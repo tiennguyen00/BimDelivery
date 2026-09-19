@@ -1,0 +1,9 @@
+# Copy to .dev.vars (git ignored) for local development.
+# In production these are Cloudflare secrets set with:
+#   wrangler secret put RESEND_API_KEY
+#
+# Neither is needed for the site as it stands. Both are required only when the
+# contact form's delivery endpoint is built (spec 0001, deferred in the scope).
+
+# RESEND_API_KEY=""
+# CONTACT_TO_EMAIL=""

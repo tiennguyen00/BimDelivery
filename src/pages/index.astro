@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+/**
+ * Placeholder front door. Feature 6 builds the real home page from content
+ * data. The text below is plain markup on purpose: it is what proves the
+ * rendering invariant, since it has to appear in the HTML the server sends
+ * without any JavaScript running.
+ */
+---
+
+<BaseLayout
+  title="BIM Delivery"
+  description="BIM and Revit modeling services."
+>
+  <main>
+    <h1>BIM Delivery</h1>
+    <p>
+      The scaffold is running. This text is prerendered into a plain HTML file
+      at build time, which is what the whole stack decision was made for.
+    </p>
+  </main>
+</BaseLayout>

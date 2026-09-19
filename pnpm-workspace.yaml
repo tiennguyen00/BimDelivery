@@ -1,0 +1,7 @@
+# Build-script approval. Packages not listed here are blocked from running
+# install scripts. Both of these are core to the toolchain:
+#   esbuild  - Astro's bundler
+#   workerd  - Cloudflare's runtime, used by wrangler for local dev and deploy
+allowBuilds:
+  esbuild: true
+  workerd: true

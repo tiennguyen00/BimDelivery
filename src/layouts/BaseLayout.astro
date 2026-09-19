@@ -1,0 +1,32 @@
+---
+/**
+ * The one layout every page sits inside.
+ *
+ * Deliberately bare: feature 4 (Design system & UI foundation) owns type,
+ * colour, and spacing, and feature 5 (Site shell) owns the header, nav, and
+ * footer. This exists so the scaffold serves a real page, and so those
+ * features have a seam to build into rather than a new file to invent.
+ */
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const lang = Astro.currentLocale ?? 'en';
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

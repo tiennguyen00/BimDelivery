@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bim-delivery-site",
+
+  // The adapter's Worker entrypoint. It serves the prerendered files in dist/
+  // and will run the single on-demand route (POST /api/contact) when it lands.
+  "main": "@astrojs/cloudflare/entrypoints/server",
+
+  // Set to the date this project was scaffolded, then left alone.
+  // Raising it later is a deliberate act, not a default (spec 0001).
+  "compatibility_date": "2026-09-19",
+
+  // The deployed runtime is workerd, not Node. Code written against full Node
+  // passes locally and fails once deployed, so this flag is set from the very
+  // first deploy rather than discovered later (spec 0001).
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Astro's adapter builds through Cloudflare's Vite plugin, which reads this
+  // file and writes the real deploy config to dist/client/wrangler.json
+  // (prerendered pages land in dist/client/, not dist/). `wrangler deploy`
+  // follows that automatically via .wrangler/deploy/config.json.
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+
+  "observability": {
+    "enabled": true
+  }
+}
