@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
+import { DEFAULT_LOCALE, LOCALES } from './src/i18n/locales.ts';
 
 // https://astro.build/config
 export default defineConfig({
@@ -32,9 +33,11 @@ export default defineConfig({
   // English only today, but configured from day one so a second language is a
   // content change rather than a URL migration. prefixDefaultLocale: false
   // keeps today's URLs clean (`/about-us`, not `/en/about-us`).
+  // The languages come from src/i18n/locales.ts, the single list the content
+  // schemas also read (spec 0002).
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: DEFAULT_LOCALE,
+    locales: [...LOCALES],
     routing: { prefixDefaultLocale: false },
   },
 

@@ -1,0 +1,8 @@
+lang: en
+title: Riverside Offices
+summary: Full architectural Revit model for a new office block.
+image:
+  src: ../../../assets/images/projects/riverside-offices.jpg
+  alt: An office building facade lit at night
+order: 2
+service: en/revit-modeling

@@ -1,14 +1,16 @@
 # Content entries
 
-Content collection entries (JSON or YAML) live here, validated by Zod schemas
-at build time so a malformed entry fails the build instead of reaching a
-visitor.
+Every word and image on the site lives here (spec 0002). One folder per
+collection, one folder per language inside it:
+`src/content/<collection>/<lang>/<file>`. The schemas are in
+`src/content.config.ts`; pages read content only through `src/lib/content.ts`.
 
-Two notes for whoever builds feature 3 (Content model):
-
-- In current Astro the collection **config** file lives at `src/content.config.ts`
-  (project root of `src/`), not inside this folder. This folder holds the data.
-- Every entry carries a required language field from the first entry, even
-  while English is the only locale (spec 0001).
-
-Nothing is defined yet on purpose. Feature 3 designs the actual fields.
+- Every entry has a `lang` field equal to its language folder.
+- Image paths are relative to the entry file, for example
+  `../../../assets/images/services/scan-to-bim.jpg`. Record every new stock
+  photo in `src/assets/images/CREDITS.md`.
+- Every image needs a non empty `alt`, or `decorative: true`.
+- A project points to its service by id: `service: en/revit-modeling`.
+- A new service is one Markdown file in `services/<lang>/` with a unique `slug`
+  and `order`. It appears in the nav and on the home page with no code change.
+- A broken entry fails `pnpm build` with a message naming the file.

@@ -1,0 +1,15 @@
+lang: en
+items:
+  - label: Home
+    href: /
+  - label: About Us
+    href: /about-us
+  - label: Services
+    type: services
+  - label: Project
+    href: /project
+  - label: Contact Us
+    href: /contact-us
+cta:
+  label: Get a quote
+  href: /contact-us

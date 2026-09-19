@@ -11,9 +11,9 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 | # | Feature | Phase | Status |
 |---|---------|-------|--------|
-| 1 | Stack & architecture | Foundation | in-progress |
+| 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
-| 3 | Content model | Foundation | planned |
+| 3 | Content model | Foundation | in-progress |
 | 4 | Design system & UI foundation | Foundation | planned |
 | 5 | Site shell: nav, dropdown, footer | Release 1 | planned |
 | 6 | Home page | Release 1 | planned |
@@ -35,7 +35,7 @@ Decide the framework and project shape for a public marketing site that has to r
 spec [0001](../specs/0001-stack-and-architecture/index.md) · code in [src/](../../src/) (config: `astro.config.mjs`, `wrangler.jsonc`)
 - [x] Decide the stack (spec): `/architect stack & architecture`
 - [x] Scaffold from the decision: `/develop stack & architecture`
-- [ ] Verify it: `/check verify stack & architecture`
+- [x] Verify it: `/check verify stack & architecture`
 
 This spec is also the natural place to settle where the site is hosted. If it does, feature 14 can go straight to `/develop`. **It did**: spec 0001 settles Cloudflare hosting, the DNS move, and the full deploy configuration, so feature 14 can skip `/architect`.
 
@@ -46,10 +46,17 @@ code in the project root (config: `eslint.config.js`, `.prettierrc.json`, `.husk
 - [x] Capture conventions + tooling choices: `/audit`
 - [x] Install the tooling: `/develop tooling`
 
-### 3. Content model · needs a decision
+### 3. Content model
 The shape of the content data files every page reads: site settings, navigation, home page sections, the three services, project entries, and contact details. Carries a language key from day one so a second language can drop in later without reshaping anything.
 **Done when:** every headline, paragraph, and image on the site comes from a data file rather than from layout code; each entry carries a language key; adding a fourth service means adding one entry, not editing a component.
-- [ ] Design it (spec): `/architect content model`
+spec [0002](../specs/0002-content-model/index.md) · code in [src/content/](../../src/content/) (config: `src/content.config.ts`, query module: `src/lib/content.ts`, locales: `src/i18n/locales.ts`)
+- [x] Design it (spec): `/architect content model`
+- [x] Build it: `/develop content model`
+  - [x] Thin path: locale list, shared shapes, `home` collection, query module, placeholder home page reading from content (AC-2 to AC-5, AC-10)
+  - [x] Services and projects with placeholder entries, stock images, and cross entry checks (AC-6 to AC-9, AC-11)
+  - [x] Remaining single entry collections (settings, navigation, stats, about, contact, projectPage, notFound) and their getters (AC-1, AC-2, AC-8, AC-11)
+  - [x] Build gate and failure drills (AC-3 to AC-7, AC-12)
+- [ ] Verify it: `/check verify content model`
 
 ### 4. Design system & UI foundation · needs a decision
 The visual language and the base pieces every page reuses: type scale, colour, spacing, the breakpoints for desktop, tablet, and mobile, plus buttons, cards, section wrappers, and form fields.
@@ -62,7 +69,7 @@ Every page exists, is linked, and reads well on a phone. This is the thinnest ve
 
 ### 5. Site shell: nav, dropdown, footer · needs a decision
 The header, the navigation with a SERVICES dropdown holding three sub items, the mobile menu, the footer, and the page layout every route sits inside. With numbered service URLs there is no services overview page, so the SERVICES item only opens the dropdown.
-**Done when:** `/`, `/about-us`, `/service-1`, `/service-2`, `/service-3`, `/project`, and `/contact-us` all resolve and are reachable from the nav; the dropdown opens by mouse, keyboard, and touch, and closes on Escape; the mobile menu works; the current page is marked in the nav; a 404 page exists.
+**Done when:** `/`, `/about-us`, `//revit-modeling, /scan-to-bim, /bim-coordination`, `/service-2`, `/service-3`, `/project`, and `/contact-us` all resolve and are reachable from the nav; the dropdown opens by mouse, keyboard, and touch, and closes on Escape; the mobile menu works; the current page is marked in the nav; a 404 page exists.
 - [ ] Design it (spec): `/architect site shell`
 
 ### 6. Home page · needs a decision
@@ -76,7 +83,7 @@ Who the company is, in placeholder copy: the story, capability highlights, and t
 - [ ] Build it: `/develop about us page`
 
 ### 8. Service pages (three)
-One service page template, filled three times, at `/service-1`, `/service-2`, and `/service-3`: what the service is, what you get, a placeholder process, and a call to action back to contact.
+One service page template, filled three times, at `//revit-modeling, /scan-to-bim, /bim-coordination`, `/service-2`, and `/service-3`: what the service is, what you get, a placeholder process, and a call to action back to contact.
 **Done when:** all three URLs render from one template plus three data entries; each has its own title, description, and heading; adding a fourth is a data entry and a route, not a new layout; each links back to `/contact-us`.
 - [ ] Build it: `/develop service pages`
 
@@ -97,7 +104,7 @@ The sitewide plumbing that lets search engines and chat previews understand the 
 **Done when:** every page has a unique title and description; a sitemap and a robots file are served; sharing any URL shows a correct preview card; the structured data validates; headings run in a sensible order on every page.
 - [ ] Design it (spec): `/architect SEO foundation`
 
-Worth knowing: because you chose `/service-1` style URLs, the path itself tells a search engine nothing about the service. Titles, headings, and descriptions carry more of the weight here than they would with named paths.
+Worth knowing: because you chose `//revit-modeling, /scan-to-bim, /bim-coordination` style URLs, the path itself tells a search engine nothing about the service. Titles, headings, and descriptions carry more of the weight here than they would with named paths.
 
 ### 12. Performance & image handling
 Make the pages fast on a real connection: right sized images in modern formats, deliberate font loading, and nothing jumping around as the page loads.
@@ -127,7 +134,7 @@ Know how many people arrive, where they come from, and which service page they r
 Out of scope for the current build pass, kept so the plan stays honest.
 - **Working contact form delivery**: the message actually reaches an inbox, with spam protection · needs a decision
 - **Project detail pages**: `/project/<name>` with a gallery and a write up per project · needs a decision
-- **Services overview page and more services**: grow from three toward the reference site's ten
+- **Services overview page and more services**: grow from three toward the reference site's ten; decide then whether the home page keeps showing every service or a featured subset (from spec 0002)
 - **Second language**: the switcher and a full second set of copy; the content model is already shaped for it · needs a decision
 - **Content editing in a browser**: a real content system so copy changes need no code · needs a decision
 - **Cookie consent banner**: once you run tracking that legally needs consent · needs a decision

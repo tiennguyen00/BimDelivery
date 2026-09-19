@@ -7,13 +7,15 @@
  * footer. This exists so the scaffold serves a real page, and so those
  * features have a seam to build into rather than a new file to invent.
  */
+import { resolveLocale } from '../i18n/locales';
+
 interface Props {
   title: string;
   description?: string;
 }
 
 const { title, description } = Astro.props;
-const lang = Astro.currentLocale ?? 'en';
+const lang = resolveLocale(Astro.currentLocale);
 ---
 
 <!doctype html>

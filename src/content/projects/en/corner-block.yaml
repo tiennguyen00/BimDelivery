@@ -1,0 +1,8 @@
+lang: en
+title: Corner Block
+summary: Scan to BIM survey of a corner building with ground floor shops.
+image:
+  src: ../../../assets/images/projects/corner-block.jpg
+  alt: A brick corner building with shops at street level
+order: 4
+service: en/scan-to-bim

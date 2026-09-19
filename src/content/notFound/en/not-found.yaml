@@ -1,0 +1,9 @@
+lang: en
+seo:
+  title: Page not found | BIM Delivery
+  description: The page you are looking for does not exist or has moved. Head back to the home page to keep browsing.
+heading: Page not found
+text: The page you are looking for does not exist or has moved.
+button:
+  label: Back to home
+  href: /

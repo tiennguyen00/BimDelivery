@@ -1,0 +1,19 @@
+lang: en
+seo:
+  title: Contact Us | BIM Delivery
+  description: Tell us about your project and get a reply within one business day. Email, phone, or use the form on this page.
+heading: Contact us
+intro: Tell us about your project. We reply within one business day.
+form:
+  nameLabel: Your name
+  emailLabel: Email address
+  companyLabel: Company
+  messageLabel: How can we help?
+  submitLabel: Send message
+errors:
+  required: Please fill in this field.
+  email: Please enter a valid email address.
+  deliveryFailed: Your message could not be sent. Please try again, or email us directly.
+success:
+  heading: Thank you
+  text: We have your message and will reply within one business day.

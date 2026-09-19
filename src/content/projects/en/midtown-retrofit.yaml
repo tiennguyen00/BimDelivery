@@ -1,0 +1,8 @@
+lang: en
+title: Midtown Retrofit
+summary: As built model of a historic building ahead of its retrofit.
+image:
+  src: ../../../assets/images/projects/midtown-retrofit.jpg
+  alt: A city street lined with older buildings
+order: 3
+service: en/scan-to-bim

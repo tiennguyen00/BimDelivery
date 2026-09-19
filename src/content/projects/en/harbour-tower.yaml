@@ -1,0 +1,8 @@
+lang: en
+title: Harbour Tower
+summary: Clash coordination for a 30 storey mixed use tower.
+image:
+  src: ../../../assets/images/projects/harbour-tower.jpg
+  alt: Looking up between two glass towers
+order: 1
+service: en/bim-coordination

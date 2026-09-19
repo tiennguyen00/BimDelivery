@@ -1,0 +1,13 @@
+lang: en
+items:
+  - value: 12
+    suffix: '+'
+    label: Years of experience
+  - value: 1200
+    suffix: '+'
+    label: Projects delivered
+  - value: 18
+    label: Countries served
+  - value: 60
+    suffix: '+'
+    label: BIM specialists

@@ -1,0 +1,8 @@
+lang: en
+title: College Hall
+summary: Revit model of a heritage college hall for a planned extension.
+image:
+  src: ../../../assets/images/projects/college-hall.jpg
+  alt: A historic college building behind a lawn
+order: 5
+service: en/revit-modeling

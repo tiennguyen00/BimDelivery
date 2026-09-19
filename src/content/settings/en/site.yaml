@@ -1,0 +1,18 @@
+lang: en
+siteName: BIM Delivery
+tagline: Precise BIM and Revit models, delivered on time.
+logo:
+  src: ../../../assets/images/brand/logo.svg
+  alt: BIM Delivery
+contact:
+  email: hello@example.com
+  phone: '+1 555 010 0000'
+  address: 100 Placeholder Street, Suite 200, Example City
+social:
+  - network: linkedin
+    url: https://www.linkedin.com/
+  - network: youtube
+    url: https://www.youtube.com/
+footer:
+  text: BIM and Revit modeling services for architects, engineers, and contractors.
+  copyright: © BIM Delivery. All rights reserved.

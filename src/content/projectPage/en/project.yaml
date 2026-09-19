@@ -1,0 +1,9 @@
+lang: en
+seo:
+  title: Projects | BIM Delivery
+  description: A selection of BIM and Revit modeling projects delivered for architects, engineers, and contractors.
+heading: Our projects
+intro: A selection of recent work. Placeholder projects until the real portfolio is ready.
+emptyState:
+  heading: Projects coming soon
+  text: We are preparing our portfolio. Get in touch to hear about similar work.
