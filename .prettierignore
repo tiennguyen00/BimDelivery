@@ -1,0 +1,13 @@
+# Generated output and local state
+dist/
+.astro/
+.wrangler/
+pnpm-lock.yaml
+
+# Vendored agent skills and their lock file
+.agents/
+.claude/
+skills-lock.json
+
+# Workflow docs are edited by the workflow skills; keep their layout as written
+docs/

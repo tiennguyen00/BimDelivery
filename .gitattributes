@@ -1,0 +1,3 @@
+# Store and check out text files with LF on every OS, so Prettier's output and
+# git agree on Windows too (core.autocrlf would otherwise convert to CRLF).
+* text=auto eol=lf

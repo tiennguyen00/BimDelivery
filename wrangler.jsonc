@@ -21,10 +21,10 @@
   // follows that automatically via .wrangler/deploy/config.json.
   "assets": {
     "directory": "./dist",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
   },
 
   "observability": {
-    "enabled": true
-  }
+    "enabled": true,
+  },
 }

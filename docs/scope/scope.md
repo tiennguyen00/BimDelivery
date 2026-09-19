@@ -12,7 +12,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | # | Feature | Phase | Status |
 |---|---------|-------|--------|
 | 1 | Stack & architecture | Foundation | in-progress |
-| 2 | Coding standards & tooling | Foundation | planned |
+| 2 | Coding standards & tooling | Foundation | done |
 | 3 | Content model | Foundation | planned |
 | 4 | Design system & UI foundation | Foundation | planned |
 | 5 | Site shell: nav, dropdown, footer | Release 1 | planned |
@@ -42,8 +42,9 @@ This spec is also the natural place to settle where the site is hosted. If it do
 ### 2. Coding standards & tooling
 Capture the conventions from the real scaffolded project, then install lint, format, and commit checks, so every page after this is written the same way.
 **Done when:** root `AGENTS.md` reflects the real stack and the agreed conventions, and lint and format run clean on the scaffold.
-- [ ] Capture conventions + tooling choices: `/audit`
-- [ ] Install the tooling: `/develop tooling`
+code in the project root (config: `eslint.config.js`, `.prettierrc.json`, `.husky/pre-commit`, `lint-staged` in `package.json`)
+- [x] Capture conventions + tooling choices: `/audit`
+- [x] Install the tooling: `/develop tooling`
 
 ### 3. Content model · needs a decision
 The shape of the content data files every page reads: site settings, navigation, home page sections, the three services, project entries, and contact details. Carries a language key from day one so a second language can drop in later without reshaping anything.
