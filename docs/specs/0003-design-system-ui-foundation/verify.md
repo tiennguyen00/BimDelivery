@@ -1,4 +1,4 @@
-# Verify: Design system & UI foundation · spec 0003 · updated 2026-09-20
+# Verify: Design system & UI foundation · spec 0003 · updated 2026-09-20 (tone coverage steps added)
 
 _Steps derived from spec 0003 acceptance criteria. `/check verify` runs these; `/test` locks the durable ones._
 
@@ -12,13 +12,14 @@ where most of the manual steps happen.
 - [ ] Open `/styleguide` → every colour token shows as a swatch labelled with what it may and may not be used for; the type scale, the spacing steps, and every component variant all render on both white and tint, filled with real content entries → AC-13
 - [ ] Read the page → text is Inter, body copy is grey on white, `h1` and `h2` are black, `h3` is darker grey, and no element looks unstyled → AC-4
 - [ ] Look at the two `Section` tones → the only difference is the background; text, border, and focus colours are identical on each → AC-6
+- [ ] Walk the whole page → `Button`, `Card`, and the form fields each appear in a tint section and in a white section, and the bands alternate tone the whole way down → AC-13
 - [ ] Look at a `Section` at desktop → content is centred at 1200px with 32px side gutters and 96px top and bottom padding; the narrow band holds its content to 720px → AC-6
 
 ### Keyboard and pointer
 
 - [ ] Tab from the top of `/styleguide` → every button, card link, and field takes focus in reading order, and each shows a 2px deep gold outline with a 2px gap → AC-10
 - [ ] Tab onto a linked card → exactly one outline is drawn, around the whole card, not around the title text alone → AC-8
-- [ ] Tab onto a card on tint and then one on white → the ring looks the same on both → AC-10
+- [ ] Tab onto a card on tint (the `Cards` section) and then one on white (`The same cards on white`) → both draw the same 2px deep gold ring with a 2px gap → AC-8, AC-10
 - [ ] Click a button with the mouse → no focus outline appears → AC-10
 - [ ] Hover a linked card → the shadow lifts and the title underlines; nothing that reads as a focus ring appears → AC-8
 - [ ] Tab through a linked card → it is one tab stop, and a screen reader announces the card's title as the link name → AC-8
@@ -37,6 +38,7 @@ where most of the manual steps happen.
 - [ ] Inspect the field that has both a hint and an error → `aria-describedby` lists the hint id first, then the error id, so a screen reader reads them in that order → AC-9
 - [ ] Run a screen reader over the invalid field → the label, then the hint, then the error message are all announced → AC-9
 - [ ] Check every field has a visible label and no placeholder standing in for one → AC-9
+- [ ] Compare a field in the tint `Form fields` section with the same field in `The same fields on white` → both keep a white fill and a `--color-field` border, and the error state looks the same on each → AC-9, AC-13
 
 ### Responsive and zoom
 
