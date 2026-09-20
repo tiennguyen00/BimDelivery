@@ -1,0 +1,165 @@
+/**
+ * The whole visual language, in one file (spec 0003).
+ *
+ * Tailwind v4 has no config file: every token is a CSS custom property inside
+ * `@theme`, and each one generates the utilities that use it. So this file is
+ * the single source of truth for colour, type, corners, and page widths, and
+ * `docs/design.md` is its written companion. A token change edits both.
+ *
+ * Four namespaces are cleared to `initial` before being repopulated. That is
+ * what turns "use the agreed tokens" from a review comment into something the
+ * build enforces: `text-gray-500`, `text-sm`, `rounded-lg`, and `sm:flex` no
+ * longer exist, so an off-token class produces no CSS at all rather than a
+ * quiet visual drift. The silence is the point, and it is worth knowing about
+ * the first time a class seems to do nothing.
+ */
+@import 'tailwindcss';
+
+/**
+ * Card uses this to draw one focus ring around the whole card when the link
+ * inside it has keyboard focus. Defined here so no component needs a square
+ * bracket variant.
+ */
+@custom-variant link-focus (&:has(a:focus-visible));
+
+@theme {
+  /* ---- Colour -------------------------------------------------------- */
+  /* Clear Tailwind's palette, then allow only the agreed one. */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Surfaces. Both section tones are light, so no component adapts to its
+     background and nothing in this system reads a tone variable. */
+  --color-white: #ffffff;
+  --color-tint: #fff9e6;
+
+  /* Text. Named by role, not by page, so a real brand later is a change of
+     values here rather than a change of class names everywhere. */
+  --color-black: #000000;
+  --color-ink-strong: #333333;
+  --color-ink: #666666;
+  --color-ink-muted: #707070;
+
+  /* Gold has two jobs and they must not be mixed up. `gold` is a FILL: it
+     carries black labels and decorative rules, and measures 2.41:1 on white,
+     so it can never be a word or a control border. `gold-ink` is the same hue
+     dark enough to read (5.05:1), and is the only gold allowed as text, a
+     link, an outline, or the focus ring. See the gold role table in
+     docs/design.md; this is the one rule the build cannot catch for you. */
+  --color-gold: #e09900;
+  --color-gold-deep: #c88600;
+  --color-gold-ink: #946600;
+
+  /* Reserved for the real logo and feature 5's icons. Fills only. Nothing in
+     this feature uses it; if feature 5 ships without it, drop the token. */
+  --color-yellow: #ffcc00;
+
+  /* Lines. `line` is decorative (card borders, dividers) and is deliberately
+     low contrast. `field` is a control boundary, so it has to reach 3:1. */
+  --color-line: #e5e5e5;
+  --color-field: #767676;
+
+  --color-error: #b42318;
+
+  /* ---- Breakpoints --------------------------------------------------- */
+  /* Three screens only: mobile is the unprefixed default, then md and lg. */
+  --breakpoint-sm: initial;
+  --breakpoint-xl: initial;
+  --breakpoint-2xl: initial;
+
+  /* ---- Type ---------------------------------------------------------- */
+  /* Clearing `--text-*` removes text-xs through text-9xl, so these six are
+     the only font sizes that exist. Without it, `text-sm` and `text-small`
+     would both work and the scale would drift.
+
+     Headings interpolate linearly between a 360px and a 1200px viewport, so
+     they grow smoothly and never jump at a breakpoint. The rem term keeps
+     them responsive to full page zoom; body, lead, and small are pure rem. */
+  --text-*: initial;
+  --text-h1: clamp(2.25rem, 1.714rem + 2.381vw, 3.5rem);
+  --text-h2: clamp(1.75rem, 1.429rem + 1.429vw, 2.5rem);
+  --text-h3: clamp(1.25rem, 1.143rem + 0.476vw, 1.5rem);
+  --text-lead: 1.125rem;
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+
+  /* Companion keys: line height and letter spacing ride on the size token, so
+     `text-h1` is the whole type treatment and no component ever repeats them.
+     Only h1 carries negative tracking; at 56px the default reads loose. */
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h2--line-height: 1.2;
+  --text-h3--line-height: 1.3;
+  --text-lead--line-height: 1.6;
+  --text-body--line-height: 1.6;
+  --text-small--line-height: 1.5;
+
+  /* ---- Corners ------------------------------------------------------- */
+  /* One radius for every button, card, field, and image. `full` is kept for
+     the pills and round icon buttons feature 5 is likely to need, because
+     reintroducing a cleared namespace later is a spec change. */
+  --radius-*: initial;
+  --radius-ui: 0.25rem;
+  --radius-full: 9999px;
+
+  /* ---- Page widths --------------------------------------------------- */
+  /* Section owns width and gutters; there is no separate Container. */
+  --container-content: 75rem;
+  --container-narrow: 45rem;
+}
+
+/**
+ * `inline` because the value points at a variable Astro's fonts API defines
+ * elsewhere in the page CSS. Inlining it means `font-sans` emits the whole
+ * stack rather than a var() chain that could resolve to nothing.
+ */
+@theme inline {
+  --font-sans: var(--font-inter), sans-serif;
+}
+
+/**
+ * Everything a page gets for free, with no per page work: the typeface, the
+ * body colour, heading sizes and colours, the focus ring, and the reduced
+ * motion cut. Spacing, shadows, and durations deliberately keep Tailwind's
+ * defaults, because nothing here needs them constrained and `min-h-11`
+ * (44px) relies on the default 0.25rem step.
+ */
+@layer base {
+  body {
+    @apply bg-white font-sans text-body text-ink antialiased;
+  }
+
+  h1 {
+    @apply text-h1 font-bold text-black;
+  }
+
+  h2 {
+    @apply text-h2 font-bold text-black;
+  }
+
+  h3 {
+    @apply text-h3 font-semibold text-ink-strong;
+  }
+
+  /* Keyboard focus only, never a mouse click. Deep gold so the ring itself
+     reaches 3:1 on both tones. */
+  :focus-visible {
+    outline: 2px solid var(--color-gold-ink);
+    outline-offset: 2px;
+  }
+
+  /* When the visitor's system asks for less motion, state changes are
+     instant rather than animated. Not zero, so anything listening for a
+     transitionend event still hears one. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

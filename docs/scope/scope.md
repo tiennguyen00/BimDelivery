@@ -14,7 +14,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
 | 3 | Content model | Foundation | in-progress |
-| 4 | Design system & UI foundation | Foundation | planned |
+| 4 | Design system & UI foundation | Foundation | in-progress |
 | 5 | Site shell: nav, dropdown, footer | Release 1 | planned |
 | 6 | Home page | Release 1 | planned |
 | 7 | About Us page | Release 1 | planned |
@@ -56,12 +56,19 @@ spec [0002](../specs/0002-content-model/index.md) · code in [src/content/](../.
   - [x] Services and projects with placeholder entries, stock images, and cross entry checks (AC-6 to AC-9, AC-11)
   - [x] Remaining single entry collections (settings, navigation, stats, about, contact, projectPage, notFound) and their getters (AC-1, AC-2, AC-8, AC-11)
   - [x] Build gate and failure drills (AC-3 to AC-7, AC-12)
-- [ ] Verify it: `/check verify content model`
+- [x] Verify it: `/check verify content model`
 
-### 4. Design system & UI foundation · needs a decision
+### 4. Design system & UI foundation
 The visual language and the base pieces every page reuses: type scale, colour, spacing, the breakpoints for desktop, tablet, and mobile, plus buttons, cards, section wrappers, and form fields.
 **Done when:** `design.md` covers type, colour, spacing, and the three breakpoints; base components are reachable by keyboard with a visible focus outline and readable contrast; a page can be composed from them without writing new one off CSS.
-- [ ] Design it (spec): `/architect design system & UI foundation`
+spec [0003](../specs/0003-design-system-ui-foundation/index.md)
+- [x] Design it (spec): `/architect design system & UI foundation`
+- [ ] Build it: `/develop design system & UI foundation`
+  - [x] Tokens, Inter, and base styles sitewide: Tailwind and the Prettier plugin installed, `global.css` with the four cleared namespaces, every token and its type companion keys, fonts API, `BaseLayout` wired (AC-2 to AC-5, AC-10, AC-12)
+  - [ ] Astro components: class maps, `Section`, `Button`, `Card` (AC-6 to AC-8, AC-10, AC-14)
+  - [ ] React fields: React integration, `Button`, `TextField`, `TextArea` sharing the class maps (AC-7, AC-9)
+  - [ ] Dev only `/styleguide`, `docs/design.md` with both contrast tables and the gold rule, and the build gate (AC-1, AC-11, AC-13 to AC-15)
+- [ ] Verify it: `/check verify design system & UI foundation`
 
 ## Release 1: the whole site stands up
 
@@ -139,6 +146,8 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Content editing in a browser**: a real content system so copy changes need no code · needs a decision
 - **Cookie consent banner**: once you run tracking that legally needs consent · needs a decision
 - **Blog or insights section** · needs a decision
+- **Real brand**: the real logo, brand colours, and typeface replace the palette borrowed from paviliusbim.com before launch; update the tokens, both contrast tables, and walk `/styleguide` again (from spec 0003)
+- **A dark section tone**: bring back a dark band for a section such as the home page's closing call to action. It means reintroducing inherited tone variables, a card tone reset, and a second focus colour, then computing the dark contrast pairs. Gold reads well on black at 8.73:1 if you want it (from spec 0003)
 - **Testimonials and client logos**
 - **Error monitoring**: know when a real visitor hits a broken page · needs a decision
 

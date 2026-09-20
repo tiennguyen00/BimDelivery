@@ -2,12 +2,13 @@
 /**
  * The one layout every page sits inside.
  *
- * Deliberately bare: feature 4 (Design system & UI foundation) owns type,
- * colour, and spacing, and feature 5 (Site shell) owns the header, nav, and
- * footer. This exists so the scaffold serves a real page, and so those
- * features have a seam to build into rather than a new file to invent.
+ * It now carries the design system (spec 0003): the tokens and base styles in
+ * global.css, and Inter through Astro's fonts API. Feature 5 (Site shell) adds
+ * the header, nav, and footer around the slot.
  */
+import { Font } from 'astro:assets';
 import { resolveLocale } from '../i18n/locales';
+import '../styles/global.css';
 
 interface Props {
   title: string;
@@ -26,6 +27,9 @@ const lang = resolveLocale(Astro.currentLocale);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    {/* Emits the @font-face rules and preloads the Inter files, which Astro
+        serves from this site's own origin. */}
+    <Font cssVariable="--font-inter" preload />
     <slot name="head" />
   </head>
   <body>

@@ -1,6 +1,7 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
+import tailwindcss from '@tailwindcss/vite';
 import { DEFAULT_LOCALE, LOCALES } from './src/i18n/locales.ts';
 
 // https://astro.build/config
@@ -41,9 +42,37 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false },
   },
 
+  // Inter, the one typeface (spec 0003). Astro downloads the files at build
+  // and serves them from this site's own origin, so there is no third party
+  // request and no layout shift from a late swap: `optimizedFallbacks` (on by
+  // default) generates a metric matched local fallback.
+  //
+  // `cssVariable` is what Tailwind's `--font-sans` token points at, in
+  // src/styles/global.css. The weight range '400 700' pulls Inter's variable
+  // font once and covers body (400), semibold (600), and headings (700).
+  //
+  // Note for an offline build: the first build on a new machine or in CI needs
+  // network access to download the files. Astro caches them after that.
+  fonts: [
+    {
+      provider: fontProviders.fontsource(),
+      name: 'Inter',
+      cssVariable: '--font-inter',
+      weights: ['400 700'],
+      subsets: ['latin'],
+      fallbacks: ['sans-serif'],
+    },
+  ],
+
   // `site` is intentionally NOT set yet: the public domain is not chosen.
   // Feature 11 (SEO foundation) sets it for canonical URLs and the sitemap.
   // Left unset deliberately so a missing domain fails loudly when the sitemap
   // lands, rather than quietly emitting canonical URLs pointing at a
   // placeholder host.
+
+  vite: {
+    // Tailwind v4 runs as a Vite plugin; there is no tailwind.config file.
+    // Every token lives in the `@theme` block in src/styles/global.css.
+    plugins: [tailwindcss()],
+  },
 });

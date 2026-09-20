@@ -3,6 +3,8 @@
   "semi": true,
   "trailingComma": "all",
   "printWidth": 80,
-  "plugins": ["prettier-plugin-astro"],
+  "plugins": ["prettier-plugin-astro", "prettier-plugin-tailwindcss"],
+  "tailwindStylesheet": "./src/styles/global.css",
+  "tailwindFunctions": ["cx"],
   "overrides": [{ "files": "*.astro", "options": { "parser": "astro" } }]
 }
