@@ -2,6 +2,7 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import tailwindcss from '@tailwindcss/vite';
+import react from '@astrojs/react';
 import { DEFAULT_LOCALE, LOCALES } from './src/i18n/locales.ts';
 
 // https://astro.build/config
@@ -75,4 +76,10 @@ export default defineConfig({
     // Every token lives in the `@theme` block in src/styles/global.css.
     plugins: [tailwindcss()],
   },
+
+  // React is here for one reason: the contact form island in feature 10
+  // (spec 0001). Nothing is hydrated by default, so the design system's React
+  // components render to static HTML and ship no client JavaScript until that
+  // one island asks for it.
+  integrations: [react()],
 });

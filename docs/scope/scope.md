@@ -65,8 +65,8 @@ spec [0003](../specs/0003-design-system-ui-foundation/index.md)
 - [x] Design it (spec): `/architect design system & UI foundation`
 - [ ] Build it: `/develop design system & UI foundation`
   - [x] Tokens, Inter, and base styles sitewide: Tailwind and the Prettier plugin installed, `global.css` with the four cleared namespaces, every token and its type companion keys, fonts API, `BaseLayout` wired (AC-2 to AC-5, AC-10, AC-12)
-  - [ ] Astro components: class maps, `Section`, `Button`, `Card` (AC-6 to AC-8, AC-10, AC-14)
-  - [ ] React fields: React integration, `Button`, `TextField`, `TextArea` sharing the class maps (AC-7, AC-9)
+  - [x] Astro components: class maps, `Section`, `Button`, `Card` (AC-6 to AC-8, AC-10, AC-14)
+  - [x] React fields: React integration, `Button`, `TextField`, `TextArea` sharing the class maps (AC-7, AC-9)
   - [ ] Dev only `/styleguide`, `docs/design.md` with both contrast tables and the gold rule, and the build gate (AC-1, AC-11, AC-13 to AC-15)
 - [ ] Verify it: `/check verify design system & UI foundation`
 
