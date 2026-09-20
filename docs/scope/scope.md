@@ -16,7 +16,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 3 | Content model | Foundation | in-progress |
 | 4 | Design system & UI foundation | Foundation | in-progress |
 | 5 | Site shell: nav, dropdown, footer | Release 1 | in-progress |
-| 6 | Home page | Release 1 | planned |
+| 6 | Home page | Release 1 | in-progress |
 | 7 | About Us page | Release 1 | planned |
 | 8 | Service pages (three) | Release 1 | planned |
 | 9 | Project page | Release 1 | planned |
@@ -86,10 +86,17 @@ spec [0004](../specs/0004-site-shell/index.md) · code in [src/components/ui/](.
   - [x] Written down: `docs/design.md` sections, `/styleguide` entries, and the build gate (AC-16, AC-17)
 - [ ] Verify it: `/check verify site shell`
 
-### 6. Home page · needs a decision
+### 6. Home page
 The front door, following the reference layout minus the section you cut: hero, why choose us, company overview, stats counter, three service cards, global presence, differentiators list, certification, and a closing call to action.
 **Done when:** every section renders from content data on desktop, tablet, and mobile; the services section shows exactly three cards linking to the three service pages; the "Delivering Precision BIM & Revit Modeling" section is absent; every image carries alt text.
-- [ ] Design it (spec): `/architect home page`
+spec [0005](../specs/0005-home-page/index.md) · code in [src/components/home/](../../src/components/home/) and [src/pages/index.astro](../../src/pages/index.astro) (shared bands: `src/components/ui/MediaText.astro`, `StatsBand.astro`, `CtaBand.astro`, script: `src/scripts/counters.ts`)
+- [x] Design it (spec): `/architect home page`
+- [x] Build it: `/develop home page`
+  - [x] The whole page stands up, no script: `MediaText`, `StatsBand`, `CtaBand` with its `ctaLinkClass`, the hero, and the three home only pieces, composed into `index.astro` with its tones, image loading, and heading ids (AC-1 to AC-5, AC-7 to AC-13, AC-15, AC-18)
+  - [x] The numbers move: `counters.ts`, the data attributes it reads, the reduced motion cut, and the no script proof (AC-6, AC-14)
+  - [x] The guard: the exactly three services rule added to the cross entry checks (AC-4)
+  - [x] Written down and gated: `design.md` entries with the new contrast pairs and the focus exception, `/styleguide` tiles, and the check, lint, and build gates (AC-16, AC-17)
+- [ ] Verify it: `/check verify home page`
 
 ### 7. About Us page
 Who the company is, in placeholder copy: the story, capability highlights, and the same stats and trust cues the home page uses.
@@ -148,13 +155,13 @@ Know how many people arrive, where they come from, and which service page they r
 Out of scope for the current build pass, kept so the plan stays honest.
 - **Working contact form delivery**: the message actually reaches an inbox, with spam protection · needs a decision
 - **Project detail pages**: `/project/<name>` with a gallery and a write up per project · needs a decision
-- **Services overview page and more services**: grow from three toward the reference site's ten; decide then whether the home page keeps showing every service or a featured subset (from spec 0002)
+- **Services overview page and more services**: grow from three toward the reference site's ten; decide then whether the home page keeps showing every service or a featured subset. Spec 0005 makes this a deliberate moment rather than a silent one: a fourth service entry stops the build until the home page's grid is decided (from specs 0002 and 0005)
 - **Second language**: the switcher and a full second set of copy; the content model is already shaped for it · needs a decision
 - **Content editing in a browser**: a real content system so copy changes need no code · needs a decision
 - **Cookie consent banner**: once you run tracking that legally needs consent · needs a decision
 - **Blog or insights section** · needs a decision
 - **Real brand**: the real logo, brand colours, and typeface replace the palette borrowed from paviliusbim.com before launch; update the tokens, both contrast tables, and walk `/styleguide` again (from spec 0003)
-- **A dark section tone**: bring back a dark band for a section such as the home page's closing call to action. It means reintroducing inherited tone variables, a card tone reset, and a second focus colour, then computing the dark contrast pairs. Gold reads well on black at 8.73:1 if you want it (from spec 0003)
+- **A dark section tone**: bring back a dark band for a section such as the home page's closing call to action. It means reintroducing inherited tone variables, a card tone reset, and a second focus colour, then computing the dark contrast pairs. Gold reads well on black at 8.73:1 if you want it. Less urgent since spec 0005: the closing call to action now ends on a self contained gold band, so the dark tone is no longer the only way to close a page (from specs 0003 and 0005)
 - **Testimonials and client logos**
 - **Error monitoring**: know when a real visitor hits a broken page · needs a decision
 

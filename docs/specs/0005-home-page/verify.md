@@ -41,3 +41,12 @@ the hero's loading behaviour on a throttled connection.
 - [ ] On the gold band, check the heading, text, and link label against the contrast table in `docs/design.md`: black on gold at 8.73:1 and white on black at 21:1 → AC-10
 - [ ] Open `/styleguide` in dev → `StatsBand`, `MediaText`, and `CtaBand` each have a tile → AC-16
 - [ ] `docs/design.md` `## Components` holds an entry for each of the three, and the contrast table holds the black on gold and white on black pairs → AC-16
+
+## Value sourcing (added by /develop, one per row the build touched)
+
+Each of these varies an input and checks the output, so a value that comes
+from the wrong place is caught even when the build time gate is happy.
+
+- [ ] Set the browser's language to one that groups differently (German shows `1.200`, not `1,200`), reload, and scroll the stats band in → every counting frame and the final number read `1,200`, the page's own language, because `StatsBand` writes `data-locale` and the script reads it rather than the visitor's locale → AC-5, AC-6
+- [ ] Swap the `order` values on two service entries → the home page's three cards reorder to match, and they stay in the same order as the header's SERVICES dropdown, because both read `getServices(lang)` → AC-4
+- [ ] At a viewport just above `lg` (say 1100px), check the hero photo's chosen source in the network panel → it is roughly half the viewport wide, not a full width one, because the hero passes `sizes="(min-width: 64rem) 50vw, 100vw"` → AC-12

@@ -152,7 +152,7 @@ Sliced by the project's Skateboard approach. Milestone 1 is the thinnest genuine
 
 Image loading sits inside milestone 1 rather than in a later pass, because `loading`, `sizes`, and a reserved aspect ratio cost nothing while a component is being written and a great deal once eight components exist.
 
-**Milestone 1: the whole page stands up, with no script**
+**Milestone 1: the whole page stands up, with no script** (done)
 
 1. Build `src/components/ui/MediaText.astro`: heading with an `id` of `<section>-heading`, paragraphs, an optional list slot, an optional image with `imageSide` of `start` or `end`, stacking to copy then image on mobile, lazy image with a reserved aspect ratio, and a single centred column when there is no image, satisfies **AC-7**, **AC-11**, **AC-12**.
 2. Build `src/components/ui/StatsBand.astro`: a heading and one item per stat, each rendering `Intl.NumberFormat(lang).format(value)` plus its suffix and label, each carrying `data-count-to`, and the band carrying `data-locale`. No script yet, satisfies **AC-5**.
@@ -162,16 +162,16 @@ Image loading sits inside milestone 1 rather than in a later pass, because `load
 6. Rewrite `src/pages/index.astro` to compose all nine sections in order with the tones in the composition table, reading `getHomePage`, `getStats`, and `getServices` for the resolved locale, rendering the services row as three `Card`s linking `/{slug}` with `alt={service.image.alt ?? ''}`, giving every section a `labelledBy` of `<section>-heading`, and passing `home.seo` to `PageLayout`, satisfies **AC-1**, **AC-2**, **AC-4**, **AC-11**, **AC-15**.
 7. Check the page against a real preview at 360px, 768px, and 1280px: no sideways scrolling, the services row reflowing one to two to three, tap targets at 44px, satisfies **AC-13**.
 
-**Milestone 2: the numbers move**
+**Milestone 2: the numbers move** (done)
 
 8. Write `src/scripts/counters.ts`: one `IntersectionObserver` at a 25 percent threshold that unobserves after firing, a `requestAnimationFrame` ease out over 1200ms formatting each frame with `Intl.NumberFormat` and the band's `data-locale`, and an immediate return when `prefers-reduced-motion: reduce` matches, satisfies **AC-6**.
 9. Import it from one `<script>` in `StatsBand.astro`, the way `Header.astro` imports `nav.ts`, then confirm with the script blocked that the finished numbers still read correctly, satisfies **AC-6**, **AC-14**.
 
-**Milestone 3: the guard**
+**Milestone 3: the guard** (done)
 
 10. Add the exactly three services rule to the cross entry checks in `src/lib/content.ts`, so it runs from the single `content-gate` call site and fails the build with a message naming the collection, the language, and the count. Prove it by adding and then removing a fourth entry, satisfies **AC-4**.
 
-**Milestone 4: written down and gated**
+**Milestone 4: written down and gated** (done)
 
 11. Add `StatsBand`, `MediaText`, and `CtaBand` sections to `docs/design.md` under `## Components`, add the black on gold and white on black pairs to the contrast table, and record the band's black focus ring as the one documented exception to the `## Focus and motion` rule. Add a tile for each to `/styleguide`, satisfies **AC-16**, **AC-18**.
 12. Run `pnpm check`, `pnpm lint`, and `pnpm build`, and confirm `dist/client/` still holds one HTML file per route and the built home page holds no `astro-island`, satisfies **AC-14**, **AC-17**.
