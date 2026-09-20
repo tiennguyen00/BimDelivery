@@ -163,6 +163,8 @@ const activeClass =
             aria-expanded="true"
             aria-controls="nav-menu-panel"
             aria-label={ui.closeMenu}
+            data-open-label={ui.openMenu}
+            data-close-label={ui.closeMenu}
             class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-ui text-ink-strong hover:text-gold-ink lg:hidden"
           >
             <Icon name="menu" class="nav-icon-menu" />
@@ -248,6 +250,16 @@ const activeClass =
     </div>
   </nav>
 </header>
+
+{/**
+ * The site's only bundled JavaScript, imported once here so the nav ships it
+ * on every page and nothing else does. Astro compiles this to a deferred
+ * module, which is why the flag script that hides the panels lives inline in
+ * the document head instead.
+ */}
+<script>
+  import '../../scripts/nav';
+</script>
 
 {/**
  * `is:global` because the closing rules are rooted at `html.js`, which this
