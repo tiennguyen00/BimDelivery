@@ -550,7 +550,46 @@ const headCellClass =
       </div>
     </Section>
 
-    <Section labelledBy="sg-fields">
+    <Section labelledBy="sg-cards-white">
+      <h2 id="sg-cards-white" class="text-h3">
+        The same cards on white
+      </h2>
+      <div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {firstService && (
+          <Card
+            title={firstService.title}
+            text={firstService.summary}
+            image={{
+              src: firstService.image.src,
+              alt: firstService.image.alt ?? '',
+            }}
+            href={`/${firstService.slug}`}
+          />
+        )}
+        {firstProject && (
+          <Card
+            title={firstProject.title}
+            text={firstProject.summary}
+            image={{
+              src: firstProject.image.src,
+              alt: firstProject.image.alt ?? '',
+            }}
+          />
+        )}
+        {home.whyChooseUs.items[0] && (
+          <Card
+            title={home.whyChooseUs.items[0].title}
+            text={home.whyChooseUs.items[0].text}
+          />
+        )}
+      </div>
+      <p class="mt-4 text-small text-ink">
+        The card keeps its own white surface and its own border on either tone,
+        so the only thing that changed is the band behind it.
+      </p>
+    </Section>
+
+    <Section tone="tint" labelledBy="sg-fields">
       <h2 id="sg-fields">Form fields</h2>
       <p class="mt-4 max-w-narrow">
         Labels are always visible, so no placeholder stands in for one. An error
@@ -612,6 +651,50 @@ const headCellClass =
           />
         </div>
       </div>
+    </Section>
+
+    <Section labelledBy="sg-fields-white">
+      <h2 id="sg-fields-white" class="text-h3">
+        The same fields on white
+      </h2>
+      <div class="mt-4 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div class="flex flex-col gap-6">
+          <TextField
+            id="sg-white-name"
+            name="white-name"
+            label={contact.form.nameLabel}
+            required
+          />
+          <TextField
+            id="sg-white-company"
+            name="white-company"
+            label={contact.form.companyLabel}
+            hint="Optional"
+          />
+        </div>
+
+        <div class="flex flex-col gap-6">
+          <TextField
+            id="sg-white-email-invalid"
+            name="white-email-invalid"
+            type="email"
+            label={contact.form.emailLabel}
+            error={contact.errors.email}
+            defaultValue="not-an-email"
+          />
+          <TextArea
+            id="sg-white-message"
+            name="white-message"
+            label={contact.form.messageLabel}
+            rows={4}
+          />
+        </div>
+      </div>
+      <p class="mt-4 text-small text-ink">
+        The field keeps its white fill and its{' '}
+        <code class="font-mono text-small">--color-field</code> border on either
+        tone, so the control boundary clears 3:1 on both.
+      </p>
     </Section>
 
     <Section tone="tint" labelledBy="sg-contrast">
