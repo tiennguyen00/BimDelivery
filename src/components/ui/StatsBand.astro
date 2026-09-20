@@ -53,3 +53,12 @@ const format = new Intl.NumberFormat(lang);
     ))}
   </dl>
 </div>
+
+{/**
+ * The same shape as the nav script in `Header.astro`: one `<script>` importing
+ * a module, which Astro bundles and serves. It enhances the numbers already in
+ * the markup above, so if it never loads nothing is lost.
+ */}
+<script>
+  import '../../scripts/counters';
+</script>
