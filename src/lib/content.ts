@@ -117,10 +117,38 @@ const checkUnique = <T extends { id: string; filePath?: string }>(
   });
 };
 
+/**
+ * The home page's services row is a contract of exactly three (spec 0005).
+ *
+ * This is a deliberate speed bump, not a limit on the business. The scope
+ * elsewhere calls adding a service easy, and it nearly is: a data entry and a
+ * route. What it is not is a silent change to the home page, where three cards
+ * fill a row and a fourth reflows it into something nobody chose. So a fourth
+ * entry stops the build and asks the question: a two by two grid, or a curated
+ * three with the rest on the service pages?
+ *
+ * When that call is made, this rule goes and the home page's grid changes with
+ * it. Until then, failing here is cheaper than finding out in production.
+ */
+const HOME_SERVICES_COUNT = 3;
+
+const checkServiceCount = (
+  lang: Locale,
+  entries: readonly Entry<'services'>[],
+): void => {
+  if (entries.length === HOME_SERVICES_COUNT) return;
+  throw new Error(
+    `[content] services (${lang}): found ${entries.length} entries, but the home page's ` +
+      `services row needs exactly ${HOME_SERVICES_COUNT}. Either add or remove an entry in ` +
+      `src/content/services/${lang}/, or decide what the home page shows with four or more ` +
+      'services and relax this rule in src/lib/content.ts (spec 0005).',
+  );
+};
 const checkServices = (
   lang: Locale,
   entries: readonly Entry<'services'>[],
 ): void => {
+  checkServiceCount(lang, entries);
   checkUnique('services', lang, 'slug', entries, (entry) => entry.data.slug);
   checkUnique('services', lang, 'order', entries, (entry) => entry.data.order);
   const reserved = entries.find((entry) =>
