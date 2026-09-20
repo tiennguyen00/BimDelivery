@@ -1,0 +1,303 @@
+---
+/**
+ * The sticky site header (spec 0004).
+ *
+ * It ships as plain HTML in which both the services dropdown and the mobile
+ * menu are already open. Milestone 2 adds one script that closes them and makes
+ * them behave. That order is deliberate: if the script never loads, never
+ * parses, or throws, the visitor still sees and can follow every link. The
+ * worst case is cosmetic.
+ *
+ * The nav exists twice in the DOM, once as the desktop bar and once inside the
+ * mobile panel, which is why every control's id is fixed here and in the spec:
+ * `aria-controls` needs a stable target and there are two of each. Both copies
+ * sit inside one `<nav>`, so the header contributes a single navigation
+ * landmark rather than two competing ones, and the mobile panel is an ordinary
+ * block after the bar rather than an overlay, so that with no JavaScript it
+ * pushes the page down instead of covering it.
+ *
+ * The header registers no scroll listener. It is `position: sticky` at one
+ * constant height, held in `--header-h` by `PageLayout`.
+ */
+import { Image } from 'astro:assets';
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+import type { Link, NavItem, NavUi, Settings } from '../../lib/content';
+
+interface Props {
+  items: readonly NavItem[];
+  cta?: Link;
+  ui: NavUi;
+  logo: Settings['logo'];
+  siteName: string;
+  /** `Astro.url.pathname` for the page being built, used to mark the current item. */
+  currentPath: string;
+}
+
+const { items, cta, ui, logo, siteName, currentPath } = Astro.props;
+
+type NavGroup = Readonly<{ label: string; children: readonly Link[] }>;
+
+const hasChildren = (item: NavItem): item is NavGroup => 'children' in item;
+
+/**
+ * `/about-us` and `/about-us/` are the same page, so both sides lose a trailing
+ * slash before they are compared. `/` normalises to itself.
+ */
+const normalise = (path: string): string => path.replace(/\/+$/, '') || '/';
+
+const here = normalise(currentPath);
+const isCurrent = (href: string): boolean => normalise(href) === here;
+
+/**
+ * A service page is not itself a nav item, so SERVICES gets the active underline
+ * without `aria-current`: the current page is the service, not the group.
+ */
+const isGroupActive = (group: NavGroup): boolean =>
+  group.children.some((child) => isCurrent(child.href));
+
+/** An empty services collection means no SERVICES control at all, not an empty one. */
+const visibleItems = items.filter(
+  (item) => !hasChildren(item) || item.children.length > 0,
+);
+
+const barLinkClass =
+  'inline-flex min-h-11 items-center gap-1 rounded-ui px-3 font-semibold text-ink-strong hover:text-gold-ink';
+const panelLinkClass =
+  'flex min-h-11 items-center rounded-ui px-2 font-semibold text-ink-strong hover:text-gold-ink';
+const activeClass =
+  'text-black underline decoration-gold decoration-2 underline-offset-8';
+---
+
+<header class="sticky top-0 z-40 border-b border-line bg-white">
+  {/**
+   * One landmark for the whole header. The logo link sits inside it, which
+   * costs a screen reader one extra item in the nav and buys a single, clean
+   * navigation region instead of two labelled the same.
+   */}
+  <nav aria-label={ui.primaryNavLabel}>
+    <div class="mx-auto w-full max-w-content px-4 md:px-6 lg:px-8">
+      <div class="flex h-(--header-h) items-center justify-between gap-4">
+        <a href="/" class="inline-flex shrink-0 items-center rounded-ui">
+          {/* Above the fold on every page, so it never waits to load. */}
+          <Image
+            src={logo.src}
+            alt={logo.alt ?? siteName}
+            loading="eager"
+            class="h-8 w-auto"
+          />
+        </a>
+
+        <div class="flex items-center gap-2">
+          <ul class="hidden list-none items-center gap-1 p-0 lg:flex">
+            {visibleItems.map((item) =>
+              hasChildren(item) ? (
+                <li class="relative" data-nav-dropdown>
+                  <button
+                    type="button"
+                    id="nav-services-desktop-btn"
+                    aria-expanded="true"
+                    aria-controls="nav-services-desktop"
+                    class:list={[
+                      barLinkClass,
+                      isGroupActive(item) && activeClass,
+                    ]}
+                  >
+                    {item.label}
+                    <Icon name="chevron-down" size={16} class="nav-chevron" />
+                  </button>
+
+                  {/* Ships open; `html.js` closes it before the first paint. */}
+                  <div
+                    id="nav-services-desktop"
+                    class="absolute top-full left-0 min-w-56 rounded-ui border border-line bg-white p-2 shadow-lg"
+                  >
+                    <ul class="flex list-none flex-col p-0">
+                      {item.children.map((child) => (
+                        <li>
+                          <a
+                            href={child.href}
+                            aria-current={
+                              isCurrent(child.href) ? 'page' : undefined
+                            }
+                            class:list={[
+                              panelLinkClass,
+                              isCurrent(child.href) && activeClass,
+                            ]}
+                          >
+                            {child.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </li>
+              ) : (
+                <li>
+                  <a
+                    href={item.href}
+                    aria-current={isCurrent(item.href) ? 'page' : undefined}
+                    class:list={[
+                      barLinkClass,
+                      isCurrent(item.href) && activeClass,
+                    ]}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ),
+            )}
+          </ul>
+
+          {cta && (
+            <div class="hidden lg:block">
+              <Button href={cta.href}>{cta.label}</Button>
+            </div>
+          )}
+
+          {/* Which glyph shows follows `aria-expanded` in CSS, so it is right
+               in the server HTML and stays right however the state changes. */}
+          <button
+            type="button"
+            id="nav-menu-btn"
+            aria-expanded="true"
+            aria-controls="nav-menu-panel"
+            aria-label={ui.closeMenu}
+            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-ui text-ink-strong hover:text-gold-ink lg:hidden"
+          >
+            <Icon name="menu" class="nav-icon-menu" />
+            <Icon name="close" class="nav-icon-close" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {/**
+     * The mobile panel. With no JavaScript it is an ordinary block in the page
+     * flow: it sits under the bar and the content continues below it, so every
+     * link is reachable and nothing is covered. The `html.js` rules turn it
+     * into the fixed overlay and close it.
+     */}
+    <div
+      id="nav-menu-panel"
+      class="z-30 border-b border-line bg-white px-4 pt-2 pb-6 lg:hidden"
+    >
+      <ul class="flex list-none flex-col p-0">
+        {visibleItems.map((item) =>
+          hasChildren(item) ? (
+            <li>
+              <button
+                type="button"
+                id="nav-services-mobile-btn"
+                aria-expanded="true"
+                aria-controls="nav-services-mobile"
+                class:list={[
+                  panelLinkClass,
+                  'w-full justify-between gap-1',
+                  isGroupActive(item) && activeClass,
+                ]}
+              >
+                {item.label}
+                <Icon name="chevron-down" size={16} class="nav-chevron" />
+              </button>
+
+              <ul
+                id="nav-services-mobile"
+                class="flex list-none flex-col p-0 pl-4"
+              >
+                {item.children.map((child) => (
+                  <li>
+                    <a
+                      href={child.href}
+                      aria-current={isCurrent(child.href) ? 'page' : undefined}
+                      class:list={[
+                        panelLinkClass,
+                        isCurrent(child.href) && activeClass,
+                      ]}
+                    >
+                      {child.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ) : (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isCurrent(item.href) ? 'page' : undefined}
+                class:list={[
+                  panelLinkClass,
+                  isCurrent(item.href) && activeClass,
+                ]}
+              >
+                {item.label}
+              </a>
+            </li>
+          ),
+        )}
+      </ul>
+
+      {cta && (
+        <div class="mt-4">
+          <Button href={cta.href} class="w-full">
+            {cta.label}
+          </Button>
+        </div>
+      )}
+    </div>
+  </nav>
+</header>
+
+{/**
+ * `is:global` because the closing rules are rooted at `html.js`, which this
+ * component does not render and so cannot carry a scoped class. The ids are
+ * fixed by spec 0004 and unique on the page, so the reach stays narrow.
+ *
+ * The `html.js` block is the closed state. It applies only once the inline
+ * flag script in `PageLayout` has added the class, which happens before the
+ * first paint, so a slow connection never shows an open menu (AC-18). Remove
+ * that script and none of it matches: the panels stay open, which is the
+ * usable no script baseline rather than a broken page.
+ *
+ * The two rules outside the block are not state, they are the glyph and the
+ * chevron following `aria-expanded`, so they hold with or without JavaScript.
+ */}
+<style is:global>
+  #nav-menu-btn[aria-expanded='true'] .nav-icon-menu,
+  #nav-menu-btn[aria-expanded='false'] .nav-icon-close {
+    display: none;
+  }
+
+  .nav-chevron {
+    transition: transform 150ms;
+  }
+
+  [aria-expanded='true'] > .nav-chevron {
+    transform: rotate(180deg);
+  }
+
+  html.js #nav-services-desktop,
+  html.js #nav-services-mobile {
+    display: none;
+  }
+
+  html.js #nav-services-desktop[data-open],
+  html.js #nav-services-mobile[data-open] {
+    display: block;
+  }
+
+  /* Only with JavaScript does the panel become an overlay. Without it the panel
+     stays in the flow, where it cannot cover the page. */
+  html.js #nav-menu-panel {
+    position: fixed;
+    inset: var(--header-h) 0 0 0;
+    display: none;
+    overflow-y: auto;
+    border-bottom: 0;
+  }
+
+  html.js #nav-menu-panel[data-open] {
+    display: block;
+  }
+</style>

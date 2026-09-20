@@ -41,7 +41,22 @@ export type Link = Readonly<{ label: string; href: string }>;
 export type NavItem =
   Link | Readonly<{ label: string; children: readonly Link[] }>;
 
-export type Navigation = Readonly<{ items: readonly NavItem[]; cta?: Link }>;
+/** The interface strings the site shell needs (spec 0004). */
+export type NavUi = Readonly<Entry<'navigation'>['data']['ui']>;
+
+export type Navigation = Readonly<{
+  items: readonly NavItem[];
+  cta?: Link;
+  ui: NavUi;
+  /** Footer only links. Normalised to an empty list when the field is absent. */
+  legal: readonly Link[];
+}>;
+
+/** Site wide settings: the logo, the contact details, the social links, the footer copy. */
+export type Settings = Readonly<Entry<'settings'>['data']>;
+
+/** The networks the icon set draws. Matches the `network` enum in the schema. */
+export type SocialNetwork = Settings['social'][number]['network'];
 
 export type StatItem = Readonly<Entry<'stats'>['data']['items'][number]>;
 
@@ -270,6 +285,8 @@ export const getNavigation = async (lang: Locale): Promise<Navigation> => {
   return {
     items: expandNavigation(fileOf(entry), entry.data.items, services),
     ...(entry.data.cta && { cta: entry.data.cta }),
+    ui: entry.data.ui,
+    legal: entry.data.legal ?? [],
   };
 };
 

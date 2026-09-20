@@ -127,6 +127,21 @@ const navigation = defineCollection({
       )
       .min(1),
     cta: link.optional(),
+    /**
+     * The interface strings the shell needs (spec 0004). Required, not
+     * optional, on purpose: an optional block would let a missing string fall
+     * back to an empty `aria-label`, which fails silently for exactly the
+     * people it exists for. A missing or empty one stops the build instead.
+     */
+    ui: z.object({
+      skipToContent: text,
+      openMenu: text,
+      closeMenu: text,
+      primaryNavLabel: text,
+      footerNavLabel: text,
+    }),
+    /** Footer only links, such as the privacy page feature 13 adds. */
+    legal: z.array(link).optional(),
   }),
 });
 

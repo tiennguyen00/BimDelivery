@@ -1,0 +1,51 @@
+---
+/**
+ * Every service page, from one template (spec 0004).
+ *
+ * A stub: the frame, the metadata and the page's own heading and intro, all
+ * from the service's own content file. Feature 8 adds the deliverables, the
+ * process and the call to action.
+ *
+ * This file sits at the root of `src/pages/`, so its pattern is `/<slug>`.
+ * That is safe because Astro matches static routes before dynamic ones:
+ * `/about-us`, `/project`, `/contact-us` and `/404` all win over this route
+ * even though the pattern would also match them. Moving this file to look
+ * safer would change every service URL, so leave it where it is. The reverse
+ * risk, a service slug claiming a page's path, is caught at build by the
+ * reserved path list in `src/lib/content.ts`.
+ *
+ * Adding a fourth service is one content file. No edit here.
+ */
+import type { GetStaticPaths } from 'astro';
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/ui/Section.astro';
+import { DEFAULT_LOCALE } from '../i18n/locales';
+import { getServices, type Service } from '../lib/content';
+
+/**
+ * `getStaticPaths` runs outside any page's request, so there is no
+ * `Astro.currentLocale` to read here. With `prefixDefaultLocale: false` and one
+ * language configured, the default locale is the whole route table. A second
+ * language means a routing change as well as content, which is deferred work.
+ */
+export const getStaticPaths = (async () => {
+  const services = await getServices(DEFAULT_LOCALE);
+  return services.map((service) => ({
+    params: { service: service.slug },
+    props: { service },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  service: Service;
+}
+
+const { service } = Astro.props;
+---
+
+<PageLayout title={service.seo.title} description={service.seo.description}>
+  <Section tone="white" labelledBy="page-title">
+    <h1 id="page-title">{service.title}</h1>
+    <p class="mt-4 max-w-narrow text-lead">{service.summary}</p>
+  </Section>
+</PageLayout>

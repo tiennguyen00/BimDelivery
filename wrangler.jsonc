@@ -22,6 +22,11 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
+
+    // Serve the site's own 404.html, with a real 404 status, for any path that
+    // matches no file (spec 0004). Without this a mistyped URL gets a bare
+    // platform error page instead of the site.
+    "not_found_handling": "404-page",
   },
 
   "observability": {

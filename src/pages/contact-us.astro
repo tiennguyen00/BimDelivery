@@ -1,0 +1,21 @@
+---
+/**
+ * Contact Us. A stub: the frame, the metadata and the page's own heading and
+ * intro, all from content. Feature 10 adds the form island and the contact
+ * details.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/ui/Section.astro';
+import { resolveLocale } from '../i18n/locales';
+import { getContactPage } from '../lib/content';
+
+const lang = resolveLocale(Astro.currentLocale);
+const page = await getContactPage(lang);
+---
+
+<PageLayout title={page.seo.title} description={page.seo.description}>
+  <Section tone="white" labelledBy="page-title">
+    <h1 id="page-title">{page.heading}</h1>
+    <p class="mt-4 max-w-narrow text-lead">{page.intro}</p>
+  </Section>
+</PageLayout>

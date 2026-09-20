@@ -1,53 +1,21 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { resolveLocale } from '../i18n/locales';
-import {
-  getAboutPage,
-  getContactPage,
-  getHomePage,
-  getNavigation,
-  getNotFoundPage,
-  getProjectPage,
-  getProjects,
-  getServices,
-  getSettings,
-  getStats,
-} from '../lib/content';
-
 /**
- * Placeholder front door. Feature 6 builds the real home page. Every word here
- * comes from content through the query module (spec 0002, AC-10), and is still
- * prerendered into the HTML the server sends (the spec 0001 invariant).
- *
- * Until the page features exist, this page also calls every getter once, so
- * the cross entry checks in src/lib/content.ts run on every build. Drop a call
- * here once a real page takes it over.
+ * The front door. A stub: the frame, the metadata and the hero's heading and
+ * subheading, all from content. Feature 6 builds the real home page, every
+ * section of it.
  */
-const lang = resolveLocale(Astro.currentLocale);
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/ui/Section.astro';
+import { resolveLocale } from '../i18n/locales';
+import { getHomePage } from '../lib/content';
 
-const [home, services] = await Promise.all([
-  getHomePage(lang),
-  getServices(lang),
-  getSettings(lang),
-  getNavigation(lang),
-  getStats(lang),
-  getAboutPage(lang),
-  getContactPage(lang),
-  getProjectPage(lang),
-  getNotFoundPage(lang),
-  getProjects(lang),
-]);
+const lang = resolveLocale(Astro.currentLocale);
+const home = await getHomePage(lang);
 ---
 
-<BaseLayout title={home.seo.title} description={home.seo.description}>
-  <main>
-    <h1>{home.hero.heading}</h1>
-    <p>{home.hero.subheading}</p>
-    <h2>{home.services.heading}</h2>
-    <ul>
-      {services.map((service) => (
-        <li>{service.title}</li>
-      ))}
-    </ul>
-  </main>
-</BaseLayout>
+<PageLayout title={home.seo.title} description={home.seo.description}>
+  <Section tone="white" labelledBy="page-title">
+    <h1 id="page-title">{home.hero.heading}</h1>
+    <p class="mt-4 max-w-narrow text-lead">{home.hero.subheading}</p>
+  </Section>
+</PageLayout>

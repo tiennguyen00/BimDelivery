@@ -1,0 +1,21 @@
+---
+/**
+ * About Us. A stub: the frame, the metadata and the page's own heading and
+ * intro, all from content. Feature 7 fills in the story, the highlights and
+ * the stats.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/ui/Section.astro';
+import { resolveLocale } from '../i18n/locales';
+import { getAboutPage } from '../lib/content';
+
+const lang = resolveLocale(Astro.currentLocale);
+const about = await getAboutPage(lang);
+---
+
+<PageLayout title={about.seo.title} description={about.seo.description}>
+  <Section tone="white" labelledBy="page-title">
+    <h1 id="page-title">{about.heading}</h1>
+    <p class="mt-4 max-w-narrow text-lead">{about.intro}</p>
+  </Section>
+</PageLayout>

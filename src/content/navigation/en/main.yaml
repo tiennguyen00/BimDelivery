@@ -13,3 +13,9 @@ items:
 cta:
   label: Get a quote
   href: /contact-us
+ui:
+  skipToContent: Skip to main content
+  openMenu: Open menu
+  closeMenu: Close menu
+  primaryNavLabel: Main
+  footerNavLabel: Footer

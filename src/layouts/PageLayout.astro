@@ -1,0 +1,113 @@
+---
+/**
+ * The frame every public page sits inside (spec 0004).
+ *
+ * It wraps `BaseLayout`, which stays the bare document shell, and adds the
+ * parts that are the same on every route: the skip link, the header, the main
+ * region, and the footer. The split exists so the dev only style guide can
+ * import `BaseLayout` directly and render on a clean canvas.
+ *
+ * A page that imports `BaseLayout` by mistake loses its header and footer with
+ * no error anywhere. If a page renders bare, that import is the first thing to
+ * check.
+ *
+ * This layout reads the navigation and the settings itself, so no page passes
+ * them down. A page passes only its own title and description.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Header from '../components/ui/Header.astro';
+import Footer from '../components/ui/Footer.astro';
+import { resolveLocale } from '../i18n/locales';
+import { getNavigation, getSettings } from '../lib/content';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+
+const lang = resolveLocale(Astro.currentLocale);
+const [navigation, settings] = await Promise.all([
+  getNavigation(lang),
+  getSettings(lang),
+]);
+---
+
+<BaseLayout title={title} description={description}>
+  <Fragment slot="head">
+    {/**
+     * The only inline script on the site, and the only one that has to be
+     * inline. The nav panels ship open in the HTML so the site works with no
+     * JavaScript at all (AC-7), and the CSS that hides them is gated on this
+     * flag. Astro compiles a component `<script>` to a deferred module that
+     * runs after paint has begun, so a flag set there would arrive too late
+     * and every slow load would flash an open menu.
+     *
+     * It does one thing and must stay that way.
+     */}
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </Fragment>
+
+  {/**
+   * The skip link is the first focusable thing on every page. It sits off the
+   * top of the viewport and slides in when focused, so it costs no layout and
+   * no visual noise until a keyboard user needs it.
+   */}
+  <a
+    href="#main"
+    class="fixed top-0 left-0 z-50 inline-flex min-h-11 -translate-y-full items-center rounded-ui bg-white px-4 py-3 font-semibold text-gold-ink shadow-md transition-transform focus:translate-y-0"
+  >
+    {navigation.ui.skipToContent}
+  </a>
+
+  <Header
+    items={navigation.items}
+    cta={navigation.cta}
+    ui={navigation.ui}
+    logo={settings.logo}
+    siteName={settings.siteName}
+    currentPath={Astro.url.pathname}
+  />
+
+  {/**
+   * `tabindex="-1"` is what makes the skip link actually move focus. Without
+   * it the link only scrolls the page and the keyboard stays in the header,
+   * which is the failure this whole pattern exists to avoid.
+   */}
+  <main id="main" tabindex="-1">
+    <slot />
+  </main>
+
+  <Footer
+    items={navigation.items}
+    ui={navigation.ui}
+    legal={navigation.legal}
+    settings={settings}
+  />
+</BaseLayout>
+
+{/**
+ * The one place the header's height is written down. The sticky header, the
+ * mobile panel's top offset and its height all read it, so they cannot drift
+ * apart.
+ *
+ * `is:global` because the custom property belongs on `:root`, which is not an
+ * element this component renders and so cannot carry a scoped class.
+ *
+ * The 64rem breakpoint is Tailwind's `lg`. It is repeated in the media query
+ * below and in `src/scripts/nav.ts`; a change to the token needs all three.
+ */}
+<style is:global>
+  :root {
+    --header-h: 4.5rem;
+  }
+
+  @media (min-width: 64rem) {
+    :root {
+      --header-h: 5rem;
+    }
+  }
+</style>

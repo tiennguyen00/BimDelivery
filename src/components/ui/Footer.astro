@@ -1,0 +1,183 @@
+---
+/**
+ * The site footer (spec 0004).
+ *
+ * Four columns on desktop, two on tablet, one on a phone: the brand, the site
+ * links, the service links, and how to reach the company.
+ *
+ * Both link columns come from the same `getNavigation` call the header uses, so
+ * the footer can never fall out of step with the nav, and a fourth service file
+ * appears in both from one edit. Nothing here is ever marked as the current
+ * page: that belongs to the header alone, so a screen reader hears it once.
+ */
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import type {
+  Link,
+  NavItem,
+  NavUi,
+  Settings,
+  SocialNetwork,
+} from '../../lib/content';
+
+interface Props {
+  items: readonly NavItem[];
+  ui: NavUi;
+  legal: readonly Link[];
+  settings: Settings;
+}
+
+const { items, ui, legal, settings } = Astro.props;
+
+/**
+ * The nav is one list of items where exactly one holds the services. The footer
+ * splits it back into two columns: everything else, and the services flattened
+ * out of their group.
+ */
+const hasChildren = (
+  item: NavItem,
+): item is Readonly<{ label: string; children: readonly Link[] }> =>
+  'children' in item;
+
+/* A negated type guard does not narrow, so this one states the result type. */
+const isLink = (item: NavItem): item is Link => !hasChildren(item);
+
+const siteLinks: readonly Link[] = items.filter(isLink);
+const servicesGroup = items.find(hasChildren);
+
+/**
+ * The social networks' own spelling. `network` is the enum key, which is
+ * lowercase; this is what a screen reader should actually say.
+ */
+const SOCIAL_NAMES: Readonly<Record<SocialNetwork, string>> = {
+  linkedin: 'LinkedIn',
+  facebook: 'Facebook',
+  youtube: 'YouTube',
+  x: 'X',
+  instagram: 'Instagram',
+};
+
+const columnHeadingClass = 'text-small font-semibold tracking-wide uppercase';
+const linkClass = 'inline-flex min-h-11 items-center hover:text-gold-ink';
+---
+
+<footer class="bg-tint">
+  <div class="mx-auto w-full max-w-content px-4 py-16 md:px-6 md:py-20 lg:px-8">
+    <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
+      <div class="md:col-span-2 lg:col-span-1">
+        <Image
+          src={settings.logo.src}
+          alt={settings.logo.alt ?? ''}
+          class="h-8 w-auto"
+        />
+        <p class="mt-4 max-w-narrow text-small">{settings.footer.text}</p>
+      </div>
+
+      {/**
+       * One `<nav>` holding both link columns, so the footer contributes a
+       * single navigation landmark rather than two competing ones. It spans
+       * the middle two columns on desktop and lays its lists out inside.
+       */}
+      <nav
+        aria-label={ui.footerNavLabel}
+        class="grid grid-cols-1 gap-10 md:col-span-2 md:grid-cols-2 lg:col-span-2"
+      >
+        <div>
+          <h2 class={columnHeadingClass}>{ui.primaryNavLabel}</h2>
+          <ul class="mt-2 flex list-none flex-col p-0">
+            {siteLinks.map((link) => (
+              <li>
+                <a href={link.href} class={linkClass}>
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {
+          /* No services, no column. An empty heading over nothing is worse
+             than one column fewer. */
+          servicesGroup && servicesGroup.children.length > 0 && (
+            <div>
+              <h2 class={columnHeadingClass}>{servicesGroup.label}</h2>
+              <ul class="mt-2 flex list-none flex-col p-0">
+                {servicesGroup.children.map((link) => (
+                  <li>
+                    <a href={link.href} class={linkClass}>
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+      </nav>
+
+      <div class="md:col-span-2 lg:col-span-1">
+        <h2 class={columnHeadingClass}>{settings.siteName}</h2>
+        <ul class="mt-2 flex list-none flex-col p-0 text-small">
+          <li>
+            <a href={`mailto:${settings.contact.email}`} class={linkClass}>
+              {settings.contact.email}
+            </a>
+          </li>
+          <li>
+            <a
+              href={`tel:${settings.contact.phone.replace(/[^+\d]/g, '')}`}
+              class={linkClass}
+            >
+              {settings.contact.phone}
+            </a>
+          </li>
+          <li class="py-2">{settings.contact.address}</li>
+        </ul>
+
+        {
+          /* The whole block goes when there is nothing to put in it, rather
+             than leaving an empty row of padding. */
+          settings.social.length > 0 && (
+            <ul class="mt-2 flex list-none flex-wrap gap-1 p-0">
+              {settings.social.map((account) => (
+                <li>
+                  <a
+                    href={account.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-ui hover:text-gold-ink"
+                  >
+                    <Icon
+                      name={account.network}
+                      size={20}
+                      title={SOCIAL_NAMES[account.network]}
+                    />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-col gap-2 border-t border-line pt-6 text-small md:flex-row md:items-center md:justify-between">
+      <p>{settings.footer.copyright}</p>
+      {
+        /* Feature 13's privacy page lands here as a content edit, with no code
+           change. Absent or empty, the row is just the copyright. */
+        legal.length > 0 && (
+          <ul class="flex list-none flex-wrap gap-x-6 p-0">
+            {legal.map((link) => (
+              <li>
+                <a href={link.href} class="hover:text-gold-ink">
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </div>
+</footer>
