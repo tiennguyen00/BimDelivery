@@ -195,9 +195,10 @@ colour, and a second focus colour, then computing the dark contrast pairs.
 
 ## Components
 
-Four base pieces. Three are Astro; the form fields are React because the
-contact island (feature 10) needs them, and the button exists in both idioms
-sharing one class map so they cannot drift apart.
+Four base pieces, plus the four the site shell adds (spec 0004). The form fields
+are React because the contact island (feature 10) needs them, and the button
+exists in both idioms sharing one class map so they cannot drift apart;
+everything else is Astro.
 
 ### `Section` · `src/components/ui/Section.astro`
 
@@ -284,6 +285,96 @@ and so on).
   across roots. Inside one island the generated id is enough.
 - The component draws no required marker. If a form wants one, it passes a
   `hint` from content.
+
+### `Icon` · `src/components/ui/Icon.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `name` | `IconName` (required) | |
+| `size` | `number`, the edge length in pixels | `24` |
+| `title` | `string`, the accessible name | none |
+| `class` | `string` | none |
+
+The whole set, eight glyphs on one 24 unit grid: `menu`, `close`,
+`chevron-down`, and the five social marks `linkedin`, `facebook`, `youtube`,
+`x`, `instagram`.
+
+- Every glyph inherits `currentColor`, so an icon is coloured by the text around
+  it. **Do not** give an icon a colour of its own.
+- A name outside the map is a **type error**, not a blank square. There is no
+  icon library and no dynamic lookup.
+- Without `title` the icon is hidden from assistive tech, which is right
+  whenever visible text sits beside it. **Do** pass `title` only when the icon
+  is the whole accessible name of a control, as the footer's social links are.
+- Use 20 beside a label, 24 for a standalone control.
+
+### `PageLayout` · `src/layouts/PageLayout.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `title` | `string` (required) | |
+| `description` | `string` | none |
+
+The frame every public page sits inside: the skip link, `Header`,
+`<main id="main" tabindex="-1">`, `Footer`. It reads the navigation and the
+settings itself, so a page passes only its own title and description.
+
+- **Do** import this in every page under `src/pages/`. `BaseLayout` is the bare
+  document shell and is for the dev only style guide. A page that imports the
+  wrong one loses its header and footer **with no error**: that is the first
+  thing to check when a page renders bare.
+- It declares `--header-h` (`4.5rem`, `5rem` at `lg`). That value, the media
+  query beside it, and `DESKTOP_QUERY` in `src/scripts/nav.ts` all describe
+  Tailwind's `lg`. Nothing enforces that they agree, so a breakpoint change
+  needs all three.
+- The one inline script on the site lives here, in the head, and sets the `js`
+  flag before the first paint. **Do not** add anything to it.
+
+### `Header` · `src/components/ui/Header.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `items` | `readonly NavItem[]` (required) | |
+| `cta` | `Link` | none, and then no button renders |
+| `ui` | `NavUi` (required) | |
+| `logo` | `Settings['logo']` (required) | |
+| `siteName` | `string` (required) | |
+| `currentPath` | `string` (required) | |
+
+Sticky, one constant height, white, and it registers **no scroll listener**.
+
+- The nav is in the DOM twice, the desktop bar and the mobile panel, inside one
+  `<nav>` landmark. Every control's id is fixed by spec 0004 because
+  `aria-controls` needs a stable target and SERVICES exists twice.
+- Both panels ship **open** in the HTML and the CSS closes them, gated on the
+  `js` flag. **Never** invert this: shipping them closed would hide every
+  service link from a visitor whose JavaScript failed.
+- Active marking lives here and nowhere else. The matching link carries
+  `aria-current="page"` and the underline, in both copies; only one copy is ever
+  in the accessibility tree, since the other is `display: none` at that
+  breakpoint. On a service page SERVICES takes the underline and **no**
+  `aria-current`, because the current page is the service, not the group.
+- No services in the content means no SERVICES control at all, in either copy.
+
+### `Footer` · `src/components/ui/Footer.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `items` | `readonly NavItem[]` (required) | |
+| `ui` | `NavUi` (required) | |
+| `legal` | `readonly Link[]` (required, may be empty) | |
+| `settings` | `Settings` (required) | |
+
+Four columns at `lg`, two at `md`, one below: brand, site links, service links,
+contact. Tone `tint`.
+
+- Both link columns come from the same `getNavigation` call the header uses, so
+  the two can never fall out of step and a fourth service file appears in both.
+- Footer links **never** carry `aria-current`. That belongs to the header, so a
+  screen reader hears the current page once.
+- An empty `social` list drops the whole block, and an empty `legal` list leaves
+  just the copyright. Neither renders an empty row.
+- Social links open in a new tab and carry `rel="noopener noreferrer"`.
 
 ## Focus and motion
 

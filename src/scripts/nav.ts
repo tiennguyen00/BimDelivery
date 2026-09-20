@@ -289,6 +289,16 @@ const wireMobileMenu = (
 };
 
 const init = (): void => {
+  /**
+   * The `js` flag is the single switch for "the nav is script managed". The
+   * flag script in the document head sets it, and the CSS that hides the panels
+   * is gated on the same flag, so without it this module must stay inert: it
+   * would otherwise report panels closed that nothing has hidden. That is the
+   * state the dev only style guide is in, since it renders `BaseLayout`
+   * directly and never gets the flag.
+   */
+  if (!document.documentElement.classList.contains('js')) return;
+
   const desktopButton = element(ID.desktopButton);
   const desktopPanel = element(ID.desktopPanel);
   const menuButton = element(ID.menuButton);

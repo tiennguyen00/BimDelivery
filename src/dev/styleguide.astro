@@ -17,6 +17,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Button from '../components/ui/Button.astro';
 import Card from '../components/ui/Card.astro';
+import Icon, { type IconName } from '../components/ui/Icon.astro';
+import Header from '../components/ui/Header.astro';
+import Footer from '../components/ui/Footer.astro';
 import { Button as ReactButton } from '../components/react/ui/Button';
 import { TextField } from '../components/react/ui/TextField';
 import { TextArea } from '../components/react/ui/TextArea';
@@ -24,18 +27,35 @@ import { resolveLocale } from '../i18n/locales';
 import {
   getContactPage,
   getHomePage,
+  getNavigation,
   getProjects,
   getServices,
+  getSettings,
 } from '../lib/content';
 
 const lang = resolveLocale(Astro.currentLocale);
 
-const [home, services, projects, contact] = await Promise.all([
-  getHomePage(lang),
-  getServices(lang),
-  getProjects(lang),
-  getContactPage(lang),
-]);
+const [home, services, projects, contact, navigation, settings] =
+  await Promise.all([
+    getHomePage(lang),
+    getServices(lang),
+    getProjects(lang),
+    getContactPage(lang),
+    getNavigation(lang),
+    getSettings(lang),
+  ]);
+
+/** The whole icon map, in the order Icon.astro declares it. */
+const iconNames: readonly IconName[] = [
+  'menu',
+  'close',
+  'chevron-down',
+  'linkedin',
+  'facebook',
+  'youtube',
+  'x',
+  'instagram',
+];
 
 const firstService = services[0];
 const secondService = services[1];
@@ -732,6 +752,79 @@ const headCellClass =
             ))}
           </tbody>
         </table>
+      </div>
+    </Section>
+    <Section labelledBy="sg-icons">
+      <h2 id="sg-icons">Icons</h2>
+      <p class="mt-4 max-w-narrow">
+        The whole set. There is no icon library: eight glyphs is not enough to
+        earn a dependency, and a fixed map means a name outside it is a type
+        error rather than a blank square. Every glyph inherits{' '}
+        <code class="font-mono text-small">currentColor</code>, so the two rows
+        below are the same eight files.
+      </p>
+
+      <ul class="mt-8 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-4 lg:grid-cols-8">
+        {iconNames.map((name) => (
+          <li class="flex flex-col items-center gap-2 rounded-ui border border-line p-4">
+            <Icon name={name} />
+            <code class="font-mono text-small text-ink-muted">{name}</code>
+          </li>
+        ))}
+      </ul>
+
+      <p class="mt-8">Inheriting the colour of the text around them:</p>
+      <ul class="mt-4 flex list-none flex-wrap gap-4 p-0 text-gold-ink">
+        {iconNames.map((name) => (
+          <li>
+            <Icon name={name} size={20} />
+          </li>
+        ))}
+      </ul>
+    </Section>
+
+    <Section tone="tint" labelledBy="sg-shell">
+      <h2 id="sg-shell">The site shell</h2>
+      <p class="mt-4 max-w-narrow">
+        The real <code class="font-mono text-small">Header</code> and{' '}
+        <code class="font-mono text-small">Footer</code>, from the real
+        navigation entry. They are shown here in the state a visitor with no
+        JavaScript sees, because this page imports{' '}
+        <code class="font-mono text-small">BaseLayout</code> directly and so
+        never gets the <code class="font-mono text-small">js</code> flag that
+        closes the panels. Both the services dropdown and the mobile menu are
+        open below, and every link is reachable. That is the baseline the nav
+        script enhances, not a bug.
+      </p>
+      <p class="mt-4 max-w-narrow">
+        The current page is set to <code class="font-mono text-small">/</code>{' '}
+        so the active underline and{' '}
+        <code class="font-mono text-small">aria-current</code> are visible. To
+        walk the real behaviour, open any page of the site instead; the panels
+        only close where the flag script runs.
+      </p>
+
+      {/* `--header-h` is declared by PageLayout, which this page does not use.
+           The preview sets the same mobile value so the bar has its real
+           height. If that value changes in PageLayout, change it here too. */}
+      <div
+        class="mt-8 overflow-hidden rounded-ui border border-line"
+        style="--header-h: 4.5rem"
+      >
+        <Header
+          items={navigation.items}
+          cta={navigation.cta}
+          ui={navigation.ui}
+          logo={settings.logo}
+          siteName={settings.siteName}
+          currentPath="/"
+        />
+        <Footer
+          items={navigation.items}
+          ui={navigation.ui}
+          legal={navigation.legal}
+          settings={settings}
+        />
       </div>
     </Section>
   </main>
