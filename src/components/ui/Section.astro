@@ -1,0 +1,53 @@
+---
+/**
+ * A full width band with its content centred (spec 0003).
+ *
+ * Section owns page width and gutters, so no page writes its own container.
+ * There are two tones and both are light, which means every text, border, and
+ * focus colour inside is identical on either one: nothing a page puts in here
+ * needs to know which tone it landed on.
+ *
+ * Pages set the rhythm by alternating `white` and `tint`. Adjacent sections of
+ * the same tone are fine; there is no margin between them, only padding.
+ */
+interface Props {
+  tone?: 'white' | 'tint';
+  width?: 'default' | 'narrow';
+  id?: string;
+  /** The id of the heading this section is named by, for screen readers. */
+  labelledBy?: string;
+  class?: string;
+}
+
+const {
+  tone = 'white',
+  width = 'default',
+  id,
+  labelledBy,
+  class: className,
+} = Astro.props;
+
+const tones = {
+  white: 'bg-white',
+  tint: 'bg-tint',
+} as const;
+
+const widths = {
+  default: 'max-w-content',
+  narrow: 'max-w-narrow',
+} as const;
+---
+
+<section
+  id={id}
+  aria-labelledby={labelledBy}
+  class:list={[
+    'px-4 py-16 md:px-6 md:py-20 lg:px-8 lg:py-24',
+    tones[tone],
+    className,
+  ]}
+>
+  <div class:list={['mx-auto w-full', widths[width]]}>
+    <slot />
+  </div>
+</section>

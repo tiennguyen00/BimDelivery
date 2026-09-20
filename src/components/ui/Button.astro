@@ -1,0 +1,56 @@
+---
+/**
+ * The button, in its Astro form (spec 0003).
+ *
+ * It renders an `<a>` when given `href` and a `<button>` otherwise, because a
+ * thing that navigates should be a link (middle click, open in a new tab,
+ * right click, all free) and a thing that acts should be a button.
+ *
+ * The props are a union on purpose: `href` together with `disabled` is a type
+ * error, since there is no honest way to disable a link. Use a `<button>`, or
+ * leave the link out.
+ *
+ * The label always arrives through the slot, never as text written here.
+ * Its words come from a content entry (spec 0002).
+ */
+import { buttonClass, cx, type ButtonVariant } from './styles';
+
+type Common = {
+  variant?: ButtonVariant;
+  class?: string;
+};
+
+type AsLink = Common & {
+  href: string;
+  type?: never;
+  disabled?: never;
+};
+
+type AsButton = Common & {
+  href?: never;
+  type?: 'button' | 'submit';
+  disabled?: boolean;
+};
+
+type Props = AsLink | AsButton;
+
+const {
+  variant = 'primary',
+  href,
+  type = 'button',
+  disabled,
+  class: className,
+} = Astro.props;
+
+const classes = cx(buttonClass(variant), className);
+---
+
+{href ? (
+  <a href={href} class={classes}>
+    <slot />
+  </a>
+) : (
+  <button type={type} disabled={disabled} class={classes}>
+    <slot />
+  </button>
+)}
