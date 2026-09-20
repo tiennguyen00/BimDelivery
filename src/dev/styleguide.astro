@@ -1,0 +1,655 @@
+---
+/**
+ * The living check on the design system (spec 0003), at /styleguide under
+ * `pnpm dev` only. It is never built, so it never reaches the live site.
+ *
+ * Two jobs. It shows every token and every component variant in one place, so
+ * a change to global.css is visible immediately rather than discovered on a
+ * page later. And it is the page you walk with a keyboard and at 200% zoom
+ * when checking this feature.
+ *
+ * The sample copy and images come from the real content collections, so the
+ * components are exercised with the lengths the site actually has. The token
+ * names, hex values, and contrast figures are written here on purpose: they
+ * are developer labels rather than site content, and this page is never built.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Button from '../components/ui/Button.astro';
+import Card from '../components/ui/Card.astro';
+import { Button as ReactButton } from '../components/react/ui/Button';
+import { TextField } from '../components/react/ui/TextField';
+import { TextArea } from '../components/react/ui/TextArea';
+import { resolveLocale } from '../i18n/locales';
+import {
+  getContactPage,
+  getHomePage,
+  getProjects,
+  getServices,
+} from '../lib/content';
+
+const lang = resolveLocale(Astro.currentLocale);
+
+const [home, services, projects, contact] = await Promise.all([
+  getHomePage(lang),
+  getServices(lang),
+  getProjects(lang),
+  getContactPage(lang),
+]);
+
+const firstService = services[0];
+const secondService = services[1];
+const firstProject = projects[0];
+
+/**
+ * Every swatch carries what the colour is for and what it must never be,
+ * because the two golds look alike in a list and only one of them is legible
+ * as a word.
+ */
+const colours = [
+  {
+    token: '--color-white',
+    swatch: 'bg-white',
+    hex: '#ffffff',
+    use: 'Page background, card surface',
+    avoid: 'Text (there is no dark surface to sit on)',
+  },
+  {
+    token: '--color-tint',
+    swatch: 'bg-tint',
+    hex: '#fff9e6',
+    use: 'The tint section background',
+    avoid: 'Text',
+  },
+  {
+    token: '--color-black',
+    swatch: 'bg-black',
+    hex: '#000000',
+    use: 'h1 and h2; the label on any gold or yellow fill',
+    avoid: 'Nothing',
+  },
+  {
+    token: '--color-ink-strong',
+    swatch: 'bg-ink-strong',
+    hex: '#333333',
+    use: 'h3, field labels, strong text',
+    avoid: 'Nothing',
+  },
+  {
+    token: '--color-ink',
+    swatch: 'bg-ink',
+    hex: '#666666',
+    use: 'Body text, the most used text colour on the site',
+    avoid: 'Nothing',
+  },
+  {
+    token: '--color-ink-muted',
+    swatch: 'bg-ink-muted',
+    hex: '#707070',
+    use: 'Hints, captions, card text',
+    avoid: 'Long body copy (it sits at the 4.5:1 floor)',
+  },
+  {
+    token: '--color-gold',
+    swatch: 'bg-gold',
+    hex: '#e09900',
+    use: 'FILLS ONLY: primary button, highlight fills, decorative rules',
+    avoid: 'Any text, any control border, any focus ring (2.41:1 on white)',
+  },
+  {
+    token: '--color-gold-deep',
+    swatch: 'bg-gold-deep',
+    hex: '#c88600',
+    use: 'The primary button hover fill',
+    avoid: 'Everything else',
+  },
+  {
+    token: '--color-gold-ink',
+    swatch: 'bg-gold-ink',
+    hex: '#946600',
+    use: 'The only readable gold: words, links, control borders, focus ring',
+    avoid: 'Large flat fills, where it reads muddy rather than gold',
+  },
+  {
+    token: '--color-yellow',
+    swatch: 'bg-yellow',
+    hex: '#ffcc00',
+    use: 'Reserved for the real logo and feature 5 icons',
+    avoid: 'Any text; anything in this feature (1.51:1 on white)',
+  },
+  {
+    token: '--color-line',
+    swatch: 'bg-line',
+    hex: '#e5e5e5',
+    use: 'Card borders and dividers (decorative)',
+    avoid: 'Any control boundary (1.26:1 on white)',
+  },
+  {
+    token: '--color-field',
+    swatch: 'bg-field',
+    hex: '#767676',
+    use: 'Form field borders, a control boundary at 4.54:1',
+    avoid: 'Decorative lines, where it is heavier than they need',
+  },
+  {
+    token: '--color-error',
+    swatch: 'bg-error',
+    hex: '#b42318',
+    use: 'Error text and error borders',
+    avoid: 'Decoration',
+  },
+] as const;
+
+const typeScale = [
+  {
+    token: 'text-h1',
+    class: 'text-h1 font-bold text-black',
+    note: '36px to 56px, line height 1.1, tracking -0.02em',
+  },
+  {
+    token: 'text-h2',
+    class: 'text-h2 font-bold text-black',
+    note: '28px to 40px, line height 1.2',
+  },
+  {
+    token: 'text-h3',
+    class: 'text-h3 font-semibold text-ink-strong',
+    note: '20px to 24px, line height 1.3',
+  },
+  {
+    token: 'text-lead',
+    class: 'text-lead text-ink',
+    note: '18px fixed, line height 1.6',
+  },
+  {
+    token: 'text-body',
+    class: 'text-body text-ink',
+    note: '16px fixed, line height 1.6',
+  },
+  {
+    token: 'text-small',
+    class: 'text-small text-ink-muted',
+    note: '14px fixed, line height 1.5',
+  },
+] as const;
+
+const contrastPairs = [
+  { pair: 'black on white / tint', ratio: '21.00 / 19.94', needs: '4.5' },
+  { pair: 'ink-strong on white / tint', ratio: '12.63 / 12.00', needs: '4.5' },
+  { pair: 'ink on white / tint', ratio: '5.74 / 5.45', needs: '4.5' },
+  { pair: 'ink-muted on white / tint', ratio: '4.95 / 4.70', needs: '4.5' },
+  { pair: 'gold-ink on white / tint', ratio: '5.05 / 4.79', needs: '4.5' },
+  { pair: 'black on gold / gold-deep', ratio: '8.73 / 6.87', needs: '4.5' },
+  { pair: 'black on yellow', ratio: '13.89', needs: '4.5' },
+  { pair: 'field border on white / tint', ratio: '4.54 / 4.31', needs: '3.0' },
+  { pair: 'error on white / tint', ratio: '6.57 / 6.24', needs: '4.5' },
+  {
+    pair: 'focus ring gold-ink on white / tint',
+    ratio: '5.05 / 4.79',
+    needs: '3.0',
+  },
+] as const;
+
+const spacingSteps = [
+  { token: 'gap-2', px: '8px', use: 'Inside a card body' },
+  { token: 'gap-4 / px-4', px: '16px', use: 'Mobile gutters, grid gaps' },
+  { token: 'md:px-6', px: '24px', use: 'Tablet gutters' },
+  { token: 'lg:px-8', px: '32px', use: 'Desktop gutters' },
+  { token: 'p-6', px: '24px', use: 'Card padding' },
+  { token: 'py-16', px: '64px', use: 'Mobile section padding' },
+  { token: 'md:py-20', px: '80px', use: 'Tablet section padding' },
+  { token: 'lg:py-24', px: '96px', use: 'Desktop section padding' },
+] as const;
+
+const cellClass = 'border-b border-line px-3 py-2 align-top';
+const headCellClass =
+  'border-b border-field px-3 py-2 text-left font-semibold text-ink-strong';
+---
+
+<BaseLayout
+  title="Style guide"
+  description="Every design token and component variant in the BIM Delivery design system, for development only."
+>
+  <main>
+    <Section tone="tint" labelledBy="sg-title">
+      <p class="text-small font-semibold tracking-wide text-gold-ink uppercase">
+        Development only
+      </p>
+      <h1 id="sg-title" class="mt-2">
+        Design system
+      </h1>
+      <p class="mt-4 max-w-narrow text-lead">
+        Every token and every component variant in one place. This page is
+        injected by a dev only integration, so it never reaches a build. Walk it
+        with a keyboard and at 200% zoom when checking this feature.
+      </p>
+    </Section>
+
+    <Section labelledBy="sg-colour">
+      <h2 id="sg-colour">Colour</h2>
+      <p class="mt-4 max-w-narrow">
+        Tailwind's own palette is switched off, so these are the only colours
+        that exist. Every one is named for its role rather than its hue, which
+        is what makes a real brand later a change of values rather than a change
+        of class names everywhere.
+      </p>
+
+      <ul class="mt-8 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
+        {colours.map((colour) => (
+          <li class="flex flex-col gap-3 rounded-ui border border-line p-4">
+            <div
+              class:list={[
+                'h-20 w-full rounded-ui border border-line',
+                colour.swatch,
+              ]}
+            />
+            <div class="flex flex-col gap-1">
+              <code class="font-mono text-small font-semibold text-ink-strong">
+                {colour.token}
+              </code>
+              <code class="font-mono text-small text-ink-muted">
+                {colour.hex}
+              </code>
+            </div>
+            <dl class="flex flex-col gap-1 text-small">
+              <div>
+                <dt class="inline font-semibold text-ink-strong">Use: </dt>
+                <dd class="inline text-ink">{colour.use}</dd>
+              </div>
+              <div>
+                <dt class="inline font-semibold text-error">Never: </dt>
+                <dd class="inline text-ink">{colour.avoid}</dd>
+              </div>
+            </dl>
+          </li>
+        ))}
+      </ul>
+    </Section>
+
+    <Section tone="tint" labelledBy="sg-gold">
+      <h2 id="sg-gold">The gold rule</h2>
+      <p class="mt-4 max-w-narrow">
+        This is the one convention the build cannot catch for you. Gold splits
+        in two: a fill gold and a text gold. They look alike in a swatch list,
+        and only one of them is legible as a word.
+      </p>
+
+      <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div class="rounded-ui border border-line bg-white p-6">
+          <h3>Right</h3>
+          <p class="mt-3">
+            A <span class="font-semibold text-gold-ink">gold word</span> and a{' '}
+            <a href="#sg-gold" class="font-semibold text-gold-ink underline">
+              gold link
+            </a>{' '}
+            both use <code class="font-mono text-small">gold-ink</code> at
+            5.05:1.
+          </p>
+          <p class="mt-3">The fill gold carries a black label:</p>
+          <p class="mt-3 inline-block rounded-ui bg-gold px-4 py-2 font-semibold text-black">
+            Black on gold, 8.73:1
+          </p>
+        </div>
+
+        <div class="rounded-ui border border-error bg-white p-6">
+          <h3>Wrong</h3>
+          <p class="mt-3">
+            The fill gold <code class="font-mono text-small">--color-gold</code>{' '}
+            on white is 2.41:1, and the accent{' '}
+            <code class="font-mono text-small">--color-yellow</code> is 1.51:1.
+            Both fail WCAG AA at every text size, so neither is ever a word, a
+            link, a control border, or a focus ring.
+          </p>
+          <p class="mt-3 text-small text-ink">
+            Two things are avoided here on purpose. The failing pairs are not
+            rendered as text, which would put a failing pair on the page. And
+            their utility class names are not written out either: Tailwind reads
+            source files as plain text, so a class name quoted in prose becomes
+            real CSS and would also trip the gold guard search.
+          </p>
+        </div>
+      </div>
+    </Section>
+
+    <Section labelledBy="sg-type">
+      <h2 id="sg-type">Type</h2>
+      <p class="mt-4 max-w-narrow">
+        Inter, served from this site's own origin. Headings grow smoothly with
+        the viewport rather than jumping at a breakpoint. Line height and letter
+        spacing ride on the size token, so{' '}
+        <code class="font-mono text-small">text-h1</code> is the whole treatment
+        and no component ever repeats them.
+      </p>
+
+      <dl class="mt-8 flex flex-col gap-8">
+        {typeScale.map((entry) => (
+          <div class="border-t border-line pt-6">
+            <dt class="flex flex-wrap items-baseline gap-3">
+              <code class="font-mono text-small font-semibold text-ink-strong">
+                {entry.token}
+              </code>
+              <span class="text-small text-ink-muted">{entry.note}</span>
+            </dt>
+            <dd class:list={['mt-3', entry.class]}>
+              Precision BIM and Revit modelling
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </Section>
+
+    <Section tone="tint" labelledBy="sg-space">
+      <h2 id="sg-space">Spacing, widths, and breakpoints</h2>
+
+      <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div>
+          <h3>Spacing in use</h3>
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full border-collapse text-small">
+              <thead>
+                <tr>
+                  <th class={headCellClass} scope="col">
+                    Utility
+                  </th>
+                  <th class={headCellClass} scope="col">
+                    Size
+                  </th>
+                  <th class={headCellClass} scope="col">
+                    Where
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {spacingSteps.map((step) => (
+                  <tr>
+                    <td class={cellClass}>
+                      <code class="font-mono">{step.token}</code>
+                    </td>
+                    <td class={cellClass}>{step.px}</td>
+                    <td class={cellClass}>{step.use}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <h3>Widths and breakpoints</h3>
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full border-collapse text-small">
+              <thead>
+                <tr>
+                  <th class={headCellClass} scope="col">
+                    Token
+                  </th>
+                  <th class={headCellClass} scope="col">
+                    Value
+                  </th>
+                  <th class={headCellClass} scope="col">
+                    Meaning
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class={cellClass}>
+                    <code class="font-mono">max-w-content</code>
+                  </td>
+                  <td class={cellClass}>1200px</td>
+                  <td class={cellClass}>Section width "default"</td>
+                </tr>
+                <tr>
+                  <td class={cellClass}>
+                    <code class="font-mono">max-w-narrow</code>
+                  </td>
+                  <td class={cellClass}>720px</td>
+                  <td class={cellClass}>Section width "narrow", for reading</td>
+                </tr>
+                <tr>
+                  <td class={cellClass}>
+                    <code class="font-mono">(none)</code>
+                  </td>
+                  <td class={cellClass}>0 to 767px</td>
+                  <td class={cellClass}>Mobile, the unprefixed default</td>
+                </tr>
+                <tr>
+                  <td class={cellClass}>
+                    <code class="font-mono">md:</code>
+                  </td>
+                  <td class={cellClass}>768px and up</td>
+                  <td class={cellClass}>Tablet</td>
+                </tr>
+                <tr>
+                  <td class={cellClass}>
+                    <code class="font-mono">lg:</code>
+                  </td>
+                  <td class={cellClass}>1024px and up</td>
+                  <td class={cellClass}>Desktop</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-4 text-small text-ink">
+            <code class="font-mono">sm</code>, <code class="font-mono">xl</code>
+            , and <code class="font-mono">2xl</code> are switched off. Three
+            screens is the whole system.
+          </p>
+        </div>
+      </div>
+    </Section>
+
+    <Section width="narrow" labelledBy="sg-narrow">
+      <h2 id="sg-narrow" class="text-h3">
+        A narrow band, 720px
+      </h2>
+      <p class="mt-3">
+        This is the reading width for long copy, such as the privacy page. The
+        default width is 1200px and is what most sections use. The band itself
+        is still full width; only its content is held in.
+      </p>
+    </Section>
+
+    <Section tone="tint" labelledBy="sg-buttons">
+      <h2 id="sg-buttons">Buttons</h2>
+      <p class="mt-4 max-w-narrow">
+        Two variants, at least 44px tall, identical on white and on tint. A
+        button with <code class="font-mono text-small">href</code> renders an
+        anchor, so middle click and open in a new tab work; without one it
+        renders a real button. Labels always arrive from content.
+      </p>
+
+      <h3 class="mt-8">On tint</h3>
+      <div class="mt-4 flex flex-wrap items-center gap-4">
+        <Button href={home.hero.primaryCta.href}>
+          {home.hero.primaryCta.label}
+        </Button>
+        <Button variant="secondary" href={home.hero.primaryCta.href}>
+          {home.hero.primaryCta.label}
+        </Button>
+        <Button type="submit">{contact.form.submitLabel}</Button>
+        <Button variant="secondary" disabled>
+          {contact.form.submitLabel}
+        </Button>
+      </div>
+
+      <h3 class="mt-8">React, sharing the same class map</h3>
+      <div class="mt-4 flex flex-wrap items-center gap-4">
+        <ReactButton>{contact.form.submitLabel}</ReactButton>
+        <ReactButton variant="secondary">
+          {contact.form.submitLabel}
+        </ReactButton>
+        <ReactButton disabled>{contact.form.submitLabel}</ReactButton>
+      </div>
+    </Section>
+
+    <Section labelledBy="sg-buttons-white">
+      <h2 id="sg-buttons-white" class="text-h3">
+        The same buttons on white
+      </h2>
+      <div class="mt-4 flex flex-wrap items-center gap-4">
+        <Button href={home.hero.primaryCta.href}>
+          {home.hero.primaryCta.label}
+        </Button>
+        <Button variant="secondary" href={home.hero.primaryCta.href}>
+          {home.hero.primaryCta.label}
+        </Button>
+        <Button disabled>{contact.form.submitLabel}</Button>
+      </div>
+      <p class="mt-4 text-small text-ink">
+        Nothing changed. Both tones are light, so no component adapts to its
+        background and none takes a tone prop.
+      </p>
+    </Section>
+
+    <Section tone="tint" labelledBy="sg-cards">
+      <h2 id="sg-cards">Cards</h2>
+      <p class="mt-4 max-w-narrow">
+        One link, one tab stop, and the whole card is clickable. Keyboard focus
+        draws a single ring around the card; hover is a raised shadow and an
+        underlined title, so a mouse user is never shown something that reads as
+        a focus ring.
+      </p>
+
+      <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {firstService && (
+          <Card
+            title={firstService.title}
+            text={firstService.summary}
+            image={{
+              src: firstService.image.src,
+              alt: firstService.image.alt ?? '',
+            }}
+            href={`/${firstService.slug}`}
+          />
+        )}
+        {firstProject && (
+          <Card
+            title={firstProject.title}
+            text={firstProject.summary}
+            image={{
+              src: firstProject.image.src,
+              alt: firstProject.image.alt ?? '',
+            }}
+          />
+        )}
+        {secondService && (
+          <Card
+            title={`${secondService.title} for federated models, clash detection, and fully coordinated delivery across every discipline`}
+            text={secondService.summary}
+            href={`/${secondService.slug}`}
+          />
+        )}
+      </div>
+
+      <h3 class="mt-12">Text only, with no image and no link</h3>
+      <div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {home.whyChooseUs.items.slice(0, 3).map((item) => (
+          <Card title={item.title} text={item.text} />
+        ))}
+      </div>
+    </Section>
+
+    <Section labelledBy="sg-fields">
+      <h2 id="sg-fields">Form fields</h2>
+      <p class="mt-4 max-w-narrow">
+        Labels are always visible, so no placeholder stands in for one. An error
+        never relies on colour: the control gets{' '}
+        <code class="font-mono text-small">aria-invalid</code>, the message is
+        linked through{' '}
+        <code class="font-mono text-small">aria-describedby</code>, and the
+        outline thickens through an inset ring so nothing shifts.
+      </p>
+      <p class="mt-3 max-w-narrow text-small text-ink">
+        Each field here passes an explicit id, because a field placed straight
+        into an .astro file renders as its own React root and generated ids can
+        repeat across roots. Inside one island the generated id is enough.
+      </p>
+
+      <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div class="flex flex-col gap-6">
+          <TextField
+            id="sg-name"
+            name="name"
+            label={contact.form.nameLabel}
+            required
+          />
+          <TextField
+            id="sg-email"
+            name="email"
+            type="email"
+            label={contact.form.emailLabel}
+          />
+          <TextField
+            id="sg-company"
+            name="company"
+            label={contact.form.companyLabel}
+            hint="Optional"
+          />
+        </div>
+
+        <div class="flex flex-col gap-6">
+          <TextField
+            id="sg-email-invalid"
+            name="email-invalid"
+            type="email"
+            label={contact.form.emailLabel}
+            error={contact.errors.email}
+            defaultValue="not-an-email"
+          />
+          <TextField
+            id="sg-name-invalid"
+            name="name-invalid"
+            label={contact.form.nameLabel}
+            hint="Optional"
+            error={contact.errors.required}
+          />
+          <TextArea
+            id="sg-message"
+            name="message"
+            label={contact.form.messageLabel}
+            rows={4}
+          />
+        </div>
+      </div>
+    </Section>
+
+    <Section tone="tint" labelledBy="sg-contrast">
+      <h2 id="sg-contrast">Contrast</h2>
+      <p class="mt-4 max-w-narrow">
+        Every pair the site actually renders, with its measured ratio. The full
+        tables, including the three values that are deliberately never text, are
+        in <code class="font-mono text-small">docs/design.md</code>.
+      </p>
+
+      <div class="mt-8 overflow-x-auto">
+        <table class="w-full border-collapse text-small">
+          <thead>
+            <tr>
+              <th class={headCellClass} scope="col">
+                Pair
+              </th>
+              <th class={headCellClass} scope="col">
+                Ratio
+              </th>
+              <th class={headCellClass} scope="col">
+                Needs
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {contrastPairs.map((pair) => (
+              <tr>
+                <td class={cellClass}>{pair.pair}</td>
+                <td class={cellClass}>
+                  <code class="font-mono">{pair.ratio}</code>
+                </td>
+                <td class={cellClass}>{pair.needs}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Section>
+  </main>
+</BaseLayout>

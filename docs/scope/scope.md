@@ -61,13 +61,13 @@ spec [0002](../specs/0002-content-model/index.md) · code in [src/content/](../.
 ### 4. Design system & UI foundation
 The visual language and the base pieces every page reuses: type scale, colour, spacing, the breakpoints for desktop, tablet, and mobile, plus buttons, cards, section wrappers, and form fields.
 **Done when:** `design.md` covers type, colour, spacing, and the three breakpoints; base components are reachable by keyboard with a visible focus outline and readable contrast; a page can be composed from them without writing new one off CSS.
-spec [0003](../specs/0003-design-system-ui-foundation/index.md)
+spec [0003](../specs/0003-design-system-ui-foundation/index.md) · code in [src/components/ui/](../../src/components/ui/) and [src/components/react/ui/](../../src/components/react/ui/) (tokens: `src/styles/global.css`, reference: `docs/design.md`, style guide: `src/dev/`)
 - [x] Design it (spec): `/architect design system & UI foundation`
-- [ ] Build it: `/develop design system & UI foundation`
+- [x] Build it: `/develop design system & UI foundation`
   - [x] Tokens, Inter, and base styles sitewide: Tailwind and the Prettier plugin installed, `global.css` with the four cleared namespaces, every token and its type companion keys, fonts API, `BaseLayout` wired (AC-2 to AC-5, AC-10, AC-12)
   - [x] Astro components: class maps, `Section`, `Button`, `Card` (AC-6 to AC-8, AC-10, AC-14)
   - [x] React fields: React integration, `Button`, `TextField`, `TextArea` sharing the class maps (AC-7, AC-9)
-  - [ ] Dev only `/styleguide`, `docs/design.md` with both contrast tables and the gold rule, and the build gate (AC-1, AC-11, AC-13 to AC-15)
+  - [x] Dev only `/styleguide`, `docs/design.md` with both contrast tables and the gold rule, and the build gate (AC-1, AC-11, AC-13 to AC-15)
 - [ ] Verify it: `/check verify design system & UI foundation`
 
 ## Release 1: the whole site stands up

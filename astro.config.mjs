@@ -3,6 +3,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
+import { styleguide } from './src/dev/styleguide-integration.ts';
 import { DEFAULT_LOCALE, LOCALES } from './src/i18n/locales.ts';
 
 // https://astro.build/config
@@ -81,5 +82,5 @@ export default defineConfig({
   // (spec 0001). Nothing is hydrated by default, so the design system's React
   // components render to static HTML and ship no client JavaScript until that
   // one island asks for it.
-  integrations: [react()],
+  integrations: [react(), styleguide()],
 });

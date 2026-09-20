@@ -13,7 +13,18 @@
  * quiet visual drift. The silence is the point, and it is worth knowing about
  * the first time a class seems to do nothing.
  */
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+
+/**
+ * Tailwind scans source files as plain text, and by default it scans the whole
+ * project. That turns prose into CSS: a spec that mentions `text-[13px]` as an
+ * example of what not to write, or a vendored docs snapshot quoting a utility,
+ * both become real rules in the stylesheet.
+ *
+ * So automatic detection is off and only this project's own markup and code is
+ * scanned. Content markdown is deliberately left out: it is copy, not classes.
+ */
+@source '../**/*.{astro,ts,tsx,js,jsx,mjs}';
 
 /**
  * Card uses this to draw one focus ring around the whole card when the link
