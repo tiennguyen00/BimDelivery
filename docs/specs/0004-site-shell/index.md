@@ -1,7 +1,7 @@
 # 0004. Build the site shell as a layout wrapper with one progressively enhanced nav script
 
 **Date**: 2026-09-20
-**Status**: Proposed
+**Status**: In Progress
 **Scope feature**: 5, Site shell: nav, dropdown, footer (`docs/scope/scope.md`)
 
 ## Summary

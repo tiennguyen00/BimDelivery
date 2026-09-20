@@ -77,13 +77,13 @@ Every page exists, is linked, and reads well on a phone. This is the thinnest ve
 ### 5. Site shell: nav, dropdown, footer
 The header, the navigation with a SERVICES dropdown holding three sub items, the mobile menu, the footer, and the page layout every route sits inside. There is no services overview page yet, so the SERVICES item only opens the dropdown.
 **Done when:** `/`, `/about-us`, `/revit-modeling`, `/scan-to-bim`, `/bim-coordination`, `/project`, and `/contact-us` all resolve and are reachable from the nav; the dropdown opens by mouse, keyboard, and touch, and closes on Escape; the mobile menu works; the current page is marked in the nav; a 404 page exists.
-spec [0004](../specs/0004-site-shell/index.md)
+spec [0004](../specs/0004-site-shell/index.md) · code in [src/components/ui/](../../src/components/ui/) and [src/pages/](../../src/pages/) (layout: `src/layouts/PageLayout.astro`, script: `src/scripts/nav.ts`, build gate: `src/lib/content-gate.ts`)
 - [x] Design it (spec): `/architect site shell`
-- [ ] Build it: `/develop site shell`
-  - [ ] Frame and routes, no script yet: the nav `ui` strings, `Icon`, `PageLayout`, static `Header` and `Footer`, the route stubs, and the 404 proved against a real preview (AC-1 to AC-4, AC-7 to AC-14, AC-18)
-  - [ ] Nav behaviour: the no flash hiding, the dropdown and mobile menu machines, the focus trap and scroll lock, and the breakpoint listener (AC-5 to AC-7, AC-17, AC-18)
-  - [ ] Content gate: one build time call site keeping spec 0002's cross entry checks running (AC-15)
-  - [ ] Written down: `docs/design.md` sections, `/styleguide` entries, and the build gate (AC-16, AC-17)
+- [x] Build it: `/develop site shell`
+  - [x] Frame and routes, no script yet: the nav `ui` strings, `Icon`, `PageLayout`, static `Header` and `Footer`, the route stubs, and the 404 proved against a real preview (AC-1 to AC-4, AC-7 to AC-14, AC-18)
+  - [x] Nav behaviour: the no flash hiding, the dropdown and mobile menu machines, the focus trap and scroll lock, and the breakpoint listener (AC-5 to AC-7, AC-17, AC-18)
+  - [x] Content gate: one build time call site keeping spec 0002's cross entry checks running (AC-15)
+  - [x] Written down: `docs/design.md` sections, `/styleguide` entries, and the build gate (AC-16, AC-17)
 - [ ] Verify it: `/check verify site shell`
 
 ### 6. Home page · needs a decision
