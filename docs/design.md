@@ -105,6 +105,9 @@ focus indicators. Computed from the hex values above.
 | field border | white / tint | 4.54 / 4.31 | 3.0 |
 | error | white / tint | 6.57 / 6.24 | 4.5 |
 | focus ring gold-ink | white / tint | 5.05 / 4.79 | 3.0 |
+| white (the gold band's link label) | black / ink-strong (hover) | 21.00 / 12.63 | 4.5 |
+| black (the gold band's heading and text) | gold | 8.73 | 4.5 |
+| focus ring black (the gold band only) | gold | 8.73 | 3.0 |
 
 ### Contrast, the three that are deliberately never text
 
@@ -195,7 +198,8 @@ colour, and a second focus colour, then computing the dark contrast pairs.
 
 ## Components
 
-Four base pieces, plus the four the site shell adds (spec 0004). The form fields
+Four base pieces, plus the four the site shell adds (spec 0004) and the three
+the home page promotes into the system (spec 0005). The form fields
 are React because the contact island (feature 10) needs them, and the button
 exists in both idioms sharing one class map so they cannot drift apart;
 everything else is Astro.
@@ -376,12 +380,101 @@ contact. Tone `tint`.
   just the copyright. Neither renders an empty row.
 - Social links open in a new tab and carry `rel="noopener noreferrer"`.
 
+
+### `MediaText` · `src/components/ui/MediaText.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `heading` | `string` (required) | |
+| `headingId` | `string` (required), the id the section points at | |
+| `paragraphs` | `readonly string[]` (required) | |
+| `image` | `{ src: ImageMetadata; alt: string }` | none |
+| `imageSide` | `'start' \| 'end'` | `'start'` |
+
+A heading, paragraphs, an optional slot for a list, and an optional photo
+beside them. The home page uses it twice (spec 0005) and About (feature 7)
+reuses it.
+
+- **Do** flip `imageSide` between two on one page, so the second does not read
+  as the first printed again.
+- Mobile always stacks copy first, photo second, whichever side the photo takes
+  at `lg`. `imageSide` only moves the photo once there are two columns.
+- **Renders correctly with no image**: the copy becomes one centred reading
+  column rather than half a grid with an empty other half. `presence.image` is
+  optional in the schema, so this is a real state, not a defensive one.
+- The photo is lazy with a reserved 3:2 box, so nothing moves as it arrives.
+- The slot renders after the paragraphs. **Do not** put a heading in it; the
+  component owns the only heading in this block.
+
+### `StatsBand` · `src/components/ui/StatsBand.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `heading` | `string` (required) | |
+| `headingId` | `string` (required), the id the section points at | |
+| `items` | `readonly StatItem[]` (required) | |
+| `lang` | `Locale` (required) | |
+
+A heading and one figure per stat, two columns on mobile and four at `md`.
+About (feature 7) reuses it; its entry already carries a `statsHeading`.
+
+- **The finished numbers are rendered at build**, already grouped for `lang`
+  (so `1200` reads as `1,200`). `src/scripts/counters.ts` animates them when
+  the band scrolls in, and only ever replaces text that is already correct. No
+  JavaScript, a failed script, or reduced motion all leave the right figures on
+  screen.
+- This is the one component in the system that ships client JavaScript, and it
+  is the only exception to the "no component ships client JavaScript" rule.
+  It degrades to nothing, which is the whole reason it is allowed.
+- It writes two `data-` attributes the script needs and nothing else can
+  supply: `data-count-to` (the raw value, so no script parses `1,200` back) and
+  `data-locale` (because a browser script cannot see `Astro.currentLocale`).
+  **Do not** drop either when restyling.
+- Each stat is a `<dl>` group, label as the term and number as the definition,
+  shown in reverse so the number sits on top. **Do not** flatten it to `<div>`s.
+
+### `CtaBand` · `src/components/ui/CtaBand.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `heading` | `string` (required) | |
+| `headingId` | `string` (required), the id this band points at | |
+| `text` | `string` (required) | |
+| `button` | `Link` (required) | |
+
+The closing call to action: a self contained gold band, always gold, taking no
+tone. The service pages (feature 8) reuse it; every service entry carries a
+`cta` block of this shape.
+
+- **It is not a `Section` with a third tone**, and that is the point. Two tones
+  and both light is what lets every other component name its colours directly
+  and never read a tone variable. A gold `Section` would reopen all of it.
+- It repeats `Section`'s padding and width rather than wrapping it, because
+  wrapping would mean giving `Section` the tone prop this avoids. If a third
+  tone ever becomes right, this component collapses into it.
+- Its link is built from `ctaLinkClass` in `styles.ts`, never from `<Button>`
+  with an override class. Tailwind's generated order decides which background
+  utility wins, not the order classes appear in the attribute, so an override
+  is a silent coin flip.
+- Black heading and text on the gold (8.73:1), black link with a white label
+  (21.00:1). The focus ring here is **black**, the one exception below.
+
 ## Focus and motion
 
 - Keyboard focus is a 2px solid `--color-gold-ink` outline with a 2px gap,
   identical on both tones. Mouse clicks show nothing (`:focus-visible`).
 - When the visitor's system asks for reduced motion, every transition and
   animation is cut to 0.01ms, so state changes are instant.
+- **One documented exception**, and only one: the link on `CtaBand`'s gold band
+  uses a 2px solid `--color-black` outline instead. `gold-ink` on full gold
+  measures 2.10:1, so the sitewide ring would be close to invisible on the only
+  band that is neither of the two light tones. Everything else about it is
+  unchanged: same 2px width, same 2px offset, still `:focus-visible` only. It
+  is set by `ctaLinkClass`, so anything focusable added to that band later
+  inherits the override rather than reintroducing the problem.
+- One exception is fine and two would be a pattern. The next component that
+  wants a non standard ring is a sign that this section needs revisiting, not
+  another exception (spec 0005).
 
 ## Invariants
 
@@ -401,8 +494,12 @@ contact. Tone `tint`.
 - A React field placed directly in an `.astro` file gets an explicit `id`.
 - Components never contain visible copy. Every word arrives through a prop or
   slot, from a content entry.
-- No component ships client JavaScript. The React components render to static
-  HTML unless a page hydrates them, and only feature 10's contact island may.
+- Exactly two components ship client JavaScript, and both only enhance markup
+  that already works: `Header` imports `src/scripts/nav.ts` (spec 0004) and
+  `StatsBand` imports `src/scripts/counters.ts` (spec 0005). Remove either
+  script and the site stays usable. Any third one needs a reason this good.
+- The React components render to static HTML unless a page hydrates them, and
+  only feature 10's contact island may.
 
 ## The living check
 

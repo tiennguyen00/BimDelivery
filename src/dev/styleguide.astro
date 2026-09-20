@@ -17,6 +17,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Button from '../components/ui/Button.astro';
 import Card from '../components/ui/Card.astro';
+import MediaText from '../components/ui/MediaText.astro';
+import StatsBand from '../components/ui/StatsBand.astro';
+import CtaBand from '../components/ui/CtaBand.astro';
 import Icon, { type IconName } from '../components/ui/Icon.astro';
 import Header from '../components/ui/Header.astro';
 import Footer from '../components/ui/Footer.astro';
@@ -31,11 +34,12 @@ import {
   getProjects,
   getServices,
   getSettings,
+  getStats,
 } from '../lib/content';
 
 const lang = resolveLocale(Astro.currentLocale);
 
-const [home, services, projects, contact, navigation, settings] =
+const [home, services, projects, contact, navigation, settings, stats] =
   await Promise.all([
     getHomePage(lang),
     getServices(lang),
@@ -43,6 +47,7 @@ const [home, services, projects, contact, navigation, settings] =
     getContactPage(lang),
     getNavigation(lang),
     getSettings(lang),
+    getStats(lang),
   ]);
 
 /** The whole icon map, in the order Icon.astro declares it. */
@@ -206,6 +211,21 @@ const contrastPairs = [
   {
     pair: 'focus ring gold-ink on white / tint',
     ratio: '5.05 / 4.79',
+    needs: '3.0',
+  },
+  {
+    pair: 'white on black / ink-strong (the gold band link)',
+    ratio: '21.00 / 12.63',
+    needs: '4.5',
+  },
+  {
+    pair: 'black on gold (the gold band heading and text)',
+    ratio: '8.73',
+    needs: '4.5',
+  },
+  {
+    pair: 'focus ring black on gold (the gold band only)',
+    ratio: '8.73',
     needs: '3.0',
   },
 ] as const;
@@ -824,6 +844,94 @@ const headCellClass =
           ui={navigation.ui}
           legal={navigation.legal}
           settings={settings}
+        />
+      </div>
+    </Section>
+
+    <Section tone="tint" labelledBy="sg-mediatext">
+      <h2 id="sg-mediatext">Media and text</h2>
+      <p class="mt-4 max-w-narrow">
+        A heading, paragraphs, an optional list in the slot, and an optional
+        photo beside them. The home page uses it twice with{' '}
+        <code class="font-mono text-small">imageSide</code> flipped, so the two
+        bands do not read as the same block printed again.
+      </p>
+
+      <div class="mt-8">
+        <MediaText
+          heading={home.overview.heading}
+          headingId="sg-mediatext-overview"
+          paragraphs={home.overview.paragraphs}
+          image={{
+            src: home.overview.image.src,
+            alt: home.overview.image.alt ?? '',
+          }}
+          imageSide="end"
+        />
+      </div>
+
+      <h3 class="mt-12">The same component with no image</h3>
+      <p class="mt-3 max-w-narrow text-small text-ink">
+        A real state, not a defensive one:{' '}
+        <code class="font-mono text-small">presence.image</code> is optional in
+        the schema. The copy becomes one centred reading column rather than half
+        a grid with an empty other half.
+      </p>
+      <div class="mt-6">
+        <MediaText
+          heading={home.presence.heading}
+          headingId="sg-mediatext-presence"
+          paragraphs={[home.presence.text]}
+        />
+      </div>
+    </Section>
+
+    <Section labelledBy="sg-statsband">
+      <h2 id="sg-statsband">Stats band</h2>
+      <p class="mt-4 max-w-narrow">
+        The finished numbers are rendered at build, already grouped for the
+        page's language, so <code class="font-mono text-small">1200</code> reads
+        as <code class="font-mono text-small">1,200</code>. The counter script
+        animates them when the band scrolls in and only ever replaces text that
+        is already correct, so no JavaScript, a failed script, and reduced
+        motion all leave the right figures on screen.
+      </p>
+      <p class="mt-3 max-w-narrow text-small text-ink">
+        Scroll it into view to see the count. Turn on your system's reduce
+        motion setting and reload: the numbers should simply be there.
+      </p>
+
+      <div class="mt-8">
+        <StatsBand
+          heading={home.stats.heading}
+          headingId="sg-statsband-heading"
+          items={stats}
+          lang={lang}
+        />
+      </div>
+    </Section>
+
+    <Section tone="tint" labelledBy="sg-ctaband">
+      <h2 id="sg-ctaband">Closing call to action</h2>
+      <p class="mt-4 max-w-narrow">
+        The one gold band on the site, and deliberately not a third{' '}
+        <code class="font-mono text-small">Section</code> tone: two tones and
+        both light is what lets every other component name its colours directly
+        and never read a tone variable.
+      </p>
+      <p class="mt-3 max-w-narrow text-small text-ink">
+        Tab to its link. The ring is <strong>black</strong>, the one documented
+        exception to the sitewide deep gold one, because{' '}
+        <code class="font-mono text-small">--color-gold-ink</code> on full gold
+        measures 2.10:1. Same 2px width, same 2px offset, still keyboard only.
+      </p>
+
+      <div class="mt-8 overflow-hidden rounded-ui border border-line">
+        <CtaBand
+          heading={home.cta.heading}
+          headingId="sg-ctaband-heading"
+          text={home.cta.text}
+          button={home.cta.button}
         />
       </div>
     </Section>
