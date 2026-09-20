@@ -1,7 +1,7 @@
 # 0003. Build the design system as Tailwind tokens plus four base components
 
 **Date**: 2026-09-20 (palette revised; first written 2026-09-19)
-**Status**: In Progress
+**Status**: Accepted
 **Scope feature**: 4, Design system & UI foundation (`docs/scope/scope.md`)
 
 ## Summary

@@ -15,7 +15,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 2 | Coding standards & tooling | Foundation | done |
 | 3 | Content model | Foundation | in-progress |
 | 4 | Design system & UI foundation | Foundation | in-progress |
-| 5 | Site shell: nav, dropdown, footer | Release 1 | planned |
+| 5 | Site shell: nav, dropdown, footer | Release 1 | in-progress |
 | 6 | Home page | Release 1 | planned |
 | 7 | About Us page | Release 1 | planned |
 | 8 | Service pages (three) | Release 1 | planned |
@@ -68,16 +68,23 @@ spec [0003](../specs/0003-design-system-ui-foundation/index.md) · code in [src/
   - [x] Astro components: class maps, `Section`, `Button`, `Card` (AC-6 to AC-8, AC-10, AC-14)
   - [x] React fields: React integration, `Button`, `TextField`, `TextArea` sharing the class maps (AC-7, AC-9)
   - [x] Dev only `/styleguide`, `docs/design.md` with both contrast tables and the gold rule, and the build gate (AC-1, AC-11, AC-13 to AC-15)
-- [ ] Verify it: `/check verify design system & UI foundation`
+- [x] Verify it: `/check verify design system & UI foundation`
 
 ## Release 1: the whole site stands up
 
 Every page exists, is linked, and reads well on a phone. This is the thinnest version a visitor would actually use, and the version you can show a client.
 
-### 5. Site shell: nav, dropdown, footer · needs a decision
-The header, the navigation with a SERVICES dropdown holding three sub items, the mobile menu, the footer, and the page layout every route sits inside. With numbered service URLs there is no services overview page, so the SERVICES item only opens the dropdown.
-**Done when:** `/`, `/about-us`, `//revit-modeling, /scan-to-bim, /bim-coordination`, `/service-2`, `/service-3`, `/project`, and `/contact-us` all resolve and are reachable from the nav; the dropdown opens by mouse, keyboard, and touch, and closes on Escape; the mobile menu works; the current page is marked in the nav; a 404 page exists.
-- [ ] Design it (spec): `/architect site shell`
+### 5. Site shell: nav, dropdown, footer
+The header, the navigation with a SERVICES dropdown holding three sub items, the mobile menu, the footer, and the page layout every route sits inside. There is no services overview page yet, so the SERVICES item only opens the dropdown.
+**Done when:** `/`, `/about-us`, `/revit-modeling`, `/scan-to-bim`, `/bim-coordination`, `/project`, and `/contact-us` all resolve and are reachable from the nav; the dropdown opens by mouse, keyboard, and touch, and closes on Escape; the mobile menu works; the current page is marked in the nav; a 404 page exists.
+spec [0004](../specs/0004-site-shell/index.md)
+- [x] Design it (spec): `/architect site shell`
+- [ ] Build it: `/develop site shell`
+  - [ ] Frame and routes, no script yet: the nav `ui` strings, `Icon`, `PageLayout`, static `Header` and `Footer`, the route stubs, and the 404 proved against a real preview (AC-1 to AC-4, AC-7 to AC-14, AC-18)
+  - [ ] Nav behaviour: the no flash hiding, the dropdown and mobile menu machines, the focus trap and scroll lock, and the breakpoint listener (AC-5 to AC-7, AC-17, AC-18)
+  - [ ] Content gate: one build time call site keeping spec 0002's cross entry checks running (AC-15)
+  - [ ] Written down: `docs/design.md` sections, `/styleguide` entries, and the build gate (AC-16, AC-17)
+- [ ] Verify it: `/check verify site shell`
 
 ### 6. Home page · needs a decision
 The front door, following the reference layout minus the section you cut: hero, why choose us, company overview, stats counter, three service cards, global presence, differentiators list, certification, and a closing call to action.
