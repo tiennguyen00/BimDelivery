@@ -46,6 +46,32 @@ export const buttonClass = (variant: ButtonVariant = 'primary'): string =>
   cx(buttonBase, buttonVariants[variant]);
 
 /**
+ * The link inside `CtaBand`, the one gold band on the site (spec 0005).
+ *
+ * It composes `buttonBase`, so the 44px tap target, the padding, and the
+ * wrapping label are shared with every other button rather than copied. What
+ * it does not do is go through `buttonVariants`: on full gold both variants
+ * disappear, the primary's gold fill into the band behind it and the
+ * secondary's gold-ink border down to 2.10:1. Adding a third variant would
+ * make `Button` carry a treatment only one band can ever use.
+ *
+ * Black fill, white label (21.00:1), deepening to ink-strong on hover
+ * (12.63:1). The focus ring is the one documented exception to the sitewide
+ * gold-ink outline in global.css: gold-ink on gold measures 2.10:1, so the
+ * usual ring would be invisible on exactly the band that needs it. Only the
+ * colour is overridden; the 2px width and the 2px offset still come from the
+ * base layer, so the ring looks like every other ring on the site.
+ *
+ * Do not reach for `<Button class="bg-black">` instead. Tailwind's generated
+ * order decides which background utility wins, not the order the classes
+ * appear in the attribute, so an override is a silent coin flip.
+ */
+export const ctaLinkClass = cx(
+  buttonBase,
+  'bg-black text-white hover:bg-ink-strong focus-visible:outline-black',
+);
+
+/**
  * The invalid state adds an inset ring rather than a thicker border, so the
  * outline reads as 2px while the box stays exactly the same size and nothing
  * on the page shifts. Colour never carries the error alone: the field also

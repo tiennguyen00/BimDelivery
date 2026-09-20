@@ -1,0 +1,64 @@
+---
+/**
+ * The front door's opening split: copy on one side, photo on the other
+ * (spec 0005).
+ *
+ * The heading here is the page's only `h1`, which is why the component takes
+ * the id rather than inventing one: the section around it points at the same
+ * id with `aria-labelledby`.
+ *
+ * The photo is the page's largest contentful paint, so it is the one image on
+ * the site that loads eagerly and at a high fetch priority, with widths and a
+ * `sizes` hint matching what it actually occupies: half the split at `lg`, the
+ * full column below. Every other image on the page loads lazily.
+ *
+ * The secondary call to action is optional in the schema (spec 0002). With
+ * only the primary one the row simply holds one button, which is why the
+ * buttons sit in a wrapping flex row rather than a two column grid.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Button from '../ui/Button.astro';
+import type { Link } from '../../lib/content';
+
+interface Props {
+  heading: string;
+  /** The id the surrounding Section points at with `aria-labelledby`. */
+  headingId: string;
+  subheading: string;
+  image: { src: ImageMetadata; alt: string };
+  primaryCta: Link;
+  secondaryCta?: Link;
+}
+
+const { heading, headingId, subheading, image, primaryCta, secondaryCta } =
+  Astro.props;
+---
+
+<div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
+  <div>
+    <h1 id={headingId} class="text-balance">
+      {heading}
+    </h1>
+    <p class="mt-6 text-lead">{subheading}</p>
+
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button href={primaryCta.href}>{primaryCta.label}</Button>
+      {secondaryCta && (
+        <Button variant="secondary" href={secondaryCta.href}>
+          {secondaryCta.label}
+        </Button>
+      )}
+    </div>
+  </div>
+
+  <Image
+    src={image.src}
+    alt={image.alt}
+    widths={[600, 900, 1200]}
+    sizes="(min-width: 64rem) 50vw, 100vw"
+    loading="eager"
+    fetchpriority="high"
+    class="aspect-3/2 w-full rounded-ui object-cover"
+  />
+</div>

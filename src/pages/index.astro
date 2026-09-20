@@ -1,21 +1,175 @@
 ---
 /**
- * The front door. A stub: the frame, the metadata and the hero's heading and
- * subheading, all from content. Feature 6 builds the real home page, every
- * section of it.
+ * The front door (spec 0005): nine sections, in order, every word and image of
+ * them from a content entry.
+ *
+ * This file is the only place that knows the page's shape. It owns the tone of
+ * each band (the `white` and `tint` alternation spec 0003 asks a page to set),
+ * and it owns the heading ids, under one rule for all nine: `<section>-heading`.
+ * No component here reads a tone or invents an id.
+ *
+ * The reference site's "Delivering Precision BIM & Revit Modeling" section is
+ * deliberately absent; it was cut in the scope.
+ *
+ * Three of the pieces below live in `components/ui/` rather than
+ * `components/home/`, because a later Release 1 page already needs each one:
+ * `MediaText` and `StatsBand` for About, `CtaBand` for the service pages.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/ui/Section.astro';
+import Card from '../components/ui/Card.astro';
+import MediaText from '../components/ui/MediaText.astro';
+import StatsBand from '../components/ui/StatsBand.astro';
+import CtaBand from '../components/ui/CtaBand.astro';
+import Hero from '../components/home/Hero.astro';
+import ValueGrid from '../components/home/ValueGrid.astro';
+import DifferentiatorList from '../components/home/DifferentiatorList.astro';
+import CertificationRow from '../components/home/CertificationRow.astro';
 import { resolveLocale } from '../i18n/locales';
-import { getHomePage } from '../lib/content';
+import { getHomePage, getServices, getStats } from '../lib/content';
 
 const lang = resolveLocale(Astro.currentLocale);
-const home = await getHomePage(lang);
+
+const [home, stats, services] = await Promise.all([
+  getHomePage(lang),
+  getStats(lang),
+  getServices(lang),
+]);
 ---
 
 <PageLayout title={home.seo.title} description={home.seo.description}>
-  <Section tone="white" labelledBy="page-title">
-    <h1 id="page-title">{home.hero.heading}</h1>
-    <p class="mt-4 max-w-narrow text-lead">{home.hero.subheading}</p>
+  {/* 1. Hero */}
+  <Section tone="white" labelledBy="hero-heading">
+    <Hero
+      heading={home.hero.heading}
+      headingId="hero-heading"
+      subheading={home.hero.subheading}
+      image={{
+        src: home.hero.image.src,
+        alt: home.hero.image.alt ?? '',
+      }}
+      primaryCta={home.hero.primaryCta}
+      secondaryCta={home.hero.secondaryCta}
+    />
   </Section>
+
+  {/* 2. Why choose us */}
+  <Section tone="tint" labelledBy="why-choose-us-heading">
+    <ValueGrid
+      heading={home.whyChooseUs.heading}
+      headingId="why-choose-us-heading"
+      items={home.whyChooseUs.items}
+    />
+  </Section>
+
+  {/* 3. Company overview */}
+  <Section tone="white" labelledBy="overview-heading">
+    <MediaText
+      heading={home.overview.heading}
+      headingId="overview-heading"
+      paragraphs={home.overview.paragraphs}
+      image={{
+        src: home.overview.image.src,
+        alt: home.overview.image.alt ?? '',
+      }}
+      imageSide="end"
+    />
+  </Section>
+
+  {/* 4. Stats */}
+  <Section tone="tint" labelledBy="stats-heading">
+    <StatsBand
+      heading={home.stats.heading}
+      headingId="stats-heading"
+      items={stats}
+      lang={lang}
+    />
+  </Section>
+
+  {/**
+   * 5. Services. Exactly three, guaranteed by the cross entry check in
+   * `content.ts`: a fourth entry stops the build rather than quietly
+   * reflowing this row. The path is `/${slug}`, the same one `[service].astro`
+   * builds its route from.
+   */}
+  <Section tone="white" labelledBy="services-heading">
+    <h2 id="services-heading" class="max-w-narrow text-balance">
+      {home.services.heading}
+    </h2>
+    <p class="mt-4 max-w-narrow text-lead">{home.services.intro}</p>
+
+    <div class="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {services.map((service) => (
+        <Card
+          title={service.title}
+          text={service.summary}
+          image={{ src: service.image.src, alt: service.image.alt ?? '' }}
+          href={`/${service.slug}`}
+        />
+      ))}
+    </div>
+  </Section>
+
+  {/**
+   * 6. Global presence. The photo takes the opposite side to the overview
+   * above, so the two `MediaText` bands do not read as the same block twice.
+   * The regions go in through the slot: they are a list this page has and
+   * About does not.
+   */}
+  <Section tone="tint" labelledBy="presence-heading">
+    <MediaText
+      heading={home.presence.heading}
+      headingId="presence-heading"
+      paragraphs={[home.presence.text]}
+      image={
+        home.presence.image && {
+          src: home.presence.image.src,
+          alt: home.presence.image.alt ?? '',
+        }
+      }
+      imageSide="start"
+    >
+      <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+        {home.presence.regions.map((region) => (
+          <li class="flex items-center gap-2 font-semibold text-ink-strong">
+            <span
+              aria-hidden="true"
+              class="block h-1 w-4 shrink-0 bg-gold"
+            ></span>
+            {region}
+          </li>
+        ))}
+      </ul>
+    </MediaText>
+  </Section>
+
+  {/* 7. Differentiators */}
+  <Section tone="white" labelledBy="differentiators-heading">
+    <DifferentiatorList
+      heading={home.differentiators.heading}
+      headingId="differentiators-heading"
+      items={home.differentiators.items}
+    />
+  </Section>
+
+  {/* 8. Certification */}
+  <Section tone="tint" labelledBy="certification-heading">
+    <CertificationRow
+      heading={home.certification.heading}
+      headingId="certification-heading"
+      text={home.certification.text}
+      badges={home.certification.badges.map((badge) => ({
+        name: badge.name,
+        image: { src: badge.image.src, alt: badge.image.alt ?? '' },
+      }))}
+    />
+  </Section>
+
+  {/* 9. Closing call to action. Its own gold band, not a Section tone. */}
+  <CtaBand
+    heading={home.cta.heading}
+    headingId="cta-heading"
+    text={home.cta.text}
+    button={home.cta.button}
+  />
 </PageLayout>

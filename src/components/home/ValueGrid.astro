@@ -1,0 +1,37 @@
+---
+/**
+ * The why choose us grid (spec 0005).
+ *
+ * One column on mobile, two at `md`, three at `lg`, for however many items the
+ * content entry holds rather than for exactly three: the schema allows any
+ * number and a fourth reason should not need a component change.
+ *
+ * Typographic on purpose, with a short gold rule as the only ornament. There
+ * is no icon library on this site (spec 0003 draws eight glyphs and no more),
+ * and inventing a glyph per value would be the start of one. The rule is a
+ * fill, so brand gold is the right token for it; it is `aria-hidden` because
+ * it says nothing a screen reader needs.
+ */
+interface Props {
+  heading: string;
+  /** The id the surrounding Section points at with `aria-labelledby`. */
+  headingId: string;
+  items: readonly { title: string; text: string }[];
+}
+
+const { heading, headingId, items } = Astro.props;
+---
+
+<h2 id={headingId} class="max-w-narrow text-balance">
+  {heading}
+</h2>
+
+<ul class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+  {items.map((item) => (
+    <li>
+      <span aria-hidden="true" class="block h-1 w-10 bg-gold"></span>
+      <h3 class="mt-4 text-balance">{item.title}</h3>
+      <p class="mt-2">{item.text}</p>
+    </li>
+  ))}
+</ul>

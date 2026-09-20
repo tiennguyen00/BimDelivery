@@ -1,0 +1,55 @@
+---
+/**
+ * The numbers band: a heading and one figure per stat (spec 0005).
+ *
+ * The finished numbers are rendered here, at build, already grouped for the
+ * page's language. The counter script (`src/scripts/counters.ts`) only
+ * replaces text that is already correct, so with no JavaScript, or with
+ * reduced motion asked for, the visitor simply sees the final figures.
+ *
+ * Two data attributes carry what a browser script cannot work out for itself:
+ *
+ * - `data-count-to` holds the raw number, so the script never has to parse a
+ *   grouped string such as "1,200" back into 1200.
+ * - `data-locale` holds the resolved locale, because a script cannot see
+ *   `Astro.currentLocale`. Without it the count would format in the visitor's
+ *   own locale and disagree with the value the page shipped.
+ *
+ * Each stat is a description list group so the label is genuinely the term and
+ * the number its definition. `flex-col-reverse` shows the number above its
+ * label while the markup keeps the order a description list requires.
+ */
+import type { Locale } from '../../i18n/locales';
+import type { StatItem } from '../../lib/content';
+
+interface Props {
+  heading: string;
+  /** The id the surrounding Section points at with `aria-labelledby`. */
+  headingId: string;
+  items: readonly StatItem[];
+  /** The page's language, used to group the numbers and handed to the script. */
+  lang: Locale;
+}
+
+const { heading, headingId, items, lang } = Astro.props;
+
+const format = new Intl.NumberFormat(lang);
+---
+
+<div data-stats-band data-locale={lang}>
+  <h2 id={headingId} class="text-center">
+    {heading}
+  </h2>
+
+  <dl class="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4">
+    {items.map((item) => (
+      <div class="flex flex-col-reverse items-center gap-2 text-center">
+        <dt class="text-ink">{item.label}</dt>
+        <dd class="text-h1 font-bold text-balance text-black">
+          <span data-count-to={item.value}>{format.format(item.value)}</span>
+          {item.suffix && <span>{item.suffix}</span>}
+        </dd>
+      </div>
+    ))}
+  </dl>
+</div>

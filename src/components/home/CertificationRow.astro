@@ -1,0 +1,51 @@
+---
+/**
+ * The certification badges (spec 0005).
+ *
+ * A centred row that wraps to a column on a narrow screen, each badge showing
+ * its name beneath its image. The badges are SVGs, so they go through `Image`
+ * without `widths`: Astro does not resize vector files, and an explicit height
+ * class plus the file's own intrinsic ratio is what reserves the space.
+ *
+ * `alt` comes straight from the entry, so a badge is never announced as the
+ * bare word "badge". Its name sits beneath it as visible text as well, which
+ * is repetition a sighted visitor wants and a screen reader tolerates: the two
+ * say different things (what the mark looks like, and what it certifies).
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  heading: string;
+  /** The id the surrounding Section points at with `aria-labelledby`. */
+  headingId: string;
+  text: string;
+  badges: readonly {
+    name: string;
+    image: { src: ImageMetadata; alt: string };
+  }[];
+}
+
+const { heading, headingId, text, badges } = Astro.props;
+---
+
+<div class="flex flex-col items-center text-center">
+  <h2 id={headingId} class="text-balance">
+    {heading}
+  </h2>
+  <p class="mt-4 max-w-narrow text-lead">{text}</p>
+
+  <ul class="mt-10 flex flex-col flex-wrap items-center justify-center gap-10 md:flex-row md:gap-12">
+    {badges.map((badge) => (
+      <li class="flex w-40 flex-col items-center gap-3">
+        <Image
+          src={badge.image.src}
+          alt={badge.image.alt}
+          loading="lazy"
+          class="h-20 w-auto"
+        />
+        <span class="text-small text-ink-muted text-balance">{badge.name}</span>
+      </li>
+    ))}
+  </ul>
+</div>
