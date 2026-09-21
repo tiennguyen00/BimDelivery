@@ -227,7 +227,8 @@ const home = defineCollection({
       hero: z.strictObject({
         heading: text,
         subheading: text,
-        image: photoSchema,
+        /** The carousel's photos, in order; the first is the one that loads first. */
+        images: z.array(photoSchema).min(1).max(3),
         primaryCta: link,
       }),
       // The black intro band under the hero (spec 0005). Its numbers are the

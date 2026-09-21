@@ -5,9 +5,13 @@ seo:
 hero:
   heading: BIM and Revit modeling you can build from
   subheading: Accurate models, clean drawings, and coordinated trades, delivered by a team that speaks the language of construction.
-  image:
-    src: https://images.pexels.com/photos/3961750/pexels-photo-3961750.jpeg?auto=compress&cs=tinysrgb&w=2560
-    alt: A small clay model house standing alone on a plain white background
+  images:
+    - src: https://images.pexels.com/photos/3961750/pexels-photo-3961750.jpeg?auto=compress&cs=tinysrgb&w=2560
+      alt: A small clay model house standing alone on a plain white background
+    - src: https://images.pexels.com/photos/323705/pexels-photo-323705.jpeg?auto=compress&cs=tinysrgb&w=2560
+      alt: A modern apartment building with glass balconies against a pale sky
+    - src: https://images.pexels.com/photos/2219024/pexels-photo-2219024.jpeg?auto=compress&cs=tinysrgb&w=2560
+      alt: Workers levelling fresh concrete on a building site
   primaryCta:
     label: Talk to our team
     href: /contact-us

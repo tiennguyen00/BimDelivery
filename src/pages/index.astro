@@ -58,10 +58,10 @@ const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
     heading={home.hero.heading}
     headingId="hero-heading"
     subheading={home.hero.subheading}
-    image={{
-      src: home.hero.image.src,
-      alt: home.hero.image.alt ?? '',
-    }}
+    images={home.hero.images.map((image) => ({
+      src: image.src,
+      alt: image.alt ?? '',
+    }))}
     primaryCta={home.hero.primaryCta}
   />
 

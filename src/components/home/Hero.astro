@@ -1,9 +1,10 @@
 ---
 /**
- * The front door's opening screen (spec 0005, revised 2026-09-21): one photo
- * filling the first screen on phones and tablets and 80% of it from `lg` up,
- * so the next band peeks in on desktop, a centred see through dark panel holding the
- * heading and subheading, one button under it, and three decorative dots.
+ * The front door's opening screen (spec 0005, revised 2026-09-21): up to three
+ * photos in a crossfading carousel, filling the first screen on phones and
+ * tablets and 80% of it from `lg` up, so the next band peeks in on desktop, a
+ * centred see through dark panel holding the heading and subheading, one
+ * button under it, and the carousel's controls at the bottom.
  *
  * It is its own band, not a `Section` tone, because it is not a light surface.
  * It borrows `Section`'s frame from `styles.ts` so its gutters and widths
@@ -25,13 +26,17 @@
  *   below the card. Both read the one value in `PageLayout`. Nothing between
  *   the header and this band may clip (`overflow`, `contain`), or the part
  *   pulled up under the card disappears.
- * - The dots are decoration. They mimic slider controls that do not exist, so
- *   they are hidden from assistive tech and are never focusable.
+ * - The carousel is an enhancement. The markup shows the first photo and hides
+ *   the rest (transparent, `aria-hidden`), and the controls start `invisible`,
+ *   so with no JavaScript the hero is one still photo with nothing dead to
+ *   tab to. `src/scripts/hero-carousel.ts` reveals the controls and runs it.
+ *   The controls are real buttons (one dot per photo, then pause), each with a
+ *   24px hit area around its small visible mark.
  *
- * The photo is the page's largest contentful paint, so it is the one image on
- * the site that loads eagerly and at a high fetch priority. It is positioned
- * to fill the band, so it takes no layout space and cannot shift anything as
- * it arrives.
+ * The first photo is the page's largest contentful paint, so it is the one
+ * image on the site that loads eagerly and at a high fetch priority; the
+ * others load lazily. Every photo is positioned to fill the band, so none
+ * takes layout space or can shift anything as it arrives.
  */
 import { Image, inferRemoteSize } from 'astro:assets';
 import Button from '../ui/Button.astro';
@@ -48,15 +53,21 @@ interface Props {
   /** The id this band points at with `aria-labelledby`. */
   headingId: string;
   subheading: string;
-  /** A photo link (spec 0006): a white background, one object in the centre. */
-  image: { src: string; alt: string };
+  /** One to three photo links (spec 0006), shown in this order. */
+  images: readonly { src: string; alt: string }[];
   primaryCta: Link;
 }
 
-const { heading, headingId, subheading, image, primaryCta } = Astro.props;
+const { heading, headingId, subheading, images, primaryCta } = Astro.props;
 
-// Read once at build from the link, like a local file's metadata.
-const source = await inferRemoteSize(image.src);
+// Read once at build from each link, like a local file's metadata.
+const slides = await Promise.all(
+  images.map(async (image) => ({
+    ...image,
+    source: await inferRemoteSize(image.src),
+  })),
+);
+const hasCarousel = slides.length > 1;
 
 /** The widths the photo is generated at, before the source width cap. */
 const HERO_STEPS: readonly number[] = [640, 960, 1280, 1920];
@@ -76,22 +87,30 @@ const heroWidths = (sourceWidth: number): number[] => {
 
 <section
   aria-labelledby={headingId}
+  data-hero-carousel={hasCarousel ? '' : undefined}
   class={cx(
     'focus-contrast relative isolate -mt-(--header-h) flex min-h-svh flex-col bg-black lg:min-h-[80svh]',
     bandGutterClass,
   )}
 >
-  <Image
-    src={image.src}
-    alt={image.alt}
-    width={source.width}
-    height={source.height}
-    widths={heroWidths(source.width)}
-    sizes="100vw"
-    loading="eager"
-    fetchpriority="high"
-    class="absolute inset-0 -z-10 size-full object-cover object-center"
-  />
+  {slides.map(({ src, alt, source }, index) => (
+    <Image
+      src={src}
+      alt={alt}
+      width={source.width}
+      height={source.height}
+      widths={heroWidths(source.width)}
+      sizes="100vw"
+      loading={index === 0 ? 'eager' : 'lazy'}
+      fetchpriority={index === 0 ? 'high' : undefined}
+      aria-hidden={index === 0 ? undefined : 'true'}
+      data-hero-slide
+      class={cx(
+        'absolute inset-0 -z-10 size-full object-cover object-center transition-opacity duration-1000',
+        index === 0 ? 'opacity-100' : 'opacity-0',
+      )}
+    />
+  ))}
 
   <div class="flex flex-1 flex-col items-center justify-center pt-(--header-h)">
     <div class={cx(bandPaddingClass, 'flex w-full flex-col items-center')}>
@@ -113,9 +132,56 @@ const heroWidths = (sourceWidth: number): number[] => {
     </div>
   </div>
 
-  <div aria-hidden="true" class="flex justify-center gap-2 pb-8">
-    <span class="size-2.5 rounded-full bg-white"></span>
-    <span class="size-2.5 rounded-full bg-white/50"></span>
-    <span class="size-2.5 rounded-full bg-white/50"></span>
-  </div>
+  {hasCarousel ? (
+    <div
+      data-hero-controls
+      class="invisible flex items-center justify-center gap-1 pb-8"
+    >
+      {slides.map((_, index) => (
+        <button
+          type="button"
+          data-hero-dot
+          aria-label={`Show photo ${index + 1} of ${slides.length}`}
+          aria-current={index === 0 ? 'true' : 'false'}
+          class="group grid size-6 cursor-pointer place-items-center rounded-full"
+        >
+          <span class="size-2.5 rounded-full bg-white/50 transition-colors group-aria-[current=true]:bg-white" />
+        </button>
+      ))}
+      <button
+        type="button"
+        data-hero-toggle
+        aria-label="Pause the slideshow"
+        class="ml-2 grid size-6 cursor-pointer place-items-center rounded-full text-white"
+      >
+        <svg
+          data-icon="pause"
+          aria-hidden="true"
+          viewBox="0 0 16 16"
+          class="size-3.5 fill-current"
+        >
+          <rect x="3" y="2" width="3.5" height="12" rx="1" />
+          <rect x="9.5" y="2" width="3.5" height="12" rx="1" />
+        </svg>
+        <svg
+          data-icon="play"
+          aria-hidden="true"
+          viewBox="0 0 16 16"
+          class="hidden size-3.5 fill-current"
+        >
+          <path d="M4 2.5v11a1 1 0 0 0 1.5.86l9-5.5a1 1 0 0 0 0-1.72l-9-5.5A1 1 0 0 0 4 2.5Z" />
+        </svg>
+      </button>
+    </div>
+  ) : (
+    <div class="pb-8" />
+  )}
 </section>
+
+{/**
+ * The same shape as the counters in `StatsBand.astro`: one `<script>`
+ * importing a module, which Astro bundles and serves.
+ */}
+<script>
+  import '../../scripts/hero-carousel';
+</script>
