@@ -11,9 +11,6 @@ hero:
   primaryCta:
     label: Talk to our team
     href: /contact-us
-  secondaryCta:
-    label: See our projects
-    href: /project
 whyChooseUs:
   heading: Why choose us
   items:

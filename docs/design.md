@@ -41,7 +41,7 @@ a change of values rather than a change of class names everywhere.
 
 | Token | Value | Role |
 |---|---|---|
-| `--color-white` | `#ffffff` | Page background, card surface. Not a text colour: there is no dark surface to sit on |
+| `--color-white` | `#ffffff` | Page background, card surface. A text colour only on the scrim (the home hero), and the outer half of the two colour focus ring |
 | `--color-tint` | `#fff9e6` | The `tint` section background, a warm cream drawn from the gold |
 | `--color-black` | `#000000` | `h1` and `h2`; the label on every gold or yellow fill |
 | `--color-ink-strong` | `#333333` | `h3` and sub headings, field labels, strong text |
@@ -54,6 +54,7 @@ a change of values rather than a change of class names everywhere.
 | `--color-line` | `#e5e5e5` | Card borders and dividers. Decorative, never a control boundary |
 | `--color-field` | `#767676` | Form field borders. A control boundary, so it has to reach 3:1 |
 | `--color-error` | `#b42318` | Error text and error borders |
+| `--color-scrim` | `rgb(0 0 0 / 0.6)` | The see through dark panel white text sits on over a photo (the home hero, spec 0005). Never lighter: 0.6 is what makes white text pass over any photo |
 
 ### The gold rule
 
@@ -107,7 +108,8 @@ focus indicators. Computed from the hex values above.
 | focus ring gold-ink | white / tint | 5.05 / 4.79 | 3.0 |
 | white (the gold band's link label) | black / ink-strong (hover) | 21.00 / 12.63 | 4.5 |
 | black (the gold band's heading and text) | gold | 8.73 | 4.5 |
-| focus ring black (the gold band only) | gold | 8.73 | 3.0 |
+| white (the hero's heading and subheading) | scrim over any photo, worst case over pure white (composite `#666666`) | 5.74 at worst | 4.5 |
+| two colour focus ring, black inner band / white outer band (the hero photo and the gold band) | gold / any photo | black on gold 8.73; on any colour at all, one of the two bands reaches at least 4.58 | 3.0 |
 
 ### Contrast, the three that are deliberately never text
 
@@ -222,6 +224,13 @@ no page writes its own container.
 - **Do not** add vertical margin around it. Padding is the whole rhythm.
 - There is no `Container` component. A band that needs full bleed content is a
   new `Section` option later, not a one off.
+- **The band frame** lives in `src/components/ui/styles.ts`: `bandGutterClass`
+  (`px-4 md:px-6 lg:px-8`), `bandPaddingClass` (`py-16 md:py-20 lg:py-24`), and
+  `bandWidthClass` (`default` and `narrow`). `Section` builds from them, and so
+  do the two bands that are not a light tone, `CtaBand` and the home hero, so
+  the three cannot drift apart. A band that is not a light tone is its own
+  component that borrows this frame; it never adds a tone to `Section`
+  (spec 0005).
 
 ### `Button` · `src/components/ui/Button.astro` and `src/components/react/ui/Button.tsx`
 
@@ -463,32 +472,36 @@ tone. The service pages (feature 8) reuse it; every service entry carries a
 - **It is not a `Section` with a third tone**, and that is the point. Two tones
   and both light is what lets every other component name its colours directly
   and never read a tone variable. A gold `Section` would reopen all of it.
-- It repeats `Section`'s padding and width rather than wrapping it, because
-  wrapping would mean giving `Section` the tone prop this avoids. If a third
-  tone ever becomes right, this component collapses into it.
+- It borrows `Section`'s frame (the band classes above) rather than wrapping
+  it, because wrapping would mean giving `Section` the tone prop this avoids.
+  If a third tone ever becomes right, this component collapses into it.
 - Its link is built from `ctaLinkClass` in `styles.ts`, never from `<Button>`
   with an override class. Tailwind's generated order decides which background
   utility wins, not the order classes appear in the attribute, so an override
   is a silent coin flip.
 - Black heading and text on the gold (8.73:1), black link with a white label
-  (21.00:1). The focus ring here is **black**, the one exception below.
+  (21.00:1). The band carries `focus-contrast`, so its link shows the two
+  colour ring (below), not the gold ink one.
 
 ## Focus and motion
 
-- Keyboard focus is a 2px solid `--color-gold-ink` outline with a 2px gap,
-  identical on both tones. Mouse clicks show nothing (`:focus-visible`).
+Two rules, chosen by the surface, and no exceptions (spec 0005):
+
+- **On the two light tones**: a 2px solid `--color-gold-ink` outline with a 2px
+  gap, identical on white and tint. This is the base rule in `global.css`.
+- **On every surface that is not a light tone** (today the home hero's photo
+  and `CtaBand`'s gold band): a two colour ring, a 2px `--color-black` band
+  directly around the control and a 2px `--color-white` band outside it. It
+  comes from the `focus-contrast` utility in `global.css`, placed on the band's
+  `<section>`, so everything focusable inside inherits it and no control sets
+  its own ring colour. Two colours is what makes it work on any background:
+  against any colour at all, one of the two bands reaches at least 4.58:1.
+- The rule belongs to the surface, not the control. A new dark or photo surface
+  adds `focus-contrast`; it never invents a third ring.
+- Either way, mouse clicks show nothing (`:focus-visible`), and width and
+  offset are the same 2px.
 - When the visitor's system asks for reduced motion, every transition and
   animation is cut to 0.01ms, so state changes are instant.
-- **One documented exception**, and only one: the link on `CtaBand`'s gold band
-  uses a 2px solid `--color-black` outline instead. `gold-ink` on full gold
-  measures 2.10:1, so the sitewide ring would be close to invisible on the only
-  band that is neither of the two light tones. Everything else about it is
-  unchanged: same 2px width, same 2px offset, still `:focus-visible` only. It
-  is set by `ctaLinkClass`, so anything focusable added to that band later
-  inherits the override rather than reintroducing the problem.
-- One exception is fine and two would be a pattern. The next component that
-  wants a non standard ring is a sign that this section needs revisiting, not
-  another exception (spec 0005).
 
 ## Invariants
 

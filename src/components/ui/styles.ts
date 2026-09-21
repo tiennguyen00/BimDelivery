@@ -56,11 +56,9 @@ export const buttonClass = (variant: ButtonVariant = 'primary'): string =>
  * make `Button` carry a treatment only one band can ever use.
  *
  * Black fill, white label (21.00:1), deepening to ink-strong on hover
- * (12.63:1). The focus ring is the one documented exception to the sitewide
- * gold-ink outline in global.css: gold-ink on gold measures 2.10:1, so the
- * usual ring would be invisible on exactly the band that needs it. Only the
- * colour is overridden; the 2px width and the 2px offset still come from the
- * base layer, so the ring looks like every other ring on the site.
+ * (12.63:1). It sets no focus ring of its own: the band carries
+ * `focus-contrast` (global.css), the ring for every surface that is not a
+ * light tone, and this link inherits it like anything else placed there.
  *
  * Do not reach for `<Button class="bg-black">` instead. Tailwind's generated
  * order decides which background utility wins, not the order the classes
@@ -68,8 +66,22 @@ export const buttonClass = (variant: ButtonVariant = 'primary'): string =>
  */
 export const ctaLinkClass = cx(
   buttonBase,
-  'bg-black text-white hover:bg-ink-strong focus-visible:outline-black',
+  'bg-black text-white hover:bg-ink-strong',
 );
+
+/**
+ * The band frame: side gutters, vertical rhythm, and the two content widths
+ * (spec 0005). `Section` uses them, and so do the two bands that are not a
+ * `Section` tone, `CtaBand` and the home hero, so the three cannot drift
+ * apart. A band that is not a light tone borrows this frame; it never adds a
+ * tone to `Section`.
+ */
+export const bandGutterClass = cx('px-4 md:px-6 lg:px-8');
+export const bandPaddingClass = cx('py-16 md:py-20 lg:py-24');
+export const bandWidthClass: Readonly<Record<'default' | 'narrow', string>> = {
+  default: cx('mx-auto w-full max-w-content'),
+  narrow: cx('mx-auto w-full max-w-narrow'),
+};
 
 /**
  * The invalid state adds an inset ring rather than a thicker border, so the

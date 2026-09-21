@@ -213,7 +213,7 @@ Image loading sits inside milestone 1 rather than in a later pass, because `load
 11. (Built as first specified; the focus exception part is superseded on 2026-09-21 by task 20, which replaces it with the two focus rules.) Add `StatsBand`, `MediaText`, and `CtaBand` sections to `docs/design.md` under `## Components`, add the black on gold and white on black pairs to the contrast table, and record the band's black focus ring as the one documented exception to the `## Focus and motion` rule. Add a tile for each to `/styleguide`, satisfies **AC-16**, **AC-18**.
 12. Run `pnpm check`, `pnpm lint`, and `pnpm build`, and confirm `dist/client/` still holds one HTML file per route and the built home page holds no `astro-island`, satisfies **AC-14**, **AC-17**.
 
-**Milestone 5: the reference hero** (added 2026-09-21)
+**Milestone 5: the reference hero** (added 2026-09-21, done)
 
 Still Skateboard: the page already works end to end, so this milestone swaps one section for its new form in one slice and keeps every step shippable. Build it after spec 0004's milestone 5 (the header card), because the hero's overlap only reads correctly once the header is a card. The two ring rule goes in first because it changes a band that already exists and is the part most likely to surprise.
 

@@ -38,20 +38,20 @@ const [home, stats, services] = await Promise.all([
 ---
 
 <PageLayout title={home.seo.title} description={home.seo.description}>
-  {/* 1. Hero */}
-  <Section tone="white" labelledBy="hero-heading">
-    <Hero
-      heading={home.hero.heading}
-      headingId="hero-heading"
-      subheading={home.hero.subheading}
-      image={{
-        src: home.hero.image.src,
-        alt: home.hero.image.alt ?? '',
-      }}
-      primaryCta={home.hero.primaryCta}
-      secondaryCta={home.hero.secondaryCta}
-    />
-  </Section>
+  {/**
+   * 1. Hero. Its own full bleed photo band, not a Section tone, and the only
+   * band on the site that slides up under the header card.
+   */}
+  <Hero
+    heading={home.hero.heading}
+    headingId="hero-heading"
+    subheading={home.hero.subheading}
+    image={{
+      src: home.hero.image.src,
+      alt: home.hero.image.alt ?? '',
+    }}
+    primaryCta={home.hero.primaryCta}
+  />
 
   {/* 2. Why choose us */}
   <Section tone="tint" labelledBy="why-choose-us-heading">

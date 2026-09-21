@@ -9,7 +9,12 @@
  *
  * Pages set the rhythm by alternating `white` and `tint`. Adjacent sections of
  * the same tone are fine; there is no margin between them, only padding.
+ *
+ * The gutters, padding, and widths are the shared band frame in `styles.ts`,
+ * which `CtaBand` and the home hero also use (spec 0005).
  */
+import { bandGutterClass, bandPaddingClass, bandWidthClass } from './styles';
+
 interface Props {
   tone?: 'white' | 'tint';
   width?: 'default' | 'narrow';
@@ -31,23 +36,14 @@ const tones = {
   white: 'bg-white',
   tint: 'bg-tint',
 } as const;
-
-const widths = {
-  default: 'max-w-content',
-  narrow: 'max-w-narrow',
-} as const;
 ---
 
 <section
   id={id}
   aria-labelledby={labelledBy}
-  class:list={[
-    'px-4 py-16 md:px-6 md:py-20 lg:px-8 lg:py-24',
-    tones[tone],
-    className,
-  ]}
+  class:list={[bandGutterClass, bandPaddingClass, tones[tone], className]}
 >
-  <div class:list={['mx-auto w-full', widths[width]]}>
+  <div class={bandWidthClass[width]}>
     <slot />
   </div>
 </section>

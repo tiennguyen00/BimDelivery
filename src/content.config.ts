@@ -167,12 +167,14 @@ const home = defineCollection({
     z.object({
       lang,
       seo,
-      hero: z.object({
+      // Strict (spec 0005, AC-22): the hero has one button, so a leftover
+      // `secondaryCta`, or any other unknown key, fails the build by name
+      // instead of being dropped without a word.
+      hero: z.strictObject({
         heading: text,
         subheading: text,
         image: imageSchema(image),
         primaryCta: link,
-        secondaryCta: link.optional(),
       }),
       whyChooseUs: z.object({
         heading: text,

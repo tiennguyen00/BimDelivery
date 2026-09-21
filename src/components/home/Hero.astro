@@ -1,64 +1,115 @@
 ---
 /**
- * The front door's opening split: copy on one side, photo on the other
- * (spec 0005).
+ * The front door's opening screen (spec 0005, revised 2026-09-21): one photo
+ * filling the first screen, a centred see through dark panel holding the
+ * heading and subheading, one button under it, and three decorative dots.
+ *
+ * It is its own band, not a `Section` tone, because it is not a light surface.
+ * It borrows `Section`'s frame from `styles.ts` so its gutters and widths
+ * cannot drift from the rest of the page, and it carries `focus-contrast`, the
+ * ring for surfaces that are not a light tone.
  *
  * The heading here is the page's only `h1`, which is why the component takes
- * the id rather than inventing one: the section around it points at the same
- * id with `aria-labelledby`.
+ * the id rather than inventing one: the band points at the same id with
+ * `aria-labelledby`.
+ *
+ * Three things hold the design together, and each is easy to break quietly:
+ *
+ * - Text sits only on the scrim, never straight on the photo. `--color-scrim`
+ *   is dark enough that white text reaches 5.74:1 over a pure white pixel, so
+ *   swapping the photo never needs a contrast check. The band itself is black,
+ *   so a photo that fails to load leaves white copy on a dark band.
+ * - The band slides up under the header card by `--header-h` and pads its
+ *   content down by the same amount, so the panel centres in the visible area
+ *   below the card. Both read the one value in `PageLayout`. Nothing between
+ *   the header and this band may clip (`overflow`, `contain`), or the part
+ *   pulled up under the card disappears.
+ * - The dots are decoration. They mimic slider controls that do not exist, so
+ *   they are hidden from assistive tech and are never focusable.
  *
  * The photo is the page's largest contentful paint, so it is the one image on
- * the site that loads eagerly and at a high fetch priority, with widths and a
- * `sizes` hint matching what it actually occupies: half the split at `lg`, the
- * full column below. Every other image on the page loads lazily.
- *
- * The secondary call to action is optional in the schema (spec 0002). With
- * only the primary one the row simply holds one button, which is why the
- * buttons sit in a wrapping flex row rather than a two column grid.
+ * the site that loads eagerly and at a high fetch priority. It is positioned
+ * to fill the band, so it takes no layout space and cannot shift anything as
+ * it arrives.
  */
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Button from '../ui/Button.astro';
+import {
+  bandGutterClass,
+  bandPaddingClass,
+  bandWidthClass,
+  cx,
+} from '../ui/styles';
 import type { Link } from '../../lib/content';
 
 interface Props {
   heading: string;
-  /** The id the surrounding Section points at with `aria-labelledby`. */
+  /** The id this band points at with `aria-labelledby`. */
   headingId: string;
   subheading: string;
   image: { src: ImageMetadata; alt: string };
   primaryCta: Link;
-  secondaryCta?: Link;
 }
 
-const { heading, headingId, subheading, image, primaryCta, secondaryCta } =
-  Astro.props;
+const { heading, headingId, subheading, image, primaryCta } = Astro.props;
+
+/** The widths the photo is generated at, before the source width cap. */
+const HERO_STEPS: readonly number[] = [640, 960, 1280, 1920];
+/** Wider than this is never worth the bytes, even on a large monitor. */
+const HERO_MAX_WIDTH = 2560;
+
+/**
+ * The steps below the source width, then the source width itself capped at
+ * 2560, so a wider photo later gains the larger steps with no code change and
+ * nothing is ever upscaled. A source under 640px yields just its own width.
+ */
+const heroWidths = (sourceWidth: number): number[] => {
+  const cap = Math.min(sourceWidth, HERO_MAX_WIDTH);
+  return [...HERO_STEPS.filter((width) => width < cap), cap];
+};
 ---
 
-<div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
-  <div>
-    <h1 id={headingId} class="text-balance">
-      {heading}
-    </h1>
-    <p class="mt-6 text-lead">{subheading}</p>
-
-    <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button href={primaryCta.href}>{primaryCta.label}</Button>
-      {secondaryCta && (
-        <Button variant="secondary" href={secondaryCta.href}>
-          {secondaryCta.label}
-        </Button>
-      )}
-    </div>
-  </div>
-
+<section
+  aria-labelledby={headingId}
+  class={cx(
+    'focus-contrast relative isolate -mt-(--header-h) flex min-h-svh flex-col bg-black',
+    bandGutterClass,
+  )}
+>
   <Image
     src={image.src}
     alt={image.alt}
-    widths={[600, 900, 1200]}
-    sizes="(min-width: 64rem) 50vw, 100vw"
+    widths={heroWidths(image.src.width)}
+    sizes="100vw"
     loading="eager"
     fetchpriority="high"
-    class="aspect-3/2 w-full rounded-ui object-cover"
+    class="absolute inset-0 -z-10 size-full object-cover object-center"
   />
-</div>
+
+  <div class="flex flex-1 flex-col items-center justify-center pt-(--header-h)">
+    <div class={cx(bandPaddingClass, 'flex w-full flex-col items-center')}>
+      <div
+        class={cx(
+          bandWidthClass.default,
+          'rounded-ui bg-scrim px-6 py-8 text-center md:px-10 md:py-10',
+        )}
+      >
+        <h1 id={headingId} class="text-balance text-white">
+          {heading}
+        </h1>
+        <p class="mt-6 text-lead text-white">{subheading}</p>
+      </div>
+
+      <Button href={primaryCta.href} class="mt-8">
+        {primaryCta.label}
+      </Button>
+    </div>
+  </div>
+
+  <div aria-hidden="true" class="flex justify-center gap-2 pb-8">
+    <span class="size-2.5 rounded-full bg-white"></span>
+    <span class="size-2.5 rounded-full bg-white/50"></span>
+    <span class="size-2.5 rounded-full bg-white/50"></span>
+  </div>
+</section>

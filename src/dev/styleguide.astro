@@ -13,6 +13,7 @@
  * names, hex values, and contrast figures are written here on purpose: they
  * are developer labels rather than site content, and this page is never built.
  */
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Button from '../components/ui/Button.astro';
@@ -76,8 +77,8 @@ const colours = [
     token: '--color-white',
     swatch: 'bg-white',
     hex: '#ffffff',
-    use: 'Page background, card surface',
-    avoid: 'Text (there is no dark surface to sit on)',
+    use: 'Page background, card surface; text on the scrim; the ring outer band',
+    avoid: 'Text anywhere but on the scrim',
   },
   {
     token: '--color-tint',
@@ -163,6 +164,13 @@ const colours = [
     use: 'Error text and error borders',
     avoid: 'Decoration',
   },
+  {
+    token: '--color-scrim',
+    swatch: 'bg-scrim',
+    hex: 'rgb(0 0 0 / 0.6)',
+    use: 'The dark panel white text sits on over a photo (the home hero)',
+    avoid: 'Anything lighter: 0.6 is what keeps white text at 5.74:1',
+  },
 ] as const;
 
 const typeScale = [
@@ -224,8 +232,13 @@ const contrastPairs = [
     needs: '4.5',
   },
   {
-    pair: 'focus ring black on gold (the gold band only)',
-    ratio: '8.73',
+    pair: 'white on the scrim over any photo (worst case: over pure white)',
+    ratio: '5.74 at worst',
+    needs: '4.5',
+  },
+  {
+    pair: 'two colour focus ring, black inside and white outside (the hero photo, the gold band)',
+    ratio: '8.73 on gold; at least 4.58 on any colour',
     needs: '3.0',
   },
 ] as const;
@@ -920,10 +933,13 @@ const headCellClass =
         and never read a tone variable.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
-        Tab to its link. The ring is <strong>black</strong>, the one documented
-        exception to the sitewide deep gold one, because{' '}
-        <code class="font-mono text-small">--color-gold-ink</code> on full gold
-        measures 2.10:1. Same 2px width, same 2px offset, still keyboard only.
+        Tab to its link. The ring is the <strong>two colour ring</strong>, black
+        inside and white outside, the rule for every surface that is not a light
+        tone, because <code class="font-mono text-small">--color-gold-ink</code>{' '}
+        on full gold measures 2.10:1. The band carries{' '}
+        <code class="font-mono text-small">focus-contrast</code>, so the link
+        sets no ring of its own. Same 2px width, same 2px offset, still keyboard
+        only.
       </p>
 
       <div class="mt-8 overflow-hidden rounded-ui border border-line">
@@ -933,6 +949,37 @@ const headCellClass =
           text={home.cta.text}
           button={home.cta.button}
         />
+      </div>
+    </Section>
+
+    <Section labelledBy="sg-photo-focus">
+      <h2 id="sg-photo-focus">Focus on a photo</h2>
+      <p class="mt-4 max-w-narrow">
+        The home hero's surface: the real hero photo, the{' '}
+        <code class="font-mono text-small">--color-scrim</code> panel, and white
+        text on it. White on the scrim is 5.74:1 even over a pure white pixel,
+        so no photo swap needs a contrast check.
+      </p>
+      <p class="mt-3 max-w-narrow text-small text-ink">
+        Tab to the button. It shows the same two colour ring as the gold band,
+        from <code class="font-mono text-small">focus-contrast</code> on the
+        swatch, and reads on the bright sky and the dark city alike.
+      </p>
+
+      <div class="focus-contrast relative isolate mt-8 flex flex-col items-center gap-6 overflow-hidden rounded-ui bg-black px-4 py-12">
+        <Image
+          src={home.hero.image.src}
+          alt=""
+          widths={[640, 1280]}
+          sizes="(min-width: 75rem) 75rem, 100vw"
+          class="absolute inset-0 -z-10 size-full object-cover object-center"
+        />
+        <p class="rounded-ui bg-scrim px-6 py-4 text-lead text-white">
+          {home.hero.subheading}
+        </p>
+        <Button href={home.hero.primaryCta.href}>
+          {home.hero.primaryCta.label}
+        </Button>
       </div>
     </Section>
   </main>

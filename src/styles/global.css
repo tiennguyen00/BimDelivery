@@ -73,6 +73,13 @@
 
   --color-error: #b42318;
 
+  /* The see through dark panel white text sits on over a photo (spec 0005,
+     the home hero). Black at 60 percent: the worst case is white text over a
+     pure white pixel seen through it, a composite of #666666, which still
+     measures 5.74:1. So no photo swap can ever lower the contrast, and the
+     photo never needs checking. Lighter than 0.6 breaks that guarantee. */
+  --color-scrim: rgb(0 0 0 / 0.6);
+
   /* ---- Breakpoints --------------------------------------------------- */
   /* Three screens only: mobile is the unprefixed default, then md and lg. */
   --breakpoint-sm: initial;
@@ -132,6 +139,30 @@
  */
 @theme inline {
   --font-sans: var(--font-inter), sans-serif;
+}
+
+/**
+ * The second of the site's two focus rules (spec 0005). The first, the gold-ink
+ * ring in the base layer below, is for the two light tones. This one is for
+ * every surface that is not a light tone, today the home hero's photo and the
+ * gold band, where gold-ink would vanish (2.10:1 on gold, and anything at all
+ * on a photo).
+ *
+ * The rule belongs to the surface, not the control: put `focus-contrast` on the
+ * band's `<section>` and everything focusable inside inherits it. The ring is
+ * two colours, so it reads on any background: a 2px black band directly around
+ * the control (the shadow fills the base rule's 2px offset gap) and the 2px
+ * white outline outside it. Width and offset still come from the base rule.
+ *
+ * It wins over the base rule because the utilities layer comes after the base
+ * layer, not because of specificity. A new dark or photo surface adds this
+ * utility; it never invents a third ring.
+ */
+@utility focus-contrast {
+  & :focus-visible {
+    outline-color: var(--color-white);
+    box-shadow: 0 0 0 2px var(--color-black);
+  }
 }
 
 /**

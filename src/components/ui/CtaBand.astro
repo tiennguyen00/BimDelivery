@@ -8,20 +8,28 @@
  * that: inherited tone variables, a card reset, a second focus colour. So the
  * gold lives here, in one band that is always gold and never asks.
  *
- * It repeats `Section`'s padding and width rather than wrapping it, because
- * wrapping would mean giving `Section` the very tone prop this avoids. If a
- * third tone ever becomes the right answer, this component collapses into it.
+ * It borrows `Section`'s frame (the shared band classes in `styles.ts`) rather
+ * than wrapping it, because wrapping would mean giving `Section` the very tone
+ * prop this avoids. If a third tone ever becomes the right answer, this
+ * component collapses into it.
  *
  * Every colour here is fixed: black heading and text on gold (8.73:1), and a
  * black link with a white label (21.00:1). Nothing on this band reads a tone.
- * The link's focus ring is black, the one documented exception to the sitewide
- * gold-ink ring; see `ctaLinkClass` and `docs/design.md`.
+ * Focus follows the second of the site's two rules: the band carries
+ * `focus-contrast`, the black and white double ring for surfaces that are not
+ * a light tone, so the link and anything focusable added here later inherit it.
  *
  * The service pages (feature 8) reuse it: every service entry carries a `cta`
  * block of exactly this shape.
  */
 import type { Link } from '../../lib/content';
-import { ctaLinkClass, cx } from './styles';
+import {
+  bandGutterClass,
+  bandPaddingClass,
+  bandWidthClass,
+  ctaLinkClass,
+  cx,
+} from './styles';
 
 interface Props {
   heading: string;
@@ -36,9 +44,11 @@ const { heading, headingId, text, button } = Astro.props;
 
 <section
   aria-labelledby={headingId}
-  class="bg-gold px-4 py-16 md:px-6 md:py-20 lg:px-8 lg:py-24"
+  class={cx('focus-contrast bg-gold', bandGutterClass, bandPaddingClass)}
 >
-  <div class="mx-auto flex w-full max-w-narrow flex-col items-center text-center">
+  <div
+    class={cx(bandWidthClass.narrow, 'flex flex-col items-center text-center')}
+  >
     <h2 id={headingId} class="text-balance">
       {heading}
     </h2>

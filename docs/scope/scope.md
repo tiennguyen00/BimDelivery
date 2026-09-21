@@ -97,6 +97,7 @@ spec [0005](../specs/0005-home-page/index.md) · code in [src/components/home/](
   - [x] The numbers move: `counters.ts`, the data attributes it reads, the reduced motion cut, and the no script proof (AC-6, AC-14)
   - [x] The guard: the exactly three services rule added to the cross entry checks (AC-4)
   - [x] Written down and gated: `design.md` entries with the new contrast pairs and the focus exception, `/styleguide` tiles, and the check, lint, and build gates (AC-16, AC-17)
+  - [x] The reference hero (2026-09-21, after the header card): the scrim token and the two ring focus rule (the gold band moves to it), the shared band frame, the strict hero schema, the full bleed hero under the header card, and `design.md` plus `/styleguide` updated (AC-3, AC-12, AC-18 to AC-24)
 - [ ] Verify it: `/check verify home page`
 
 ### 7. About Us page
