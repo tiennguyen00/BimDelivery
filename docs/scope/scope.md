@@ -84,6 +84,7 @@ spec [0004](../specs/0004-site-shell/index.md) · code in [src/components/ui/](.
   - [x] Nav behaviour: the no flash hiding, the dropdown and mobile menu machines, the focus trap and scroll lock, and the breakpoint listener (AC-5 to AC-7, AC-17, AC-18)
   - [x] Content gate: one build time call site keeping spec 0002's cross entry checks running (AC-15)
   - [x] Written down: `docs/design.md` sections, `/styleguide` entries, and the build gate (AC-16, AC-17)
+  - [x] The header card (2026-09-21): the `--radius-card` token, the full width white card with rounded bottom corners and a shadow, corners squared while the mobile menu is open, and the `--header-h` readers written down (AC-4, AC-19)
 - [ ] Verify it: `/check verify site shell`
 
 ### 6. Home page

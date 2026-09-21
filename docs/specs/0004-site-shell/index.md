@@ -1,6 +1,6 @@
 # 0004. Build the site shell as a layout wrapper with one progressively enhanced nav script
 
-**Date**: 2026-09-20
+**Date**: 2026-09-21 (header restyled as a floating card; first written 2026-09-20)
 **Status**: In Progress
 **Scope feature**: 5, Site shell: nav, dropdown, footer (`docs/scope/scope.md`)
 
@@ -11,6 +11,8 @@ Every page gets the same frame: a skip link, a sticky header with the logo, the 
 This feature also makes the nav honest. It creates a thin page on every route the nav points at, including one dynamic route that turns each service file into its own page, plus a styled 404 page that Cloudflare is configured to actually serve. Features 7 to 10 then fill those pages in rather than creating them.
 
 Two small additions to the content model come with it: a required `ui` block on the navigation entry for the interface strings the shell needs, and an optional `legal` list for footer only links such as the privacy page in feature 13.
+
+**Revised 2026-09-21, the header card.** The header is now drawn as a white card across the full width of the screen, flush with the top, with rounded bottom corners and a soft shadow instead of a bottom border. It still sticks to the top at one fixed height, and it still behaves exactly as before. On the home page only, the hero photo slides up underneath it (spec 0005); every other page still starts below it.
 
 ## Requirements
 
@@ -28,7 +30,7 @@ Two small additions to the content model come with it: a required `ui` block on 
 - **AC-1**: `src/layouts/PageLayout.astro` exists, wraps `BaseLayout`, and renders in order: the skip link, `<header>`, `<main id="main">` holding the slot, and `<footer>`. It takes the same `title` and `description` props and passes them straight through. `BaseLayout` still renders only the document shell, so `/styleguide`, which imports it directly, renders with no header and no footer.
 - **AC-2**: These routes each produce one HTML file in `dist/client/`: `/`, `/about-us`, `/revit-modeling`, `/scan-to-bim`, `/bim-coordination`, `/project`, `/contact-us`, and `/404`. The three service pages come from a single route `src/pages/[service].astro` whose `getStaticPaths` reads `getServices(lang)`. Adding a fourth service file, with no code edit, produces a fourth page and a fourth nav entry.
 - **AC-3**: Every page renders its own `seo.title` and `seo.description` from its content entry, and its `h1` and intro paragraph from that same entry, inside a `Section` with `tone="white"`, which is where spec 0003's alternating rhythm starts. No page and neither layout contains hardcoded visible copy.
-- **AC-4**: The header renders the logo (linking to `/`, accessible name from `settings.logo.alt`), the nav items from `getNavigation(lang)`, and the call to action from `navigation.cta` as a primary `Button` in both the desktop bar and the mobile panel. It is sticky at one constant height, held in the `--header-h` custom property set once in `PageLayout` (`4.5rem` below `lg`, `5rem` at `lg` and above), and it registers no scroll listener.
+- **AC-4**: The header renders the logo (linking to `/`, accessible name from `settings.logo.alt`), the nav items from `getNavigation(lang)`, and the call to action from `navigation.cta` as a primary `Button` in both the desktop bar and the mobile panel. It is sticky at one constant height, held in the `--header-h` custom property set once in `PageLayout` (`4.5rem` below `lg`, `5rem` at `lg` and above), and it registers no scroll listener. (Revised 2026-09-21.) The `<header>` is a full width white card flush with the top of the viewport: `rounded-b-card` bottom corners (the new `--radius-card` token, `1.5rem`), `shadow-md`, and no bottom border. `--header-h` means the height of that card's box, which is the strip at the top of the viewport it covers; the shadow and the corner curve fall outside it and are not counted. The card is the same on every page. Only the home hero slides under it (spec 0005, AC-21); on every other page the first band starts below it, as before.
 - **AC-5**: At 1024px and above the nav is a horizontal bar and SERVICES is a `<button id="nav-services-desktop-btn" aria-expanded aria-controls="nav-services-desktop">` controlling a panel with that id, holding the three service links. The panel opens when the pointer enters the item and when the button is clicked, and opens from the keyboard with Enter, Space or ArrowDown. ArrowDown and ArrowUp move focus between panel items. Escape closes it and returns focus to the button. A click outside it, focus leaving the header, or the viewport crossing below 1024px also closes it. `aria-expanded` matches the visible state at all times.
 - **AC-6**: Below 1024px the header shows a hamburger `<button id="nav-menu-btn" aria-expanded aria-controls="nav-menu-panel">` and the panel with that id fills the viewport beneath the sticky header, offset by `--header-h`. While it is open, Tab and Shift Tab cycle within the panel with the focusable set recomputed on each Tab so the nested disclosure cannot break the cycle, `<body>` carries `overflow: hidden` with `scrollbar-gutter: stable` so the page neither scrolls nor shifts, and Escape closes it and returns focus to the hamburger. Inside the panel SERVICES is a disclosure `<button id="nav-services-mobile-btn" aria-expanded aria-controls="nav-services-mobile">` revealing the three service links.
 - **AC-7**: In the HTML the server sends, both the dropdown panel and the mobile panel are present and visible, and the script hides them at startup. With JavaScript disabled, every nav link including the three services is visible and clickable on every breakpoint, and no control is a dead end.
@@ -43,6 +45,7 @@ Two small additions to the content model come with it: a required `ui` block on 
 - **AC-16**: `docs/design.md` gains a section per new component under `## Components`, covering `PageLayout`, `Header`, `Footer` and `Icon`, and `/styleguide` shows the full icon set plus the header and footer in place.
 - **AC-17**: `pnpm check`, `pnpm lint` and `pnpm build` all pass. `dist/client/` holds one HTML file per route in AC-2 and no others beyond the assets. The only JavaScript a page loads is the one nav bundle plus the small inline flag script in AC-18; no React component is hydrated on any page.
 - **AC-18**: The panels are hidden before the first paint, not by the nav module. A short inline script in the document `<head>` sets a `js` flag on `<html>` synchronously, and the CSS hides both panels only when that flag is present. Astro compiles a component `<script>` to a deferred module that runs after paint has begun, so without this the visitor on a slow connection sees an open menu flash on every page. The flag script is the only inline script in the site and does nothing but set the flag.
+- **AC-19** (added 2026-09-21): While the mobile menu is open with JavaScript running (`html.js` and `#nav-menu-panel[data-open]`), the header's bottom corners square off and its shadow drops, so header and panel read as one white sheet with no sliver of page showing at the corners. With JavaScript off, the panel sits inside the card in the normal flow, so the card's rounded corners simply fall below the panel and nothing changes.
 
 ## Decision
 
@@ -54,7 +57,7 @@ Build the shell as `PageLayout.astro` wrapping `BaseLayout`, with `Header`, `Foo
 
 ## Feature design
 
-**Design source**: the existing `docs/design.md` and `/styleguide` from spec 0003. No new tokens, no new colours, no new breakpoints. The header is `white`, the footer is `tint`, matching the two section tones already defined.
+**Design source**: the existing `docs/design.md` and `/styleguide` from spec 0003. No new colours and no new breakpoints. The header is `white`, the footer is `tint`, matching the two section tones already defined. (Revised 2026-09-21.) The header's card shape comes from the reference screenshot supplied with spec 0005's hero revision, and adds one token, `--radius-card: 1.5rem`, to the radius namespace spec 0003 cleared. It is named for the shape, not the header, so a later large surface can reuse it.
 
 **Data model sketch**:
 
@@ -141,7 +144,10 @@ Astro matches static routes before dynamic ones, so `[service].astro` at the roo
 | Header | call to action label and href | `navigation.cta`, omitted entirely when absent |
 | Header | whether an item is the current page | `Astro.url.pathname` compared to the item href at build, with a trailing slash normalised off both sides, and applied in the header only |
 | Header | whether SERVICES is the active section | `Astro.url.pathname` matching any service href in the group |
-| Header | the sticky height the mobile panel and the layout both need | the `--header-h` custom property, declared once in `PageLayout` |
+| Header | the sticky height the mobile panel and the layout both need | the `--header-h` custom property, declared once in `PageLayout`. From 2026-09-21 it has four readers: the header row's height, the mobile panel's top inset, and the home hero's pull up and its matching top padding (spec 0005) |
+| Header | the card's bottom corner radius | the `--radius-card` token, `1.5rem`, used as `rounded-b-card` (2026-09-21) |
+| Header | the card's shadow | decided in this spec: Tailwind's default `shadow-md`, since spec 0003 leaves shadows unconstrained (2026-09-21) |
+| Header | whether the card is squared off | the `html.js` flag plus `data-open` on `#nav-menu-panel`, read by the header's global CSS (AC-19) |
 | `nav.ts` | the 1024px boundary at runtime | one exported const holding `(min-width: 64rem)`, commented as the mirror of Tailwind's `lg` token so a token change has one place to follow |
 | `nav.ts` | which element controls which panel | the fixed id table above, not generated at runtime |
 | Any page | whether the panels start hidden | the `js` flag the inline head script sets on `<html>`, read by CSS |
@@ -170,7 +176,8 @@ Astro matches static routes before dynamic ones, so `[service].astro` at the roo
 - `aria-expanded` on the dropdown button, the mobile disclosure and the hamburger always matches what is visible.
 - Every route in the nav resolves to a real HTML file in `dist/client/`. A nav item pointing at a path with no page is a build bug, caught by the reserved path list and by AC-2.
 - The shell reads content only through `src/lib/content.ts`. No component calls `getCollection` or `getEntry` directly.
-- Header and footer use only tokens defined in `src/styles/global.css`. No new colour, size, radius or breakpoint is introduced.
+- Header and footer use only tokens defined in `src/styles/global.css`. No new colour, size or breakpoint is introduced; the one new radius is `--radius-card` (2026-09-21).
+- `--header-h` is the height of the header card's box and nothing else. Anything that changes how tall the header renders (padding, a taller logo, a second row) changes `--header-h` in the same edit, or the home hero's copy slides under the card (2026-09-21).
 - The panels are visible in the emitted HTML and hidden by CSS gated on the `js` flag, never the other way round, and the flag is set before the first paint rather than by the deferred nav module.
 - `output` stays `'static'` and no route in this feature sets `prerender = false`.
 
@@ -195,6 +202,8 @@ No environment variables and no secrets. One configuration change:
 - Failure case: requesting `/does-not-exist` against a preview of the production build returns the styled 404 page with status 404, not a platform error, verifies **AC-12**.
 - Edge case: temporarily emptying the services collection builds successfully with no SERVICES control anywhere and no empty panel, verifies **AC-10**.
 - Edge case: removing `ui.openMenu` from `main.yaml` fails the build with a message naming that file and field, verifies **AC-11**.
+- The card (2026-09-21): on every route the header is a full width white card with rounded bottom corners and a shadow and no bottom border; on `/` the hero photo shows behind the corners, on `/about-us` the page's `h1` starts fully below the card, verifies **AC-4**.
+- The card and the menu (2026-09-21): at 390px, opening the menu squares the card's corners and drops its shadow so no page shows at the corners; closing it restores them. With JavaScript off, the rounded corners sit below the in flow panel, verifies **AC-19**.
 - Regression: after the shell lands, `pnpm build` still fails when a project references a missing service, proving spec 0002's cross entry checks still run without a page importing `getStats`, verifies **AC-15**.
 
 ## Build plan
@@ -230,6 +239,15 @@ The 404 sits in milestone 1 rather than later on purpose. Whether Cloudflare's s
 14. Add `PageLayout`, `Header`, `Footer` and `Icon` sections to `docs/design.md` under `## Components`, and add the icon set plus the header and footer to `/styleguide`, satisfies **AC-16**.
 15. Run `pnpm check`, `pnpm lint` and `pnpm build`, and confirm `dist/client/` holds exactly the eight HTML files and no React is hydrated, satisfies **AC-17**.
 
+**Milestone 5: the header card** (added 2026-09-21)
+
+Build it before spec 0005's milestone 5, which pulls the home hero up under the card. On its own it is a visual change to a header that already works on every page, so it ships safely by itself.
+
+16. Add `--radius-card: 1.5rem` to the radius block of `@theme` in `src/styles/global.css`, commented as the one large radius, satisfies **AC-4**.
+17. In `Header.astro`, replace `border-b border-line` on the `<header>` with `rounded-b-card shadow-md` (keeping `sticky top-0 z-40 bg-white`), and add to the header's global CSS a rule that, under `html.js`, sets `border-radius: 0` and `box-shadow: none` on the header while `#nav-menu-panel[data-open]` is inside it (a `:has()` selector). That rule beats the `rounded-b-card shadow-md` utilities because Astro's `<style is:global>` CSS sits outside Tailwind's cascade layers, and unlayered CSS always wins over layered CSS; say so in the comment, since moving the rule into a layer would silently break it. Update the component comment so it says what `--header-h` measures and who reads it, satisfies **AC-4**, **AC-19**.
+18. Update the `--header-h` comment in `PageLayout.astro` to list its four readers, and the `Header` section of `docs/design.md` plus the radius table with `--radius-card`, satisfies **AC-4**, **AC-16**.
+19. Check a real preview at 390px and 1280px on `/` and `/about-us`, with the menu open and closed and with JavaScript off, satisfies **AC-4**, **AC-19**.
+
 ## Consequences
 
 **Positive**:
@@ -247,6 +265,9 @@ The 404 sits in milestone 1 rather than later on purpose. Whether Cloudflare's s
 - The panels are visible in the emitted HTML, so the site now carries one inline script in the head whose only job is to set a flag before paint. It is a small thing to explain to every future reader, and it is load bearing: remove it and the menus flash open on every slow load.
 - The `--header-h` value, the `(min-width: 64rem)` const in the script and Tailwind's `lg` token all describe the same two facts in three places. Comments tie them together, but nothing enforces it, so a token change needs a deliberate look at all three.
 - Thin stub pages can read as finished. Someone glancing at `/about-us` will see a heading and an intro and might tick feature 7 off. The scope rows are what keep that honest.
+- (2026-09-21) The card's shadow and rounded corners sit over white on every page except home, where they sit over the photo. On a white page the card reads more subtly than in the reference, and the shadow is the only thing separating it from the first section.
+- (2026-09-21) `--header-h` is now read in four places, one of them on a different page's component. The coupling is intentional and commented, and it is also the kind nobody remembers when they bump the logo size.
+- (2026-09-21) The squared corners while the menu is open rely on `:has()`. Every browser this site targets supports it; one that does not keeps the rounded corners over the open panel, which is cosmetic.
 - The header and footer stay light, which is further from the reference site than a dark footer would be. That remains deferred work, and doing it later means recomputing contrast pairs, not just changing a colour.
 
 **Neutral**:
@@ -263,6 +284,7 @@ The 404 sits in milestone 1 rather than later on purpose. Whether Cloudflare's s
 - [ ] Spec 0003 reserved `--color-yellow` for "feature 5's icons" and said to drop the token if feature 5 ships without it. This design uses `currentColor` for every icon, so unless the build finds a use, the token should be removed and `docs/design.md` updated with it.
 - [ ] Feature 13's privacy page has a home waiting in `navigation.legal`. Adding the link is a content edit, no code change.
 - [ ] Feature 11 owns canonical URLs, the sitemap, robots rules and social preview cards. This spec only guarantees that every page passes a title and a description through `PageLayout`; the `<head>` will need extending, and `astro.config.mjs` still deliberately has no `site` set.
+- [ ] (2026-09-21) The sticky card can cover a control that receives focus while tabbing backwards up the page, and an in page anchor lands under it. `scroll-padding-top: var(--header-h)` on `html` would fix both (WCAG 2.4.11, focus not obscured). This predates the card, so it is logged here rather than folded into milestone 5.
 - [ ] Feature 6 takes `getStats` over for real. When it does, the build time call site from task 12 can drop that getter, or stay as the guard for whichever getter is next without a page.
 
 ## Rationale

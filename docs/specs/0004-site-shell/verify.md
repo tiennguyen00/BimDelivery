@@ -1,4 +1,4 @@
-# Verify: site shell · spec 0004 · updated 2026-09-20
+# Verify: site shell · spec 0004 · updated 2026-09-21
 
 _Steps derived from spec 0004 acceptance criteria. `/check verify` runs these; `/test` locks the durable ones._
 
@@ -219,13 +219,40 @@ file exists.
 - [ ] Icon colour: an icon inside gold text is gold; it names no colour of its
       own → Value sourcing
 
+## The header card (added 2026-09-21, milestone 5)
+
+Steps marked **(done)** were run during `/develop` against a preview of the
+production build in headless Chrome, reading computed styles and screenshots.
+
+- [x] On `/` and `/about-us` at 1280px and 390px the header is a full width
+      white card: bottom corners 24px, a shadow, bottom border 0 → AC-4 **(done)**
+- [x] The card's box is exactly `--header-h` tall: 80px at 1280px, 72px at
+      390px → AC-4, Value sourcing (`--header-h`) **(done)**
+- [x] On `/about-us` the `h1` starts fully below the card, and scrolled down
+      the card stays stuck at the top over the content → AC-4 **(done)**
+- [ ] On `/` the hero photo shows behind the card's corners. This needs spec
+      0005's milestone 5 (the hero pull up); until it lands, home starts below
+      the card like every other page → AC-4
+- [x] At 390px open the menu: the corners compute to 0 and the shadow to
+      `none`, and no page shows at the corners above the panel → AC-19 **(done)**
+- [ ] At 390px close the menu again: the corners and the shadow come back
+      → AC-19
+- [x] At 390px with JavaScript off, the panel sits in the flow inside the card
+      and the rounded corners fall below it, with nothing covered → AC-19 **(done)**
+- [ ] The `--radius-card` token: change it in `global.css` to `0.5rem`,
+      rebuild, and the header corners follow; restore it → Value sourcing
+      (the card's radius)
+- [ ] The squared corner rule is unlayered: in the built CSS, `html.js
+      header:has(#nav-menu-panel[data-open])` sits outside every `@layer`
+      block → AC-19 **(done during the build, re-check after any CSS move)**
+
 ## Acceptance-criteria coverage
 
 - AC-1 · covered by the `/styleguide` layout step
 - AC-2 · covered by the build file list, the preview status codes, and the
   fourth service drill
 - AC-3 · covered by the frame steps
-- AC-4 · covered by the header height and scroll listener steps
+- AC-4 · covered by the header height and scroll listener steps, and the header card steps (partly **done**)
 - AC-5 · covered by the keyboard, mouse, touch and breakpoint dropdown steps
 - AC-6 · covered by the mobile menu steps
 - AC-7 · covered by the no JavaScript steps
@@ -240,3 +267,4 @@ file exists.
 - AC-16 · covered by the style guide and `design.md` steps
 - AC-17 · covered by the command steps **(done)**
 - AC-18 · covered by the throttled load and view source steps
+- AC-19 · covered by the header card menu steps (partly **done**)

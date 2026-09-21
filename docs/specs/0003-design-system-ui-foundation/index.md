@@ -79,6 +79,7 @@ Spacing, shadows, and durations deliberately keep Tailwind's defaults (0.25rem s
 | `--color-line` | `#e5e5e5` | Card border and dividers (decorative, never a control boundary) |
 | `--color-field` | `#767676` | Form field border: a control boundary, so it must reach 3:1 |
 | `--color-error` | `#b42318` | Error text and error border |
+| `--color-scrim` | `rgb(0 0 0 / 0.6)` | Added 2026-09-21 by spec 0005. The see through panel behind white copy on a photo. White on it is 5.74:1 even over a pure white pixel, so no photo can break it. Never a page or section background |
 | `--font-sans` | `var(--font-inter), sans-serif` (in `@theme inline`) | The only typeface |
 | `--text-h1` | `clamp(2.25rem, 1.714rem + 2.381vw, 3.5rem)` | Page title, weight 700 |
 | `--text-h2` | `clamp(1.75rem, 1.429rem + 1.429vw, 2.5rem)` | Section heading, weight 700 |
