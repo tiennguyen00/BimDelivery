@@ -94,3 +94,41 @@ On the component split, the deciding evidence is in the content schemas rather t
 A cross check caught the one thing this reasoning initially missed, and it is worth recording rather than quietly fixing. The gold rule in spec 0003 was applied to every colour on the band except the focus ring, which is `gold-ink` sitewide and measures 2.10:1 on full gold, so the ring would have been invisible on the only element anyone tabs to there. The band is now the site's first documented focus exception (black, 8.73:1). The general lesson is the one the cross check named: a new visual context has to be re-audited against the system's own contrast rules, not assumed to inherit them, and the author of the new context is the person least likely to notice.
 
 The one place this spec deliberately chooses friction is the exactly three services rule. A silent cap or a reflowing grid would both be easier and both fail quietly, and a layout contract that fails quietly is the kind of thing that ships to a client. Making it a build error with a message that names the collection, the language, and the count turns it into a two minute decision at the moment it matters, and the follow up item records that the decision is genuinely owed rather than settled forever.
+
+## Revision 2026-09-21: the reference hero
+
+### Context
+
+The engineer supplied a reference screenshot for the hero: one photo filling the first screen, a wide centred gray see through panel carrying white copy, a gold button under it, three dots near the bottom edge, and the header drawn as a white card with rounded bottom corners over the top of the photo. It replaces the split this spec first built. Four things had to be settled that the split never raised: which colour pair keeps white copy readable over a photo nobody controls, which focus ring works on a photo, what `--header-h` means once the header overlaps the page, and how `Section`, which is built on "every tone is light", handles a full height photo band.
+
+Three facts from the code shaped the options. The only readable pair for white text over an arbitrary photo is white on a dark scrim, and a black scrim at 54 percent or more is the threshold at which white keeps 4.5:1 even over a pure white pixel. The sitewide `gold-ink` ring has unknown contrast on a photo, which makes the hero the second surface after the gold band where it fails, and this spec had already written down that a second exception should prompt revisiting the rule. And the secondary button draws its border and label in `gold-ink`, which cannot be read on a photo.
+
+### Options considered (per sub decision, the engineer chose each)
+
+**Scrim**: black at 60 percent, 5.74:1 worst case (chosen); black at 55 percent, 4.76:1, closer to the reference but with almost no margin; black at 70 percent, 8.52:1, very readable but it buries the photo. Written as a named token (chosen) rather than `bg-black/60` in markup, so the number the contrast depends on lives in one place that `docs/design.md` can list.
+
+**Focus**: a two ring rule, `gold-ink` on light tones and one shared black and white double ring on every other surface, with the gold band moving to it (chosen); a hero only exception beside the gold band's black ring, which would be the second exception this spec warned against; the double ring everywhere, which takes the brand gold out of every focus state and reopens spec 0003's accepted look. The double ring is the two colour indicator technique (black and white measure 21:1 apart, so any background pixel is at least 3:1 from one of them, and the pixels the ring changes always change by at least 3:1). In forced colours mode the `box-shadow` half disappears and the outline half stays, drawn in the system colour, so the ring still shows.
+
+**Section**: the hero as its own band sharing `Section`'s frame through class strings (chosen); `Section` gaining `height` and media props, which would put a dark tone inside `Section` and break spec 0003's rule that nothing inside needs to know its background; the hero as its own band copying the gutter classes, as `CtaBand` did, which leaves the same values in three places.
+
+**Header overlap**: the card look sitewide with the overlap on home only (chosen), because every other page opens on a white `Section` whose `h1` an overlap would cover; the overlap on every page, which touches every route; the card on home only, which leaves two header looks. Mechanism: the header stays `sticky` exactly as spec 0004 built it and the home hero pulls itself up by `--header-h` (chosen), rather than `position: fixed` everywhere with padding on every other page, or an absolute header that scrolls away on one page only.
+
+**Hero height**: `min-h-svh` (chosen), which fills the first screen without jumping as a phone's address bar hides and grows instead of clipping on a short screen; `min-h-dvh`, which resizes while scrolling; a fixed clamp, which does not fill the screen.
+
+**Second button**: removed from the schema and the entry (chosen); kept optional and ignored by the hero, which lets an editor add a button that never shows; rendered in a new white outline treatment, which adds a variant only one band uses.
+
+**Dots**: decoration hidden from assistive tech (chosen); dropped entirely, which is more honest but further from the reference.
+
+**Copy, width, size, photo**: the current placeholder copy kept (content, swapped later); the panel at the content width, matching the reference's proportion; the subheading at `text-lead`; the 1600px `hero.jpg` kept with a follow up to replace it before launch.
+
+### Rationale
+
+The binding force is the same one the first version of this spec answered to: spec 0003's invariant that both `Section` tones are light and nothing inside adapts. Every choice here protects it. The hero is a band that is its own background, as `CtaBand` is, rather than a new tone that every future component would have to ask about. Borrowing `Section`'s frame through class strings keeps the part that should be shared (gutters, rhythm, widths) in one place without sharing the part that must not be (tone).
+
+On contrast, choosing a scrim strong enough for the worst possible pixel turns a per photo judgement into a property of one token. The reference's lighter gray looks marginally airier, and it would make every photo swap a contrast audit that nobody will remember to run. At 60 percent the guarantee holds with enough margin that a small tweak later does not silently cross the line.
+
+On focus, this spec's own first version recorded the lesson that a new visual context has to be audited against the system's rules rather than assumed to inherit them, and that a second exception is a sign the rule is wrong. Two exceptions (black on gold, something else on the photo) would each be locally correct and together would make a third inevitable. Stating the rule by surface, "light tones get `gold-ink`, everything else gets the double ring", covers the gold band, the hero, and any future dark or photo surface with one utility, and it keeps the brand gold ring on the ninety percent of the site where it works.
+
+On `--header-h`, keeping the header sticky and making the hero opt in to the overlap means the property keeps exactly the meaning spec 0004 gave it, the height of the strip the header covers at the top of the viewport, and every other page stays byte for byte as it is. The cost is one more reader of that property, recorded as a consequence.
+
+Making the hero schema strict was not asked about directly. It follows from the engineer's choice to remove `secondaryCta`, whose whole point was that an editor cannot add a button that silently never shows. A plain `z.object` drops unknown keys without a word, so removing the field without making the object strict would have kept exactly the failure the removal was meant to prevent.

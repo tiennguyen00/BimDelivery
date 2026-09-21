@@ -1,6 +1,6 @@
 # 0003. Build the design system as Tailwind tokens plus four base components
 
-**Date**: 2026-09-20 (palette revised; first written 2026-09-19)
+**Date**: 2026-09-21 (two tokens and the second focus rule added by specs 0004 and 0005; palette revised 2026-09-20; first written 2026-09-19)
 **Status**: Accepted
 **Scope feature**: 4, Design system & UI foundation (`docs/scope/scope.md`)
 
@@ -28,7 +28,7 @@ Gold is a fill colour, not a text colour. Full gold `#e09900` carries button fil
 - **AC-7**: `Button` exists as an Astro component and a React component that share one class map, so both have the same two variants and look identical: `primary` (full gold `#e09900` fill with black text, 8.73:1) and `secondary` (deep gold `#946600` border and label, 5.05:1 on white). Both are at least 44px tall and both variants stay readable on white and on the tint. The Astro component additionally renders an `<a>` when given `href` and a `<button>` otherwise (type `button` by default, `submit` when asked), and supports `disabled` on the `<button>` form only. The React component renders a `<button>` only; it has no `href`, because the contact island never needs a link button.
 - **AC-8**: `Card` shows an optional image (3:2, cropped to fill), a title at a heading level the page chooses (default `h3`), optional text, and an optional link. With a link, the whole card is clickable through one link with one tab stop whose accessible name is the title. Keyboard focus draws one deep gold outline around the whole card and none around the title text alone. Hover is a different treatment on purpose, a raised shadow plus an underlined title, so that a mouse user is never shown something that reads as a focus ring. The card renders correctly with no image, with no link, and with a title long enough to wrap to three lines (no overflow, no clipped text).
 - **AC-9**: React `TextField` (types `text` and `email`) and `TextArea` show a visible label tied to the control, an optional hint, and, when given an error, an error message linked through `aria-describedby` with `aria-invalid="true"` on the control. The error state adds a thicker error outline without moving the layout and shows text, so it never relies on colour alone. Controls are at least 44px tall, and ids are unique on the page: inside one React island they are generated when no `id` is passed, and a field placed directly in an `.astro` file (the style guide) always receives an explicit `id`.
-- **AC-10**: Every interactive element these components render is reachable with Tab in reading order and shows a 2px solid deep gold (`#946600`) outline with a 2px gap when focused by keyboard, the same on both tones. Mouse clicks do not show the outline.
+- **AC-10**: Every interactive element these components render is reachable with Tab in reading order and shows a 2px solid deep gold (`#946600`) outline with a 2px gap when focused by keyboard, the same on both tones. Mouse clicks do not show the outline. (Amended 2026-09-21 by spec 0005, AC-18: on any surface that is not one of the two light tones, today the home hero photo and the gold band, the ring is instead a 2px black band around the control plus a 2px white band outside it, from the `focus-contrast` utility in `global.css` placed on that band. Two rules by surface, no exceptions.)
 - **AC-11**: Every text and background pair listed in `docs/design.md` meets WCAG 2.2 AA: at least 4.5:1 for normal text, at least 3:1 for large text, field borders, and the focus outline. Each ratio is written next to the pair. Full gold `#e09900` (2.41:1 on white) and yellow `#ffcc00` (1.51:1) never render as text or as a control boundary on a light background; they appear only as fills carrying black text, and as decoration. Gold as a word, a link, an outline, or a focus ring is always `--color-gold-ink`.
 - **AC-12**: When the visitor's system asks for reduced motion, every transition and animation is cut to a near zero duration (0.01ms), so state changes appear instant.
 - **AC-13**: `/styleguide` is available under `pnpm dev` only. It shows every colour token as a swatch, each labelled with what it may and may not be used for, the type scale, the spacing steps, and every component in every variant on both tones, filled with real entries from the content collections. After `pnpm build`, nothing under `dist/` contains the style guide, and `dist/client/` still has exactly one HTML file per page route.
@@ -66,7 +66,7 @@ Spacing, shadows, and durations deliberately keep Tailwind's defaults (0.25rem s
 
 | Token | Value | Role |
 |---|---|---|
-| `--color-white` | `#ffffff` | Page background and card surface. Not a text colour anywhere in this feature, because there is no dark surface to sit on |
+| `--color-white` | `#ffffff` | Page background and card surface. Not a text colour in this feature; from 2026-09-21 it is also the text on the home hero's scrim (spec 0005) and the outer half of the two colour focus ring |
 | `--color-tint` | `#fff9e6` | The `tint` section background: a warm cream drawn from the gold |
 | `--color-black` | `#000000` | `h1` and `h2` headings; the label on every gold or yellow fill |
 | `--color-ink-strong` | `#333333` | `h3` and sub headings, field labels, strong text |
@@ -89,6 +89,7 @@ Spacing, shadows, and durations deliberately keep Tailwind's defaults (0.25rem s
 | `--text-small` | `0.875rem` | Labels, hints, errors, captions |
 | `--radius-ui` | `0.25rem` | Every button, card, field, and image corner |
 | `--radius-full` | `9999px` | Pills and round icon buttons, for feature 5 |
+| `--radius-card` | `1.5rem` | Added 2026-09-21 by spec 0004. The one large radius: the header card's bottom corners, and any later large surface |
 | `--container-content` | `75rem` (1200px) | `Section` width `default` |
 | `--container-narrow` | `45rem` (720px) | `Section` width `narrow` |
 
