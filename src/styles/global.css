@@ -109,9 +109,14 @@
   /* ---- Corners ------------------------------------------------------- */
   /* One radius for every button, card, field, and image. `full` is kept for
      the pills and round icon buttons feature 5 is likely to need, because
-     reintroducing a cleared namespace later is a spec change. */
+     reintroducing a cleared namespace later is a spec change. `card` is the
+     one large radius, for a surface big enough that 4px barely shows: today
+     the header card's bottom corners (spec 0004). It is named for the shape,
+     not the header, so the next large surface reuses it instead of adding
+     another. */
   --radius-*: initial;
   --radius-ui: 0.25rem;
+  --radius-card: 1.5rem;
   --radius-full: 9999px;
 
   /* ---- Page widths --------------------------------------------------- */

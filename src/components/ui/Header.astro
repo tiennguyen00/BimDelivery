@@ -18,6 +18,17 @@
  *
  * The header registers no scroll listener. It is `position: sticky` at one
  * constant height, held in `--header-h` by `PageLayout`.
+ *
+ * It is drawn as a full width white card flush with the top: rounded bottom
+ * corners (`--radius-card`) and a shadow instead of a bottom border. It stays
+ * sticky, so every page but home still starts below it, and the home hero opts
+ * in to sliding under it (spec 0005). `--header-h` measures the card's box, the
+ * strip it covers at the top of the viewport. The shadow and the corner curve
+ * fall outside that box and are not counted. Its readers are the bar's height
+ * here, the mobile panel's top inset below, and the home hero's pull up and its
+ * matching top padding. Anything that makes the header taller (padding, a
+ * bigger logo, a second row) changes `--header-h` in the same edit, or the hero
+ * copy slides under the card.
  */
 import { Image } from 'astro:assets';
 import Button from './Button.astro';
@@ -69,7 +80,7 @@ const activeClass =
   'text-black underline decoration-gold decoration-2 underline-offset-8';
 ---
 
-<header class="sticky top-0 z-40 border-b border-line bg-white">
+<header class="sticky top-0 z-40 rounded-b-card bg-white shadow-md">
   {/**
    * One landmark for the whole header. The logo link sits inside it, which
    * costs a screen reader one extra item in the nav and buys a single, clean
@@ -311,5 +322,19 @@ const activeClass =
 
   html.js #nav-menu-panel[data-open] {
     display: block;
+  }
+
+  /* While the menu is open the panel starts exactly at `--header-h`, so the
+     card's rounded corners would show two slivers of page above it. Squaring
+     them and dropping the shadow makes header and panel one white sheet
+     (AC-19). Without `:has()` support the corners simply stay rounded.
+
+     This beats the `rounded-b-card shadow-md` utilities only because Astro's
+     `is:global` CSS sits outside Tailwind's cascade layers, and unlayered CSS
+     always wins over layered CSS. Moving this rule into a layer would silently
+     break it. */
+  html.js header:has(#nav-menu-panel[data-open]) {
+    border-radius: 0;
+    box-shadow: none;
   }
 </style>

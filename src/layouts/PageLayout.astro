@@ -92,9 +92,12 @@ const [navigation, settings] = await Promise.all([
 </BaseLayout>
 
 {/**
- * The one place the header's height is written down. The sticky header, the
- * mobile panel's top offset and its height all read it, so they cannot drift
- * apart.
+ * The one place the header's height is written down. It measures the header
+ * card's box (not its shadow or corner curve) and has four readers: the header
+ * bar's height, the mobile panel's top inset, and the home hero's pull up under
+ * the card and its matching top padding (spec 0005). They all read it here, so
+ * they cannot drift apart. Anything that makes the header taller changes this
+ * value in the same edit.
  *
  * `is:global` because the custom property belongs on `:root`, which is not an
  * element this component renders and so cannot carry a scoped class.

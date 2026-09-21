@@ -170,6 +170,7 @@ use.
 | Token | Value | Use |
 |---|---|---|
 | `--radius-ui` | 4px | Every button, card, field, and image corner |
+| `--radius-card` | 24px | The one large radius, for a surface big enough that 4px barely shows. Today only the header card's bottom corners (`rounded-b-card`) |
 | `--radius-full` | 9999px | Pills and round icon buttons, for feature 5 |
 | `--container-content` | 1200px | `Section` width `default` |
 | `--container-narrow` | 720px | `Section` width `narrow`, the reading column |
@@ -327,7 +328,9 @@ settings itself, so a page passes only its own title and description.
   document shell and is for the dev only style guide. A page that imports the
   wrong one loses its header and footer **with no error**: that is the first
   thing to check when a page renders bare.
-- It declares `--header-h` (`4.5rem`, `5rem` at `lg`). That value, the media
+- It declares `--header-h` (`4.5rem`, `5rem` at `lg`), the height of the header
+  card's box. It has four readers: the header bar, the mobile panel's top
+  inset, and the home hero's pull up and matching top padding. That value, the media
   query beside it, and `DESKTOP_QUERY` in `src/scripts/nav.ts` all describe
   Tailwind's `lg`. Nothing enforces that they agree, so a breakpoint change
   needs all three.
@@ -346,6 +349,17 @@ settings itself, so a page passes only its own title and description.
 | `currentPath` | `string` (required) | |
 
 Sticky, one constant height, white, and it registers **no scroll listener**.
+
+- It is a full width white card flush with the top: `rounded-b-card` bottom
+  corners, `shadow-md`, and no bottom border. The card is the same on every
+  page. Only the home hero slides under it; every other page starts below it.
+- `--header-h` is the card's box, not its shadow or corner curve. Anything
+  that makes the header taller (padding, a bigger logo, a second row) changes
+  `--header-h` in the same edit, or the home hero's copy slides under the card.
+- While the mobile menu is open the corners square off and the shadow drops, so
+  header and panel read as one white sheet. That rule lives in the header's
+  `is:global` CSS and wins over the utilities only because it sits outside
+  Tailwind's layers. **Never** move it into a layer.
 
 - The nav is in the DOM twice, the desktop bar and the mobile panel, inside one
   `<nav>` landmark. Every control's id is fixed by spec 0004 because
