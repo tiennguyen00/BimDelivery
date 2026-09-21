@@ -1,7 +1,7 @@
 ---
 /**
  * The site's whole icon set, as one fixed map (spec 0004, plus the four stat
- * glyphs the home page's why choose us band adds).
+ * glyphs the home page's intro band adds).
  *
  * There is no icon library. A dozen glyphs is not enough to earn a dependency,
  * and a fixed map means `IconName` is a union over real keys: a typo, or a
@@ -35,6 +35,18 @@ const ICONS = {
   menu: { d: 'M4 7h16M4 12h16M4 17h16', mode: 'stroke' },
   close: { d: 'M6 6l12 12M18 6L6 18', mode: 'stroke' },
   'chevron-down': { d: 'M5 9l7 7 7-7', mode: 'stroke' },
+  /** The home presence band's why choose list (spec 0005). */
+  check: { d: 'M4.5 12.5l5 5 10-11', mode: 'stroke' },
+  /** The footer's contact list. */
+  phone: {
+    d: 'M5 4h3.5l1.5 4.5-2 1.5a11 11 0 0 0 6 6l1.5-2 4.5 1.5V19a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z',
+    mode: 'stroke',
+  },
+  mail: { d: 'M3 6h18v12H3zM3 7l9 6 9-6', mode: 'stroke' },
+  globe: {
+    d: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z',
+    mode: 'stroke',
+  },
   linkedin: {
     d: 'M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z',
     mode: 'fill',
@@ -56,7 +68,7 @@ const ICONS = {
     mode: 'fill',
   },
   /**
-   * The four stat glyphs (the home page's why choose us cards, spec 0005).
+   * The four stat glyphs (the home page's intro band cards, spec 0005).
    * Solid shapes, so they read at a glance at 48px, with every detail cut out
    * of them rather than drawn on top.
    */

@@ -33,6 +33,14 @@ export default defineConfig({
     imageService: 'compile',
   }),
 
+  // Photos are internet links on Pexels (spec 0006, assumed). Allowing the one
+  // host here is what lets `<Image>` download and optimise them at build like
+  // a local file, so visitors get copies from this site's own origin. A link on
+  // any other host is also refused by the content schema.
+  image: {
+    domains: ['images.pexels.com'],
+  },
+
   // English only today, but configured from day one so a second language is a
   // content change rather than a URL migration. prefixDefaultLocale: false
   // keeps today's URLs clean (`/about-us`, not `/en/about-us`).

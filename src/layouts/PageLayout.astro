@@ -83,12 +83,7 @@ const [navigation, settings] = await Promise.all([
     <slot />
   </main>
 
-  <Footer
-    items={navigation.items}
-    ui={navigation.ui}
-    legal={navigation.legal}
-    settings={settings}
-  />
+  <Footer legal={navigation.legal} settings={settings} />
 </BaseLayout>
 
 {/**

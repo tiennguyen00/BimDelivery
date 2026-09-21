@@ -62,8 +62,8 @@
   --color-gold-deep: #c88600;
   --color-gold-ink: #946600;
   /* The same value as `gold`, under a name that only makes sense on black:
-     the one place a bright gold word is legible (8.73:1). The home page's why
-     choose us band uses it for its highlighted words. Never on a light tone,
+     the one place a bright gold word is legible (8.73:1). The home page's intro
+     band uses it for its highlighted words. Never on a light tone,
      where it drops to 2.41:1; there, a gold word is `gold-ink`. */
   --color-gold-on-dark: #e09900;
 
@@ -135,20 +135,6 @@
   /* Section owns width and gutters; there is no separate Container. */
   --container-content: 75rem;
   --container-narrow: 45rem;
-
-  /* ---- Motion -------------------------------------------------------- */
-  /* Tailwind's own animations are kept; this adds the text caret blinking
-     after the why choose us heading (spec 0005). `step-end` makes it a hard
-     on and off, like a real caret, rather than a fade. With reduced motion
-     the base rule below runs it once in 0.01ms, and with no fill mode it
-     settles back on its resting, visible state. */
-  --animate-caret: caret 1s step-end infinite;
-
-  @keyframes caret {
-    50% {
-      opacity: 0;
-    }
-  }
 }
 
 /**
@@ -163,8 +149,8 @@
 /**
  * The second of the site's two focus rules (spec 0005). The first, the gold-ink
  * ring in the base layer below, is for the two light tones. This one is for
- * every surface that is not a light tone, today the home hero's photo and the
- * gold band, where gold-ink would vanish (2.10:1 on gold, and anything at all
+ * every surface that is not a light tone, today the home hero's photo, the
+ * home intro band's black, and the gold band, where gold-ink would vanish (2.10:1 on gold, and anything at all
  * on a photo).
  *
  * The rule belongs to the surface, not the control: put `focus-contrast` on the
@@ -182,6 +168,24 @@
     outline-color: var(--color-white);
     box-shadow: 0 0 0 2px var(--color-black);
   }
+}
+
+/**
+ * A faint diagonal stripe laid over a light tone (spec 0005, the home presence
+ * band). It sets only `background-image`, so it stacks on the tone's own
+ * `background-color` and changes nothing else: every text colour, contrast
+ * pair, and focus ring on the tone still holds, because the stripe is paler
+ * than the tone's darkest pixel ever needs to be (`line`, 1px in every 10).
+ *
+ * The 45 degree angle and 10px period give roughly the density of the
+ * reference; a wider gap reads as ruled paper, a tighter one as a grey wash.
+ */
+@utility bg-diagonal {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 9px,
+    var(--color-line) 9px 10px
+  );
 }
 
 /**

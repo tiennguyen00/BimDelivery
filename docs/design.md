@@ -50,7 +50,7 @@ a change of values rather than a change of class names everywhere.
 | `--color-gold` | `#e09900` | Brand gold. Fills only: primary button, highlight fills, decorative rules, icon fills |
 | `--color-gold-deep` | `#c88600` | The primary button's hover fill, and nothing else |
 | `--color-gold-ink` | `#946600` | The same hue, dark enough to read. The only gold allowed as text, a link, a control border, or the focus ring |
-| `--color-gold-on-dark` | `#e09900` | Brand gold as a word, allowed only on black (8.73:1): the highlighted words in the home page's why choose us band. Never on a light tone |
+| `--color-gold-on-dark` | `#e09900` | Brand gold as a word, allowed only on black (8.73:1): the highlighted words in the home page's intro band. Never on a light tone |
 | `--color-yellow` | `#ffcc00` | Reserved for the real logo and feature 5's icons. Fills and decoration only |
 | `--color-line` | `#e5e5e5` | Card borders and dividers. Decorative, never a control boundary |
 | `--color-field` | `#767676` | Form field borders. A control boundary, so it has to reach 3:1 |
@@ -67,7 +67,7 @@ list and only one of them is legible as a word.
 | Fill gold | `--color-gold` | Button fills, highlight fills behind black text, decorative rules, icon fills | Any text; any control border; any focus ring |
 | Fill gold, hover | `--color-gold-deep` | The primary button's hover fill | Everything else |
 | Text gold | `--color-gold-ink` | Emphasised words, links, the secondary button's border and label, the focus ring | Large flat fills, where it reads muddy rather than gold |
-| Text gold on black | `--color-gold-on-dark` | Highlighted words on a black band (today only why choose us) | Anything on white, tint, or a photo |
+| Text gold on black | `--color-gold-on-dark` | Highlighted words on a black band (today only the home intro band) | Anything on white, tint, or a photo |
 | Accent yellow | `--color-yellow` | The real logo and feature 5's icons | Any text; anything else today |
 
 A gold word, link, control border, or focus ring that is not
@@ -110,9 +110,10 @@ focus indicators. Computed from the hex values above.
 | focus ring gold-ink | white / tint | 5.05 / 4.79 | 3.0 |
 | white (the gold band's link label) | black / ink-strong (hover) | 21.00 / 12.63 | 4.5 |
 | black (the gold band's heading and text) | gold | 8.73 | 4.5 |
-| white (why choose us heading and copy) | black | 21.00 | 4.5 |
-| gold-on-dark (why choose us highlighted words) | black | 8.73 | 4.5 |
-| gold-ink (why choose us card numbers) / ink-strong (card labels) | white | 5.05 / 12.63 | 4.5 |
+| white (intro band heading and copy) | black | 21.00 | 4.5 |
+| gold-on-dark (intro band highlighted words) | black | 8.73 | 4.5 |
+| gold-ink (intro band card numbers) / ink-strong (card labels) | white | 5.05 / 12.63 | 4.5 |
+| ink (text on `bg-diagonal`), worst case over a stripe line | line (`#e5e5e5`) | 4.56 | 4.5 |
 | white (the hero's heading and subheading) | scrim over any photo, worst case over pure white (composite `#666666`) | 5.74 at worst | 4.5 |
 | two colour focus ring, black inner band / white outer band (the hero photo and the gold band) | gold / any photo | black on gold 8.73; on any colour at all, one of the two bands reaches at least 4.58 | 3.0 |
 
@@ -200,10 +201,21 @@ border, and focus colour is identical on each, so no component adapts to its
 background, none takes a tone prop, and none reads a tone variable. Components
 name their colours directly (`text-ink`, `border-gold-ink`).
 
-The home page has one black band, why choose us, and it is not a tone: like
+A tone may carry one pattern on top: `bg-diagonal` (`global.css`, spec 0005),
+a 1px `line` stripe every 10px at 45 degrees, today on the home presence band.
+It sets only `background-image`, so it is not a third tone. Pass it through
+`Section`'s `class`; **do not** add a tone for it.
+
+- **Do** keep text on `bg-diagonal` at `ink` or stronger. Its worst case, `ink`
+  over a stripe line, measures 4.56:1.
+- **Don't** use `ink-muted` for text on it: over a stripe line it drops to
+  3.93:1, under the 4.5 minimum.
+
+The home page has one black band, the intro band, and it is not a tone: like
 the hero and `CtaBand` it is its own component that borrows the band frame,
 carries `focus-contrast`, and holds only white text, `--color-gold-on-dark`
-words, and white cards. A dark `Section` tone would still be a change to spec
+words, and white cards. Nothing on it moves except the counter, which runs once,
+so the page needs no pause control. A dark `Section` tone would still be a change to spec
 0003, not a page level override. It means
 bringing back inherited tone variables, a card tone reset, a light error
 colour, and a second focus colour, then computing the dark contrast pairs.
@@ -318,17 +330,20 @@ and so on).
 | `title` | `string`, the accessible name | none |
 | `class` | `string` | none |
 
-The whole set, twelve glyphs on one 24 unit grid: `menu`, `close`,
-`chevron-down`, the five social marks `linkedin`, `facebook`, `youtube`,
+The whole set, thirteen glyphs on one 24 unit grid: `menu`, `close`,
+`chevron-down`, `check` (the home presence band's why choose list, spec 0005),
+the five social marks `linkedin`, `facebook`, `youtube`,
 `x`, `instagram`, and the four solid stat glyphs `briefcase-clock`, `users`,
-`building`, `map-pin` (the why choose us cards). A glyph whose details are
+`building`, `map-pin` (the home intro band's cards). A glyph whose details are
 holes punched through it sets `evenodd` in the map.
 
 - Every glyph inherits `currentColor`, so an icon is coloured by the text around
   it. **Do not** give an icon a colour of its own. The one exception is a
-  gold icon on white, as in the why choose us cards: gold may not be a text
+  gold icon on white, as in the intro band's cards: gold may not be a text
   colour there, so the icon takes `fill-gold` instead, which is a fill and
-  within the gold rule.
+  within the gold rule. A stroke glyph that should read as gold, the `check`
+  in the presence band's list, takes `text-gold-ink` instead: `gold-ink` is
+  allowed as a line, so the stroke stays within the rule too.
 - A name outside the map is a **type error**, not a blank square. There is no
   icon library and no dynamic lookup.
 - Without `title` the icon is hidden from assistive tech, which is right
@@ -429,16 +444,16 @@ contact. Tone `tint`.
 | `imageSide` | `'start' \| 'end'` | `'start'` |
 
 A heading, paragraphs, an optional slot for a list, and an optional photo
-beside them. The home page uses it twice (spec 0005) and About (feature 7)
-reuses it.
+beside them. The home overview uses it (spec 0005) and About (feature 7)
+reuses it. The home presence band used it until spec 0005's revision gave that band its
+own map layout (`src/components/home/PresenceBand.astro`).
 
 - **Do** flip `imageSide` between two on one page, so the second does not read
   as the first printed again.
 - Mobile always stacks copy first, photo second, whichever side the photo takes
   at `lg`. `imageSide` only moves the photo once there are two columns.
 - **Renders correctly with no image**: the copy becomes one centred reading
-  column rather than half a grid with an empty other half. `presence.image` is
-  optional in the schema, so this is a real state, not a defensive one.
+  column rather than half a grid with an empty other half.
 - The photo is lazy with a reserved 3:2 box, so nothing moves as it arrives.
 - The slot renders after the paragraphs. **Do not** put a heading in it; the
   component owns the only heading in this block.
@@ -504,7 +519,7 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 - **On the two light tones**: a 2px solid `--color-gold-ink` outline with a 2px
   gap, identical on white and tint. This is the base rule in `global.css`.
 - **On every surface that is not a light tone** (today the home hero's photo,
-  the why choose us black band, and `CtaBand`'s gold band): a two colour ring, a 2px `--color-black` band
+  the home intro band's black, and `CtaBand`'s gold band): a two colour ring, a 2px `--color-black` band
   directly around the control and a 2px `--color-white` band outside it. It
   comes from the `focus-contrast` utility in `global.css`, placed on the band's
   `<section>`, so everything focusable inside inherits it and no control sets
@@ -537,7 +552,7 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
   slot, from a content entry.
 - Exactly two scripts ship, and both only enhance markup that already works:
   `Header` imports `src/scripts/nav.ts` (spec 0004), and `StatsBand` and the
-  home page's `WhyChooseUs` import `src/scripts/counters.ts` (spec 0005). Remove either
+  home page's `IntroBand` import `src/scripts/counters.ts` (spec 0005). Remove either
   script and the site stays usable. Any third one needs a reason this good.
 - The React components render to static HTML unless a page hydrates them, and
   only feature 10's contact island may.

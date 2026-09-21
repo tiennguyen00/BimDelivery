@@ -132,3 +132,45 @@ On focus, this spec's own first version recorded the lesson that a new visual co
 On `--header-h`, keeping the header sticky and making the hero opt in to the overlap means the property keeps exactly the meaning spec 0004 gave it, the height of the strip the header covers at the top of the viewport, and every other page stays byte for byte as it is. The cost is one more reader of that property, recorded as a consequence.
 
 Making the hero schema strict was not asked about directly. It follows from the engineer's choice to remove `secondaryCta`, whose whole point was that an editor cannot add a button that silently never shows. A plain `z.object` drops unknown keys without a word, so removing the field without making the object strict would have kept exactly the failure the removal was meant to prevent.
+
+## Revision 2026-09-21 (second): the six section page, ratifying specs 0007 and 0008
+
+### Context
+
+The home page was reshaped during `/develop` for a demo, faster than the spec could follow. Three changes landed without a deliberated decision: the stats band and the old why choose us grid became one black band with stat cards (no spec revision at all), the presence band became a map with rich copy that absorbed the differentiators (spec 0007, assumed), and certification plus the closing gold band gave way to a project showcase (spec 0008, assumed). Spec 0005 still described nine sections, so `/check verify` had no contract that matched the page, and `/develop` had three documents to reconcile for any further change.
+
+Reading the built code against the design system turned up five concrete gaps. The heading caret blinked forever, which WCAG 2.2.2 does not allow without a way to pause it (the reduced motion rule only helps people who set it). The black band was called `whyChooseUs` while the actual reasons list lived in `presence.whyChoose`, so an editor looking for "why choose us" would find two answers. Nothing limited how many regions float over the map, so a close region could overlap silently. The showcase's large first tile layout leaves an empty cell with two projects and a lone half width tile with one. And the showcase photos zoomed on hover while the tiles were not links, which tells a mouse user something is clickable when it is not.
+
+Spec 0006 (photos as Pexels links, the white hero photo) was left out of this pass on purpose. It is a site wide content and build decision, not a home page one.
+
+### Options considered (per sub decision, the engineer chose each)
+
+**Recording**: revise 0005 in place and mark 0007 and 0008 superseded (chosen), so one file is the contract; ratify 0007 and 0008 in place, which keeps each decision separate but leaves the page's contract split across three files; a new spec superseding all three, which is clean but discards 0005's history and `verify.md` and moves every scope link.
+
+**Page ending**: keep the six sections as built (chosen), because the engineer removed the closing band deliberately and the hero, nav, and footer still reach contact; a second contact button in the showcase band, a small nudge with no new band; the gold `CtaBand` back as a seventh section, the strongest prompt but it reverses the engineer's choice.
+
+**Caret**: remove it (chosen); blink three times and settle, which keeps the typed look and meets 2.2.2; keep it blinking and accept the gap. The engineer preferred the simplest option over the recommended finite blink; both meet the standard.
+
+**StatsBand**: keep it for About (chosen), deferring the choice to the page that needs it; extract the white cards into a shared component and retire `StatsBand`, which is work for a reuse nobody has asked for yet; delete it, which breaks spec 0005's promise to About.
+
+**Which projects**: the lowest three by `order` (chosen), with no new field and the same order as `/project`; a `featured` flag, which lets the home picks differ from the list order but needs a rule for more than three flagged; ids listed in `home.yaml`, the most explicit, but a renamed project breaks the home page.
+
+**World map**: a checked in asset with its bounds recorded (chosen); a committed generator script plus `world-atlas` as a dev dependency, reproducible but tooling for a file that may never change; a designed map later, treating the dots as a placeholder.
+
+**Map labels**: at most six regions, with overlap checked at verify (chosen); dots only with the names always in a row under the map, which can never overlap but loses the labelled map of the reference; a per region label side, flexible but more schema for editors to learn.
+
+**Naming**: rename to `intro` (chosen), so every key names what it shows; keep the names and explain them in the spec.
+
+**Few projects**: an equal grid under three (chosen); hide the band under three, which leaves a new language with no showcase; require three at build, which blocks a second language until its projects are written.
+
+**Tile hover**: drop the zoom until the tiles link somewhere (chosen); make every tile a link to `/project`, three extra tab stops to the page the button already reaches; keep the zoom and accept the misleading cue.
+
+**Hero photo**: keep it as built (chosen by the engineer, against the recommendation to swap in a full frame photo); move the panel to the start side at `lg`, which departs from the centred reference. Recorded as a tradeoff and left with spec 0006.
+
+### Rationale
+
+The binding force is that this is a ratify, not a redesign: the page works, it was shaped by a real reference, and the engineer made most of these calls on purpose. So the default for every sub decision was to keep what was built unless it breaks a rule the rest of the system relies on. Each of the five changes is one of those breaks. The caret breaks an accessibility rule, and removing it is less work than making it stop. The `whyChooseUs` name breaks the rule that content keys say what they hold, and a rename costs one commit now against editor confusion forever. The uncapped regions and the fragile showcase grid both fail silently in production when content changes, which is the one kind of failure spec 0002's content model was built to prevent. The hover zoom breaks the rule that affordance matches behaviour.
+
+Folding everything into 0005 follows from the same force. The page is one feature with one scope row; three partial specs that each supersede a few of the others' criteria are exactly the kind of drift that let the page get ahead of its contract. Keeping the AC numbers stable and appending new ones (AC-25 onward) means the scope row, `verify.md`, and anyone who cited an AC can still find it, with the revised ones marked.
+
+Two engineer choices went against the recommendation and are recorded honestly as tradeoffs rather than argued with: the hero photo whose subject hides under the panel, and the removed rather than finite caret. Neither is wrong; the first costs some visual impact until the launch content pass, and the second costs only the typed look. The page ending without a call to action was the recommended pick, because the engineer removed it deliberately and three other paths to contact remain; it is still the first thing to revisit if the page underperforms.

@@ -6,12 +6,12 @@ hero:
   heading: BIM and Revit modeling you can build from
   subheading: Accurate models, clean drawings, and coordinated trades, delivered by a team that speaks the language of construction.
   image:
-    src: ../../../assets/images/home/hero.jpg
-    alt: A city skyline at sunset seen from above
+    src: https://images.pexels.com/photos/3961750/pexels-photo-3961750.jpeg?auto=compress&cs=tinysrgb&w=2560
+    alt: A small clay model house standing alone on a plain white background
   primaryCta:
     label: Talk to our team
     href: /contact-us
-whyChooseUs:
+intro:
   heading: Delivering BIM modeling services
   headingHighlight: worldwide
   lead:
@@ -25,48 +25,43 @@ overview:
     - We turn drawings, point clouds, and sketches into coordinated models that design and site teams can rely on.
     - This is placeholder copy. The real company overview will replace it before launch.
   image:
-    src: ../../../assets/images/home/overview.jpg
-    alt: A tidy desk with a laptop by a window
+    src: https://images.pexels.com/photos/6615107/pexels-photo-6615107.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: Three architects studying a white scale model of a building on a studio table
 services:
   heading: Our services
   intro: Three core services, each delivered to your standards and your schedule.
 presence:
-  heading: Working with clients worldwide
-  text: Our teams support projects across several time zones, so work moves forward around the clock.
+  heading: Delivering BIM excellence across the globe
+  paragraphs:
+    - With teams working across several time zones, **BIM Delivery** provides **BIM modeling, Revit documentation, scan to BIM, and clash coordination** to clients in **North America, Europe, the Middle East, and Asia Pacific**, so work moves forward around the clock.
+    - We partner with **architects, engineers, contractors, developers, and facility managers** to deliver accurate, standards compliant models for projects of every size. From concept design through construction and handover, we help you improve collaboration, reduce risk, and keep delivery on schedule.
   regions:
-    - North America
-    - Europe
-    - Middle East
-    - Asia Pacific
-  image:
-    src: ../../../assets/images/home/presence.jpg
-    alt: An aerial view of a dense city centre
-differentiators:
-  heading: What sets us apart
-  items:
-    - Models built to your company standards and templates
-    - Quality checks at every milestone
-    - Secure file handling and clear version history
-    - A single point of contact for every project
-certification:
-  heading: Certified and trusted
-  text: Placeholder badges. The real certifications will be listed here once confirmed.
-  badges:
-    - name: Quality management (placeholder)
-      image:
-        src: ../../../assets/images/badges/badge-quality.svg
-        alt: Placeholder quality management badge
-    - name: BIM process (placeholder)
-      image:
-        src: ../../../assets/images/badges/badge-bim.svg
-        alt: Placeholder BIM process badge
-    - name: Information security (placeholder)
-      image:
-        src: ../../../assets/images/badges/badge-security.svg
-        alt: Placeholder information security badge
-cta:
-  heading: Ready to start your next model?
-  text: Tell us about your project and we will reply within one business day.
-  button:
-    label: Contact us
-    href: /contact-us
+    - name: North America
+      lon: -100
+      lat: 45
+    - name: Europe
+      lon: 10
+      lat: 50
+    - name: Middle East
+      lon: 48
+      lat: 25
+    - name: Asia Pacific
+      lon: 125
+      lat: -5
+  whyChoose:
+    heading: Why choose BIM Delivery?
+    items:
+      - Models built to your company standards and templates
+      - Quality checks at every milestone
+      - Secure file handling and clear version history
+      - A single point of contact for every project
+      - Fast turnaround across time zones
+      - LOD 100 to 500 modeling
+      - Multi disciplinary BIM expertise
+      - Quality assurance at every stage
+projectShowcase:
+  heading: Featured projects
+  intro: A few of the models we have delivered for design and site teams.
+  link:
+    label: View all projects
+    href: /project

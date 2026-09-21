@@ -1,49 +1,33 @@
 ---
 /**
- * The site footer (spec 0004).
+ * The site footer: a black band in three columns on desktop, stacked on a
+ * phone. The brand and a short introduction, how to reach the company, and
+ * the certifications it holds.
  *
- * Four columns on desktop, two on tablet, one on a phone: the brand, the site
- * links, the service links, and how to reach the company.
+ * The site links are the header's job alone; the footer does not repeat them.
+ * Legal links (the privacy page, feature 13) still sit in the bottom row.
  *
- * Both link columns come from the same `getNavigation` call the header uses, so
- * the footer can never fall out of step with the nav, and a fourth service file
- * appears in both from one edit. Nothing here is ever marked as the current
- * page: that belongs to the header alone, so a screen reader hears it once.
+ * Colour on black follows the home intro band: copy is white and the
+ * `**bold**` phrases in the content are `gold-on-dark`, the one gold allowed
+ * on black. The band carries `focus-contrast`, so every link here gets the
+ * two colour focus ring rather than the gold-ink one that would vanish.
+ *
+ * The badges are drawn for a light ground, so they sit on a white panel of
+ * their own instead of being recoloured.
  */
 import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
-import type {
-  Link,
-  NavItem,
-  NavUi,
-  Settings,
-  SocialNetwork,
-} from '../../lib/content';
+import { bandGutterClass, bandWidthClass, cx } from './styles';
+import { splitEmphasis } from '../../lib/emphasis';
+import type { Link, Settings, SocialNetwork } from '../../lib/content';
 
 interface Props {
-  items: readonly NavItem[];
-  ui: NavUi;
-  legal: readonly Link[];
+  legal?: readonly Link[];
   settings: Settings;
 }
 
-const { items, ui, legal, settings } = Astro.props;
-
-/**
- * The nav is one list of items where exactly one holds the services. The footer
- * splits it back into two columns: everything else, and the services flattened
- * out of their group.
- */
-const hasChildren = (
-  item: NavItem,
-): item is Readonly<{ label: string; children: readonly Link[] }> =>
-  'children' in item;
-
-/* A negated type guard does not narrow, so this one states the result type. */
-const isLink = (item: NavItem): item is Link => !hasChildren(item);
-
-const siteLinks: readonly Link[] = items.filter(isLink);
-const servicesGroup = items.find(hasChildren);
+const { legal = [], settings } = Astro.props;
+const { contact, footer } = settings;
 
 /**
  * The social networks' own spelling. `network` is the enum key, which is
@@ -57,112 +41,123 @@ const SOCIAL_NAMES: Readonly<Record<SocialNetwork, string>> = {
   instagram: 'Instagram',
 };
 
-const columnHeadingClass = 'text-small font-semibold tracking-wide uppercase';
-const linkClass = 'inline-flex min-h-11 items-center hover:text-gold-ink';
+/** `https://www.example.com/` shown as `www.example.com`. */
+const displayUrl = (url: string): string =>
+  url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+const telHref = (phone: string): string =>
+  `tel:${phone.replace(/[^+\d]/g, '')}`;
+
+const headingClass =
+  'text-h3 font-bold tracking-wide text-balance text-white uppercase';
+const linkClass = 'inline-flex min-h-11 items-center hover:text-gold-on-dark';
+const contactItemClass = 'flex items-center gap-3';
+const contactIconClass = 'shrink-0 text-gold-on-dark';
 ---
 
-<footer class="bg-tint">
-  <div class="mx-auto w-full max-w-content px-4 py-16 md:px-6 md:py-20 lg:px-8">
-    <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
-      <div class="md:col-span-2 lg:col-span-1">
+<footer class="focus-contrast bg-black text-small text-white">
+  <div class={cx(bandWidthClass.default, bandGutterClass, 'py-16 md:py-20')}>
+    <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3 lg:gap-16">
+      <div>
         <Image
-          src={settings.logo.src}
-          alt={settings.logo.alt ?? ''}
-          class="h-8 w-auto"
+          src={settings.logoOnDark.src}
+          alt={settings.logoOnDark.alt ?? ''}
+          class="h-12 w-auto"
         />
-        <p class="mt-4 max-w-narrow text-small">{settings.footer.text}</p>
-      </div>
+        <div class="mt-8 flex flex-col gap-4 font-semibold">
+          {footer.intro.map((line) => (
+            <p>
+              {splitEmphasis(line).map((run) =>
+                run.strong ? (
+                  <span class="text-gold-on-dark">{run.text}</span>
+                ) : (
+                  run.text
+                ),
+              )}
+            </p>
+          ))}
+        </div>
 
-      {/**
-       * One `<nav>` holding both link columns, so the footer contributes a
-       * single navigation landmark rather than two competing ones. It spans
-       * the middle two columns on desktop and lays its lists out inside.
-       */}
-      <nav
-        aria-label={ui.footerNavLabel}
-        class="grid grid-cols-1 gap-10 md:col-span-2 md:grid-cols-2 lg:col-span-2"
-      >
-        <div>
-          <h2 class={columnHeadingClass}>{ui.primaryNavLabel}</h2>
-          <ul class="mt-2 flex list-none flex-col p-0">
-            {siteLinks.map((link) => (
+        {settings.social.length > 0 && (
+          <ul class="mt-6 flex list-none flex-wrap gap-1 p-0">
+            {settings.social.map((account) => (
               <li>
-                <a href={link.href} class={linkClass}>
-                  {link.label}
+                <a
+                  href={account.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-ui hover:text-gold-on-dark"
+                >
+                  <Icon
+                    name={account.network}
+                    size={20}
+                    title={SOCIAL_NAMES[account.network]}
+                  />
                 </a>
               </li>
             ))}
           </ul>
-        </div>
+        )}
+      </div>
 
-        {
-          /* No services, no column. An empty heading over nothing is worse
-             than one column fewer. */
-          servicesGroup && servicesGroup.children.length > 0 && (
-            <div>
-              <h2 class={columnHeadingClass}>{servicesGroup.label}</h2>
-              <ul class="mt-2 flex list-none flex-col p-0">
-                {servicesGroup.children.map((link) => (
-                  <li>
-                    <a href={link.href} class={linkClass}>
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )
-        }
-      </nav>
+      <div>
+        <h2 class={headingClass}>{footer.contactHeading}</h2>
+        <ul class="mt-6 flex list-none flex-col p-0">
+          <li class={contactItemClass}>
+            <Icon name="phone" size={18} class={contactIconClass} />
+            <a href={telHref(contact.phone)} class={linkClass}>
+              {contact.phone}
+            </a>
+          </li>
+          <li class={contactItemClass}>
+            <Icon name="mail" size={18} class={contactIconClass} />
+            <a href={`mailto:${contact.email}`} class={linkClass}>
+              {contact.email}
+            </a>
+          </li>
+          {contact.website && (
+            <li class={contactItemClass}>
+              <Icon name="globe" size={18} class={contactIconClass} />
+              <a href={contact.website} class={linkClass}>
+                {displayUrl(contact.website)}
+              </a>
+            </li>
+          )}
+          <li class={cx(contactItemClass, 'min-h-11 py-2')}>
+            <Icon name="map-pin" size={18} class={contactIconClass} />
+            <address class="not-italic">{contact.address}</address>
+          </li>
+        </ul>
+      </div>
 
       <div class="md:col-span-2 lg:col-span-1">
-        <h2 class={columnHeadingClass}>{settings.siteName}</h2>
-        <ul class="mt-2 flex list-none flex-col p-0 text-small">
-          <li>
-            <a href={`mailto:${settings.contact.email}`} class={linkClass}>
-              {settings.contact.email}
-            </a>
-          </li>
-          <li>
-            <a
-              href={`tel:${settings.contact.phone.replace(/[^+\d]/g, '')}`}
-              class={linkClass}
-            >
-              {settings.contact.phone}
-            </a>
-          </li>
-          <li class="py-2">{settings.contact.address}</li>
+        <h2 class={headingClass}>{footer.certification.heading}</h2>
+        <p class="mt-6">
+          {splitEmphasis(footer.certification.text).map((run) =>
+            run.strong ? (
+              <strong class="font-semibold">{run.text}</strong>
+            ) : (
+              run.text
+            ),
+          )}
+        </p>
+        <ul class="mt-8 flex max-w-sm list-none flex-wrap justify-center gap-4 bg-white p-4">
+          {footer.certification.badges.map((badge) => (
+            <li>
+              <Image
+                src={badge.src}
+                alt={badge.alt ?? ''}
+                loading="lazy"
+                class="h-24 w-auto"
+              />
+            </li>
+          ))}
         </ul>
-
-        {
-          /* The whole block goes when there is nothing to put in it, rather
-             than leaving an empty row of padding. */
-          settings.social.length > 0 && (
-            <ul class="mt-2 flex list-none flex-wrap gap-1 p-0">
-              {settings.social.map((account) => (
-                <li>
-                  <a
-                    href={account.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-ui hover:text-gold-ink"
-                  >
-                    <Icon
-                      name={account.network}
-                      size={20}
-                      title={SOCIAL_NAMES[account.network]}
-                    />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )
-        }
       </div>
     </div>
 
-    <div class="mt-12 flex flex-col gap-2 border-t border-line pt-6 text-small md:flex-row md:items-center md:justify-between">
-      <p>{settings.footer.copyright}</p>
+    <div class="mt-12 flex flex-col gap-2 border-t border-white/20 pt-6 md:flex-row md:items-center md:justify-between">
+      <p>{footer.copyright}</p>
       {
         /* Feature 13's privacy page lands here as a content edit, with no code
            change. Absent or empty, the row is just the copyright. */
@@ -170,7 +165,7 @@ const linkClass = 'inline-flex min-h-11 items-center hover:text-gold-ink';
           <ul class="flex list-none flex-wrap gap-x-6 p-0">
             {legal.map((link) => (
               <li>
-                <a href={link.href} class="hover:text-gold-ink">
+                <a href={link.href} class="hover:text-gold-on-dark">
                   {link.label}
                 </a>
               </li>

@@ -8,8 +8,8 @@ seo:
   title: BIM Coordination | BIM Delivery
   description: Find and resolve clashes between trades before construction starts, with clear reports and coordinated models for every discipline.
 image:
-  src: ../../../assets/images/services/bim-coordination.jpg
-  alt: A glass tower seen from below against the sky
+  src: https://images.pexels.com/photos/3818947/pexels-photo-3818947.jpeg?auto=compress&cs=tinysrgb&w=1600
+  alt: Steel beams and columns of a building frame under construction
 deliverables:
   - Native Revit model to your level of detail
   - Sheets and views set up to your standards

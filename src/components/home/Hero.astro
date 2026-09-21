@@ -1,7 +1,8 @@
 ---
 /**
  * The front door's opening screen (spec 0005, revised 2026-09-21): one photo
- * filling the first screen, a centred see through dark panel holding the
+ * filling the first screen on phones and tablets and 80% of it from `lg` up,
+ * so the next band peeks in on desktop, a centred see through dark panel holding the
  * heading and subheading, one button under it, and three decorative dots.
  *
  * It is its own band, not a `Section` tone, because it is not a light surface.
@@ -32,8 +33,7 @@
  * to fill the band, so it takes no layout space and cannot shift anything as
  * it arrives.
  */
-import { Image } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
+import { Image, inferRemoteSize } from 'astro:assets';
 import Button from '../ui/Button.astro';
 import {
   bandGutterClass,
@@ -48,11 +48,15 @@ interface Props {
   /** The id this band points at with `aria-labelledby`. */
   headingId: string;
   subheading: string;
-  image: { src: ImageMetadata; alt: string };
+  /** A photo link (spec 0006): a white background, one object in the centre. */
+  image: { src: string; alt: string };
   primaryCta: Link;
 }
 
 const { heading, headingId, subheading, image, primaryCta } = Astro.props;
+
+// Read once at build from the link, like a local file's metadata.
+const source = await inferRemoteSize(image.src);
 
 /** The widths the photo is generated at, before the source width cap. */
 const HERO_STEPS: readonly number[] = [640, 960, 1280, 1920];
@@ -73,14 +77,16 @@ const heroWidths = (sourceWidth: number): number[] => {
 <section
   aria-labelledby={headingId}
   class={cx(
-    'focus-contrast relative isolate -mt-(--header-h) flex min-h-svh flex-col bg-black',
+    'focus-contrast relative isolate -mt-(--header-h) flex min-h-svh flex-col bg-black lg:min-h-[80svh]',
     bandGutterClass,
   )}
 >
   <Image
     src={image.src}
     alt={image.alt}
-    widths={heroWidths(image.src.width)}
+    width={source.width}
+    height={source.height}
+    widths={heroWidths(source.width)}
     sizes="100vw"
     loading="eager"
     fetchpriority="high"

@@ -8,8 +8,8 @@ seo:
   title: Revit Modeling | BIM Delivery
   description: Accurate Revit models built from your drawings and standards, ready for design development, documentation, and construction.
 image:
-  src: ../../../assets/images/services/revit-modeling.jpg
-  alt: The geometric facade of a modern building
+  src: https://images.pexels.com/photos/15764095/pexels-photo-15764095.jpeg?auto=compress&cs=tinysrgb&w=1600
+  alt: Two people discussing a 3D house model on a laptop
 deliverables:
   - Native Revit model to your level of detail
   - Sheets and views set up to your standards

@@ -3,7 +3,7 @@
  * each entry in a language folder, `src/content/<collection>/<lang>/<file>`.
  *
  * This file checks one entry at a time: required fields, types, lengths,
- * image files that exist. Rules that need to see several entries at once
+ * local image files that exist, photo links on the one allowed host. Rules that need to see several entries at once
  * (unique slugs, matching language folders, valid references) live in
  * `src/lib/content.ts`, the only module that reads these collections.
  */
@@ -12,6 +12,7 @@ import type { SchemaContext } from 'astro/content/config';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { LOCALES } from './i18n/locales';
+import { hasBalancedEmphasis } from './lib/emphasis';
 
 // Shared shapes
 
@@ -31,16 +32,20 @@ const link = z.object({
 
 const text = z.string().min(1);
 
+/** Copy that may carry `**bold**` phrases (spec 0005); every mark needs a partner. */
+const emphasisText = text.refine(hasBalancedEmphasis, {
+  message: 'has a `**` with no closing `**`',
+});
+
 /**
- * Astro's `image()` helper only exists inside a collection's schema callback,
- * so the shared image shape is a factory. One strict object plus a refinement
+ * The shared image shape around any `src`: one strict object plus a refinement
  * (not a union) keeps the error on the `alt` field, which is the file and
  * field message AC-3 asks for.
  */
-const imageSchema = (image: SchemaContext['image']) =>
+const withAlt = <Src extends z.ZodType>(src: Src) =>
   z
     .strictObject({
-      src: image(),
+      src,
       alt: z.string().optional(),
       decorative: z.literal(true).optional(),
     })
@@ -69,6 +74,26 @@ const imageSchema = (image: SchemaContext['image']) =>
         });
       }
     });
+
+/**
+ * A local file, for the drawn assets only (the logo, the badges). Astro's
+ * `image()` helper only exists inside a collection's schema callback, so this
+ * shape is a factory.
+ */
+const imageSchema = (image: SchemaContext['image']) => withAlt(image());
+
+/**
+ * Every photo is an internet link on Pexels (spec 0006, assumed). The host is
+ * the one `image.domains` allows in `astro.config.mjs`; a link anywhere else
+ * would render unoptimised, so it fails the build here instead.
+ */
+const photoSchema = withAlt(
+  z.url({
+    protocol: /^https$/,
+    hostname: /^images\.pexels\.com$/,
+    error: 'must be an https link on images.pexels.com',
+  }),
+);
 
 const titledText = z.object({ title: text, text });
 
@@ -100,7 +125,14 @@ const settings = defineCollection({
       siteName: text,
       tagline: text,
       logo: imageSchema(image),
-      contact: z.object({ email: z.email(), phone: text, address: text }),
+      /** The same mark drawn light, for the black footer. */
+      logoOnDark: imageSchema(image),
+      contact: z.object({
+        email: z.email(),
+        phone: text,
+        address: text,
+        website: z.url({ protocol: /^https$/ }).optional(),
+      }),
       social: z.array(
         z.object({
           network: z.enum([
@@ -113,7 +145,18 @@ const settings = defineCollection({
           url: z.url({ protocol: /^https$/ }),
         }),
       ),
-      footer: z.object({ text, copyright: text }),
+      // The black footer band. A `**phrase**` in `intro` or the
+      // certification text renders in gold.
+      footer: z.strictObject({
+        intro: z.array(emphasisText).min(1),
+        contactHeading: text,
+        certification: z.object({
+          heading: text,
+          text: emphasisText,
+          badges: z.array(imageSchema(image)).min(1),
+        }),
+        copyright: text,
+      }),
     }),
 });
 
@@ -163,7 +206,7 @@ const stats = defineCollection({
           value: z.number().nonnegative(),
           suffix: z.string().optional(),
           label: text,
-          // Shown by the home page's why choose us cards (spec 0005).
+          // Shown by the home page's intro band cards (spec 0005).
           // `StatsBand` is typographic and ignores it.
           icon: z.enum(statIcons),
         }),
@@ -174,7 +217,7 @@ const stats = defineCollection({
 
 const home = defineCollection({
   loader: load('home', 'yaml'),
-  schema: ({ image }) =>
+  schema: () =>
     z.object({
       lang,
       seo,
@@ -184,12 +227,12 @@ const home = defineCollection({
       hero: z.strictObject({
         heading: text,
         subheading: text,
-        image: imageSchema(image),
+        image: photoSchema,
         primaryCta: link,
       }),
-      // The black band under the hero (spec 0005). Its numbers are the
+      // The black intro band under the hero (spec 0005). Its numbers are the
       // `stats` entry, so they are written once for the whole site.
-      whyChooseUs: z.strictObject({
+      intro: z.strictObject({
         heading: text,
         /** The heading's last words, shown in gold after `heading`. */
         headingHighlight: text,
@@ -200,36 +243,53 @@ const home = defineCollection({
       overview: z.object({
         heading: text,
         paragraphs: z.array(text).min(1),
-        image: imageSchema(image),
+        image: photoSchema,
       }),
       services: z.object({ heading: text, intro: text }),
-      presence: z.object({
+      // The presence band (spec 0005), which absorbed the old differentiators
+      // section. Strict, so a leftover `text` or `image` key fails by name.
+      presence: z.strictObject({
         heading: text,
-        text,
-        regions: z.array(text).min(1),
-        image: imageSchema(image).optional(),
+        /** A phrase wrapped in `**` renders bold. */
+        paragraphs: z.array(emphasisText).min(1),
+        /**
+         * Each region is a marker on the map, placed by longitude and
+         * latitude. The latitude range is the map's own: the SVG stops at 84
+         * north and 56 south, so a marker outside it would sit off the map.
+         * Six at most, so the names still have room to sit apart.
+         */
+        regions: z
+          .array(
+            z.object({
+              name: text,
+              lon: z.number().min(-180).max(180),
+              lat: z.number().min(-56).max(84),
+            }),
+          )
+          .min(1)
+          .max(6),
+        whyChoose: z.object({ heading: text, items: z.array(text).min(1) }),
       }),
-      differentiators: z.object({ heading: text, items: z.array(text).min(1) }),
-      certification: z.object({
+      // The last band on the page (spec 0005): the three lowest `order`
+      // projects, then one link to the full list. The tiles' words come from
+      // the `projects` entries; only the band's own copy lives here.
+      projectShowcase: z.strictObject({
         heading: text,
-        text,
-        badges: z
-          .array(z.object({ name: text, image: imageSchema(image) }))
-          .min(1),
+        intro: text,
+        link,
       }),
-      cta: callToAction,
     }),
 });
 
 const about = defineCollection({
   loader: load('about', 'md'),
-  schema: ({ image }) =>
+  schema: () =>
     z.object({
       lang,
       seo,
       heading: text,
       intro: text,
-      image: imageSchema(image),
+      image: photoSchema,
       highlights: z.array(titledText).min(1),
       statsHeading: text,
     }),
@@ -274,7 +334,7 @@ const notFound = defineCollection({
 
 const services = defineCollection({
   loader: load('services', 'md'),
-  schema: ({ image }) =>
+  schema: () =>
     z.object({
       lang,
       slug: z
@@ -287,7 +347,7 @@ const services = defineCollection({
       summary: text,
       order: z.number().int().positive(),
       seo,
-      image: imageSchema(image),
+      image: photoSchema,
       deliverables: z.array(text).min(1),
       process: z.array(titledText).min(1),
       cta: callToAction,
@@ -296,12 +356,12 @@ const services = defineCollection({
 
 const projects = defineCollection({
   loader: load('projects', 'yaml'),
-  schema: ({ image }) =>
+  schema: () =>
     z.object({
       lang,
       title: text,
       summary: text,
-      image: imageSchema(image),
+      image: photoSchema,
       order: z.number().int().positive(),
       // Astro only logs a missing reference; src/lib/content.ts fails the build.
       service: reference('services'),

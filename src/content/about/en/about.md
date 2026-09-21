@@ -6,8 +6,8 @@ seo:
 heading: About BIM Delivery
 intro: A team of architects, engineers, and modelers focused on one thing, models you can build from.
 image:
-  src: ../../../assets/images/about/about.jpg
-  alt: A laptop and an open notebook on a wooden desk
+  src: https://images.pexels.com/photos/5582590/pexels-photo-5582590.jpeg?auto=compress&cs=tinysrgb&w=1600
+  alt: Two colleagues reviewing drawings at a desk beside a screen showing a building model
 highlights:
   - title: Built by practitioners
     text: Our modelers have worked on real sites and in real design offices.

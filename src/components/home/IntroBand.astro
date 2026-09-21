@@ -1,7 +1,10 @@
 ---
 /**
- * The why choose us band (spec 0005): a black band under the hero with a
- * centred heading, a short company introduction, and one white card per stat.
+ * The intro band (spec 0005): a black band under the hero with a centred
+ * heading, a short company introduction, and one white card per stat.
+ *
+ * Nothing here moves except the counter, which runs once. There is no caret or
+ * any other looping decoration, so the band needs no pause control.
  *
  * It is its own band rather than a `Section` tone, like `CtaBand` and the
  * hero: `Section` stays two light tones. It borrows the shared band frame from
@@ -57,8 +60,7 @@ const format = new Intl.NumberFormat(lang);
   <div class={bandWidthClass.default}>
     {/**
      * The gold rule under the heading is drawn by `after:`, so it is exactly
-     * as wide as the heading's box and never reaches a screen reader. The
-     * caret is decoration too, hidden and left out of the accessible name.
+     * as wide as the heading's box and never reaches a screen reader.
      */}
     <div class="flex justify-center">
       <h2
@@ -66,10 +68,6 @@ const format = new Intl.NumberFormat(lang);
         class="relative pb-3 text-center text-balance text-white after:absolute after:inset-x-0 after:bottom-0 after:h-1 after:bg-gold"
       >
         {heading} <span class="text-gold-on-dark">{headingHighlight}</span>
-        <span
-          aria-hidden="true"
-          class="ml-1 inline-block h-lh w-0.5 animate-caret bg-gold align-bottom"
-        ></span>
       </h2>
     </div>
 

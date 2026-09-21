@@ -1,18 +1,16 @@
-# 0005. Compose the home page from content with three shared bands and one counter script
+# 0005. Compose the home page from content as six bands with one counter script
 
-**Date**: 2026-09-21 (hero revised to the reference overlay; first written 2026-09-20)
+**Date**: 2026-09-21 (six section page ratified, folding in the assumed specs 0007 and 0008; hero revised to the reference overlay earlier the same day; first written 2026-09-20)
 **Status**: In Progress
 **Scope feature**: 6, Home page (`docs/scope/scope.md`)
 
 ## Summary
 
-The home page renders the nine sections spec 0002 already models, in the order the scope lists, with every word and image coming from `src/content/home/en/home.yaml`, the `stats` entry, and the three `services` entries. Nothing on the page is written into a component.
+The home page is six bands, in this order: a full screen photo hero, a black intro band with the company's numbers as white cards, a company overview, three service cards, a global presence band with a dotted world map, and a showcase of three projects. Every word, number, and photo comes from content (`home.yaml`, the `stats` entry, the `services` and `projects` entries), never from a component.
 
-Three of the pieces are built as shared design system components, because a later Release 1 page already needs each one: a stats band (About reuses it), a media plus text split (About, plus the overview and presence sections here), and a closing call to action band (the service pages reuse it). The four pieces only this page wants stay in `src/components/home/`.
+This revision ratifies what was built quickly for the demo. The presence band (spec 0007) and the project showcase (spec 0008) were recorded as assumptions; they are now deliberated and folded in here, and both of those specs are superseded by this one. The black intro band, built with no spec at all, is written down too. Five small changes come out of the review: the blinking caret goes (it never stopped), the band's content key is renamed from `whyChooseUs` to `intro` (it holds an intro, not the reasons list), the map allows at most six regions, the showcase falls back to an equal grid with fewer than three projects, and the showcase photos stop zooming on hover (they are not links yet).
 
-The page ships one small script, the counter that animates the stat numbers once when they scroll into view. The finished numbers are in the HTML before it runs, so with no JavaScript, or with reduced motion asked for, the visitor simply sees the final figures. The page hydrates no React at all.
-
-**Revised 2026-09-21, the hero.** The opening split is replaced by the reference hero: one photo filling the first screen, a centred see through dark panel (a "scrim") holding the white heading and subheading, one gold button under it, and three dots that are pure decoration. The hero slides up under the header, which spec 0004 now draws as a floating white card. The scrim is dark enough that white text stays readable over any photo, so swapping the photo never needs a contrast check. Focus now follows two rules instead of one rule plus an exception: the gold ink ring on the two light tones, and a black and white double ring on everything else (the photo and the gold band).
+The page ships one small script, the counter that animates the numbers once when they scroll into view. The finished numbers are already in the HTML, so with no JavaScript, or with reduced motion asked for, the visitor sees the final figures. No React is hydrated on the page.
 
 ## Requirements
 
@@ -20,252 +18,235 @@ The page ships one small script, the counter that animates the stat numbers once
 
 - As a prospective client landing on the site for the first time, I want to see what this company does, what it has delivered, and how to start a conversation, without scrolling through a wall of text.
 - As a visitor on a phone on a slow connection, I want the page readable immediately and not jumping around as images arrive.
-- As someone editing the site, I want to change any headline, paragraph, number, or photo by editing a content file, never a component.
-- As a keyboard or screen reader user, I want the page to read in a sensible heading order and every image to carry a real description.
-- As a first time visitor, I want the opening screen to be one strong photo with the offer readable on top of it and one obvious next step, so I know in a glance what this company does and where to click.
+- As someone editing the site, I want to change any headline, paragraph, number, region, or photo by editing a content file, never a component.
+- As a keyboard or screen reader user, I want the page to read in a sensible heading order and every meaningful image to carry a real description, with decoration kept out of my way.
+- As a first time visitor, I want the opening screen to be one strong photo with the offer readable on top of it and one obvious next step.
+- As a prospective client, I want to see where the company works and a few real projects before I decide to get in touch.
 
 **Acceptance criteria**:
 
-- **AC-1**: The page renders exactly nine sections in this order: hero, why choose us, company overview, stats, services, global presence, differentiators, certification, closing call to action. The reference site's "Delivering Precision BIM & Revit Modeling" section is absent.
-- **AC-2**: Every headline, paragraph, list item, number, label, button word, and image on the page comes from a content entry. `src/pages/index.astro` and every component it uses contain no visible copy of their own.
+- **AC-1** (revised 2026-09-21, six sections): The page renders exactly six sections in this order: hero, intro, company overview, services, global presence, project showcase (the showcase only when AC-28 allows). The reference site's "Delivering Precision BIM & Revit Modeling" section is absent, and so are a separate stats band, a differentiators section, a certification section, and a closing call to action band. The footer follows the showcase directly.
+- **AC-2**: Every headline, paragraph, list item, number, label, button word, region name, and image on the page comes from a content entry. `src/pages/index.astro` and every component it uses contain no visible copy of their own.
 - **AC-3** (revised 2026-09-21): The hero is a full bleed band at least the small viewport height (`min-h-svh`), growing taller whenever its content needs more room, so on a short landscape phone nothing overflows or overlaps. The photo fills the whole band, cropped to cover and centred. Centred on it, at the content width (`max-w-content`, full width minus the gutters on a phone), sits one `bg-scrim` panel holding the page's only `h1` and the subheading in `text-lead`, both white and centred. Under the panel sits one primary `Button` from `home.hero.primaryCta`, and at the bottom of the band the three dots of AC-20. Panel, button, and dots stack in that order at every breakpoint and never overlap one another.
-- **AC-4**: The services section renders one `Card` per `services` entry for the page's language, ordered by `order`, each showing the entry's image, title, and summary, and linking to `/{slug}`, the same path `[service].astro` builds. When the collection does not hold exactly three entries for a language, the build fails with a message naming the collection, the language, and the count found.
-- **AC-5**: The stats band renders one item per `stats` entry item: the number grouped for the entry's language (so `1200` reads as `1,200`), its suffix when it has one, and its label. The finished numbers are present in the built HTML.
-- **AC-6**: The numbers count up once, the first time the band enters the viewport, and never again. With JavaScript unavailable, or with `prefers-reduced-motion: reduce` set, no animation runs and the finished numbers are what the visitor sees.
-- **AC-7**: The overview and presence sections both render through one shared media plus text component, with the photo on opposite sides so the two do not read as the same block twice. The presence section lists its region names. The image is optional, because `presence.image` is optional in the schema: with no image the component renders a single centred column of copy and list rather than an empty half.
-- **AC-8**: The why choose us items render in a grid of one column on mobile, two at `md`, and three at `lg`, for any number of items the entry holds. The differentiators render as a marked list. Neither uses an icon, and the map in `Icon.astro` is unchanged.
-- **AC-9**: The certification section renders its badges in a centred row with each badge's name beneath its image, wrapping to a column on a narrow screen. Each badge image carries the alt text from its entry.
-- **AC-10**: The closing call to action renders as a self contained gold band: black heading and text on full gold, and a black filled link with a white label. `Section` still offers exactly two tones and `Button` exactly two variants; neither gains a prop for this.
-- **AC-18** (revised 2026-09-21): The site has two focus rules and no exceptions. On the two light tones, the sitewide 2px `gold-ink` outline at a 2px offset, unchanged. On every surface that is not a light tone, today the hero photo and the gold band, a two colour ring: a 2px black band directly around the control and a 2px white band outside it. It comes from one `focus-contrast` utility in `global.css` placed on the band's `<section>`, so everything focusable inside inherits it and no control sets its own ring colour. `ctaLinkClass` loses its `focus-visible:outline-black`. Mouse clicks still show nothing.
-- **AC-11**: The page has exactly one `h1`. Each of the nine sections carries its own `h2` and points at it with `aria-labelledby`, using one naming rule: the heading's id is `<section>-heading`, for example `services-heading`. Item titles inside a section are `h3`.
-- **AC-12** (hero part revised 2026-09-21): The hero photo loads eagerly with a high fetch priority, `sizes="100vw"`, and widths from `heroWidths(image.src.width)`: 640, 960, 1280, and 1920 where each is below the source width, plus the source width itself capped at 2560. Today's 1600px file therefore yields 640, 960, 1280, 1600, and a wider file later gains the larger steps with no code change. The photo is positioned to fill the band, so it takes no layout space of its own and cannot shift anything as it arrives. Every other image on the page loads lazily and reserves its space, so nothing moves as images arrive. Every image either carries alt text or is marked decorative.
+- **AC-4** (heading revised 2026-09-21): The services section is a `tint` `Section` with a centred `h2` carrying the gold rule (AC-32) and a centred `text-lead` intro, both from `home.services`. It renders one `Card` per `services` entry for the page's language, ordered by `order`, each `elevated` and `align="center"`, showing the entry's image, title, and summary, and linking to `/{slug}`, the same path `[service].astro` builds. When the collection does not hold exactly three entries for a language, the build fails with a message naming the collection, the language, and the count found.
+- **AC-5** (revised 2026-09-21, numbers as cards): The intro band renders one white card per `stats` entry item, inside one `<dl>`: a decorative icon from the item's `icon` (hidden from assistive tech), then the number grouped for the entry's language (so `1200` reads as `1,200`) with its suffix when it has one, then its label. The label is the `<dt>` and the number the `<dd>`, shown number first. The grid is two columns below `lg` and four at `lg`. The finished numbers are present in the built HTML.
+- **AC-6**: The numbers count up once, the first time the cards enter the viewport, and never again. With JavaScript unavailable, or with `prefers-reduced-motion: reduce` set, no animation runs and the finished numbers are what the visitor sees.
+- **AC-7** (revised 2026-09-21): The overview renders through the shared `MediaText` component inside a `white` `Section`, with the photo on the end side. `MediaText` keeps its optional image and single column fallback, because About reuses it.
+- **AC-8** (revised 2026-09-21, the intro band): The intro band is its own black band, not a `Section` tone, framed by the shared band classes (AC-23) and carrying `focus-contrast`. Its `h2` is white and centred, with `home.intro.headingHighlight` in `gold-on-dark` after `home.intro.heading`, and the gold rule under it. The first paragraph opens with `home.intro.lead.highlight` in semibold `gold-on-dark`, then `lead.text`; any further `paragraphs` follow in white. Nothing on the band animates except the counter of AC-6: there is no caret and no blinking element.
+- **AC-9** (revised 2026-09-21, replaces the certification row): The certification row is not on the home page. The footer carries the certification badges (`settings.footer.certification`), so the page loses nothing.
+- **AC-10** (revised 2026-09-21): The gold `CtaBand` is not on the home page. It stays in `src/components/ui/` for the service pages (feature 8), and its `/styleguide` tile is fed the first service's `cta`. `Section` still offers exactly two tones and `Button` exactly two variants; neither gains a prop for any band on this page.
+- **AC-11** (revised 2026-09-21): The page has exactly one `h1`. Each of the six sections carries its own `h2` and points at it with `aria-labelledby`, using one naming rule: the heading's id is `<section>-heading`. The six ids are `hero-heading`, `intro-heading`, `overview-heading`, `services-heading`, `presence-heading`, and `project-showcase-heading`. Titles inside a section (service cards, the presence band's why choose heading, showcase tiles) are `h3`.
+- **AC-12** (revised 2026-09-21): The hero photo loads eagerly with a high fetch priority, `sizes="100vw"`, and the width steps of the hero's own width rule (spec 0006 now decides where the photo comes from and how its width is read). Every other photo on the page loads lazily and reserves its space: `MediaText` and `Card` by aspect ratio, showcase tiles by filling a tile whose height is set by the grid, so nothing moves as images arrive. The world map is an inline SVG with a fixed `viewBox`, so it reserves its own space. Every image either carries alt text or is marked decorative.
 - **AC-13**: The page renders correctly at mobile, `md`, and `lg` with no sideways scrolling at any width, and every tap target stays at least 44px.
 - **AC-14**: The only JavaScript the page loads is the existing nav bundle plus the counter module. No `astro-island` appears in the built HTML.
 - **AC-15**: The page's title and description come from `home.seo` and reach the document through `PageLayout`.
-- **AC-16**: The three shared components each have a `docs/design.md` entry under `## Components` and a tile on `/styleguide`.
+- **AC-16** (revised 2026-09-21): The three shared components spec 0005 promoted, `StatsBand`, `MediaText`, and `CtaBand`, keep their `docs/design.md` entries under `## Components` and their `/styleguide` tiles, even though only `MediaText` appears on the home page today. `StatsBand` stays for About (feature 7), which decides then between it and the intro band's cards.
 - **AC-17**: `pnpm check`, `pnpm lint`, and `pnpm build` all run clean, and `dist/client/` still holds exactly one HTML file per route and nothing more.
-- **AC-19** (added 2026-09-21): White text on the scrim reaches at least 4.5:1 over any photo pixel. The scrim is the token `--color-scrim`, black at 60 percent. Its worst case is white text over a pure white pixel seen through the scrim, a composite of about `#666666`, which measures 5.74:1, so no photo swap can lower the ratio. The band's own background is black, so a photo that fails to load leaves white copy on a dark band rather than on white.
-- **AC-20** (added 2026-09-21): The three dots are decoration. They are three plain elements inside one `aria-hidden="true"` wrapper: not buttons, not links, not focusable, default cursor. The first is solid white, the other two white at half opacity. The accessibility tree holds no trace of them, and tabbing through the hero reaches the button and nothing else.
-- **AC-21** (added 2026-09-21): The home hero starts at the very top of the page, behind the header card. It pulls itself up by `--header-h` and pads its content down by the same amount, so the panel centres in the visible area below the card and no copy, button, or dot sits under the header at load. Only the home hero does this; every other page's first band still starts below the header (spec 0004, AC-4). One accepted case: on a phone with JavaScript off, the mobile menu stays open inside the header (spec 0004, AC-7), so the header is far taller than `--header-h` and the hero starts below the open menu rather than at the top. The matching top padding means nothing is hidden, so the hero is simply lower on that page, like any other page's first band.
-- **AC-22** (added 2026-09-21): `secondaryCta` is removed from the `home` hero schema in `src/content.config.ts` and from `src/content/home/en/home.yaml`, and the hero object becomes a `z.strictObject`, so an entry that still carries `secondaryCta`, or any other unknown hero key, fails the build naming the key instead of being dropped without a word. `Hero.astro` takes no `secondaryCta` prop.
-- **AC-23** (added 2026-09-21): `Section`, `CtaBand`, and the hero take their side gutters, vertical rhythm, and content widths from shared class strings in `src/components/ui/styles.ts` (`bandGutterClass`, `bandPaddingClass`, `bandWidthClass`), so those values are written once. `Section`'s props and output are unchanged: still two light tones, still `default` and `narrow`.
-- **AC-24** (added 2026-09-21): `docs/design.md` records `--color-scrim` in the colour table, the white on scrim pair (5.74:1 worst case) in the contrast table, the two focus rules in `## Focus and motion` in place of the single exception, and the shared band frame under `Section`. The black on gold ring row becomes the two colour ring row. `/styleguide` shows the two colour ring on a photo swatch and on the gold band.
+- **AC-18** (revised 2026-09-21): The site has two focus rules and no exceptions. On the two light tones, the sitewide 2px `gold-ink` outline at a 2px offset. On every surface that is not a light tone (on this page the hero photo and the black intro band; elsewhere the gold `CtaBand`), a two colour ring: a 2px black band directly around the control and a 2px white band outside it, from the one `focus-contrast` utility in `global.css` placed on the band's `<section>`. The presence band (white under a stripe) and the showcase band (tint) are light tones and keep `gold-ink`. Mouse clicks still show nothing.
+- **AC-19**: White text on the scrim reaches at least 4.5:1 over any photo pixel. The scrim is the token `--color-scrim`, black at 60 percent. Its worst case is white text over a pure white pixel seen through the scrim, a composite of about `#666666`, which measures 5.74:1, so no photo swap can lower the ratio. The hero's own background is black, so a photo that fails to load leaves white copy on a dark band. The showcase captions (AC-29) rely on the same guarantee.
+- **AC-20**: The three hero dots are decoration. They are three plain elements inside one `aria-hidden="true"` wrapper: not buttons, not links, not focusable, default cursor. The first is solid white, the other two white at half opacity. Tabbing through the hero reaches the button and nothing else.
+- **AC-21**: The home hero starts at the very top of the page, behind the header card. It pulls itself up by `--header-h` and pads its content down by the same amount, so the panel centres in the visible area below the card and no copy, button, or dot sits under the header at load. Only the home hero does this. On a phone with JavaScript off, the open mobile menu pushes the hero below it; the matching padding means nothing is hidden.
+- **AC-22**: The `home` hero schema is a `z.strictObject` of `{ heading, subheading, image, primaryCta }`, so an entry carrying `secondaryCta`, or any other unknown hero key, fails the build naming the key. `Hero.astro` takes no `secondaryCta` prop.
+- **AC-23**: `Section`, `CtaBand`, the hero, and the intro band take their side gutters, vertical rhythm, and content widths from the shared class strings in `src/components/ui/styles.ts` (`bandGutterClass`, `bandPaddingClass`, `bandWidthClass`), so those values are written once.
+- **AC-24** (extended 2026-09-21): `docs/design.md` records the scrim token and its contrast pair, the two focus rules, and the shared band frame (as before), plus: the intro band under its new name, the `bg-diagonal` rule of AC-25 with its worst case pair, and no mention of a caret. `/styleguide` shows the double ring on a photo swatch and on the gold band.
+- **AC-25** (added 2026-09-21, the presence band surface): The presence band is a `white` `Section` carrying the `bg-diagonal` utility: thin 45 degree stripes in `--color-line` over white. Text on it is `ink` or stronger. The worst case pair, `ink` (`#666666`) over a stripe line (`#e5e5e5`), measures 4.56:1; `ink-muted` would measure 3.93:1 and is never used for text on this band.
+- **AC-26** (added 2026-09-21, the presence layout and map): The band opens with a centred `h2` carrying the gold rule. Below `lg` the copy comes first and the map second; at `lg` they sit side by side on a 12 column grid, the map on the start side (7 columns) and the copy on the end side (5 columns), with the copy still first in the markup. The map is `src/assets/images/home/world-map.svg`, a fixed, checked in dotted map in an equirectangular projection bounded at latitude 84 north and 56 south, rendered with `aria-hidden="true"`. `home.presence.regions` holds 1 to 6 regions, each `{ name, lon, lat }` with `lon` from -180 to 180 and `lat` from -56 to 84; a seventh region, or a coordinate off the map, fails the build naming the field. The regions render as one `<ul>`: each `<li>` holds a decorative gold dot placed at its projected position on the map, and its name. From `md` up the name floats above its dot; below `md` the names flow as a centred, wrapping row under the map while the dots stay on it. With the shipped regions, no two names overlap at 768px or 1280px.
+- **AC-27** (added 2026-09-21, the presence copy): `home.presence.paragraphs` are left aligned (never justified), and a phrase wrapped in `**` renders as `<strong>` in `ink-strong`. A paragraph with an unbalanced `**` fails the build naming the file and field. Under the copy, `home.presence.whyChoose.heading` renders as an `h3` with the gold rule, then `whyChoose.items` as a `<ul>`, each item led by the decorative `check` icon in `gold-ink`.
+- **AC-28** (added 2026-09-21, which projects): The showcase shows the first three entries of `getProjects(lang)`, which is already sorted by `order`, so an editor reorders it by editing `order`. With no projects for the language, the whole section is absent (no empty band, no dangling heading) and the build still passes.
+- **AC-29** (added 2026-09-21, the showcase layout): The band is a `tint` `Section` with a centred `h2` carrying the gold rule and a centred `text-lead` intro from `home.projectShowcase`. The tiles depend on the count. With three: one column on a phone; two at `md`, the first tile spanning both columns; at `lg` two columns and two rows, the first tile spanning both rows on the start side. With one or two: an equal grid, one tile at full content width, or two side by side from `md`, never an empty cell and never a lone tile at half width. Each tile is its photo, cropped to cover and filling the tile, under a `bg-scrim` caption holding the project's service title (small, uppercase), its title as an `h3`, and its summary, all white. A tile is at least 18rem tall and grows with its caption, so no text is clipped.
+- **AC-30** (added 2026-09-21, the showcase interaction): The tiles are not links and hold no focusable element, and the photo does not move on hover. The only link is one centred secondary `Button` below the grid, its words and path from `home.projectShowcase.link`. The band keeps the light tone `gold-ink` ring.
+- **AC-31** (added 2026-09-21, the rename): The intro band's content key is `intro` in `src/content.config.ts` and `src/content/home/en/home.yaml` (a `z.strictObject` of `{ heading, headingHighlight, lead: { highlight, text }, paragraphs }`), the component is `src/components/home/IntroBand.astro`, and the heading id is `intro-heading`. No `whyChooseUs` key, prop, file, or id remains in `src/`.
+- **AC-32** (added 2026-09-21, one heading treatment): The centred section headings with a gold rule (services, presence, its why choose `h3`, the showcase, and the intro band) draw the rule with `after:` on the heading itself, exactly as wide as the words and invisible to a screen reader.
 
 ## Decision
 
-**Chosen option**: Option 1: content driven Astro composition, split by reuse, with one plain counter script.
+**Chosen option**: Option 1: content driven Astro composition, split by reuse, with one plain counter script (unchanged). The 2026-09-21 ratification keeps the six section page as built and fixes it in place.
 
-The page is composed in `src/pages/index.astro` from the existing primitives plus seven new components, three of which enter the design system because a later Release 1 page already needs them, and one plain script enhances numbers that are already correct in the HTML.
+The page is composed in `src/pages/index.astro`, which owns every band's tone and every heading id. Two bands that are not light tones (the hero and the intro band) are their own components sharing `Section`'s frame through class strings; the three bands only this page wants (`IntroBand`, `PresenceBand`, `ProjectShowcase`) live in `src/components/home/` and render inside the frame the page gives them.
 
-**Revision 2026-09-21**: the hero is rebuilt as its own full bleed photo band (like `CtaBand`, not a `Section` tone) that shares `Section`'s frame through class strings in `styles.ts`, carries its contrast guarantee in one `--color-scrim` token, and adopts the two ring focus rule that the gold band now shares.
+**Ratified 2026-09-21**: the presence band of spec 0007 and the project showcase of spec 0008, both now superseded by this spec, with five changes: no caret, `whyChooseUs` renamed `intro`, at most six regions, an equal grid under three projects, and no hover zoom on tiles that are not links. The hero's photo source and its white, centred subject stay with spec 0006, still assumed.
 
-**Implementation skills**: `astro` (`astrolicious/agent-skills`, `.agents/skills/astro/`) · `tailwind-4-docs` (`lombiq/tailwind-agent-skills`, `.agents/skills/tailwind-4-docs/`)
+**Implementation skills**: `astro` (`astrolicious/agent-skills`, `.agents/skills/astro/`) · `tailwind-4-docs` (`lombiq/tailwind-agent-skills`, `.agents/skills/tailwind-4-docs/`) · `zod` (`pproenca/dot-skills`, `.agents/skills/zod/`)
 
 ## Feature design
 
-**Design source** (revision 2026-09-21): the reference screenshot the engineer supplied with the revision (a full bleed model photo, a wide centred gray see through panel of white copy, a gold button under it, three dots near the bottom edge, and a white header card with rounded bottom corners over the top). The handwritten note on it, "Show Simple Image", is read as one plain photo, not a slider. Tokens, type, and components still come from `docs/design.md`.
+**Design source**: the reference screenshots the engineer supplied during the build (the full bleed hero, the black band with stat cards, the presence band with a map and a diagonal pattern). Tokens, type, and components come from `docs/design.md`. The showcase has no reference; it follows the services and presence heading treatment and the hero's scrim.
 
-**Data model sketch**: one change (2026-09-21). `home.hero` drops `secondaryCta` and becomes a strict object: `{ heading, subheading, image, primaryCta }`, unknown keys fail the build. Nothing else in the collections spec 0002 defined is added or altered.
+**Data model sketch** (the `home` entry, confirmed 2026-09-21; nothing here needs a data migration beyond renaming one key in one YAML file):
 
-| Collection | Entry | What this page reads |
+| Collection · key | Shape | Status |
 |---|---|---|
-| `home` | `en/home` | `seo`, `hero`, `whyChooseUs`, `overview`, `stats.heading`, `services`, `presence`, `differentiators`, `certification`, `cta` |
-| `stats` | `en/stats` | `items[]`: `value`, optional `suffix`, `label` |
-| `services` | `en/*` | `slug`, `title`, `summary`, `image`, `order` |
+| `home.hero` | strict: `heading`, `subheading`, `image` (a photo, spec 0006), `primaryCta: link` | unchanged |
+| `home.intro` | strict: `heading`, `headingHighlight`, `lead: { highlight, text }`, `paragraphs: string[]` | renamed from `whyChooseUs` |
+| `home.overview` | `heading`, `paragraphs: string[] min 1`, `image` | unchanged |
+| `home.services` | `heading`, `intro` | unchanged |
+| `home.presence` | strict: `heading`, `paragraphs` (min 1, balanced `**`), `regions: [{ name, lon, lat }]` min 1 max 6, `whyChoose: { heading, items: string[] min 1 }` | from spec 0007, plus `max(6)` |
+| `home.projectShowcase` | strict: `heading`, `intro`, `link` | from spec 0008 |
+| `home.stats`, `differentiators`, `certification`, `cta` | none | removed |
+| `stats.items[]` | `value`, optional `suffix`, `label`, `icon` | `icon` added for the cards |
+| `projects` | read only: `title`, `summary`, `image`, `service` (resolved to its title), `order` | unchanged |
 
 **Component inventory**:
 
 | Component | Used here for | Reused by | Why it sits where it does |
 |---|---|---|---|
-| `src/components/ui/StatsBand.astro` | stats | About (feature 7) | The About entry already carries a `statsHeading` for exactly this band |
-| `src/components/ui/MediaText.astro` | overview, presence | About (feature 7) | Used twice on this page alone, with an `imageSide` prop |
-| `src/components/ui/CtaBand.astro` | closing call to action | service pages (feature 8) | Every service entry carries a `cta` block of the same shape |
-| `ctaLinkClass` in `src/components/ui/styles.ts` | the band's link | with `CtaBand` | Composes the existing `buttonBase` with a black fill and white label, so the sizing is shared rather than copied, and no `ButtonVariant` is added. From 2026-09-21 it carries no ring colour; the band's `focus-contrast` supplies it |
-| `bandGutterClass`, `bandPaddingClass`, `bandWidthClass` in `src/components/ui/styles.ts` (2026-09-21) | the hero's frame | `Section`, `CtaBand` | The side gutters (`px-4 md:px-6 lg:px-8`), the vertical rhythm (`py-16 md:py-20 lg:py-24`), and the two content widths (`default` gives `mx-auto w-full max-w-content`, `narrow` gives `mx-auto w-full max-w-narrow`), written once so three bands cannot drift |
-| `focus-contrast` utility in `src/styles/global.css` (2026-09-21) | the hero's button | `CtaBand` | Placed on a band's `<section>`; every `:focus-visible` inside gets a white 2px outline at a 2px offset plus a 2px black `box-shadow` filling the gap |
-| `src/components/home/Hero.astro` | hero (rebuilt 2026-09-21 as the full bleed photo band) | none | Every other page opens differently |
-| `src/components/home/ValueGrid.astro` | why choose us | none | Shape is specific to this page's copy |
-| `src/components/home/DifferentiatorList.astro` | differentiators | none | Shape is specific to this page's copy |
-| `src/components/home/CertificationRow.astro` | certification | none | Shape is specific to this page's copy |
-| `src/scripts/counters.ts` | stats | wherever `StatsBand` lands | Mirrors how `Header.astro` imports `src/scripts/nav.ts` |
+| `src/components/home/Hero.astro` | hero | none | Every other page opens differently |
+| `src/components/home/IntroBand.astro` (renamed from `WhyChooseUs.astro`) | the black intro band and its stat cards | none yet | Its black surface and card treatment are specific to this page. About decides at build time whether to reuse it or `StatsBand` |
+| `src/components/ui/MediaText.astro` | overview | About (feature 7) | Shared split of copy and photo |
+| `Card` (`elevated`, `align="center"`) | services | project and service pages | The two props exist already |
+| `src/components/home/PresenceBand.astro` | global presence | none | Map, region projection, and emphasis are specific to this band |
+| `src/lib/emphasis.ts` | presence paragraphs | the footer (`settings.footer`) | Pure `splitEmphasis` and `hasBalancedEmphasis`, one mark only (`**`) |
+| `bg-diagonal` utility in `global.css` | presence surface | any light band later | A background image only, so tone, text colours, and focus are unchanged |
+| `check` in `Icon.astro` | the why choose list | anywhere | A decorative glyph |
+| `src/components/home/ProjectShowcase.astro` | project showcase | none | Renders the tiles it is given; never reads a collection |
+| `src/components/ui/StatsBand.astro`, `CtaBand.astro` | not on this page | About, service pages | Kept per AC-16 and AC-10 |
+| `src/scripts/counters.ts` | the intro band's numbers | wherever `data-stats-band` appears | Counts every `data-stats-band` on the page |
 
 **Page composition** (the page owns tone; no component reads one):
 
 | # | Section | Tone or surface | Component | Content |
 |---|---|---|---|---|
-| 1 | Hero | photo under a scrim, its own band (2026-09-21) | `Hero` | `home.hero` |
-| 2 | Why choose us | `tint` | `ValueGrid` | `home.whyChooseUs` |
+| 1 | Hero | photo under a scrim, its own band | `Hero` | `home.hero` |
+| 2 | Intro | black, its own band | `IntroBand` | `home.intro` plus `getStats(lang)` |
 | 3 | Company overview | `white` | `MediaText`, `imageSide="end"` | `home.overview` |
-| 4 | Stats | `tint` | `StatsBand` | `home.stats.heading` plus `getStats(lang)` |
-| 5 | Services | `white` | three `Card`s | `home.services` plus `getServices(lang)` |
-| 6 | Global presence | `tint` | `MediaText`, `imageSide="start"` | `home.presence` |
-| 7 | Differentiators | `white` | `DifferentiatorList` | `home.differentiators` |
-| 8 | Certification | `tint` | `CertificationRow` | `home.certification` |
-| 9 | Closing call to action | gold, its own band | `CtaBand` | `home.cta` |
+| 4 | Services | `tint` | three `Card`s | `home.services` plus `getServices(lang)` |
+| 5 | Global presence | `white` plus `bg-diagonal` | `PresenceBand` | `home.presence` |
+| 6 | Project showcase | `tint` | `ProjectShowcase` | `home.projectShowcase` plus the first three of `getProjects(lang)` |
 
-**API surface**: none. Every page route in this project is prerendered (spec 0001), this page adds no endpoint, and it calls nothing at runtime.
+**API surface**: none. Every page route is prerendered (spec 0001); this page adds no endpoint and calls nothing at runtime.
 
-**Value sourcing**:
+**Value sourcing** (rows for the hero are unchanged from the first revision and kept brief here):
 
 | Action | Value produced or displayed | Source |
 |---|---|---|
-| Any getter call | the language | `resolveLocale(Astro.currentLocale)`, as every existing page does |
+| Any getter call | the language | `resolveLocale(Astro.currentLocale)` |
 | Render head | title, description | `home.seo`, passed to `PageLayout` |
-| Render hero | heading, subheading, photo, alt | `home.hero` (the alt keeps coming from the entry; the photo carries meaning, and the schema still allows `decorative: true`) |
-| Render hero | the button word and path | `home.hero.primaryCta`. There is no second button (AC-22) |
-| Render hero | eager loading, fetch priority, `sizes` | decided in this spec, not content: `loading="eager"`, `fetchpriority="high"`, `sizes="100vw"`, because the photo is full bleed at every width |
-| Render hero | the widths to generate | `heroWidths(image.src.width)`, a pure function in `Hero.astro`: `[640, 960, 1280, 1920]` filtered to those below `min(width, 2560)`, then that cap appended. Astro reads the source width at build from the imported image |
-| Render hero | the photo's crop | decided in this spec: `object-cover object-center`. No focal point field; a photo that crops badly is swapped, not tuned |
-| Render hero | the scrim colour and its contrast | the `--color-scrim` token, `rgb(0 0 0 / 0.6)`, added to `global.css` (AC-19) |
-| Render hero | the band's background under the photo | decided in this spec: `bg-black`, the colour a failed image falls back to |
-| Render hero | the band's height | decided in this spec: `min-h-svh` (AC-3) |
-| Render hero | how far it pulls up and pads down | `--header-h`, declared once in `PageLayout` (spec 0004): `-mt-(--header-h)` on the band, `pt-(--header-h)` on the content column |
-| Render hero | the panel's width, padding, and corner | `bandWidthClass.default` for the width (AC-3). Padding `px-6 py-8 md:px-10 md:py-10` and `rounded-ui`, decided in this spec: spec 0003 gives every panel and image the one `ui` radius |
-| Render hero | the gap between panel and button, and the dots' place | decided in this spec: `mt-8` under the panel. The dots sit in the band's flex column after the centred content, with `pb-8`, so they are pushed to the bottom and can never overlap the button |
-| Render hero | how many dots and which is filled | decided in this spec, not content: three, the first `bg-white`, the others `bg-white/50`, each `size-2.5 rounded-full`, in an `aria-hidden` wrapper of `flex justify-center gap-2 pb-8` so the row is centred |
-| Render hero | the widths when the source is narrower than 640px | `heroWidths` returns the single source width. Astro accepts one width, so there is no special case |
-| Render hero | the focus ring on the button | the `focus-contrast` utility on the band's `<section>` (AC-18) |
-| Render why choose us | heading, item titles and text | `home.whyChooseUs` |
+| Render hero | heading, subheading, photo, alt, button | `home.hero` |
+| Render hero | loading, priority, `sizes`, widths, crop, scrim, height, header overlap, dots | decided in this spec's hero revision (AC-3, AC-12, AC-19 to AC-21); the photo's source and how its width is read are spec 0006 |
+| Render intro | heading, highlighted words, lead highlight, lead text, paragraphs | `home.intro` |
+| Render intro | each card's icon, number, suffix, label | `getStats(lang)`, the `stats` entry for the same language |
+| Render intro | the displayed number text | `Intl.NumberFormat(lang).format(value)`, computed at build |
+| Counter script | the number to count to, the locale while counting | `data-count-to` on each number, `data-locale` on the `<dl>`, written by `IntroBand` |
+| Counter script | duration, easing, threshold | decided in this spec: 1200ms, ease out, 25 percent visible |
+| Render intro | the card grid columns | decided in this spec: 2 below `lg`, 4 at `lg` (AC-5) |
 | Render overview | heading, paragraphs, photo | `home.overview` |
-| Render stats band | section heading | `home.stats.heading` |
-| Render stats band | each number, suffix, label | `getStats(lang)`, the `stats` entry for the same language |
-| Render stats band | the displayed number text | `Intl.NumberFormat(lang).format(value)`, computed at build |
-| Counter script | the number to count to | a `data-count-to` attribute the band writes from `value`, so the script never parses a formatted string back into a number |
-| Counter script | the locale to format with while counting | a `data-locale` attribute the band writes from the resolved locale. A browser script cannot see `Astro.currentLocale`, so without this attribute the count would format in the visitor's own locale and disagree with the value the page shipped |
-| Counter script | duration, easing, trigger threshold | decided in this spec (1200ms, ease out, fires at 25 percent visible), not content |
-| Render services | section heading and intro | `home.services` |
-| Render services | each card's image, title, summary | `getServices(lang)`, ordered by `order` |
-| Render services | each card's image `alt` | `service.image.alt ?? ''`. `Card` requires an `alt` string, but the shared image shape allows `decorative: true` with no `alt`, so the call site supplies the empty string, exactly as `Footer.astro` already does for the logo |
-| Render services | each card's path | `/${slug}` from the entry's `slug`, the same field `[service].astro` builds its route from |
-| Render presence | heading, paragraph, region names, photo | `home.presence` |
-| Render presence | which side the photo sits on | decided in this spec (opposite the overview), not content |
-| Render presence | the layout when the entry has no photo | decided in this spec: `presence.image` is optional in the schema, so `MediaText` renders a single centred column of copy and regions rather than half an empty grid |
-| Render any section | the heading's `id` for `aria-labelledby` | decided in this spec: `<section>-heading`, one rule for all nine, so seven components do not each invent one |
-| Render differentiators | heading, items | `home.differentiators` |
-| Render certification | heading, text, badge names, badge images and alts | `home.certification` |
-| Render closing call to action | heading, text, button word and path | `home.cta` |
+| Render services | heading, intro | `home.services` |
+| Render services | each card's image, alt, title, summary, path | `getServices(lang)`: `image.alt ?? ''`, `/${slug}` |
+| Render presence | heading, paragraphs, bold phrases | `home.presence.paragraphs`, split by `splitEmphasis` |
+| Render presence | each region's name | `home.presence.regions[].name` |
+| Render presence | each dot's position over the map | derived: `toMapPosition({ lon, lat })` in `PresenceBand`, `x = (lon + 180) / 360`, `y = (84 - lat) / (84 - (-56))`, as percentages in `--x` and `--y` |
+| Render presence | the map's bounds | decided in this spec: the constants `MAP_LAT_TOP = 84` and `MAP_LAT_BOTTOM = -56` in `PresenceBand`, matching the checked in SVG and the schema's `lat` range. The three must change together |
+| Render presence | the maximum number of regions | decided in this spec: 6, the schema's `max(6)` (AC-26) |
+| Render presence | the why choose heading and items | `home.presence.whyChoose` |
+| Render presence | the band's stripe | the `bg-diagonal` utility, stripes in `--color-line` |
+| Choose showcase projects | which projects, in what order | derived: `getProjects(lang).slice(0, 3)` in `index.astro`, the count a named constant (`FEATURED_PROJECTS_COUNT = 3`) |
+| Render showcase | whether the band renders | derived: the selected list is not empty (AC-28) |
+| Render showcase | which grid layout | derived: the selected list's length, three gives the large first tile, one or two the equal grid (AC-29) |
+| Render showcase | heading, intro, link words and path | `home.projectShowcase` |
+| Render showcase | each tile's service name, title, summary, photo, alt | the project entry: `service.title`, `title`, `summary`, `image.src`, `image.alt ?? ''` |
+| Render showcase | each tile photo's widths and `sizes` | decided in this spec: `[400, 640, 960, 1280]`, `(min-width: 48rem) 50vw, 100vw` |
+| Render any section | the heading's `id` | decided in this spec: `<section>-heading` (AC-11) |
 
 **Key invariants**:
 
-- Exactly one `h1` on the page, the hero heading. Sections are `h2`, item titles `h3`.
-- The page owns tone. No new component takes a tone prop or reads a tone variable, which keeps the spec 0003 invariant intact. `CtaBand` is the exception that proves it: it is not a `Section` with a tone, it is its own band and it is always gold.
-- Gold is never a word on this page. On the gold band the heading, the text, and the button fill are black; the button label is white on black. On the hero the only gold is the primary button's fill, carrying its black label (8.73:1).
-- Two focus rules, no exceptions (2026-09-21): `gold-ink` on the two light tones, the `focus-contrast` double ring on every other surface. The rule belongs to the surface, not the control, so `focus-contrast` sits on the band's `<section>` and anything focusable added to the hero or the gold band later inherits it. A new dark or photo surface adds the utility; it never invents a third ring.
-- Text on the photo is white and sits only on the scrim, never straight on the photo. The dots are the one thing drawn directly on the photo, and they are decoration hidden from assistive tech.
-- `Section` stays two light tones. A band that is not light (the hero, the gold band) is its own component that borrows `Section`'s frame classes and never adds a tone to `Section`.
-- Nothing between the header and the hero may clip or scroll (2026-09-21). `<main>` stays a plain block: no `overflow: hidden`, no `overflow: auto`, no `contain: paint`. Any of them would cut off the part of the hero pulled up under the header, and only a visual check would notice.
-- The band's link is built from `ctaLinkClass`, never from `<Button>` with an override class. Tailwind's generated order, not the order classes appear in the attribute, decides which background utility wins, so an override would be a silent coin flip.
-- The finished numbers are in the HTML before any script runs. The script only replaces text that is already correct.
-- The services grid is a contract of exactly three. A fourth entry stops the build rather than silently reflowing the row.
-- No component on this page ships client JavaScript except `StatsBand`, and that one script degrades to nothing.
-- Class strings stay written out in full inside a `cx` call, per spec 0003, so Tailwind can find them.
+- Exactly one `h1`, the hero heading. Sections are `h2`, titles inside them `h3`.
+- The page owns tone. No component takes a tone prop or reads a tone variable. A band that is not a light tone (the hero, the intro band, `CtaBand`) is its own component that borrows `Section`'s frame classes; `Section` never gains a third tone.
+- Two focus rules, no exceptions: `gold-ink` on the light tones, `focus-contrast` on every other surface, placed on the band's `<section>`.
+- White text on a photo sits only on the scrim (the hero panel, the showcase captions). The hero dots are the one thing drawn directly on a photo, and they are hidden decoration.
+- Gold as a word appears only on black (`gold-on-dark` in the intro band); on light tones gold is a fill, a rule, or an icon, and a gold word is `gold-ink`.
+- Nothing on the page blinks or loops. The only motion is the counter, which runs once and is skipped with reduced motion.
+- Text on `bg-diagonal` is `ink` or stronger.
+- The map's bounds live in three places that change together: the SVG, the two constants in `PresenceBand`, and the schema's `lat` range.
+- A showcase tile that is not a link does not look like one: no hover motion, no pointer cursor.
+- The finished numbers are in the HTML before any script runs.
+- The services grid is a contract of exactly three; a fourth entry stops the build.
+- `<main>` stays a plain block (no `overflow` or `contain`), or the hero's pull under the header is clipped.
+- Class strings stay written out in full, so Tailwind can find them.
 
-**Security model**: a public, prerendered page. No authentication, no authorisation, no visitor input, no personal data, no runtime request. Content is read at build only, so nothing a visitor sends can reach it. No compliance scope applies.
+**Security model**: a public, prerendered page. No authentication, no visitor input, no personal data, no runtime request. Content is read at build only. No compliance scope applies.
 
-**Configuration required**: none. No new environment variable, secret, or third party account.
+**Configuration required**: none.
 
 **Critical test scenarios**:
 
-- Happy path: the built `index.html` holds all nine sections in order, every string traceable to a content file, one `h1`, verifies **AC-1**, **AC-2**, **AC-11**.
-- Failure case: adding a fourth entry to `src/content/services/en/` fails `pnpm build` with a message naming the collection, the language, and the count, verifies **AC-4**.
-- No script case: with JavaScript disabled, the stat numbers read as their finished grouped values and the page stays fully usable, verifies **AC-5**, **AC-6**.
-- Reduced motion: with `prefers-reduced-motion: reduce` set, scrolling the band into view changes no number, verifies **AC-6**.
-- Loading behaviour: on a throttled connection the hero photo is requested first and nothing on the page shifts as later images arrive, verifies **AC-12**.
-- Responsive: at 360px, 768px, and 1280px the page never scrolls sideways and the services row reflows from one column to three, verifies **AC-13**.
-- Two focus rules: tabbing to the hero button and to the gold band's link each shows the black inside, white outside double ring, clearly visible against the photo and the gold; every control on a white or tint section still shows the gold ink ring, verifies **AC-18**.
-- The hero at a glance: at 360px, 768px, 1280px, and 1920px the photo fills the first screen, the panel is centred in the area below the header card, the button sits under it, the dots sit at the bottom, and nothing is hidden under the header at load, verifies **AC-3**, **AC-21**.
-- Short screen: at 740 by 360 (a landscape phone) the hero grows taller than the screen instead of clipping, and panel, button, and dots never overlap, verifies **AC-3**.
-- Worst case contrast: temporarily point `hero.image` at a plain white image; the white heading and subheading still read, and the scrim's composite measures `#666666` (5.74:1) in the browser's colour picker, verifies **AC-19**.
-- Broken photo: block the hero image request; the band is black and the copy still reads, verifies **AC-19**.
-- Dots are silent: the accessibility tree shows no dot, and Tab from the header goes to the hero button and then straight on to the next section, verifies **AC-20**.
-- Only home overlaps: on `/about-us` the page's `h1` starts fully below the header card, verifies **AC-21**.
-- No JavaScript on a phone: at 390px with JavaScript off, `/` shows the open menu inside the header and then the whole hero below it, with the panel, button, and dots fully visible and nothing hidden under the header, verifies **AC-21**.
-- Strict hero: adding `secondaryCta` back to `home.yaml` fails `pnpm build` with a message naming the key, verifies **AC-22**.
-- Optional content: removing `presence.image` still builds and renders a single centred column rather than half an empty grid, verifies **AC-7**.
+- Happy path: the built `index.html` holds six sections in the AC-1 order with the six heading ids of AC-11, one `h1`, and every string traceable to a content file, verifies **AC-1**, **AC-2**, **AC-11**.
+- Nothing retired lingers: the built HTML holds no `why-choose-us-heading`, `certification-heading`, `cta-heading`, `differentiators-heading`, or `stats-heading`, and `src/` holds no `whyChooseUs`, verifies **AC-1**, **AC-9**, **AC-10**, **AC-31**.
+- Numbers: the built HTML holds `1,200`, and with JavaScript disabled, or with reduced motion set, the cards show the finished values with no change on scroll, verifies **AC-5**, **AC-6**.
+- No blinking: nothing in the intro band animates after load, and `global.css` holds no `caret` keyframes, verifies **AC-8**.
+- Too many regions: adding a seventh region fails `pnpm build` naming `presence.regions`, verifies **AC-26**.
+- Off the map: a region with `lat: -60` fails the build naming the field, verifies **AC-26**.
+- Labels: at 768px and 1280px no two region names overlap; at 360px the names sit in a row under the map with every dot on it, verifies **AC-26**, **AC-13**.
+- Emphasis: a paragraph with a lone `**` fails the build naming the file and field; a balanced one renders `<strong>`, verifies **AC-27**.
+- Stripe contrast: inspecting a paragraph over a stripe line shows `ink` or stronger, never `ink-muted`, verifies **AC-25**.
+- Showcase with three, two, one, and zero projects (temporarily moving project files aside): three gives the large first tile; two gives two equal tiles with no empty cell at `lg`; one gives a single full width tile; zero removes the section and the build passes, verifies **AC-28**, **AC-29**.
+- Showcase interaction: hovering a tile moves nothing; tabbing through the band reaches only the button, which shows the `gold-ink` ring, verifies **AC-30**, **AC-18**.
+- Focus on dark: tabbing to the hero button shows the double ring; the intro band holds nothing focusable today, and a link added there temporarily shows the double ring too, verifies **AC-18**.
+- Loading: on a throttled connection the hero photo is requested first and nothing shifts as the overview, service, and showcase photos arrive, verifies **AC-12**.
+- Responsive: at 360px, 768px, and 1280px nothing scrolls sideways, the services row reflows one to two to three, the intro cards go two to four, and no showcase caption is clipped, verifies **AC-13**, **AC-5**, **AC-29**.
+- The hero scenarios of the first revision (short screen, worst case contrast, broken photo, silent dots, home only overlap, no JavaScript on a phone, strict hero) still hold, verifies **AC-3**, **AC-19** to **AC-22**.
 
 ## Build plan
 
-Sliced by the project's Skateboard approach. Milestone 1 is the thinnest genuinely usable whole page: all nine sections, real content, correct numbers, correct images, and no script at all. Everything after it adds one thing to a page that already works, which is also the only order in which the no script baseline can honestly be proven.
+Sliced by the project's Skateboard approach. The page already works end to end, so milestone 6 records what was built for the demo and then makes the five ratified changes, each a small edit to a page that keeps working after every step. The rename goes first because it touches the most files and every later check greps for the new names.
 
-Image loading sits inside milestone 1 rather than in a later pass, because `loading`, `sizes`, and a reserved aspect ratio cost nothing while a component is being written and a great deal once eight components exist.
+**Milestones 1 to 5** (done): the page stood up with no script, the numbers moved, the services guard, the docs and gates, and the reference hero. Their tasks (1 to 21) are kept in this spec's history in git; tasks 4 and 11 were superseded by the hero revision, and the nine section composition by milestone 6.
 
-**Milestone 1: the whole page stands up, with no script** (done)
+**Milestone 6: the six section page, ratified 2026-09-21**
 
-1. Build `src/components/ui/MediaText.astro`: heading with an `id` of `<section>-heading`, paragraphs, an optional list slot, an optional image with `imageSide` of `start` or `end`, stacking to copy then image on mobile, lazy image with a reserved aspect ratio, and a single centred column when there is no image, satisfies **AC-7**, **AC-11**, **AC-12**.
-2. Build `src/components/ui/StatsBand.astro`: a heading and one item per stat, each rendering `Intl.NumberFormat(lang).format(value)` plus its suffix and label, each carrying `data-count-to`, and the band carrying `data-locale`. No script yet, satisfies **AC-5**.
-3. Add `ctaLinkClass` to `src/components/ui/styles.ts`, composing `buttonBase` with the black fill, the white label, and the black focus outline override, then build `src/components/ui/CtaBand.astro`: its own full width gold band with a black heading and text and a link using that class, taking no tone prop and never importing `Button`, satisfies **AC-10**, **AC-18**.
-4. (Built as first specified; superseded on 2026-09-21 by tasks 16 to 18, which rebuild the hero to the revised AC-3 and AC-12.) Build `src/components/home/Hero.astro`: the split, the single `h1`, both calls to action with the secondary one optional, and the photo eager with `fetchpriority="high"`, `widths={[600, 900, 1200]}`, and `sizes="(min-width: 64rem) 50vw, 100vw"`, satisfies **AC-3**, **AC-12**.
-5. Build `src/components/home/ValueGrid.astro`, `DifferentiatorList.astro`, and `CertificationRow.astro`: the responsive grid, the marked list, and the centred badge row with names beneath, all typographic with no new icon, satisfies **AC-8**, **AC-9**.
-6. Rewrite `src/pages/index.astro` to compose all nine sections in order with the tones in the composition table, reading `getHomePage`, `getStats`, and `getServices` for the resolved locale, rendering the services row as three `Card`s linking `/{slug}` with `alt={service.image.alt ?? ''}`, giving every section a `labelledBy` of `<section>-heading`, and passing `home.seo` to `PageLayout`, satisfies **AC-1**, **AC-2**, **AC-4**, **AC-11**, **AC-15**.
-7. Check the page against a real preview at 360px, 768px, and 1280px: no sideways scrolling, the services row reflowing one to two to three, tap targets at 44px, satisfies **AC-13**.
+Built during `/develop` for the demo (done):
 
-**Milestone 2: the numbers move** (done)
+22. The black intro band with a gold highlighted heading, the lead, and the `stats` entry as white icon cards counting up through `counters.ts`; the separate stats band left the page; four new icon glyphs and the `gold-on-dark` token, satisfies **AC-5**, **AC-6**, **AC-8** (all but the caret).
+23. The presence band: `PresenceBand.astro`, the checked in `world-map.svg`, `emphasis.ts` with the balanced mark check in the schema, `bg-diagonal`, the `check` glyph, `presence` as a strict object with `paragraphs`, `regions` as coordinates, and `whyChoose`; the differentiators section folded into it, satisfies **AC-25**, **AC-26** (all but the cap), **AC-27**.
+24. The project showcase: `ProjectShowcase.astro`, `home.projectShowcase`, the first three projects by `order`, the section absent with none; certification and the closing band removed from the page and the schema, satisfies **AC-9**, **AC-10**, **AC-28**, **AC-29** (three projects only).
+25. The services heading centred with the gold rule and the cards `elevated` and centred, satisfies **AC-4**, **AC-32**.
 
-8. Write `src/scripts/counters.ts`: one `IntersectionObserver` at a 25 percent threshold that unobserves after firing, a `requestAnimationFrame` ease out over 1200ms formatting each frame with `Intl.NumberFormat` and the band's `data-locale`, and an immediate return when `prefers-reduced-motion: reduce` matches, satisfies **AC-6**.
-9. Import it from one `<script>` in `StatsBand.astro`, the way `Header.astro` imports `nav.ts`, then confirm with the script blocked that the finished numbers still read correctly, satisfies **AC-6**, **AC-14**.
+To build now:
 
-**Milestone 3: the guard** (done)
-
-10. Add the exactly three services rule to the cross entry checks in `src/lib/content.ts`, so it runs from the single `content-gate` call site and fails the build with a message naming the collection, the language, and the count. Prove it by adding and then removing a fourth entry, satisfies **AC-4**.
-
-**Milestone 4: written down and gated** (done)
-
-11. (Built as first specified; the focus exception part is superseded on 2026-09-21 by task 20, which replaces it with the two focus rules.) Add `StatsBand`, `MediaText`, and `CtaBand` sections to `docs/design.md` under `## Components`, add the black on gold and white on black pairs to the contrast table, and record the band's black focus ring as the one documented exception to the `## Focus and motion` rule. Add a tile for each to `/styleguide`, satisfies **AC-16**, **AC-18**.
-12. Run `pnpm check`, `pnpm lint`, and `pnpm build`, and confirm `dist/client/` still holds one HTML file per route and the built home page holds no `astro-island`, satisfies **AC-14**, **AC-17**.
-
-**Milestone 5: the reference hero** (added 2026-09-21, done)
-
-Still Skateboard: the page already works end to end, so this milestone swaps one section for its new form in one slice and keeps every step shippable. Build it after spec 0004's milestone 5 (the header card), because the hero's overlap only reads correctly once the header is a card. The two ring rule goes in first because it changes a band that already exists and is the part most likely to surprise.
-
-13. Add `--color-scrim: rgb(0 0 0 / 0.6)` to the colour block of `@theme` in `src/styles/global.css` with a comment giving the 5.74:1 worst case. Add a `@utility focus-contrast` that, for every `:focus-visible` inside the element (a nested `& :focus-visible`), sets `outline-color: var(--color-white)` and `box-shadow: 0 0 0 2px var(--color-black)`, keeping the base 2px width and 2px offset. The nested descendant form has not been used in this repo yet, so confirm with a build that the generated CSS holds the `.focus-contrast :focus-visible` rule. If it does not, write that rule as plain CSS in `global.css` instead; its specificity still beats the base `:focus-visible`, satisfies **AC-18**, **AC-19**.
-14. Move `CtaBand` onto the rule: put `focus-contrast` on its `<section>` and drop `focus-visible:outline-black` from `ctaLinkClass`, rewriting that comment, satisfies **AC-18**.
-15. Add `bandGutterClass`, `bandPaddingClass`, and `bandWidthClass` to `src/components/ui/styles.ts`, each written out in full inside `cx`, and make `Section` and `CtaBand` build their classes from them with no visible change, satisfies **AC-23**.
-16. Make the `home` hero a `z.strictObject` without `secondaryCta` in `src/content.config.ts`, remove `secondaryCta` from `src/content/home/en/home.yaml` in the same commit, and drop the prop from `index.astro`, satisfies **AC-22**.
-17. Rebuild `src/components/home/Hero.astro`: a `<section aria-labelledby>` with `relative isolate -mt-(--header-h) flex min-h-svh flex-col bg-black focus-contrast` plus `bandGutterClass`; the `<Image>` absolutely filling it behind the content (`absolute inset-0 -z-10 size-full object-cover object-center`), eager, high priority, `sizes="100vw"`, widths from the pure `heroWidths` function; a content column `flex flex-1 flex-col items-center justify-center pt-(--header-h)` wrapping a block with `bandPaddingClass`; inside it the panel (`bandWidthClass.default`, `bg-scrim rounded-ui px-6 py-8 md:px-10 md:py-10 text-center`) holding the white `h1` (`text-balance text-white`) and the white `text-lead` subheading; the primary `Button` at `mt-8`; and after the content column the `aria-hidden` dot row (`flex justify-center gap-2 pb-8`). The heading keeps taking `headingId` from the page. The negative variable form `-mt-(--header-h)` is new to this repo (only the positive `h-(--header-h)` is proven), so confirm in the built CSS that it emits `margin-top: calc(var(--header-h) * -1)`. If not, add a small `@utility` named for the job (for example `pull-under-header`) that writes exactly that, satisfies **AC-3**, **AC-12**, **AC-19**, **AC-20**, **AC-21**.
-18. In `src/pages/index.astro`, render the hero as its own band (no longer inside `<Section tone="white">`), passing `labelledBy` through as `headingId` so AC-11 still holds, satisfies **AC-1**, **AC-11**, **AC-21**.
-19. Check a real preview at 360px, 768px, 1280px, 1920px, and 740 by 360: the first screen is all photo, the panel sits centred below the card, the dots never touch the button, nothing scrolls sideways, and `/about-us` is not overlapped, satisfies **AC-3**, **AC-13**, **AC-21**.
-20. Update `docs/design.md` (the scrim token, the white on scrim pair, the two focus rules replacing the exception, the band frame under `Section`, the ring row on the gold band) and `/styleguide` (the double ring on a photo swatch and on `CtaBand`, whose caption stops calling it the one exception), satisfies **AC-24**.
-21. Run `pnpm check`, `pnpm lint`, and `pnpm build`; confirm one HTML file per route, no `astro-island`, and that the built hero `<img>` carries `fetchpriority="high"` with a `srcset` ending at `1600w`, satisfies **AC-12**, **AC-14**, **AC-17**.
+26. Rename the intro band: `whyChooseUs` becomes `intro` in `src/content.config.ts` and `src/content/home/en/home.yaml` in the same commit; `git mv` `WhyChooseUs.astro` to `IntroBand.astro`; update its import, props, and comments in `index.astro`; change the heading id to `intro-heading`. Then grep `src/` for `whyChooseUs`, `WhyChooseUs`, and `why-choose-us` and expect nothing, satisfies **AC-11**, **AC-31**.
+27. Remove the caret: delete the `animate-caret` span from `IntroBand.astro`, and `--animate-caret` plus the `caret` keyframes (and their comment) from `global.css`, satisfies **AC-8**.
+28. Cap the regions: add `.max(6)` to `presence.regions` in `src/content.config.ts`, and prove it by adding a seventh region, building, and removing it, satisfies **AC-26**.
+29. Fix the showcase for one or two projects: in `ProjectShowcase.astro`, apply the large first tile classes (`md:col-span-2 lg:row-span-2 lg:min-h-full`) and the two row `lg` grid only when there are exactly three projects; with one, the tile spans the full width; with two, two equal columns from `md`. Keep the class strings written out in full. Prove it by building with one, two, and three project files for `en` and checking each at 768px and 1280px, satisfies **AC-29**.
+30. Drop the hover zoom: remove `group-hover:scale-105`, the transform transition, and the `group` class from the tiles, and correct the component comment, satisfies **AC-30**.
+31. Update `docs/design.md`: rename the why choose us band to the intro band throughout (colour table, contrast table, the black band note, the icon list, the focus rule list, the counter note), record the `bg-diagonal` rule with its 4.56:1 worst case and the `ink-muted` ban, and remove any caret mention. Update `/styleguide` if it names the band, satisfies **AC-24**, **AC-25**.
+32. Check a real preview at 360px, 768px, and 1280px: the six sections in order, no sideways scrolling, region labels not overlapping, the intro cards two then four, no caption clipped, and tabbing through the page, satisfies **AC-1**, **AC-13**, **AC-18**, **AC-26**.
+33. Run `pnpm check`, `pnpm lint`, and `pnpm build`; confirm one HTML file per route, no `astro-island`, and only the nav and counter scripts on the home page, satisfies **AC-14**, **AC-17**.
 
 ## Consequences
 
 **Positive**:
 
-- The home page is entirely editable from content files, so replacing placeholder copy before launch touches no code.
-- Features 7 and 8 start with three of their sections already built and documented, which is most of what About needs and the ending every service page needs.
-- The page carries one small script that degrades to nothing, so the zero JavaScript default in `AGENTS.md` survives its first real page.
-- Deciding the hero's loading behaviour now means feature 12 tunes a page that is already close, rather than fixing a known miss.
+- One spec is the home page contract again. `/develop` and `/check verify` read one file instead of reconciling 0005 with two assumed specs and an unwritten band.
+- The page is still entirely editable from content, including where the company works and which projects it shows.
+- Nothing on the page loops or blinks any more, so it meets WCAG 2.2.2 with no pause control.
+- The content key names now match what an editor sees: the intro is `intro`, and the reasons list is the one `whyChoose` list, in the presence band.
+- The showcase cannot render broken for a new language with few projects.
 
 **Negative and tradeoffs**:
 
-- Seven new components for one page is real surface area, and three of them are promoted into the design system on the strength of a planned reuse rather than an observed one. If About turns out to want a different stats treatment, `StatsBand` will need a prop it does not have yet.
-- The exactly three rule makes the build fail on a change the scope elsewhere calls easy. Feature 8 says adding a fourth service should be a data entry and a route; with this rule it is also a deliberate decision about the home page. That is the point, and it is still a speed bump someone will hit.
-- `CtaBand` names its own colours instead of going through `Section` and `Button`, so a background and a button treatment are now decided in two places. A palette change has to visit both.
-- The gold band is the site's first documented exception to the sitewide focus ring. One exception is fine and two would be a pattern, so the next component that wants a non standard ring should be treated as a sign that spec 0003 needs revisiting rather than another exception.
-- The counter carries the locale in a `data-` attribute purely because a browser script cannot see `Astro.currentLocale`. It is a small, slightly awkward seam, and it is load bearing for the second language.
-- The page ends on a gold band that only this page has. Until feature 8 reuses `CtaBand`, it reads as a one off.
-- (2026-09-21) The site now has two bands that are not a `Section`, the hero and the gold band. Sharing the frame classes keeps their gutters honest, but a reader has to know that "not a light tone" means "its own component", and a third such band should prompt a look at whether `Section` wants a real third tone after all.
-- (2026-09-21) The scrim hides a large share of the photo behind a dark panel. That is the price of a guarantee that holds for any photo; a lighter panel would need a contrast check every time the photo changes.
-- (2026-09-21) The three dots mimic slider controls that do not exist. Some pointer users will click them and nothing will happen. Hiding them from assistive tech keeps them honest for screen reader users only.
-- (2026-09-21) Dropping `secondaryCta` removes the hero's path to `/project`. Visitors reach it from the nav and the services cards instead.
-- (2026-09-21) `--header-h` now has a fourth reader, the home hero. The header's height, the mobile panel's offset, and the hero's pull up and padding all move together only because they read the same property; changing the header's height anywhere else (a padding, a taller logo) without changing `--header-h` would slide the hero's copy under the card.
-- (2026-09-21) Until a photo at least 2560px wide lands, screens wider than 1600px stretch the hero photo slightly, and it will look soft on a large monitor.
-- (2026-09-21) The gold band's ring changes from plain black to the double ring. It is still clearly visible, but it is a visible change to a band spec 0005 already shipped.
+- The page no longer ends on a call to action. A visitor who scrolls to the bottom meets the showcase's "View all projects" and then the footer; the only prompts to get in touch are the hero button, the nav, and the footer's contact details. The engineer chose this deliberately. If enquiries from the home page run low, this is the first thing to revisit.
+- The hero photo's small subject sits under the centred panel on most screens, so the hero reads as texture more than as a picture of anything. The engineer chose to keep it for the demo; spec 0006's ratification or the launch content pass (feature 12) owns the photo.
+- The world map cannot be regenerated from the repo. Changing its bounds or density means rebuilding it by hand and changing the two constants and the schema range with it.
+- Six regions is a guess at what fits. A region close to Europe or the Middle East can overlap within the cap, and only the verify step catches it, not the build.
+- The showcase's three layouts are three class paths in one component, so a change to the tile grid has to be checked at one, two, and three projects.
+- `StatsBand` and `CtaBand` stay in the design system with no page using them until features 7 and 8. They are kept on the strength of a planned reuse.
+- The rename touches the schema, the entry, a component file, the page, `design.md`, and possibly the styleguide in one go. A missed reference fails `pnpm check` or the build, which is the safety net.
+- The site now has three bands that are not a `Section` (the hero, the intro band, the gold band). Each is justified alone; a fourth should prompt a look at whether `Section` wants a real dark tone (the scope's parked item).
 
 **Neutral**:
 
-- No getter changes. The one schema change (2026-09-21) is the strict hero without `secondaryCta`; spec 0002's home row is edited to match.
-- (2026-09-21) The two new tokens (`--color-scrim` here, `--radius-card` from spec 0004) and the two ring rule change spec 0003's token table and its focus criterion; spec 0003 carries dated lines pointing back here.
-- `docs/design.md` gains three component entries and two contrast pairs, which is content spec 0003 owns. The entries are added; the tokens are not.
-- Nine sections make a long page. Feature 11 will want to look at whether the heading order still reads well once real copy replaces the placeholders.
+- Specs 0007 and 0008 are marked superseded by this spec. Spec 0006 stays `Assumed` and owns where photos come from.
+- Spec 0002's `home` row and its home stats and services rows are edited to match the six section model.
+- No new tool, dependency, environment variable, or runtime behaviour.
 
 ## Follow-up
 
-- [ ] When a fourth service genuinely arrives, decide what the home page shows: a two by two grid, or a curated three with the rest living on the service pages. Until then the build stops, which is the intended prompt to make that call deliberately.
-- [ ] Spec 0003 is `Accepted` and its component list does not include these three. `/sync` should reconcile `docs/design.md` and the spec 0003 component inventory once this feature is built, so the design system's written record stays complete.
-- [ ] If feature 7 finds that About wants a different stats layout, revisit whether `StatsBand` takes a variant prop or About gets its own composition.
-- [ ] Before launch, replace `src/assets/images/home/hero.jpg` with a photo at least 2560px wide (a BIM model render fits the reference best) and update its alt in `home.yaml`. It is a content swap; `heroWidths` picks up the larger sizes on its own. Feature 12 is the natural owner.
-- [ ] `verify.md` still carries the "Remove `secondaryCta`" drill for the old AC-3. `/check verify` should replace it with the strict hero drill and add the new hero, contrast, and focus steps from the critical test scenarios.
+- [ ] Ratify spec 0006 with `/architect remote photos`. It owns the build's dependency on Pexels and the hero photo whose subject the panel covers.
+- [ ] The presence why choose list repeats itself in placeholder copy ("Quality checks at every milestone" and "Quality assurance at every stage"). A content pass before launch, not a spec change.
+- [ ] When project detail pages arrive (a parked scope item), make each showcase tile a link to its project and bring the hover motion back with it.
+- [ ] When a fourth service arrives, decide what the home page shows: a two by two grid, or a curated three. Until then the build stops.
+- [ ] `verify.md` still describes the nine section page. `/check verify` should rewrite it from this spec's critical test scenarios.
+- [ ] When About (feature 7) is built, decide between `StatsBand` and the intro band's cards, and retire whichever loses.
+- [ ] If enquiries from the home page turn out low, revisit a closing call to action (the showcase band could carry a second button).
 
 ## Rationale
 

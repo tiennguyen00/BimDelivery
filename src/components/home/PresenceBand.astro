@@ -1,0 +1,134 @@
+---
+/**
+ * The global presence band (spec 0005): a centred heading, then a dotted
+ * world map with the company's regions marked on the start side, and the copy
+ * plus the why choose list on the end side.
+ *
+ * It renders only the inside of the band. The page wraps it in a `white`
+ * `Section` carrying `bg-diagonal`, so the tone, gutters, and stripe stay the
+ * page's choice and this component never reads a tone.
+ *
+ * The map is decoration and hidden from assistive tech; the regions on it are
+ * a real `<ul>` of names, so a screen reader hears the places the map stands
+ * for rather than nothing, or 3,861 dots.
+ *
+ * Mobile stacks copy first and map second, the same reading order as
+ * `MediaText`: the words say where the company works, the map illustrates it.
+ */
+import Icon from '../ui/Icon.astro';
+import WorldMap from '../../assets/images/home/world-map.svg';
+import { splitEmphasis } from '../../lib/emphasis';
+
+interface Region {
+  name: string;
+  lon: number;
+  lat: number;
+}
+
+interface Props {
+  heading: string;
+  /** The id the surrounding Section points at with `aria-labelledby`. */
+  headingId: string;
+  /** Each may carry `**bold**` phrases. */
+  paragraphs: readonly string[];
+  regions: readonly Region[];
+  whyChoose: { heading: string; items: readonly string[] };
+}
+
+const { heading, headingId, paragraphs, regions, whyChoose } = Astro.props;
+
+/**
+ * The bounds `world-map.svg` was generated with: an equirectangular grid from
+ * longitude -180 to 180 and latitude 84 down to -56. Regenerating the map with
+ * other bounds means changing these two, and the schema's latitude range.
+ */
+const MAP_LAT_TOP = 84;
+const MAP_LAT_BOTTOM = -56;
+
+/**
+ * A longitude and latitude as a position over the map, in percent, handed to
+ * the markup as `--x` and `--y` so the classes decide at which widths to use
+ * it.
+ */
+const toMapPosition = ({ lon, lat }: Region): string =>
+  `--x: ${((lon + 180) / 360) * 100}%; --y: ${((MAP_LAT_TOP - lat) / (MAP_LAT_TOP - MAP_LAT_BOTTOM)) * 100}%`;
+
+/**
+ * The gold rule under both headings: `after:` on an inline block, so it is
+ * exactly as wide as the words and never reaches a screen reader. The same
+ * treatment as the services heading.
+ */
+const ruleClass =
+  'relative inline-block pb-3 text-balance after:absolute after:inset-x-0 after:bottom-0 after:h-1 after:bg-gold';
+---
+
+<div class="text-center">
+  <h2 id={headingId} class={ruleClass}>
+    {heading}
+  </h2>
+</div>
+
+<div class="mt-12 grid grid-cols-1 gap-12 lg:mt-16 lg:grid-cols-12 lg:items-center lg:gap-16">
+  <div class="lg:col-span-5">
+    {paragraphs.map((paragraph) => (
+      <p class="mt-4 first:mt-0">
+        {splitEmphasis(paragraph).map((run) =>
+          run.strong ? (
+            <strong class="font-semibold text-ink-strong">{run.text}</strong>
+          ) : (
+            run.text
+          ),
+        )}
+      </p>
+    ))}
+
+    <h3 class:list={[ruleClass, 'mt-12 font-bold text-black']}>
+      {whyChoose.heading}
+    </h3>
+
+    <ul class="mt-8 flex flex-col gap-4">
+      {whyChoose.items.map((item) => (
+        <li class="flex items-start gap-3 text-ink-strong">
+          <Icon name="check" size={20} class="mt-0.5 shrink-0 text-gold-ink" />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {/**
+   * Second in the markup so the copy is read first; `lg:order-first` moves
+   * the map to the start side once there are two columns.
+   *
+   * Each region's place over the map is two custom properties in percent, so
+   * it holds at any width. The dot always uses them. The label only does from
+   * `md` up: on a phone the map is too small for four names, and Europe and
+   * the Middle East would sit on top of each other, so below `md` the same
+   * list items flow as a centred row of names under the map instead.
+   *
+   * The trick that lets one element do both: below `md` the `<li>` is static,
+   * so the dot's `absolute` resolves against the map wrapper and lands on its
+   * place; from `md` the `<li>` itself is placed there and the dot sits at its
+   * origin.
+   */}
+  <div class="relative lg:order-first lg:col-span-7">
+    <WorldMap aria-hidden="true" class="h-auto w-full text-ink-muted/60" />
+
+    <ul class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 md:mt-0 md:block">
+      {regions.map((region) => (
+        <li
+          class="md:absolute md:top-(--y) md:left-(--x)"
+          style={toMapPosition(region)}
+        >
+          <span
+            aria-hidden="true"
+            class="absolute top-(--y) left-(--x) block size-3 -translate-1/2 rounded-full bg-gold ring-2 ring-white md:top-0 md:left-0"
+          ></span>
+          <span class="text-small font-bold whitespace-nowrap text-black md:absolute md:bottom-2.5 md:-translate-x-1/2 md:text-body">
+            {region.name}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>

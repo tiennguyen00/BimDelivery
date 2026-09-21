@@ -1,41 +1,52 @@
 ---
 /**
- * The front door (spec 0005): eight sections, in order, every word and image of
- * them from a content entry.
+ * The front door (spec 0005): six sections, in order, every word and image
+ * of them from a content entry.
  *
  * This file is the only place that knows the page's shape. It owns the tone of
  * each band (the `white` and `tint` alternation spec 0003 asks a page to set),
- * and it owns the heading ids, under one rule for all eight: `<section>-heading`.
+ * and it owns the heading ids, under one rule for all six: `<section>-heading`.
  * No component here reads a tone or invents an id.
  *
  * The reference site's "Delivering Precision BIM & Revit Modeling" section is
- * deliberately absent; it was cut in the scope.
+ * deliberately absent; it was cut in the scope. So are the certification row
+ * and the gold closing band: the footer already carries the badges, and the
+ * page now ends on the project showcase.
  *
- * Three of the pieces below live in `components/ui/` rather than
- * `components/home/`, because a later Release 1 page already needs each one:
- * `MediaText` and `StatsBand` for About, `CtaBand` for the service pages.
- * `StatsBand` is not used here any more: the why choose us band shows the
- * same numbers as cards.
+ * `MediaText` lives in `components/ui/` rather than `components/home/`,
+ * because About needs it too.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Card from '../components/ui/Card.astro';
 import MediaText from '../components/ui/MediaText.astro';
-import CtaBand from '../components/ui/CtaBand.astro';
 import Hero from '../components/home/Hero.astro';
-import WhyChooseUs from '../components/home/WhyChooseUs.astro';
-import DifferentiatorList from '../components/home/DifferentiatorList.astro';
-import CertificationRow from '../components/home/CertificationRow.astro';
+import IntroBand from '../components/home/IntroBand.astro';
+import PresenceBand from '../components/home/PresenceBand.astro';
+import ProjectShowcase from '../components/home/ProjectShowcase.astro';
 import { resolveLocale } from '../i18n/locales';
-import { getHomePage, getServices, getStats } from '../lib/content';
+import {
+  getHomePage,
+  getProjects,
+  getServices,
+  getStats,
+} from '../lib/content';
 
 const lang = resolveLocale(Astro.currentLocale);
 
-const [home, stats, services] = await Promise.all([
+const [home, stats, services, projects] = await Promise.all([
   getHomePage(lang),
   getStats(lang),
   getServices(lang),
+  getProjects(lang),
 ]);
+
+/**
+ * The showcase shows the first three projects by `order` (spec 0005), so an
+ * editor reorders it by editing `order`, never this file.
+ */
+const FEATURED_PROJECTS_COUNT = 3;
+const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
 ---
 
 <PageLayout title={home.seo.title} description={home.seo.description}>
@@ -55,16 +66,16 @@ const [home, stats, services] = await Promise.all([
   />
 
   {/**
-   * 2. Why choose us. Its own black band, not a Section tone, holding the
+   * 2. Intro. Its own black band, not a Section tone, holding the
    * site's numbers as cards. That is why there is no separate stats band on
    * this page: the same figures twice would read as a mistake.
    */}
-  <WhyChooseUs
-    heading={home.whyChooseUs.heading}
-    headingHighlight={home.whyChooseUs.headingHighlight}
-    headingId="why-choose-us-heading"
-    lead={home.whyChooseUs.lead}
-    paragraphs={home.whyChooseUs.paragraphs}
+  <IntroBand
+    heading={home.intro.heading}
+    headingHighlight={home.intro.headingHighlight}
+    headingId="intro-heading"
+    lead={home.intro.lead}
+    paragraphs={home.intro.paragraphs}
     stats={stats}
     lang={lang}
   />
@@ -90,83 +101,65 @@ const [home, stats, services] = await Promise.all([
    * builds its route from.
    */}
   <Section tone="tint" labelledBy="services-heading">
-    <h2 id="services-heading" class="max-w-narrow text-balance">
-      {home.services.heading}
-    </h2>
-    <p class="mt-4 max-w-narrow text-lead">{home.services.intro}</p>
+    {/**
+     * A centred heading with a gold rule under it, the same treatment as the
+     * intro band, then a centred intro. The rule is drawn by `after:`
+     * on an inline block, so it is exactly as wide as the words and never
+     * reaches a screen reader.
+     */}
+    <div class="mx-auto max-w-narrow text-center">
+      <h2
+        id="services-heading"
+        class="relative inline-block pb-3 text-balance after:absolute after:inset-x-0 after:bottom-0 after:h-1 after:bg-gold"
+      >
+        {home.services.heading}
+      </h2>
+      <p class="mt-8 text-lead">{home.services.intro}</p>
+    </div>
 
-    <div class="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
       {services.map((service) => (
         <Card
           title={service.title}
           text={service.summary}
           image={{ src: service.image.src, alt: service.image.alt ?? '' }}
           href={`/${service.slug}`}
+          align="center"
+          elevated
         />
       ))}
     </div>
   </Section>
 
   {/**
-   * 5. Global presence. The photo takes the opposite side to the overview
-   * above, so the two `MediaText` bands do not read as the same block twice.
-   * The regions go in through the slot: they are a list this page has and
-   * About does not.
+   * 5. Global presence. A white band under a faint diagonal
+   * stripe, holding the map, the copy, and the why choose list that used to
+   * be its own differentiators section.
    */}
-  <Section tone="white" labelledBy="presence-heading">
-    <MediaText
+  <Section tone="white" labelledBy="presence-heading" class="bg-diagonal">
+    <PresenceBand
       heading={home.presence.heading}
       headingId="presence-heading"
-      paragraphs={[home.presence.text]}
-      image={
-        home.presence.image && {
-          src: home.presence.image.src,
-          alt: home.presence.image.alt ?? '',
-        }
-      }
-      imageSide="start"
-    >
-      <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-        {home.presence.regions.map((region) => (
-          <li class="flex items-center gap-2 font-semibold text-ink-strong">
-            <span
-              aria-hidden="true"
-              class="block h-1 w-4 shrink-0 bg-gold"
-            ></span>
-            {region}
-          </li>
-        ))}
-      </ul>
-    </MediaText>
-  </Section>
-
-  {/* 6. Differentiators */}
-  <Section tone="tint" labelledBy="differentiators-heading">
-    <DifferentiatorList
-      heading={home.differentiators.heading}
-      headingId="differentiators-heading"
-      items={home.differentiators.items}
+      paragraphs={home.presence.paragraphs}
+      regions={home.presence.regions}
+      whyChoose={home.presence.whyChoose}
     />
   </Section>
 
-  {/* 7. Certification */}
-  <Section tone="white" labelledBy="certification-heading">
-    <CertificationRow
-      heading={home.certification.heading}
-      headingId="certification-heading"
-      text={home.certification.text}
-      badges={home.certification.badges.map((badge) => ({
-        name: badge.name,
-        image: { src: badge.image.src, alt: badge.image.alt ?? '' },
-      }))}
-    />
-  </Section>
-
-  {/* 8. Closing call to action. Its own gold band, not a Section tone. */}
-  <CtaBand
-    heading={home.cta.heading}
-    headingId="cta-heading"
-    text={home.cta.text}
-    button={home.cta.button}
-  />
+  {/**
+   * 6. Project showcase. Tint, so the light tones still alternate
+   * after the patterned presence band. It is the last band before the black
+   * footer, and it is left out entirely when the language has no projects.
+   */}
+  {featuredProjects.length > 0 && (
+    <Section tone="tint" labelledBy="project-showcase-heading">
+      <ProjectShowcase
+        heading={home.projectShowcase.heading}
+        headingId="project-showcase-heading"
+        intro={home.projectShowcase.intro}
+        projects={featuredProjects}
+        link={home.projectShowcase.link}
+      />
+    </Section>
+  )}
 </PageLayout>

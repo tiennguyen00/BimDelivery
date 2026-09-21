@@ -91,7 +91,7 @@ All collections use Astro's `glob` loader (confirmed present in the installed As
 | `settings` | `site.yaml` | `lang`, `siteName`, `tagline`, `logo: image`, `contact: { email (valid email), phone, address }`, `social: [{ network: 'linkedin' \| 'facebook' \| 'youtube' \| 'x' \| 'instagram', url (valid https URL) }]` (may be empty; the icon and the link's accessible name are derived from `network` in code), `footer: { text, copyright }` |
 | `navigation` | `main.yaml` | `lang`, `items: [ link \| { label, type: 'services' } ]` (min 1; exactly one `services` slot), `cta: link` optional |
 | `stats` | `stats.yaml` | `lang`, `items: [{ value: number (non negative), suffix: string optional, label }]` (min 1) |
-| `home` | `home.yaml` | `lang`, `seo`, `hero: { heading, subheading, image, primaryCta: link }` (a strict object; `secondaryCta` removed 2026-09-21 by spec 0005, AC-22), `whyChooseUs: { heading, items: [{ title, text }] min 1 }`, `overview: { heading, paragraphs: string[] min 1, image }`, `stats: { heading }`, `services: { heading, intro }`, `presence: { heading, text, regions: string[] min 1, image optional }`, `differentiators: { heading, items: string[] min 1 }`, `certification: { heading, text, badges: [{ name, image }] min 1 }`, `cta: { heading, text, button: link }` |
+| `home` | `home.yaml` | `lang`, `seo`, `hero: { heading, subheading, image, primaryCta: link }` (a strict object; `secondaryCta` removed 2026-09-21 by spec 0005, AC-22), `intro: { heading, headingHighlight, lead: { highlight, text }, paragraphs: string[] }` (strict), `overview: { heading, paragraphs: string[] min 1, image }`, `services: { heading, intro }`, `presence: { heading, paragraphs: string[] min 1 (balanced **), regions: [{ name, lon, lat }] min 1 max 6, whyChoose: { heading, items: string[] min 1 } }` (strict), `projectShowcase: { heading, intro, link }` (strict). Revised 2026-09-21 by spec 0005, the six section page: `whyChooseUs`, `stats`, `differentiators`, `certification`, and `cta` removed |
 | `about` | `about.md` | frontmatter: `lang`, `seo`, `heading`, `intro`, `image`, `highlights: [{ title, text }]` min 1, `statsHeading`. Markdown body: the company story |
 | `contact` | `contact.yaml` | `lang`, `seo`, `heading`, `intro`, `form: { nameLabel, emailLabel, companyLabel, messageLabel, submitLabel }`, `errors: { required, email, deliveryFailed }`, `success: { heading, text }` |
 | `projectPage` | `project.yaml` | `lang`, `seo`, `heading`, `intro`, `emptyState: { heading, text }` |
@@ -105,7 +105,8 @@ All collections use Astro's `glob` loader (confirmed present in the installed As
 | `projects` | `<name>.yaml` | `lang`, `title`, `summary`, `image`, `order` (positive integer), `service: reference('services')` | N projects to 1 service, same language only |
 
 Relationships not stored as references, resolved in the query module:
-- `home.stats` section and `about.statsHeading` read numbers from `stats`.
+- The home intro band (spec 0005, revised 2026-09-21) and `about.statsHeading` read numbers from `stats`.
+- The home project showcase reads the first three of `getProjects(lang)` by `order` (spec 0005, revised 2026-09-21).
 - `home.services` section reads cards from `services`: every service, sorted by `order` (exactly three today). No cap or featured flag; that is decided when the deferred "more services" work lands.
 - `projectPage` reads its cards from `projects`, and shows `emptyState` when there are none.
 - `contact` page reads email, phone, and address from `settings.contact`.
@@ -152,7 +153,7 @@ Implementation notes:
 | `getNavigation` | order of service items | the service entry's `order` |
 | `getContactPage` | email, phone, address | `settings.contact` |
 | `getProjects` | the service a project belongs to (title, link) | the referenced service entry's `title` and `slug` |
-| Home stats section (feature 6) | each number, its suffix, its label | `stats.items[]` |
+| Home intro band (feature 6) | each number, its suffix, its label, its icon | `stats.items[]` (`icon` added 2026-09-21 by spec 0005) |
 | Stats display (feature 6) | number formatting, for example `1,200` | `Intl.NumberFormat(lang)` on `value`, derived at render, never stored as text |
 | Contact form island (feature 10) | field labels, error and success copy | `contact.form`, `contact.errors`, `contact.success`, passed as props |
 | Any image | width, height, optimised formats | derived by Astro's `image()` helper from the file at build |

@@ -1,41 +1,40 @@
 # Image credits
 
-Every stock photo in this folder, with its source and licence. Add a line here
-whenever you add a photo.
+Every image the site uses, with its source and licence. Add a line here
+whenever you add one.
 
-All photos below come from Unsplash, downloaded through picsum.photos (which
-serves Unsplash images). They are covered by the
-[Unsplash License](https://unsplash.com/license): free for commercial use, no
+## Photos (internet links, spec 0006)
+
+No photo lives in this folder. Each one is an `https` link on
+`images.pexels.com`, written in its content entry. Astro downloads it at build,
+optimises it, and serves the copies from this site's own domain.
+
+All photos come from Pexels and are covered by the
+[Pexels License](https://www.pexels.com/license/): free for commercial use, no
 permission needed, and no attribution required on the site. They are
 placeholders until real project photography arrives.
 
-| File            | Photographer | Source                                   | Licence |
-| --------------- | ------------ | ---------------------------------------- | ------- |
-| `home/hero.jpg` | Kevin Young  | <https://unsplash.com/photos/-icmOdYWXuQ |
+| Used for                   | Pexels photo                                                                                                               | Licence        |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| Home hero                  | <https://www.pexels.com/photo/brown-and-black-house-miniature-3961750/>                                                    | Pexels License |
+| Home overview              | <https://www.pexels.com/photo/three-people-collaborating-on-a-project-6615107/>                                            | Pexels License |
+| About                      | <https://www.pexels.com/photo/professional-individuals-working-together-5582590/>                                          | Pexels License |
+| Service: Revit Modeling    | <https://www.pexels.com/photo/men-sitting-at-a-table-and-looking-at-a-laptop-displaying-a-3d-project-of-a-house-15764095/> | Pexels License |
+| Service: Scan to BIM       | <https://www.pexels.com/photo/a-man-surveying-the-area-5802822/>                                                           | Pexels License |
+| Service: BIM Coordination  | <https://www.pexels.com/photo/metal-beams-in-a-construction-site-3818947/>                                                 | Pexels License |
+| Project: Harbour Tower     | <https://www.pexels.com/photo/facade-of-architectural-glass-building-8171870/>                                             | Pexels License |
+| Project: Riverside Offices | <https://www.pexels.com/photo/modern-building-with-a-glass-facade-reflecting-other-buildings-in-city-9321327/>             | Pexels License |
+| Project: Midtown Retrofit  | <https://www.pexels.com/photo/modern-high-rise-construction-site-with-crane-33628380/>                                     | Pexels License |
+| Project: Corner Block      | <https://www.pexels.com/photo/stylish-geometric-building-with-glass-balconies-4082527/>                                    | Pexels License |
+| Project: College Hall      | <https://www.pexels.com/photo/modern-office-building-17097090/>                                                            | Pexels License |
 
-> | Unsplash License |
-> | `home/overview.jpg` | Aleksi Tappura | <https://unsplash.com/photos/mCg0ZgD7BgU
-> | Unsplash License |
-> | `home/presence.jpg` | Kelly Sikkema | <https://unsplash.com/photos/Ereoqdv5s48
-> | Unsplash License |
-> | `about/about.jpg` | Galymzhan Abdugalimov | <https://unsplash.com/photos/ICW6QYOcdlg
-> | Unsplash License |
-> | `services/revit-modeling.jpg` | Samuel Zeller | <https://unsplash.com/photos/WlD3vixTVUg
-> | Unsplash License |
-> | `services/scan-to-bim.jpg` | Christian Bardenhorst | <https://unsplash.com/photos/8lMhzUjD1Wk
-> | Unsplash License |
-> | `services/bim-coordination.jpg` | Mike Wilson | <https://unsplash.com/photos/rM7B4DheQc0
-> | Unsplash License |
-> | `projects/harbour-tower.jpg` | Anthony DELANOIX | <https://unsplash.com/photos/b5POxb2aL9o
-> | Unsplash License |
-> | `projects/riverside-offices.jpg` | Vladimir Kudinov | <https://unsplash.com/photos/KBX9XHk266s
-> | Unsplash License |
-> | `projects/midtown-retrofit.jpg` | Matthew Wiebe | <https://unsplash.com/photos/nOhUx3tiaQQ
-> | Unsplash License |
-> | `projects/corner-block.jpg` | Bonnie Meisels | <https://unsplash.com/photos/Y5uyOoct2pg
-> | Unsplash License |
-> | `projects/college-hall.jpg` | Vadim Sherbakov | <https://unsplash.com/photos/d6ebY-faOO0
-> | Unsplash License |
+## Generated from public domain data
+
+- `home/world-map.svg` (the home presence band, spec 0005): a dotted world
+  map drawn from [Natural Earth](https://www.naturalearthdata.com/) 1:50m land
+  data, which is public domain, via the `world-atlas` package (ISC). It was
+  generated once on a 2 degree grid, latitude 84 to minus 56, and is not
+  rebuilt at build time.
 
 ## Generated placeholders (no licence needed)
 

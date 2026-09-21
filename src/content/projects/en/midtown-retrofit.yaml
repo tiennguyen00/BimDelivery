@@ -2,7 +2,7 @@ lang: en
 title: Midtown Retrofit
 summary: As built model of a historic building ahead of its retrofit.
 image:
-  src: ../../../assets/images/projects/midtown-retrofit.jpg
-  alt: A city street lined with older buildings
+  src: https://images.pexels.com/photos/33628380/pexels-photo-33628380.jpeg?auto=compress&cs=tinysrgb&w=1600
+  alt: A high rise under construction with a crane and scaffolding
 order: 3
 service: en/scan-to-bim

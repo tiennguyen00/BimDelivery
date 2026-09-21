@@ -1,0 +1,111 @@
+---
+/**
+ * The home project showcase (spec 0005): a centred heading and intro, a grid
+ * of project tiles, and one link to the full list.
+ *
+ * It renders only the inside of the band. The page wraps it in a `tint`
+ * `Section` and decides which projects reach it (the first three by `order`),
+ * so this component never reads a tone or a collection.
+ *
+ * Each tile is a photo with a `bg-scrim` caption panel at its foot. White on
+ * the scrim is 5.74:1 even over a pure white pixel (spec 0005, AC-19), so any
+ * project photo is safe here without a contrast check.
+ *
+ * The tiles are not links: there are no per project pages yet, and several
+ * links to the same list would only add tab stops. The one link is the button,
+ * which keeps the ordinary gold ink ring of a light tone. A tile that is not a
+ * link must not look like one either, so the photo stays still on hover.
+ */
+import { Image } from 'astro:assets';
+import Button from '../ui/Button.astro';
+
+interface ShowcaseProject {
+  id: string;
+  title: string;
+  summary: string;
+  image: { src: string; alt?: string };
+  service: { title: string };
+}
+
+interface Props {
+  heading: string;
+  /** The id the surrounding Section points at with `aria-labelledby`. */
+  headingId: string;
+  intro: string;
+  projects: readonly ShowcaseProject[];
+  link: { label: string; href: string };
+}
+
+const { heading, headingId, intro, projects, link } = Astro.props;
+
+/**
+ * The layout depends on how many projects arrive (spec 0005, AC-29), so a
+ * language with few projects never shows an empty cell or a lone half tile.
+ *
+ * Three: one column on a phone; two at `md` with the first tile across both;
+ * at `lg` two columns and two rows, the first tile spanning both rows.
+ * Two: side by side from `md`. One: a single tile at full content width.
+ *
+ * The class strings are written out in full so Tailwind can find them.
+ */
+const featured = projects.length === 3;
+const gridClass = featured
+  ? 'grid-cols-1 md:grid-cols-2 lg:grid-rows-[repeat(2,minmax(18rem,auto))]'
+  : projects.length === 2
+    ? 'grid-cols-1 md:grid-cols-2'
+    : 'grid-cols-1';
+const firstTileClass =
+  'md:col-span-2 lg:col-span-1 lg:row-span-2 lg:min-h-full';
+
+/** From `md` a tile is roughly half the band wide in the usual layouts. */
+const imageSizes = '(min-width: 48rem) 50vw, 100vw';
+---
+
+<div class="mx-auto max-w-narrow text-center">
+  <h2
+    id={headingId}
+    class="relative inline-block pb-3 text-balance after:absolute after:inset-x-0 after:bottom-0 after:h-1 after:bg-gold"
+  >
+    {heading}
+  </h2>
+  <p class="mt-8 text-lead">{intro}</p>
+</div>
+
+{/**
+ * `minmax(18rem, auto)` rows: a tile is never shorter than 18rem, and grows
+ * when its caption needs more room, so no summary is ever clipped.
+ */}
+<ul class:list={['mt-12 grid gap-6 lg:gap-8', gridClass]}>
+  {projects.map((project, index) => (
+    <li
+      class:list={[
+        'relative isolate flex min-h-72 flex-col justify-end overflow-hidden rounded-ui bg-black',
+        featured && index === 0 && firstTileClass,
+      ]}
+    >
+      <Image
+        src={project.image.src}
+        alt={project.image.alt ?? ''}
+        inferSize
+        widths={[400, 640, 960, 1280]}
+        sizes={imageSizes}
+        class="absolute inset-0 -z-10 size-full object-cover object-center"
+      />
+      <div class="m-3 rounded-ui bg-scrim p-5 text-white md:m-4 md:p-6">
+        <p class="text-small font-semibold tracking-wide uppercase">
+          {project.service.title}
+        </p>
+        <h3 class="mt-1 text-h3 font-semibold text-balance text-white">
+          {project.title}
+        </h3>
+        <p class="mt-2">{project.summary}</p>
+      </div>
+    </li>
+  ))}
+</ul>
+
+<div class="mt-12 text-center">
+  <Button href={link.href} variant="secondary">
+    {link.label}
+  </Button>
+</div>

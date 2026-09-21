@@ -853,12 +853,7 @@ const headCellClass =
           siteName={settings.siteName}
           currentPath="/"
         />
-        <Footer
-          items={navigation.items}
-          ui={navigation.ui}
-          legal={navigation.legal}
-          settings={settings}
-        />
+        <Footer legal={navigation.legal} settings={settings} />
       </div>
     </Section>
 
@@ -866,9 +861,10 @@ const headCellClass =
       <h2 id="sg-mediatext">Media and text</h2>
       <p class="mt-4 max-w-narrow">
         A heading, paragraphs, an optional list in the slot, and an optional
-        photo beside them. The home page uses it twice with{' '}
-        <code class="font-mono text-small">imageSide</code> flipped, so the two
-        bands do not read as the same block printed again.
+        photo beside them. The home overview uses it and About will too; when
+        one page shows two, flip{' '}
+        <code class="font-mono text-small">imageSide</code> so the second does
+        not read as the first printed again.
       </p>
 
       <div class="mt-8">
@@ -886,16 +882,15 @@ const headCellClass =
 
       <h3 class="mt-12">The same component with no image</h3>
       <p class="mt-3 max-w-narrow text-small text-ink">
-        A real state, not a defensive one:{' '}
-        <code class="font-mono text-small">presence.image</code> is optional in
-        the schema. The copy becomes one centred reading column rather than half
+        The <code class="font-mono text-small">image</code> prop is optional.
+        Without it the copy becomes one centred reading column rather than half
         a grid with an empty other half.
       </p>
       <div class="mt-6">
         <MediaText
-          heading={home.presence.heading}
-          headingId="sg-mediatext-presence"
-          paragraphs={[home.presence.text]}
+          heading={home.overview.heading}
+          headingId="sg-mediatext-noimage"
+          paragraphs={home.overview.paragraphs}
         />
       </div>
     </Section>
@@ -945,10 +940,10 @@ const headCellClass =
 
       <div class="mt-8 overflow-hidden rounded-ui border border-line">
         <CtaBand
-          heading={home.cta.heading}
+          heading={firstService.cta.heading}
           headingId="sg-ctaband-heading"
-          text={home.cta.text}
-          button={home.cta.button}
+          text={firstService.cta.text}
+          button={firstService.cta.button}
         />
       </div>
     </Section>
@@ -971,6 +966,7 @@ const headCellClass =
         <Image
           src={home.hero.image.src}
           alt=""
+          inferSize
           widths={[640, 1280]}
           sizes="(min-width: 75rem) 75rem, 100vw"
           class="absolute inset-0 -z-10 size-full object-cover object-center"

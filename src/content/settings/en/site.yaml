@@ -4,15 +4,33 @@ tagline: Precise BIM and Revit models, delivered on time.
 logo:
   src: ../../../assets/images/brand/logo.svg
   alt: BIM Delivery
+logoOnDark:
+  src: ../../../assets/images/brand/logo-on-dark.svg
+  alt: BIM Delivery
 contact:
   email: hello@example.com
   phone: '+1 555 010 0000'
   address: 100 Placeholder Street, Suite 200, Example City
+  website: https://www.example.com
 social:
   - network: linkedin
     url: https://www.linkedin.com/
   - network: youtube
     url: https://www.youtube.com/
 footer:
-  text: BIM and Revit modeling services for architects, engineers, and contractors.
+  intro:
+    - Building **better AEC projects** through BIM
+    - At **BIM Delivery**, we deliver reliable BIM solutions that bring **quality**, **accuracy**, and **value** to every project through a **collaborative**, **client-focused approach**.
+    - '**Trusted BIM partner** for the **global AEC industry**'
+  contactHeading: Contact info
+  certification:
+    heading: Certified excellence. Trusted performance.
+    text: '**BIM Delivery** follows certified management systems that ensure quality, safety, and BIM best practice, delivering trusted, efficient, and reliable AEC work worldwide. Placeholder badges until the real certifications are confirmed.'
+    badges:
+      - src: ../../../assets/images/badges/badge-quality.svg
+        alt: Placeholder quality management badge
+      - src: ../../../assets/images/badges/badge-bim.svg
+        alt: Placeholder BIM process badge
+      - src: ../../../assets/images/badges/badge-security.svg
+        alt: Placeholder information security badge
   copyright: © BIM Delivery. All rights reserved.

@@ -8,8 +8,8 @@ seo:
   title: Scan to BIM | BIM Delivery
   description: Turn laser scan point clouds into accurate as built Revit models for renovation, retrofit, and facility management projects.
 image:
-  src: ../../../assets/images/services/scan-to-bim.jpg
-  alt: The concrete exterior of an existing building
+  src: https://images.pexels.com/photos/5802822/pexels-photo-5802822.jpeg?auto=compress&cs=tinysrgb&w=1600
+  alt: A surveyor setting up a measuring instrument on a tripod at a construction site
 deliverables:
   - Native Revit model to your level of detail
   - Sheets and views set up to your standards
