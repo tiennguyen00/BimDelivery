@@ -61,6 +61,11 @@
   --color-gold: #e09900;
   --color-gold-deep: #c88600;
   --color-gold-ink: #946600;
+  /* The same value as `gold`, under a name that only makes sense on black:
+     the one place a bright gold word is legible (8.73:1). The home page's why
+     choose us band uses it for its highlighted words. Never on a light tone,
+     where it drops to 2.41:1; there, a gold word is `gold-ink`. */
+  --color-gold-on-dark: #e09900;
 
   /* Reserved for the real logo and feature 5's icons. Fills only. Nothing in
      this feature uses it; if feature 5 ships without it, drop the token. */
@@ -130,6 +135,20 @@
   /* Section owns width and gutters; there is no separate Container. */
   --container-content: 75rem;
   --container-narrow: 45rem;
+
+  /* ---- Motion -------------------------------------------------------- */
+  /* Tailwind's own animations are kept; this adds the text caret blinking
+     after the why choose us heading (spec 0005). `step-end` makes it a hard
+     on and off, like a real caret, rather than a fade. With reduced motion
+     the base rule below runs it once in 0.01ms, and with no fill mode it
+     settles back on its resting, visible state. */
+  --animate-caret: caret 1s step-end infinite;
+
+  @keyframes caret {
+    50% {
+      opacity: 0;
+    }
+  }
 }
 
 /**

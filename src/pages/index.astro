@@ -1,11 +1,11 @@
 ---
 /**
- * The front door (spec 0005): nine sections, in order, every word and image of
+ * The front door (spec 0005): eight sections, in order, every word and image of
  * them from a content entry.
  *
  * This file is the only place that knows the page's shape. It owns the tone of
  * each band (the `white` and `tint` alternation spec 0003 asks a page to set),
- * and it owns the heading ids, under one rule for all nine: `<section>-heading`.
+ * and it owns the heading ids, under one rule for all eight: `<section>-heading`.
  * No component here reads a tone or invents an id.
  *
  * The reference site's "Delivering Precision BIM & Revit Modeling" section is
@@ -14,15 +14,16 @@
  * Three of the pieces below live in `components/ui/` rather than
  * `components/home/`, because a later Release 1 page already needs each one:
  * `MediaText` and `StatsBand` for About, `CtaBand` for the service pages.
+ * `StatsBand` is not used here any more: the why choose us band shows the
+ * same numbers as cards.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Card from '../components/ui/Card.astro';
 import MediaText from '../components/ui/MediaText.astro';
-import StatsBand from '../components/ui/StatsBand.astro';
 import CtaBand from '../components/ui/CtaBand.astro';
 import Hero from '../components/home/Hero.astro';
-import ValueGrid from '../components/home/ValueGrid.astro';
+import WhyChooseUs from '../components/home/WhyChooseUs.astro';
 import DifferentiatorList from '../components/home/DifferentiatorList.astro';
 import CertificationRow from '../components/home/CertificationRow.astro';
 import { resolveLocale } from '../i18n/locales';
@@ -53,14 +54,20 @@ const [home, stats, services] = await Promise.all([
     primaryCta={home.hero.primaryCta}
   />
 
-  {/* 2. Why choose us */}
-  <Section tone="tint" labelledBy="why-choose-us-heading">
-    <ValueGrid
-      heading={home.whyChooseUs.heading}
-      headingId="why-choose-us-heading"
-      items={home.whyChooseUs.items}
-    />
-  </Section>
+  {/**
+   * 2. Why choose us. Its own black band, not a Section tone, holding the
+   * site's numbers as cards. That is why there is no separate stats band on
+   * this page: the same figures twice would read as a mistake.
+   */}
+  <WhyChooseUs
+    heading={home.whyChooseUs.heading}
+    headingHighlight={home.whyChooseUs.headingHighlight}
+    headingId="why-choose-us-heading"
+    lead={home.whyChooseUs.lead}
+    paragraphs={home.whyChooseUs.paragraphs}
+    stats={stats}
+    lang={lang}
+  />
 
   {/* 3. Company overview */}
   <Section tone="white" labelledBy="overview-heading">
@@ -76,23 +83,13 @@ const [home, stats, services] = await Promise.all([
     />
   </Section>
 
-  {/* 4. Stats */}
-  <Section tone="tint" labelledBy="stats-heading">
-    <StatsBand
-      heading={home.stats.heading}
-      headingId="stats-heading"
-      items={stats}
-      lang={lang}
-    />
-  </Section>
-
   {/**
-   * 5. Services. Exactly three, guaranteed by the cross entry check in
+   * 4. Services. Exactly three, guaranteed by the cross entry check in
    * `content.ts`: a fourth entry stops the build rather than quietly
    * reflowing this row. The path is `/${slug}`, the same one `[service].astro`
    * builds its route from.
    */}
-  <Section tone="white" labelledBy="services-heading">
+  <Section tone="tint" labelledBy="services-heading">
     <h2 id="services-heading" class="max-w-narrow text-balance">
       {home.services.heading}
     </h2>
@@ -111,12 +108,12 @@ const [home, stats, services] = await Promise.all([
   </Section>
 
   {/**
-   * 6. Global presence. The photo takes the opposite side to the overview
+   * 5. Global presence. The photo takes the opposite side to the overview
    * above, so the two `MediaText` bands do not read as the same block twice.
    * The regions go in through the slot: they are a list this page has and
    * About does not.
    */}
-  <Section tone="tint" labelledBy="presence-heading">
+  <Section tone="white" labelledBy="presence-heading">
     <MediaText
       heading={home.presence.heading}
       headingId="presence-heading"
@@ -143,8 +140,8 @@ const [home, stats, services] = await Promise.all([
     </MediaText>
   </Section>
 
-  {/* 7. Differentiators */}
-  <Section tone="white" labelledBy="differentiators-heading">
+  {/* 6. Differentiators */}
+  <Section tone="tint" labelledBy="differentiators-heading">
     <DifferentiatorList
       heading={home.differentiators.heading}
       headingId="differentiators-heading"
@@ -152,8 +149,8 @@ const [home, stats, services] = await Promise.all([
     />
   </Section>
 
-  {/* 8. Certification */}
-  <Section tone="tint" labelledBy="certification-heading">
+  {/* 7. Certification */}
+  <Section tone="white" labelledBy="certification-heading">
     <CertificationRow
       heading={home.certification.heading}
       headingId="certification-heading"
@@ -165,7 +162,7 @@ const [home, stats, services] = await Promise.all([
     />
   </Section>
 
-  {/* 9. Closing call to action. Its own gold band, not a Section tone. */}
+  {/* 8. Closing call to action. Its own gold band, not a Section tone. */}
   <CtaBand
     heading={home.cta.heading}
     headingId="cta-heading"

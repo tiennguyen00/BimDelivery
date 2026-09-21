@@ -61,6 +61,10 @@ const iconNames: readonly IconName[] = [
   'youtube',
   'x',
   'instagram',
+  'briefcase-clock',
+  'users',
+  'building',
+  'map-pin',
 ];
 
 const firstService = services[0];
@@ -597,8 +601,8 @@ const headCellClass =
 
       <h3 class="mt-12">Text only, with no image and no link</h3>
       <div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {home.whyChooseUs.items.slice(0, 3).map((item) => (
-          <Card title={item.title} text={item.text} />
+        {services.slice(0, 3).map((service) => (
+          <Card title={service.title} text={service.summary} />
         ))}
       </div>
     </Section>
@@ -629,11 +633,8 @@ const headCellClass =
             }}
           />
         )}
-        {home.whyChooseUs.items[0] && (
-          <Card
-            title={home.whyChooseUs.items[0].title}
-            text={home.whyChooseUs.items[0].text}
-          />
+        {secondService && (
+          <Card title={secondService.title} text={secondService.summary} />
         )}
       </div>
       <p class="mt-4 text-small text-ink">
@@ -794,10 +795,10 @@ const headCellClass =
         earn a dependency, and a fixed map means a name outside it is a type
         error rather than a blank square. Every glyph inherits{' '}
         <code class="font-mono text-small">currentColor</code>, so the two rows
-        below are the same eight files.
+        below are the same twelve glyphs.
       </p>
 
-      <ul class="mt-8 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-4 lg:grid-cols-8">
+      <ul class="mt-8 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-4 lg:grid-cols-6">
         {iconNames.map((name) => (
           <li class="flex flex-col items-center gap-2 rounded-ui border border-line p-4">
             <Icon name={name} />
@@ -916,7 +917,7 @@ const headCellClass =
 
       <div class="mt-8">
         <StatsBand
-          heading={home.stats.heading}
+          heading="Our work in numbers"
           headingId="sg-statsband-heading"
           items={stats}
           lang={lang}

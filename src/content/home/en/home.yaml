@@ -12,14 +12,13 @@ hero:
     label: Talk to our team
     href: /contact-us
 whyChooseUs:
-  heading: Why choose us
-  items:
-    - title: Accuracy first
-      text: Every model is checked against your drawings and standards before it leaves our hands.
-    - title: On schedule
-      text: Clear milestones and weekly updates, so you always know where your model stands.
-    - title: One team
-      text: Architects, engineers, and modelers working together on your project from start to finish.
+  heading: Delivering BIM modeling services
+  headingHighlight: worldwide
+  lead:
+    highlight: BIM Delivery
+    text: is a BIM consulting and engineering team delivering accurate Revit models, BIM coordination, and digital construction support to the architecture, engineering, and construction industry. We partner with architects, engineers, contractors, manufacturers, and facility managers to make project delivery smoother through clear BIM workflows.
+  paragraphs:
+    - Our team brings accuracy, speed, and value to every stage of a project. By pairing technical depth with fast turnaround and close collaboration, we help you reduce risk, improve coordination, and deliver successful projects in every market you work in.
 overview:
   heading: A BIM partner for the whole project
   paragraphs:
@@ -28,8 +27,6 @@ overview:
   image:
     src: ../../../assets/images/home/overview.jpg
     alt: A tidy desk with a laptop by a window
-stats:
-  heading: Our work in numbers
 services:
   heading: Our services
   intro: Three core services, each delivered to your standards and your schedule.

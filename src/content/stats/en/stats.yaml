@@ -3,11 +3,15 @@ items:
   - value: 12
     suffix: '+'
     label: Years of experience
+    icon: briefcase-clock
   - value: 1200
     suffix: '+'
     label: Projects delivered
+    icon: building
   - value: 18
     label: Countries served
+    icon: map-pin
   - value: 60
     suffix: '+'
     label: BIM specialists
+    icon: users

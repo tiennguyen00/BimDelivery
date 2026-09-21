@@ -145,6 +145,14 @@ const navigation = defineCollection({
   }),
 });
 
+/**
+ * The glyphs a stat may carry, each a key of the map in `Icon.astro`. Listed
+ * here because a schema needs real values at runtime and a component's types
+ * are gone by then; passing one to `<Icon>` is still type checked, so a name
+ * added here but never drawn fails `astro check`.
+ */
+const statIcons = ['briefcase-clock', 'users', 'building', 'map-pin'] as const;
+
 const stats = defineCollection({
   loader: load('stats', 'yaml'),
   schema: z.object({
@@ -155,6 +163,9 @@ const stats = defineCollection({
           value: z.number().nonnegative(),
           suffix: z.string().optional(),
           label: text,
+          // Shown by the home page's why choose us cards (spec 0005).
+          // `StatsBand` is typographic and ignores it.
+          icon: z.enum(statIcons),
         }),
       )
       .min(1),
@@ -176,16 +187,21 @@ const home = defineCollection({
         image: imageSchema(image),
         primaryCta: link,
       }),
-      whyChooseUs: z.object({
+      // The black band under the hero (spec 0005). Its numbers are the
+      // `stats` entry, so they are written once for the whole site.
+      whyChooseUs: z.strictObject({
         heading: text,
-        items: z.array(titledText).min(1),
+        /** The heading's last words, shown in gold after `heading`. */
+        headingHighlight: text,
+        /** The first paragraph opens with `highlight` in gold, then `text`. */
+        lead: z.object({ highlight: text, text }),
+        paragraphs: z.array(text),
       }),
       overview: z.object({
         heading: text,
         paragraphs: z.array(text).min(1),
         image: imageSchema(image),
       }),
-      stats: z.object({ heading: text }),
       services: z.object({ heading: text, intro: text }),
       presence: z.object({
         heading: text,

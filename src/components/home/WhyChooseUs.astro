@@ -1,0 +1,123 @@
+---
+/**
+ * The why choose us band (spec 0005): a black band under the hero with a
+ * centred heading, a short company introduction, and one white card per stat.
+ *
+ * It is its own band rather than a `Section` tone, like `CtaBand` and the
+ * hero: `Section` stays two light tones. It borrows the shared band frame from
+ * `styles.ts` and carries `focus-contrast`, the ring for every surface that is
+ * not a light tone, so anything focusable added here later is covered.
+ *
+ * Colour on black: the copy is white (21.00:1) and the highlighted words are
+ * `gold-on-dark` (8.73:1), the one gold word allowed and only ever on black.
+ * Inside the white cards the light tone rules apply again: the icon is a gold
+ * fill, and the number, being a word, is `gold-ink` (5.05:1).
+ *
+ * The cards are the `stats` entry, the same numbers `StatsBand` shows, so they
+ * count up the same way: the grid carries `data-stats-band` and
+ * `data-locale`, each number `data-count-to`, and the one counter script
+ * enhances figures that are already correct in the HTML.
+ */
+import Icon from '../ui/Icon.astro';
+import {
+  bandGutterClass,
+  bandPaddingClass,
+  bandWidthClass,
+} from '../ui/styles';
+import type { Locale } from '../../i18n/locales';
+import type { StatItem } from '../../lib/content';
+
+interface Props {
+  heading: string;
+  /** The heading's closing words, in gold. */
+  headingHighlight: string;
+  /** The id the band points at with `aria-labelledby`. */
+  headingId: string;
+  lead: { highlight: string; text: string };
+  paragraphs: readonly string[];
+  stats: readonly StatItem[];
+  /** The page's language, used to group the numbers and handed to the script. */
+  lang: Locale;
+}
+
+const { heading, headingHighlight, headingId, lead, paragraphs, stats, lang } =
+  Astro.props;
+
+const format = new Intl.NumberFormat(lang);
+---
+
+<section
+  aria-labelledby={headingId}
+  class:list={[
+    bandGutterClass,
+    bandPaddingClass,
+    'focus-contrast bg-black text-white',
+  ]}
+>
+  <div class={bandWidthClass.default}>
+    {/**
+     * The gold rule under the heading is drawn by `after:`, so it is exactly
+     * as wide as the heading's box and never reaches a screen reader. The
+     * caret is decoration too, hidden and left out of the accessible name.
+     */}
+    <div class="flex justify-center">
+      <h2
+        id={headingId}
+        class="relative pb-3 text-center text-balance text-white after:absolute after:inset-x-0 after:bottom-0 after:h-1 after:bg-gold"
+      >
+        {heading} <span class="text-gold-on-dark">{headingHighlight}</span>
+        <span
+          aria-hidden="true"
+          class="ml-1 inline-block h-lh w-0.5 animate-caret bg-gold align-bottom"
+        ></span>
+      </h2>
+    </div>
+
+    <div class="mt-10 flex flex-col gap-4 md:mt-12">
+      <p>
+        <span class="font-semibold text-gold-on-dark">{lead.highlight}</span>{' '}
+        {lead.text}
+      </p>
+      {paragraphs.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </div>
+
+    {/**
+     * One description list, as in `StatsBand`: each label is the term and its
+     * number the definition, shown number first by `flex-col-reverse`. The
+     * icon sits outside the pair and is hidden, because the label already
+     * says what it pictures.
+     */}
+    <dl
+      data-stats-band
+      data-locale={lang}
+      class="mt-12 grid grid-cols-2 gap-4 md:gap-6 lg:mt-14 lg:grid-cols-4 lg:gap-8"
+    >
+      {stats.map((item) => (
+        <div class="flex flex-col items-center rounded-ui bg-white px-3 py-6 text-center shadow-lg shadow-white/10 md:px-6 md:py-8">
+          <Icon name={item.icon} size={72} class="fill-gold" />
+          <div class="mt-4 flex flex-col-reverse items-center gap-1">
+            <dt class="font-semibold text-ink-strong md:text-lead">
+              {item.label}
+            </dt>
+            <dd class="text-h2 font-bold text-gold-ink">
+              <span data-count-to={item.value}>
+                {format.format(item.value)}
+              </span>
+              {item.suffix && <span>{item.suffix}</span>}
+            </dd>
+          </div>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+{/**
+ * The same module `StatsBand` imports. Astro bundles it once however many
+ * components ask for it, and it counts every `data-stats-band` on the page.
+ */}
+<script>
+  import '../../scripts/counters';
+</script>

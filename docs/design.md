@@ -50,6 +50,7 @@ a change of values rather than a change of class names everywhere.
 | `--color-gold` | `#e09900` | Brand gold. Fills only: primary button, highlight fills, decorative rules, icon fills |
 | `--color-gold-deep` | `#c88600` | The primary button's hover fill, and nothing else |
 | `--color-gold-ink` | `#946600` | The same hue, dark enough to read. The only gold allowed as text, a link, a control border, or the focus ring |
+| `--color-gold-on-dark` | `#e09900` | Brand gold as a word, allowed only on black (8.73:1): the highlighted words in the home page's why choose us band. Never on a light tone |
 | `--color-yellow` | `#ffcc00` | Reserved for the real logo and feature 5's icons. Fills and decoration only |
 | `--color-line` | `#e5e5e5` | Card borders and dividers. Decorative, never a control boundary |
 | `--color-field` | `#767676` | Form field borders. A control boundary, so it has to reach 3:1 |
@@ -66,6 +67,7 @@ list and only one of them is legible as a word.
 | Fill gold | `--color-gold` | Button fills, highlight fills behind black text, decorative rules, icon fills | Any text; any control border; any focus ring |
 | Fill gold, hover | `--color-gold-deep` | The primary button's hover fill | Everything else |
 | Text gold | `--color-gold-ink` | Emphasised words, links, the secondary button's border and label, the focus ring | Large flat fills, where it reads muddy rather than gold |
+| Text gold on black | `--color-gold-on-dark` | Highlighted words on a black band (today only why choose us) | Anything on white, tint, or a photo |
 | Accent yellow | `--color-yellow` | The real logo and feature 5's icons | Any text; anything else today |
 
 A gold word, link, control border, or focus ring that is not
@@ -108,6 +110,9 @@ focus indicators. Computed from the hex values above.
 | focus ring gold-ink | white / tint | 5.05 / 4.79 | 3.0 |
 | white (the gold band's link label) | black / ink-strong (hover) | 21.00 / 12.63 | 4.5 |
 | black (the gold band's heading and text) | gold | 8.73 | 4.5 |
+| white (why choose us heading and copy) | black | 21.00 | 4.5 |
+| gold-on-dark (why choose us highlighted words) | black | 8.73 | 4.5 |
+| gold-ink (why choose us card numbers) / ink-strong (card labels) | white | 5.05 / 12.63 | 4.5 |
 | white (the hero's heading and subheading) | scrim over any photo, worst case over pure white (composite `#666666`) | 5.74 at worst | 4.5 |
 | two colour focus ring, black inner band / white outer band (the hero photo and the gold band) | gold / any photo | black on gold 8.73; on any colour at all, one of the two bands reaches at least 4.58 | 3.0 |
 
@@ -195,7 +200,11 @@ border, and focus colour is identical on each, so no component adapts to its
 background, none takes a tone prop, and none reads a tone variable. Components
 name their colours directly (`text-ink`, `border-gold-ink`).
 
-A dark band would be a change to spec 0003, not a page level override. It means
+The home page has one black band, why choose us, and it is not a tone: like
+the hero and `CtaBand` it is its own component that borrows the band frame,
+carries `focus-contrast`, and holds only white text, `--color-gold-on-dark`
+words, and white cards. A dark `Section` tone would still be a change to spec
+0003, not a page level override. It means
 bringing back inherited tone variables, a card tone reset, a light error
 colour, and a second focus colour, then computing the dark contrast pairs.
 
@@ -309,12 +318,17 @@ and so on).
 | `title` | `string`, the accessible name | none |
 | `class` | `string` | none |
 
-The whole set, eight glyphs on one 24 unit grid: `menu`, `close`,
-`chevron-down`, and the five social marks `linkedin`, `facebook`, `youtube`,
-`x`, `instagram`.
+The whole set, twelve glyphs on one 24 unit grid: `menu`, `close`,
+`chevron-down`, the five social marks `linkedin`, `facebook`, `youtube`,
+`x`, `instagram`, and the four solid stat glyphs `briefcase-clock`, `users`,
+`building`, `map-pin` (the why choose us cards). A glyph whose details are
+holes punched through it sets `evenodd` in the map.
 
 - Every glyph inherits `currentColor`, so an icon is coloured by the text around
-  it. **Do not** give an icon a colour of its own.
+  it. **Do not** give an icon a colour of its own. The one exception is a
+  gold icon on white, as in the why choose us cards: gold may not be a text
+  colour there, so the icon takes `fill-gold` instead, which is a fill and
+  within the gold rule.
 - A name outside the map is a **type error**, not a blank square. There is no
   icon library and no dynamic lookup.
 - Without `title` the icon is hidden from assistive tech, which is right
@@ -489,8 +503,8 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 
 - **On the two light tones**: a 2px solid `--color-gold-ink` outline with a 2px
   gap, identical on white and tint. This is the base rule in `global.css`.
-- **On every surface that is not a light tone** (today the home hero's photo
-  and `CtaBand`'s gold band): a two colour ring, a 2px `--color-black` band
+- **On every surface that is not a light tone** (today the home hero's photo,
+  the why choose us black band, and `CtaBand`'s gold band): a two colour ring, a 2px `--color-black` band
   directly around the control and a 2px `--color-white` band outside it. It
   comes from the `focus-contrast` utility in `global.css`, placed on the band's
   `<section>`, so everything focusable inside inherits it and no control sets
@@ -521,9 +535,9 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 - A React field placed directly in an `.astro` file gets an explicit `id`.
 - Components never contain visible copy. Every word arrives through a prop or
   slot, from a content entry.
-- Exactly two components ship client JavaScript, and both only enhance markup
-  that already works: `Header` imports `src/scripts/nav.ts` (spec 0004) and
-  `StatsBand` imports `src/scripts/counters.ts` (spec 0005). Remove either
+- Exactly two scripts ship, and both only enhance markup that already works:
+  `Header` imports `src/scripts/nav.ts` (spec 0004), and `StatsBand` and the
+  home page's `WhyChooseUs` import `src/scripts/counters.ts` (spec 0005). Remove either
   script and the site stays usable. Any third one needs a reason this good.
 - The React components render to static HTML unless a page hydrates them, and
   only feature 10's contact island may.
