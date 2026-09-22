@@ -1,6 +1,6 @@
 # 0005. Compose the home page from content as six bands, enhanced by small plain scripts
 
-**Date**: 2026-09-22 (scroll reveals with Motion added, the hero carousel recorded as built; 2026-09-21: AC-3 removed; six section page ratified, folding in the assumed specs 0007 and 0008; hero revised to the reference overlay earlier the same day; first written 2026-09-20)
+**Date**: 2026-09-22 (second revision the same day: the service cards gain an illustration, a sub services list, and a gold hover; earlier: scroll reveals with Motion added, the hero carousel recorded as built; 2026-09-21: AC-3 removed; six section page ratified, folding in the assumed specs 0007 and 0008; hero revised to the reference overlay earlier the same day; first written 2026-09-20)
 **Status**: In Progress
 **Scope feature**: 6, Home page (`docs/scope/scope.md`)
 
@@ -14,6 +14,8 @@ The page ships three small plain scripts on top of the nav, each enhancing marku
 
 The 2026-09-22 revision also writes down the hero carousel, built on 2026-09-21 without a spec change. It is recorded as built, at the engineer's choice, including one known gap: it autoplays with no pause button, so the page no longer meets WCAG 2.2.2 (see Consequences and Follow-up).
 
+The second 2026-09-22 revision rebuilds the three service cards to match a reference card. Each card now shows one shared illustration (in place of the service photo), the title, the summary, a short list of sub services with gold checks, and a "Learn more" cue. On hover or keyboard focus the card fills with a wash from cream (the `tint` token) to gold, gains gold side borders, turns its text black so it stays readable on the gold, and lifts 4px. The card becomes its own home component, `ServiceCard`, so the design system `Card` goes back to how spec 0003 left it. The illustration is a placeholder copied from the reference site and must be replaced before launch.
+
 ## Requirements
 
 **User stories**:
@@ -24,13 +26,14 @@ The 2026-09-22 revision also writes down the hero carousel, built on 2026-09-21 
 - As a keyboard or screen reader user, I want the page to read in a sensible heading order and every meaningful image to carry a real description, with decoration kept out of my way.
 - As a first time visitor, I want the opening screen to be one strong photo with the offer readable on top of it and one obvious next step.
 - As a prospective client, I want to see where the company works and a few real projects before I decide to get in touch.
+- As a prospective client comparing services, I want each service card to tell me what kinds of work it covers, and to make it obvious the card leads somewhere.
 
 **Acceptance criteria**:
 
 - **AC-1** (revised 2026-09-21, six sections): The page renders exactly six sections in this order: hero, intro, company overview, services, global presence, project showcase (the showcase only when AC-28 allows). The reference site's "Delivering Precision BIM & Revit Modeling" section is absent, and so are a separate stats band, a differentiators section, a certification section, and a closing call to action band. The footer follows the showcase directly.
 - **AC-2**: Every headline, paragraph, list item, number, label, button word, region name, and image on the page comes from a content entry. `src/pages/index.astro` and every component it uses contain no visible copy of their own.
 - **AC-3** (removed 2026-09-21): No longer required. The number stays so the other IDs keep their meaning; it is not reused.
-- **AC-4** (heading revised 2026-09-21): The services section is a `tint` `Section` with a centred `h2` carrying the gold rule (AC-32) and a centred `text-lead` intro, both from `home.services`. It renders one `Card` per `services` entry for the page's language, ordered by `order`, each `elevated` and `align="center"`, showing the entry's image, title, and summary, and linking to `/{slug}`, the same path `[service].astro` builds. When the collection does not hold exactly three entries for a language, the build fails with a message naming the collection, the language, and the count found.
+- **AC-4** (revised 2026-09-22, the service cards; heading revised 2026-09-21): The services section is a `tint` `Section` with a centred `h2` carrying the gold rule (AC-32) and a centred `text-lead` intro, both from `home.services`. It renders one `ServiceCard` (`src/components/home/ServiceCard.astro`) per `services` entry for the page's language, ordered by `order`, each linking to `/{slug}`, the same path `[service].astro` builds. What a card shows is AC-38; how it reacts is AC-40 to AC-42. No service photo appears on the home page. When the collection does not hold exactly three entries for a language, the build fails with a message naming the collection, the language, and the count found.
 - **AC-5** (revised 2026-09-21, numbers as cards): The intro band renders one white card per `stats` entry item, inside one `<dl>`: a decorative icon from the item's `icon` (hidden from assistive tech), then the number grouped for the entry's language (so `1200` reads as `1,200`) with its suffix when it has one, then its label. The label is the `<dt>` and the number the `<dd>`, shown number first. The grid is two columns below `lg` and four at `lg`. The finished numbers are present in the built HTML.
 - **AC-6**: The numbers count up once, the first time the cards enter the viewport, and never again. With JavaScript unavailable, or with `prefers-reduced-motion: reduce` set, no animation runs and the finished numbers are what the visitor sees.
 - **AC-7** (revised 2026-09-21): The overview renders through the shared `MediaText` component inside a `white` `Section`, with the photo on the end side. `MediaText` keeps its optional image and single column fallback, because About reuses it.
@@ -38,7 +41,7 @@ The 2026-09-22 revision also writes down the hero carousel, built on 2026-09-21 
 - **AC-9** (revised 2026-09-21, replaces the certification row): The certification row is not on the home page. The footer carries the certification badges (`settings.footer.certification`), so the page loses nothing.
 - **AC-10** (revised 2026-09-21): The gold `CtaBand` is not on the home page. It stays in `src/components/ui/` for the service pages (feature 8), and its `/styleguide` tile is fed the first service's `cta`. `Section` still offers exactly two tones and `Button` exactly two variants; neither gains a prop for any band on this page.
 - **AC-11** (revised 2026-09-21): The page has exactly one `h1`. Each of the six sections carries its own `h2` and points at it with `aria-labelledby`, using one naming rule: the heading's id is `<section>-heading`. The six ids are `hero-heading`, `intro-heading`, `overview-heading`, `services-heading`, `presence-heading`, and `project-showcase-heading`. Titles inside a section (service cards, the presence band's why choose heading, showcase tiles) are `h3`.
-- **AC-12** (revised 2026-09-22, the carousel): The first hero photo loads eagerly with a high fetch priority; the other hero photos load lazily. All of them use `sizes="100vw"` and the width steps of the hero's own width rule (spec 0006 decides where the photos come from and how their widths are read), and all are positioned to fill the band, so none takes layout space. Every other photo on the page loads lazily and reserves its space: `MediaText` and `Card` by aspect ratio, showcase tiles by filling a tile whose height is set by the grid, so nothing moves as images arrive. The world map is an inline SVG with a fixed `viewBox`, so it reserves its own space. Every image either carries alt text or is marked decorative.
+- **AC-12** (revised 2026-09-22, the carousel): The first hero photo loads eagerly with a high fetch priority; the other hero photos load lazily. All of them use `sizes="100vw"` and the width steps of the hero's own width rule (spec 0006 decides where the photos come from and how their widths are read), and all are positioned to fill the band, so none takes layout space. Every other image on the page loads lazily and reserves its space: `MediaText` by aspect ratio, the service card illustration by its fixed height (AC-43, revised 2026-09-22), showcase tiles by filling a tile whose height is set by the grid, so nothing moves as images arrive. The world map is an inline SVG with a fixed `viewBox`, so it reserves its own space. Every image either carries alt text or is marked decorative.
 - **AC-13**: The page renders correctly at mobile, `md`, and `lg` with no sideways scrolling at any width, and every tap target stays at least 44px.
 - **AC-14** (revised 2026-09-22): The only JavaScript the page loads is the existing nav bundle, the counter module, the hero carousel module, and the reveal module (with the parts of `motion` it imports). Astro may bundle these into fewer files; no other script appears. No `astro-island` appears in the built HTML.
 - **AC-15**: The page's title and description come from `home.seo` and reach the document through `PageLayout`.
@@ -64,6 +67,13 @@ The 2026-09-22 revision also writes down the hero carousel, built on 2026-09-21 
 - **AC-35** (added 2026-09-22, motion is never load bearing): The built HTML draws every element fully visible; only the reveal script hides anything, and only elements that are entirely below the viewport when it runs. An element already on screen, or partly on screen, when the script starts is left alone and never animates, so nothing visible blinks out and back. With JavaScript unavailable, with the script failing to load, or with `prefers-reduced-motion: reduce`, the script hides nothing and every element is visible. A focusable element inside a hidden one (a service card, the showcase button) reveals as soon as focus scrolls it into view.
 - **AC-36** (added 2026-09-22, the dependency): The reveal uses the `motion` package, imported only as `animate` from `motion/mini` and `inView` from `motion`. No other `motion` export (hybrid `animate`, `scroll`, `motion/react`) is imported anywhere in `src/`. The reveal module plus the parts of `motion` it pulls in come to at most 5 KB gzipped in the built output. `motion` needs no install script, so `allowBuilds` in `pnpm-workspace.yaml` is unchanged.
 - **AC-37** (added 2026-09-22, the carousel behaviour, recorded as built): With two or more photos, the hero crossfades to the next photo every 6 seconds, the fade taking 1 second, wrapping from the last photo to the first. The slideshow holds still while the pointer is over the band or keyboard focus is inside it, and picks up again when both leave; choosing a photo with a dot or an arrow shows it at once and gives it a full 6 seconds. Only the photo showing is exposed to assistive tech; the others are `aria-hidden="true"`. With `prefers-reduced-motion: reduce`, the slideshow never autoplays, the dots and arrows still work, and the swap is instant (the `global.css` cut). With no JavaScript, the hero is the first photo, still. There is no pause button (the known WCAG 2.2.2 gap in Consequences).
+- **AC-38** (added 2026-09-22, what a service card shows): Top to bottom: the shared illustration (`home.services.illustration`); the service title as an `h3` holding the card's one link; the entry's `summary`; the entry's `subServices` as a `<ul>` in the order written; and the cue, `home.services.cardCue` followed by a decorative right arrow, pinned to the bottom of the card. Illustration, title, and summary are centred; the list is left aligned, each item led by the decorative `check` icon. The three cards in a row are the same height and their cues line up along the bottom. The cue is plain text, not a link: the card has exactly one link and one tab stop, the whole card is clickable through that link's stretched layer, and the link's accessible name is the title alone.
+- **AC-39** (added 2026-09-22, the content): `home.services` is a `z.strictObject` of `{ heading, intro, illustration, cardCue }`. `illustration` is a local image file under `src/assets/images/services/`, in the shared image shape (a non empty `alt` or `decorative: true`, never both); the shipped entry is `decorative: true`, so each card renders it with `alt=""`. Every `services` entry has a required `subServices`: 3 to 6 non empty strings. An entry with 2 or 7 items, or none, fails the build naming the file and the field. `deliverables` is unchanged and does not appear on the home page.
+- **AC-40** (added 2026-09-22, hover and focus): When the pointer is over a card, or the card's link has keyboard focus, three things happen together over 200ms: a wash fades in, running from `tint` at the top edge to `gold` at the bottom edge, covering the whole card behind the illustration and the words; a 4px `gold` border appears on the left and right edges; and the card rises 4px (`-translate-y-1`) while its shadow deepens from `shadow-lg` to `shadow-xl`. The borders are drawn as an overlay, so the card's size and content never shift. Keyboard focus also shows the light tone `gold-ink` focus ring (AC-18) around the card. When the pointer leaves and focus moves on, everything returns to rest.
+- **AC-41** (added 2026-09-22, contrast on the wash): While the wash shows, every word on the card (title, summary, list items, cue) and the check and arrow icons are `black`, which measures at least 8.73:1 at every point of the wash, because its darkest point is `gold`. At rest the card is white with its normal colours: title `ink-strong`, summary `ink-muted`, list items `ink`, cue and icons `gold-ink`. No text ever sits on the wash in a colour under 4.5:1 (for the record: `ink-muted` on `gold` is 2.06:1, and still only 4.19:1 on gold at 20 percent).
+- **AC-42** (added 2026-09-22, motion and touch): With `prefers-reduced-motion: reduce`, the card does not rise and nothing transitions: the wash, borders, black text, and deeper shadow still appear, but at once. On a device with no hover (a phone or tablet), a tap follows the link and leaves no hover state stuck on the card. The lift uses the CSS `translate` property (what Tailwind v4's `translate-y` utilities write), never `transform`, so it composes with the scroll reveal's inline `transform` (AC-34) instead of fighting it; each `ServiceCard`'s root element stays a direct child of the `data-reveal-stagger` grid (AC-33).
+- **AC-43** (added 2026-09-22, the illustration file): The illustration is a checked in file, `src/assets/images/services/service-illustration.png`, optimised by Astro at build. No remote host is added: `image.domains` in `astro.config.mjs` and the photo schema's `images.pexels.com` rule are unchanged. It renders at a fixed height of 160px (`h-40`), its width following the image's own ratio, with 1x and 2x densities, loads lazily, keeps its transparent background, and reserves its space so nothing shifts as it arrives. `src/assets/images/CREDITS.md` lists it with its source link and states plainly that it is a placeholder copied from the reference site, licence unknown, to be replaced before launch.
+- **AC-44** (added 2026-09-22, `Card` untouched, the docs): `src/components/ui/Card.astro` has no `goldHover` prop and matches spec 0003 again, so its `/styleguide` tile and its `docs/design.md` entry are unchanged. `docs/design.md` records the service card under the home components: the wash, the black text rule with its 8.73:1 pair, the ban on `ink-muted` (or any grey) on the wash, the 4px lift, and the reduced motion rule.
 
 ## Decision
 
@@ -75,11 +85,13 @@ The page is composed in `src/pages/index.astro`, which owns every band's tone an
 
 **Revised 2026-09-22**: the page gains a scroll reveal built as one plain module, `src/scripts/reveal.ts`, on `motion`'s mini `animate` (2.3 KB, native Web Animations) and `inView` (0.5 KB), chosen by the engineer over no library, GSAP with ScrollTrigger, and CSS scroll driven animations. The script hides only what is below the fold when it runs, so no CSS ever hides content and a failed script costs nothing. The hero carousel built on 2026-09-21 is recorded as built, including its lack of a pause button.
 
+**Revised 2026-09-22 (second)**: the services band renders a new home only `ServiceCard` in place of the design system `Card`, showing one shared illustration, the summary, a sub services list, and a cue, with a cream to gold wash, gold side borders, black text, and a 4px lift on hover and focus. The engineer chose each part: fold it into this spec, the illustration replaces the photo, one illustration for all three cards held in `home.services`, a new `subServices` field (3 to 6) rather than reusing `deliverables`, the full strength wash with black text, and focus matching hover. The uncommitted `goldHover` draft on `Card` is removed. The reference screenshot arrives at the start of `/develop`; it governs spacing, sizes, radius, and type within these criteria, and where it conflicts with an AC, `/develop` stops and asks.
+
 **Implementation skills**: `astro` (`astrolicious/agent-skills`, `.agents/skills/astro/`) · `tailwind-4-docs` (`lombiq/tailwind-agent-skills`, `.agents/skills/tailwind-4-docs/`) · `zod` (`pproenca/dot-skills`, `.agents/skills/zod/`)
 
 ## Feature design
 
-**Design source**: the reference screenshots the engineer supplied during the build (the full bleed hero, the black band with stat cards, the presence band with a map and a diagonal pattern). Tokens, type, and components come from `docs/design.md`. The showcase has no reference; it follows the services and presence heading treatment and the hero's scrim.
+**Design source**: the reference screenshots the engineer supplied during the build (the full bleed hero, the black band with stat cards, the presence band with a map and a diagonal pattern). Tokens, type, and components come from `docs/design.md`. The showcase has no reference; it follows the services and presence heading treatment and the hero's scrim. The service cards (revised 2026-09-22) follow a reference card screenshot the engineer hands over at the start of `/develop`; it was not available when this revision was written, so AC-38 to AC-43 fix the structure and behaviour and the screenshot fills in the pixel detail.
 
 **Data model sketch** (the `home` entry, confirmed 2026-09-21; nothing here needs a data migration beyond renaming one key in one YAML file):
 
@@ -88,12 +100,21 @@ The page is composed in `src/pages/index.astro`, which owns every band's tone an
 | `home.hero` | strict: `heading`, `subheading`, `image` (a photo, spec 0006), `primaryCta: link` | unchanged |
 | `home.intro` | strict: `heading`, `headingHighlight`, `lead: { highlight, text }`, `paragraphs: string[]` | renamed from `whyChooseUs` |
 | `home.overview` | `heading`, `paragraphs: string[] min 1`, `image` | unchanged |
-| `home.services` | `heading`, `intro` | unchanged |
+| `home.services` | strict: `heading`, `intro`, `illustration` (local image, shared image shape), `cardCue` | `illustration` and `cardCue` added 2026-09-22 |
+| `services[].subServices` | `string[]`, min 3, max 6, required | added 2026-09-22 |
 | `home.presence` | strict: `heading`, `paragraphs` (min 1, balanced `**`), `regions: [{ name, lon, lat }]` min 1 max 6, `whyChoose: { heading, items: string[] min 1 }` | from spec 0007, plus `max(6)` |
 | `home.projectShowcase` | strict: `heading`, `intro`, `link` | from spec 0008 |
 | `home.stats`, `differentiators`, `certification`, `cta` | none | removed |
 | `stats.items[]` | `value`, optional `suffix`, `label`, `icon` | `icon` added for the cards |
 | `projects` | read only: `title`, `summary`, `image`, `service` (resolved to its title), `order` | unchanged |
+
+**Shipped content for the service cards** (placeholders, replaced by the launch content pass, feature 12): `home.services.cardCue: Learn more`; `home.services.illustration: { src: ../../../assets/images/services/service-illustration.png, decorative: true }` (the path relative to the entry, as Astro's `image()` expects). `subServices`, in this order:
+
+| Service | `subServices` |
+|---|---|
+| Revit Modeling | Architectural modeling · Structural modeling · MEP modeling · Revit families and content |
+| Scan to BIM | Point cloud to Revit models · As built documentation · Existing conditions for renovation · Model accuracy checks against the scan |
+| BIM Coordination | Clash detection and reporting · Federated model coordination · Coordinated shop drawings · Coordination meeting support |
 
 **Component inventory**:
 
@@ -102,7 +123,9 @@ The page is composed in `src/pages/index.astro`, which owns every band's tone an
 | `src/components/home/Hero.astro` | hero | none | Every other page opens differently |
 | `src/components/home/IntroBand.astro` (renamed from `WhyChooseUs.astro`) | the black intro band and its stat cards | none yet | Its black surface and card treatment are specific to this page. About decides at build time whether to reuse it or `StatsBand` |
 | `src/components/ui/MediaText.astro` | overview | About (feature 7) | Shared split of copy and photo |
-| `Card` (`elevated`, `align="center"`) | services | project and service pages | The two props exist already |
+| `src/components/home/ServiceCard.astro` (new 2026-09-22) | the three service cards | none | The illustration, the list, the cue, and the gold hover are this band's look. Props: `title`, `summary`, `subServices`, `href`, `illustration: { src: ImageMetadata, alt }`, `cue`. It reuses `Card`'s one stretched link pattern and the `link-focus` variant rather than wrapping `Card` |
+| `Card` | not on this page any more (revised 2026-09-22) | project and service pages | Back to spec 0003: the `goldHover` draft is removed (AC-44) |
+| `arrow-right` in `Icon.astro` (new 2026-09-22) | the service card cue | anywhere | A decorative stroke glyph beside the check |
 | `src/components/home/PresenceBand.astro` | global presence | none | Map, region projection, and emphasis are specific to this band |
 | `src/lib/emphasis.ts` | presence paragraphs | the footer (`settings.footer`) | Pure `splitEmphasis` and `hasBalancedEmphasis`, one mark only (`**`) |
 | `bg-diagonal` utility in `global.css` | presence surface | any light band later | A background image only, so tone, text colours, and focus are unchanged |
@@ -122,7 +145,7 @@ The page is composed in `src/pages/index.astro`, which owns every band's tone an
 | 1 | Hero | photo under a scrim, its own band | `Hero` | `home.hero` |
 | 2 | Intro | black, its own band | `IntroBand` | `home.intro` plus `getStats(lang)` |
 | 3 | Company overview | `white` | `MediaText`, `imageSide="end"` | `home.overview` |
-| 4 | Services | `tint` | three `Card`s | `home.services` plus `getServices(lang)` |
+| 4 | Services | `tint` | three `ServiceCard`s | `home.services` plus `getServices(lang)` |
 | 5 | Global presence | `white` plus `bg-diagonal` | `PresenceBand` | `home.presence` |
 | 6 | Project showcase | `tint` | `ProjectShowcase` | `home.projectShowcase` plus the first three of `getProjects(lang)` |
 
@@ -144,7 +167,16 @@ The page is composed in `src/pages/index.astro`, which owns every band's tone an
 | Render intro | the card grid columns | decided in this spec: 2 below `lg`, 4 at `lg` (AC-5) |
 | Render overview | heading, paragraphs, photo | `home.overview` |
 | Render services | heading, intro | `home.services` |
-| Render services | each card's image, alt, title, summary, path | `getServices(lang)`: `image.alt ?? ''`, `/${slug}` |
+| Render services | each card's title, summary, path | `getServices(lang)`: `title`, `summary`, `/${slug}` |
+| Render services | each card's sub services and their order | `getServices(lang)`: `subServices`, in the order written |
+| Render services | the illustration and its alt | `home.services.illustration`: its `src` (image metadata from Astro's `image()`), and `alt ?? ''` (empty for the shipped `decorative: true`) |
+| Render services | the cue words | `home.services.cardCue` |
+| Render services | the cue arrow, the list checks | the `arrow-right` (new) and `check` glyphs in `Icon.astro`, both `aria-hidden` |
+| Render services | the illustration's display height and densities | decided in this spec: 160px (`h-40`), `densities={[1, 2]}`, lazy (AC-43) |
+| Render services | the wash, border, lift, shadow, and timing | decided in this spec: `from-tint` at the top `to-gold` at the bottom, 4px `gold` left and right, `-translate-y-1`, `shadow-lg` to `shadow-xl`, 200ms (AC-40) |
+| Render services | the text colours at rest and on the wash | decided in this spec: at rest `ink-strong`, `ink-muted`, `ink`, `gold-ink`; on the wash all `black` (AC-41) |
+| Render services | what counts as focus for the wash | the existing `link-focus` variant in `global.css` (`&:has(a:focus-visible)`), so the wash follows the card's one link; hover is `group-hover` (AC-40) |
+| Render services | which spacing, sizes, radius, and type | the reference card screenshot supplied at the start of `/develop`, within AC-38 to AC-43; a conflict with an AC goes back to the engineer |
 | Render presence | heading, paragraphs, bold phrases | `home.presence.paragraphs`, split by `splitEmphasis` |
 | Render presence | each region's name | `home.presence.regions[].name` |
 | Render presence | each dot's position over the map | derived: `toMapPosition({ lon, lat })` in `PresenceBand`, `x = (lon + 180) / 360`, `y = (84 - lat) / (84 - (-56))`, as percentages in `--x` and `--y` |
@@ -183,6 +215,10 @@ The page is composed in `src/pages/index.astro`, which owns every band's tone an
 - A showcase tile that is not a link does not look like one: no hover motion, no pointer cursor.
 - The finished numbers are in the HTML before any script runs.
 - The services grid is a contract of exactly three; a fourth entry stops the build.
+- A service card has one link and one tab stop. Its cue is text, its list items are text; nothing else in it is focusable.
+- On the service card's wash, every word and icon is `black`. No grey is ever placed on the wash.
+- The service card lifts with `translate`, never `transform`, and its root stays a direct child of the stagger grid, so the reveal and the hover never collide.
+- No image on the site comes from a host other than `images.pexels.com`; the placeholder illustration is a local file.
 - `<main>` stays a plain block (no `overflow` or `contain`), or the hero's pull under the header is clipped.
 - Class strings stay written out in full, so Tailwind can find them.
 
@@ -211,7 +247,17 @@ The page is composed in `src/pages/index.astro`, which owns every band's tone an
 - Showcase with three, two, one, and zero projects (temporarily moving project files aside): three gives the large first tile; two gives two equal tiles with no empty cell at `lg`; one gives a single full width tile; zero removes the section and the build passes, verifies **AC-28**, **AC-29**.
 - Showcase interaction: hovering a tile moves nothing; tabbing through the band reaches only the button, which shows the `gold-ink` ring, verifies **AC-30**, **AC-18**.
 - Focus on dark: tabbing to the hero button shows the double ring; the intro band holds nothing focusable today, and a link added there temporarily shows the double ring too, verifies **AC-18**.
-- Loading: on a throttled connection the hero photo is requested first and nothing shifts as the overview, service, and showcase photos arrive, verifies **AC-12**.
+- Loading: on a throttled connection the hero photo is requested first and nothing shifts as the overview photo, the service card illustrations, and the showcase photos arrive, verifies **AC-12**, **AC-43**.
+- Service card contents: each card shows, top to bottom, the illustration, the title, the summary, its sub services with gold checks in the order written, and "Learn more" with an arrow at the bottom; at 1280px the three cards are the same height with their cues level; the built HTML holds no service photo in the services section, verifies **AC-4**, **AC-38**.
+- One tab stop per card: tabbing through the band stops once per card, on the title link; a screen reader announces the title alone as the link name and the illustration not at all, verifies **AC-38**, **AC-39**.
+- Sub services guard: a service entry with 2 items, then 7, then none, each fails `pnpm build` naming the file and `subServices`; an unknown key in `home.services` fails naming the key, verifies **AC-39**.
+- Hover: at 1280px, pointing at a card fades in the tint to gold wash, the gold left and right borders, and black text and icons, while the card rises 4px with a deeper shadow; the card's neighbours and its own content do not move sideways or change size; pointing away reverses it, verifies **AC-40**, **AC-41**.
+- Focus: tabbing to a card shows the same wash, borders, black text, and lift, plus the `gold-ink` ring, verifies **AC-40**, **AC-18**.
+- Contrast on the wash: inspecting the summary, a list item, and the cue near the card's bottom edge while hovered shows `black` (at least 8.73:1 on `gold`), never `ink-muted` or `ink`, verifies **AC-41**.
+- Reduced motion and touch: with reduced motion set, hovering shows the wash at once and the card does not rise; in touch emulation, tapping a card follows its link and, on going back, no card is left washed, verifies **AC-42**.
+- Reveal then hover: reload at the top, scroll the cards in so they reveal, then hover one; it lifts normally, and during the reveal a hover causes no jump, verifies **AC-42**, **AC-34**.
+- No new host: `astro.config.mjs` `image.domains` still lists only `images.pexels.com`, the illustration in the built HTML is served from this site, and CREDITS.md names it as a placeholder to replace, verifies **AC-43**.
+- `Card` untouched: `git diff` against spec 0003's `Card` shows no `goldHover`, and the `/styleguide` card tile looks as before, verifies **AC-44**.
 - Responsive: at 360px, 768px, and 1280px nothing scrolls sideways, the services row reflows one to two to three, the intro cards go two to four, and no showcase caption is clipped, verifies **AC-13**, **AC-5**, **AC-29**.
 - The hero scenarios of the first revision (worst case contrast, broken photo, home only overlap, no JavaScript on a phone, strict hero) still hold, verifies **AC-19**, **AC-21**, **AC-22**. The old "silent dots" scenario is replaced by the carousel scenario above.
 
@@ -257,6 +303,21 @@ Built during `/develop` on 2026-09-22 (done). Skateboard: the first task puts on
 40. Check a real preview at 360px, 768px, and 1280px against the reveal and carousel scenarios in Critical test scenarios, including the reload halfway down, the blocked script, reduced motion, and tabbing with no scroll first, satisfies **AC-33** to **AC-35**, **AC-37**.
 41. Run `pnpm check`, `pnpm lint`, and `pnpm build`; confirm one HTML file per route, no `astro-island`, only the four scripts of AC-14 on the home page, and the reveal chunk at most 5 KB gzipped; grep `src/` for `from 'motion` and see only the two imports of AC-36, satisfies **AC-14**, **AC-17**, **AC-36**.
 
+**Milestone 8: the service cards, revised 2026-09-22 (second)**
+
+Skateboard: the first slice puts complete, still cards on the page (content, schema, layout) so the band is usable and reviewable before any hover exists; the hover is the second slice; the cleanup and docs close it out. No new script and no new dependency.
+
+42. Take the reference card screenshot from the engineer. Compare it with AC-38 to AC-43; if it shows something they contradict (a different order, a link in the list, no cue), stop and ask before building. Note the spacing, sizes, radius, and type it shows, satisfies **AC-38**.
+43. Download the illustration from `https://paviliusbim.com/wp-content/uploads/2026/06/ChatGPT-Image-Jun-30-2026-04_57_23-PM-Photoroom.png` to `src/assets/images/services/service-illustration.png`, and add its line to `src/assets/images/CREDITS.md` under a new "Placeholders to replace before launch" heading: source link, "licence unknown, copied from the reference site", satisfies **AC-43**.
+44. Schema and content in one commit: change the `home` schema to take `({ image })` and make `services` a `z.strictObject` with `illustration: imageSchema(image)` and `cardCue: text`; add `subServices: z.array(text).min(3).max(6)` to the `services` schema; add `illustration` and `cardCue` to `home.yaml` and the placeholder `subServices` to the three service entries, exactly as in the data model sketch. Prove the guard by building with 2 items and with 7 items in one entry, then restore, satisfies **AC-39**.
+45. Add the `arrow-right` stroke glyph to `Icon.astro`, next to `check`, with a one line comment naming the service card, satisfies **AC-38**.
+46. Write `src/components/home/ServiceCard.astro`, the still card: an `<article>` root (`relative flex h-full flex-col`, white, `shadow-lg`, `rounded-ui`), the illustration through `<Image>` at `h-40` with `densities={[1, 2]}` and lazy loading, the `h3` with the stretched link (`after:absolute after:inset-0`), the summary, the `<ul>` with `check` icons, and the cue pushed to the bottom with `mt-auto`, colours as AC-41 at rest, spacing from the screenshot. A header comment explains the one link rule and why it is not `Card`. In `index.astro`, swap `Card` for `ServiceCard`, passing `home.services.illustration` and `home.services.cardCue`, and keep each card a direct child of the `data-reveal-stagger` grid. Build and look at 360px, 768px, and 1280px, satisfies **AC-4**, **AC-12**, **AC-38**, **AC-43**.
+47. Add the hover and focus to `ServiceCard`: the wash as a `before:` layer (`isolate`, `-z-10`, `bg-linear-to-b from-tint to-gold`, `opacity-0` to `100`), the side borders as an `aria-hidden` overlay span (`border-x-4 border-transparent` to `border-gold`), text and icons to `black`, `-translate-y-1` and `shadow-xl`, each triggered by `group-hover:` and by `link-focus:` (or `group-has-[a:focus-visible]:` on children), `duration-200`, the `gold-ink` ring on `link-focus`, and `motion-reduce:transition-none motion-reduce:translate-y-0` on the lift. The `goldHover` draft in `Card` is the starting point for the wash and borders; move it, do not copy it. Keep every class string written out in full, satisfies **AC-40**, **AC-41**, **AC-42**.
+48. Remove the `goldHover` prop, its class string, its overlay span, and its doc comment from `Card.astro`, and confirm `index.astro` no longer passes it; `git diff` `Card.astro` against the last commit should be empty, satisfies **AC-44**.
+49. Update `docs/design.md`: a service card note with the wash, the black text rule and its 8.73:1 pair, the grey on wash ban with the 2.06:1 figure, the 4px lift, and the reduced motion rule; add `arrow-right` to the icon list, satisfies **AC-44**.
+50. Check a real preview against the service card scenarios in Critical test scenarios: hover, keyboard focus, reduced motion, touch emulation, reveal then hover, and the three widths, satisfies **AC-13**, **AC-38**, **AC-40** to **AC-42**.
+51. Run `pnpm check`, `pnpm lint`, and `pnpm build`; confirm one HTML file per route, no `astro-island`, no new script on the home page, and `image.domains` unchanged, satisfies **AC-14**, **AC-17**, **AC-43**.
+
 ## Consequences
 
 **Positive**:
@@ -265,12 +326,20 @@ Built during `/develop` on 2026-09-22 (done). Skateboard: the first task puts on
 - The page is still entirely editable from content, including where the company works and which projects it shows.
 - Nothing on the page blinks any more. The reveals give the long page a sense of arrival without putting any content at risk: they only ever touch what is below the fold, and they vanish entirely for reduced motion, no JavaScript, or a failed script.
 - The motion library costs about 3 KB, and it is a maintained, widely used one, so springs, sequences, or scroll linked effects later are an import away rather than a rewrite.
+- The service cards now say what each service covers (the sub services) and look clickable at rest (the cue) and on hover (the wash and lift), and keyboard users get the same feedback as mouse users.
+- `Card` stays a plain design system card; the home band's look lives in one home component.
 - The content key names now match what an editor sees: the intro is `intro`, and the reasons list is the one `whyChoose` list, in the presence band.
 - The showcase cannot render broken for a new language with few projects.
 
 **Negative and tradeoffs**:
 
 - **Known accessibility gap (engineer's choice, 2026-09-22)**: the hero carousel autoplays for longer than 5 seconds with no pause, stop, or hide control, so the page does not meet WCAG 2.2.2 (Pause, Stop, Hide). Holding on hover and focus helps mouse and keyboard users but not touch or screen magnifier users. The recommended fix, a pause toggle beside the dots, was offered and declined for now; it is the first Follow-up and should land before launch.
+- **Legal risk until replaced (engineer's choice, 2026-09-22)**: the service card illustration is copied from the reference site, another company's artwork with no known licence. It is a local file, so the build never depends on their server, but it must not reach launch. CREDITS.md and the Follow-up both say so.
+- The same illustration on all three cards adds warmth but no information; the cards are told apart by their words alone.
+- The full gold wash turns the whole card's text black on hover, a big visual change for a pointer passing over. The soft wash was the calmer alternative.
+- Cards with 3 and 6 sub services sit side by side at equal height, so a short list leaves white space above the cue.
+- `ServiceCard` repeats `Card`'s stretched link pattern (a few lines) instead of reusing it; a fix to one has to be copied to the other.
+- The pixel detail of the cards is not in this spec; it depends on a screenshot handed over at build time.
 - A new runtime dependency (`motion`). Only two small functions are imported and AC-36 caps the weight, but a major version upgrade could move the `motion/mini` path.
 - The reveal adds a script and a moment of waiting to every band below the fold. On a slow device the first scroll can feel a beat behind. The 600ms duration and the 80ms step are the knobs if it feels slow.
 - Stagger works on direct children only. A future wrapper `div` inside a stagger container silently turns a sequence into one block; only the verify step catches it.
@@ -291,6 +360,8 @@ Built during `/develop` on 2026-09-22 (done). Skateboard: the first task puts on
 - Spec 0002's `home` row and its home stats and services rows are edited to match the six section model.
 - One new dependency (`motion`, revised 2026-09-22); no new tool, environment variable, or server behaviour. Every page is still prerendered.
 - `MediaText` carries reveal attributes wherever it is used, but they do nothing on a page that does not import `reveal.ts`.
+- Every `services` entry must now carry `subServices`, so a new service or a second language cannot be added without them. Spec 0002's services row should gain the field.
+- The service photo stays in each entry for the service pages (feature 8); it simply leaves the home page.
 
 ## Follow-up
 
@@ -303,6 +374,11 @@ Built during `/develop` on 2026-09-22 (done). Skateboard: the first task puts on
 - [ ] When a fourth service arrives, decide what the home page shows: a two by two grid, or a curated three. Until then the build stops.
 - [ ] When About (feature 7) is built, decide between `StatsBand` and the intro band's cards, and retire whichever loses.
 - [ ] If enquiries from the home page turn out low, revisit a closing call to action (the showcase band could carry a second button).
+- [ ] **Before launch**, replace the placeholder service card illustration with one the company owns or licenses (the launch content pass, feature 12), and move its CREDITS.md line out of the placeholders list.
+- [ ] Replace the placeholder `subServices` with the real lists in the launch content pass.
+- [ ] If each service later gets its own illustration, move `illustration` from `home.services` to the `services` entries (a small schema and content change).
+- [ ] When the service pages (feature 8) are built, decide whether they show `subServices`, and update spec 0002's services row with the new field.
+- [ ] The working tree removes the company overview band (and `MediaText` from the page) without a spec change, which contradicts AC-1, AC-7, AC-11, and AC-33. Either restore it or ratify the five section page with `/architect home page` before `/check verify`. This revision does not decide it.
 
 ## Rationale
 

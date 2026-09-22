@@ -1,0 +1,98 @@
+---
+/**
+ * One home page service card (spec 0005): the shared illustration, the title,
+ * the summary, the sub services, and a "Learn more" cue pinned to the bottom.
+ *
+ * The whole card is clickable through exactly one link and one tab stop, the
+ * same pattern as `Card`: the link wraps the title and its `::after` is
+ * stretched over the card, so a screen reader announces the title alone. The
+ * cue is plain text, not a second link, and nothing else in here may be
+ * focusable, because the stretched layer would cover it.
+ *
+ * It is not `Card` because the wash, the gold borders, and the black text on
+ * hover are this band's look only; `Card` stays as spec 0003 left it.
+ *
+ * Hover and keyboard focus show the same thing: a wash from `tint` to `gold`,
+ * gold side borders, every word and icon in `black` (at least 8.73:1 on the
+ * wash; `ink-muted` would drop to 2.06:1 on gold, so no grey is ever used
+ * here), and a 4px lift. Focus adds the `gold-ink` ring. The lift is the
+ * `translate` property, not `transform`, so it composes with the scroll
+ * reveal's inline `transform`, and only runs under `motion-safe`. Tailwind's
+ * `hover:` applies only on devices that can hover, so a tap never leaves the
+ * card stuck in its hover state.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  title: string;
+  summary: string;
+  subServices: readonly string[];
+  href: string;
+  /** Shared by every card; `alt` is `''` for the shipped decorative one. */
+  illustration: { src: ImageMetadata; alt: string };
+  cue: string;
+}
+
+const { title, summary, subServices, href, illustration, cue } = Astro.props;
+
+const lastIndex = subServices.length - 1;
+---
+
+<article class="group relative isolate flex h-full flex-col items-center overflow-hidden rounded-ui bg-white px-6 pt-8 pb-6 text-center shadow-lg transition-[translate,box-shadow] duration-200 before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:bg-linear-to-b before:from-tint before:to-gold before:opacity-0 before:transition-opacity before:duration-200 hover:shadow-xl hover:before:opacity-100 motion-safe:hover:-translate-y-1 motion-reduce:transition-none motion-reduce:before:transition-none link-focus:shadow-xl link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-gold-ink link-focus:before:opacity-100 motion-safe:link-focus:-translate-y-1">
+  {/**
+   * The side borders are an overlay rather than the card's own border, so
+   * they appear without moving a single pixel of the content.
+   */}
+  <span
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 rounded-ui border-x-4 border-transparent transition-colors duration-200 group-hover:border-gold group-has-[a:focus-visible]:border-gold motion-reduce:transition-none"
+  ></span>
+
+  <Image
+    src={illustration.src}
+    alt={illustration.alt}
+    height={160}
+    densities={[1, 2]}
+    loading="lazy"
+    decoding="async"
+    class="h-40 w-auto"
+  />
+
+  <h3 class="mt-6 text-h3 font-bold text-balance text-ink-strong transition-colors duration-200 group-hover:text-black group-has-[a:focus-visible]:text-black">
+    <a
+      href={href}
+      class="after:absolute after:inset-0 focus-visible:outline-none"
+    >
+      {title}
+    </a>
+  </h3>
+
+  <p class="mt-2 text-ink-muted transition-colors duration-200 group-hover:text-black group-has-[a:focus-visible]:text-black">
+    {summary}
+  </p>
+
+  {/**
+   * A real list for screen readers, drawn as one centred line of items split
+   * by pipes, as the reference card is. The items are inline so the line
+   * wraps like prose; the pipes are hidden from assistive tech. `role="list"`
+   * keeps Safari announcing it as a list once the markers are gone.
+   */}
+  <ul
+    role="list"
+    class="mt-4 text-small text-ink transition-colors duration-200 group-hover:text-black group-has-[a:focus-visible]:text-black"
+  >
+    {subServices.map((item, index) => (
+      <li class="inline">
+        {item}
+        {index < lastIndex && <span aria-hidden="true">{' | '}</span>}
+      </li>
+    ))}
+  </ul>
+
+  <p class="mt-auto inline-flex items-center gap-2 pt-6 font-semibold text-gold-ink transition-colors duration-200 group-hover:text-black group-has-[a:focus-visible]:text-black">
+    {cue}
+    <Icon name="arrow-right" size={20} />
+  </p>
+</article>

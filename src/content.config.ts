@@ -217,7 +217,7 @@ const stats = defineCollection({
 
 const home = defineCollection({
   loader: load('home', 'yaml'),
-  schema: () =>
+  schema: ({ image }) =>
     z.object({
       lang,
       seo,
@@ -235,8 +235,12 @@ const home = defineCollection({
       // `stats` entry, so they are written once for the whole site.
       intro: z.strictObject({
         heading: text,
-        /** The heading's last words, shown in gold after `heading`. */
-        headingHighlight: text,
+        /**
+         * The heading's last words, shown in gold after `heading` and typed
+         * through once in order (spec 0009). The first is the real one: it
+         * ships in the HTML and is what a screen reader hears.
+         */
+        headingHighlight: z.array(text).min(1),
         /** The first paragraph opens with `highlight` in gold, then `text`. */
         lead: z.object({ highlight: text, text }),
         paragraphs: z.array(text),
@@ -246,7 +250,14 @@ const home = defineCollection({
         paragraphs: z.array(text).min(1),
         image: photoSchema,
       }),
-      services: z.object({ heading: text, intro: text }),
+      // Strict (spec 0005): the band's own copy, plus the one illustration
+      // and cue word every service card shares.
+      services: z.strictObject({
+        heading: text,
+        intro: text,
+        illustration: imageSchema(image),
+        cardCue: text,
+      }),
       // The presence band (spec 0005), which absorbed the old differentiators
       // section. Strict, so a leftover `text` or `image` key fails by name.
       presence: z.strictObject({
@@ -350,6 +361,8 @@ const services = defineCollection({
       seo,
       image: photoSchema,
       deliverables: z.array(text).min(1),
+      /** The kinds of work the home service card lists (spec 0005). */
+      subServices: z.array(text).min(3).max(6),
       process: z.array(titledText).min(1),
       cta: callToAction,
     }),

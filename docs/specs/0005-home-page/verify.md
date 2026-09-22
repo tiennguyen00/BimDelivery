@@ -119,3 +119,46 @@ _Already confirmed during the build, in headless Chrome against `dist/client/`: 
 ### Acceptance criteria coverage
 
 - AC-14 by the script list step · AC-17 by the gates · AC-33 by the grep and the scroll order · AC-34 by the scroll order, no leftover style, no replay, 360px, and the constants · AC-35 by the reload, the anchor load, the three off paths, the keyboard step, and the half on screen cards · AC-36 by the size, the import grep, and the workspace diff
+
+## Milestone 8: the service cards · updated 2026-09-22
+
+_A first pass ran during `/develop` in headless Chrome at 1280, 768, and 360px
+(rest, hover, keyboard focus, reduced motion hover). Rerun it on the real site._
+
+Built on one choice the engineer made at build time: the sub services are one
+centred line split by pipes, as the reference card shows, not the left aligned
+check list AC-38 describes. The steps below check what was built; AC-38 owes a
+spec revision.
+
+### UI / manual
+
+- [ ] At 1280px, look at the services band → three cards, each showing top to bottom the illustration, the title, the summary, the sub services as one centred line split by `|`, and "Learn more →" at the bottom; the cards are the same height and the cues are level → AC-4, AC-38
+- [ ] View source of the services section → no service photo; each card holds a `<ul role="list">` with one `<li>` per sub service, and the pipes sit in `aria-hidden` spans → AC-4, AC-38
+- [ ] Tab through the band → one stop per card, on the title link; a screen reader reads the title alone as the link name and skips the illustration (`alt=""`) → AC-38, AC-39
+- [ ] Click anywhere on a card, including the cue and the illustration → it goes to `/{slug}` → AC-38
+- [ ] Hover a card → over 200ms a cream to gold wash fades in, 4px gold borders appear on the left and right, every word and the arrow turn black, the shadow deepens, and the card rises 4px; nothing inside moves → AC-40, AC-41
+- [ ] Focus a card's link with the keyboard → the same as hover, plus the `gold-ink` ring around the card; tab on → it all returns to rest → AC-40
+- [ ] With `prefers-reduced-motion: reduce` emulated, hover a card → the wash, borders, black text, and shadow appear at once, and the card does not rise → AC-42
+- [ ] Emulate a touch device and tap a card → it follows the link; press back → no card is stuck in its gold state → AC-42
+- [ ] Scroll down to the band on a fresh load → the cards reveal one by one; once they settle, hover still lifts and washes the card → AC-33, AC-34, AC-42
+- [ ] At 768px and 360px → the cards stack or pair with no overflow, the pipe line wraps like prose, and the illustration stays 160px tall → AC-13, AC-43
+- [ ] On a throttled connection → nothing shifts as the illustrations arrive → AC-12, AC-43
+
+### Commands
+
+- [ ] Give one service 2 `subServices`, then 7, then none, running `pnpm build` each time → each fails naming the entry and `subServices`; restore → AC-39
+- [ ] Add an unknown key under `home.services` in `home.yaml` and build → it fails with `Unrecognized key`; restore → AC-39
+- [ ] `git diff main -- src/components/ui/Card.astro` → empty, and `grep -rn goldHover src` → no hits → AC-44
+- [ ] `grep -n domains astro.config.mjs` → still only `images.pexels.com`; the built `index.html` serves the illustration from `/_astro/` as a 1x and 2x `webp` → AC-43
+- [ ] `pnpm check`, `pnpm lint`, `pnpm build` → all pass; `dist/client/` has one HTML file per route, no `astro-island`, and still one module script on the home page → AC-14, AC-17
+
+### Value sourcing
+
+- [ ] Sub services source: reorder the items in `scan-to-bim.md` and rebuild → that card shows them in the new order → AC-38
+- [ ] Cue source: change `home.services.cardCue` → all three cards show the new word → AC-38
+- [ ] Illustration source: point `home.services.illustration.src` at another local image → all three cards change; swap `decorative: true` for an `alt` → every card's `<img>` carries that alt → AC-39
+- [ ] Colours at rest and on the wash: in dev tools, read the computed colours at rest (title `#333333`, summary `#707070`, list `#666666`, cue `#946600`) and on hover (all `#000000`) → AC-41
+
+### Acceptance criteria coverage
+
+- AC-4 by the contents and source steps · AC-12 and AC-43 by the throttled load, the `webp` check, and the domains grep · AC-38 by the contents, tab, click, and source steps (the check list part is replaced by the pipe line) · AC-39 by the guard commands and the illustration source · AC-40 to AC-42 by the hover, focus, reduced motion, touch, and reveal steps · AC-44 by the `Card` diff and the grep

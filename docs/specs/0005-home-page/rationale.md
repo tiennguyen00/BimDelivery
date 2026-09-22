@@ -202,3 +202,39 @@ The engineer asked for basic appearance animation on the home page and wanted to
 The binding force is that motion must never be load bearing. Every choice follows from it: the reveal is one plain module, the HTML stays complete, the script hides only what the visitor cannot see yet, and reduced motion is a full stop, the same rule the counter already follows. Within that, the engineer picked Motion over the no library option for headroom; the cost is a dependency, held in check by importing only its two smallest functions and capping the weight at 5 KB (AC-36).
 
 The carousel is recorded as built because the spec should describe the page that exists. The missing pause control is recorded honestly as a WCAG 2.2.2 gap rather than argued away: holding on hover and focus does not help touch users. It is the first Follow-up and should close before launch.
+
+## Revision 2026-09-22 (second): the service cards
+
+### Context
+
+The engineer wants the three service cards to match a reference card: an illustration, a list of sub services, and a gold hover (a cream to gold wash, gold side borders, a slight lift). The cards were design system `Card`s showing a photo, a title, and a summary. An uncommitted `goldHover` prop on `Card` already sketched the wash and borders. The services schema had no field for sub services; `deliverables` exists but means what a client receives. The illustration offered is on the reference site's own server, outside the one allowed image host (spec 0006), with no licence to record. The site's text colours fail on gold: `ink-muted` measures 2.06:1 on `gold` and 4.19:1 even on gold at 20 percent, so a real wash forces a text colour decision. The reference screenshot was not available during the design conversation.
+
+### Options considered (the engineer chose each)
+
+**Where the decision lives**: revise this spec (chosen), matching how the presence band and showcase were folded in; a new small spec, which splits the card contract across two files; supersede the whole page spec, too heavy for one band.
+
+**Photo and illustration**: the illustration replaces the photo on the home card (chosen, with the engineer's own image); both on the card, busier and heavier; photo only, illustration saved for service pages.
+
+**One or many illustrations**: one shared illustration in `home.services` (chosen); one per service entry, the recommended pick, which lets real per service art drop in by content alone but asks for three images now.
+
+**Illustration source**: a checked in local file marked as a placeholder (chosen); allowing the reference site's host, which hotlinks their server and breaks the build when they move the file; a freely licensed illustration, the only option with no legal debt.
+
+**Sub services data**: a new `subServices` field, 3 to 6 items (chosen); reusing `deliverables`, which would show "a handover report" as a sub service; linked items, impossible while the whole card is one link.
+
+**Card contents**: illustration, title, summary, list (chosen), keeping the summary; dropping the summary for tighter cards; title first. A "Learn more" cue as plain text from content (chosen) over no cue, which leaves touch users no hint. Gold checks, left aligned (chosen) over centred items, which are hard to scan, or plain dots.
+
+**Wash strength**: full `tint` to `gold` with all text black (chosen), 8.73:1 at the gold end; a soft wash at 35 percent with `ink-strong` text, calmer and less like the reference; a full wash with text unchanged, rejected as failing contrast.
+
+**Lift**: 4px with a deeper shadow (chosen); 8px, busier next to the reveal; 2px, barely visible.
+
+**Focus**: the same treatment as hover plus the ring (chosen); ring only, as `Card` does, which gives keyboard users none of the gold.
+
+**Component**: a new home `ServiceCard` with `Card` reverted (chosen); extending `Card` with an illustration slot and `goldHover`, reusable but growing the design system card with one band's props.
+
+**Alt text**: decorative (chosen), since the same picture three times says nothing new.
+
+### Rationale
+
+Two forces decided the shape. First, contrast: once the wash is real, grey text cannot sit on it, so the rule is simple and total (everything black on the wash), which also makes the full reference look safe. Second, containment: the look belongs to one band, so it lives in a home component and the design system `Card` stays generic, the same split the page already uses for the intro band and the showcase. Motion follows the page's existing rules: nothing moves under reduced motion, and the lift uses `translate` so it can never collide with the reveal's `transform`.
+
+The illustration was recorded as the engineer chose it, with the legal risk stated plainly rather than argued away. Keeping it local at least removes the build's dependency on another company's server; replacing it is a launch blocker in the Follow-up.

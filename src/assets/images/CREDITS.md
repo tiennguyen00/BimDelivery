@@ -17,8 +17,7 @@ placeholders until real project photography arrives.
 | Used for                   | Pexels photo                                                                                                               | Licence        |
 | -------------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------- |
 | Home hero                  | <https://www.pexels.com/photo/brown-and-black-house-miniature-3961750/>                                                    | Pexels License |
-| Home hero, photo 2         | <https://www.pexels.com/photo/323705/>                                                                                     | Pexels License |
-| Home hero, photo 3         | <https://www.pexels.com/photo/2219024/>                                                                                    | Pexels License |
+| Home hero, photo 2         | <https://www.pexels.com/photo/31405835/>                                                                                   | Pexels License |
 | Home overview              | <https://www.pexels.com/photo/three-people-collaborating-on-a-project-6615107/>                                            | Pexels License |
 | About                      | <https://www.pexels.com/photo/professional-individuals-working-together-5582590/>                                          | Pexels License |
 | Service: Revit Modeling    | <https://www.pexels.com/photo/men-sitting-at-a-table-and-looking-at-a-laptop-displaying-a-3d-project-of-a-house-15764095/> | Pexels License |
@@ -47,3 +46,13 @@ certification body marks, and must be replaced before launch.
 - `badges/badge-quality.svg`
 - `badges/badge-bim.svg`
 - `badges/badge-security.svg`
+
+## Placeholders to replace before launch
+
+These files are copied from another company's site. Their licence is unknown,
+so they must not reach launch. Replace each one with an image the company owns
+or licenses, then move its line to the right section above.
+
+- `services/service-illustration.png` (the home service cards, spec 0005):
+  <https://paviliusbim.com/wp-content/uploads/2026/06/ChatGPT-Image-Jun-30-2026-04_57_23-PM-Photoroom.png>,
+  licence unknown, copied from the reference site.

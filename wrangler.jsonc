@@ -29,6 +29,14 @@
     "not_found_handling": "404-page",
   },
 
+  // Custom Domains: Cloudflare creates the DNS record and the HTTPS
+  // certificate for each hostname. The bimdelivery.vn zone must be on this
+  // Cloudflare account, with no other A or CNAME record on these names.
+  "routes": [
+    { "pattern": "bimdelivery.vn", "custom_domain": true },
+    { "pattern": "www.bimdelivery.vn", "custom_domain": true },
+  ],
+
   "observability": {
     "enabled": true,
   },

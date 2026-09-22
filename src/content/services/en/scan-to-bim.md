@@ -14,6 +14,11 @@ deliverables:
   - Native Revit model to your level of detail
   - Sheets and views set up to your standards
   - A handover report listing assumptions and open questions
+subServices:
+  - Point cloud to Revit models
+  - As built documentation
+  - Existing conditions for renovation
+  - Model accuracy checks against the scan
 process:
   - title: Brief
     text: We review your inputs, standards, and deadline, and agree the scope.

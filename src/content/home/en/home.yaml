@@ -8,16 +8,17 @@ hero:
   images:
     - src: https://images.pexels.com/photos/3961750/pexels-photo-3961750.jpeg?auto=compress&cs=tinysrgb&w=2560
       alt: A small clay model house standing alone on a plain white background
-    - src: https://images.pexels.com/photos/323705/pexels-photo-323705.jpeg?auto=compress&cs=tinysrgb&w=2560
-      alt: A modern apartment building with glass balconies against a pale sky
-    - src: https://images.pexels.com/photos/2219024/pexels-photo-2219024.jpeg?auto=compress&cs=tinysrgb&w=2560
-      alt: Workers levelling fresh concrete on a building site
+    - src: https://images.pexels.com/photos/31405835/pexels-photo-31405835.jpeg?auto=compress&cs=tinysrgb&w=2560
+      alt: One green model house standing out in the centre of a ring of red ones on a plain white surface
   primaryCta:
     label: Talk to our team
     href: /contact-us
 intro:
   heading: Delivering BIM modeling services
-  headingHighlight: worldwide
+  headingHighlight:
+    - worldwide
+    - abcxyz
+    - xyzcba
   lead:
     highlight: BIM Delivery
     text: is a BIM consulting and engineering team delivering accurate Revit models, BIM coordination, and digital construction support to the architecture, engineering, and construction industry. We partner with architects, engineers, contractors, manufacturers, and facility managers to make project delivery smoother through clear BIM workflows.
@@ -34,6 +35,10 @@ overview:
 services:
   heading: Our services
   intro: Three core services, each delivered to your standards and your schedule.
+  illustration:
+    src: ../../../assets/images/services/service-illustration.png
+    decorative: true
+  cardCue: Learn more
 presence:
   heading: Delivering BIM excellence across the globe
   paragraphs:

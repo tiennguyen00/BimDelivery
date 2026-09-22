@@ -75,11 +75,17 @@ export const ctaLinkClass = cx(
  * `Section` tone, `CtaBand` and the home hero, so the three cannot drift
  * apart. A band that is not a light tone borrows this frame; it never adds a
  * tone to `Section`.
+ *
+ * From `lg` up the default width is 60% of the screen, so on a desktop the
+ * content sits in a centred column with generous margins. It never drops
+ * below 50rem (800px), because 60% of a small laptop (about 614px at 1024)
+ * would squash the four column grids. So it reads as 60% from about 1340px
+ * wide, which covers the common 1440 and 1920 desktops.
  */
 export const bandGutterClass = cx('px-4 md:px-6 lg:px-8');
 export const bandPaddingClass = cx('py-16 md:py-20 lg:py-24');
 export const bandWidthClass: Readonly<Record<'default' | 'narrow', string>> = {
-  default: cx('mx-auto w-full max-w-content'),
+  default: cx('mx-auto w-full max-w-content lg:max-w-[max(75vw,50rem)]'),
   narrow: cx('mx-auto w-full max-w-narrow'),
 };
 

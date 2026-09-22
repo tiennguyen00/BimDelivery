@@ -330,8 +330,9 @@ and so on).
 | `title` | `string`, the accessible name | none |
 | `class` | `string` | none |
 
-The whole set, thirteen glyphs on one 24 unit grid: `menu`, `close`,
+The whole set, fourteen glyphs on one 24 unit grid: `menu`, `close`,
 `chevron-down`, `check` (the home presence band's why choose list, spec 0005),
+`arrow-right` (the home service card's cue, spec 0005),
 the five social marks `linkedin`, `facebook`, `youtube`,
 `x`, `instagram`, and the four solid stat glyphs `briefcase-clock`, `users`,
 `building`, `map-pin` (the home intro band's cards). A glyph whose details are
@@ -515,6 +516,42 @@ tone. The service pages (feature 8) reuse it; every service entry carries a
 - Black heading and text on the gold (8.73:1), black link with a white label
   (21.00:1). The band carries `focus-contrast`, so its link shows the two
   colour ring (below), not the gold ink one.
+
+### `ServiceCard` · `src/components/home/ServiceCard.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `title` | `string` (required) | |
+| `summary` | `string` (required) | |
+| `subServices` | `readonly string[]` (required), 3 to 6 | |
+| `href` | `string` (required) | |
+| `illustration` | `{ src: ImageMetadata; alt: string }` (required) | |
+| `cue` | `string` (required) | |
+
+The home services band's card (spec 0005), home only. Top to bottom and
+centred: the shared illustration at 160px tall, the title as an `h3`, the
+summary, the sub services, and the cue with an `arrow-right`, pinned to the
+bottom so the cues of a row line up. White, `shadow-lg`, `rounded-ui`.
+
+- **One link, one tab stop**, the same stretched title link as `Card`. The cue
+  is text. **Do not** put a link, button, or field inside it.
+- The sub services are a real `<ul>` drawn as one centred line split by pipes,
+  as the reference card is. The items are inline so the line wraps like prose,
+  and the pipes are `aria-hidden`. **Do not** turn it into a `<p>` with the
+  pipes typed in: a screen reader would lose the list.
+- At rest: title `ink-strong`, summary `ink-muted`, list `ink`, cue and arrow
+  `gold-ink`.
+- **Hover and keyboard focus look the same**: a wash from `tint` at the top to
+  `gold` at the bottom fades in over 200ms, a 4px `gold` border appears on the
+  left and right (an overlay, so nothing shifts), the shadow deepens to
+  `shadow-xl`, and the card rises 4px. Focus also shows the `gold-ink` ring.
+- **On the wash every word and icon is `black`**, at least 8.73:1 at the wash's
+  darkest point. **Never** put grey on it: `ink-muted` on `gold` is 2.06:1.
+- The lift is the `translate` property under `motion-safe`, never `transform`,
+  so it composes with the scroll reveal. With reduced motion the colours still
+  change, at once, and the card does not rise. `hover:` applies only where a
+  pointer can hover, so a tap never leaves a card stuck gold.
+- Each card stays a direct child of the band's `data-reveal-stagger` grid.
 
 ## Focus and motion
 

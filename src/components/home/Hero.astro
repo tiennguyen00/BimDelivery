@@ -30,8 +30,16 @@
  *   the rest (transparent, `aria-hidden`), and the controls start `invisible`,
  *   so with no JavaScript the hero is one still photo with nothing dead to
  *   tab to. `src/scripts/hero-carousel.ts` reveals the controls and runs it.
- *   The controls are real buttons (one dot per photo, then pause), each with a
- *   24px hit area around its small visible mark.
+ *   The controls are real buttons, one dot per photo, each with a 24px hit
+ *   area around its small visible mark, plus a previous and a next arrow on
+ *   the sides that fade in while the pointer is over the band. There is no
+ *   pause button: the slideshow holds still while the pointer is over the
+ *   band or focus is inside it, and never plays for reduced motion.
+ *
+ * Every photo is a white background with its subject in the centre (spec
+ * 0006), so the dots are black: black at 30% for the
+ * others, solid black for the one showing. The arrows are white circles with
+ * a black chevron and a soft shadow, so they read on white and on the panel.
  *
  * The first photo is the page's largest contentful paint, so it is the one
  * image on the site that loads eagerly and at a high fetch priority; the
@@ -69,6 +77,17 @@ const slides = await Promise.all(
 );
 const hasCarousel = slides.length > 1;
 
+/**
+ * The previous and next arrows, one on each side, vertically centred in the
+ * band. They start `invisible` like the dots, for the same no JavaScript
+ * reason. Once revealed they stay transparent until the pointer is over the
+ * band, or the arrow itself has keyboard focus, so a keyboard user always sees
+ * where they are. Below `md` they are left out: the panel fills the width
+ * there, and the dots already do the job.
+ */
+const heroArrowClass =
+  'invisible absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-white text-black opacity-0 shadow-md transition-opacity duration-300 group-hover/hero:opacity-100 focus-visible:opacity-100 md:grid';
+
 /** The widths the photo is generated at, before the source width cap. */
 const HERO_STEPS: readonly number[] = [640, 960, 1280, 1920];
 /** Wider than this is never worth the bytes, even on a large monitor. */
@@ -89,7 +108,7 @@ const heroWidths = (sourceWidth: number): number[] => {
   aria-labelledby={headingId}
   data-hero-carousel={hasCarousel ? '' : undefined}
   class={cx(
-    'focus-contrast relative isolate -mt-(--header-h) flex min-h-svh flex-col bg-black lg:min-h-[80svh]',
+    'group/hero focus-contrast relative isolate -mt-(--header-h) flex min-h-svh flex-col bg-black lg:min-h-[80svh]',
     bandGutterClass,
   )}
 >
@@ -111,6 +130,45 @@ const heroWidths = (sourceWidth: number): number[] => {
       )}
     />
   ))}
+
+  {hasCarousel && (
+    <>
+      <button
+        type="button"
+        data-hero-arrow="prev"
+        aria-label="Show the previous photo"
+        class={cx(heroArrowClass, 'inset-s-4 lg:inset-s-8')}
+      >
+        <svg aria-hidden="true" viewBox="0 0 16 16" class="size-4">
+          <path
+            d="M10 3 5 8l5 5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+      <button
+        type="button"
+        data-hero-arrow="next"
+        aria-label="Show the next photo"
+        class={cx(heroArrowClass, 'inset-e-4 lg:inset-e-8')}
+      >
+        <svg aria-hidden="true" viewBox="0 0 16 16" class="size-4">
+          <path
+            d="m6 3 5 5-5 5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+    </>
+  )}
 
   <div class="flex flex-1 flex-col items-center justify-center pt-(--header-h)">
     <div class={cx(bandPaddingClass, 'flex w-full flex-col items-center')}>
@@ -145,33 +203,9 @@ const heroWidths = (sourceWidth: number): number[] => {
           aria-current={index === 0 ? 'true' : 'false'}
           class="group grid size-6 cursor-pointer place-items-center rounded-full"
         >
-          <span class="size-2.5 rounded-full bg-white/50 transition-colors group-aria-[current=true]:bg-white" />
+          <span class="size-2.5 rounded-full bg-black/30 transition-colors group-aria-current:bg-black" />
         </button>
       ))}
-      <button
-        type="button"
-        data-hero-toggle
-        aria-label="Pause the slideshow"
-        class="ml-2 grid size-6 cursor-pointer place-items-center rounded-full text-white"
-      >
-        <svg
-          data-icon="pause"
-          aria-hidden="true"
-          viewBox="0 0 16 16"
-          class="size-3.5 fill-current"
-        >
-          <rect x="3" y="2" width="3.5" height="12" rx="1" />
-          <rect x="9.5" y="2" width="3.5" height="12" rx="1" />
-        </svg>
-        <svg
-          data-icon="play"
-          aria-hidden="true"
-          viewBox="0 0 16 16"
-          class="hidden size-3.5 fill-current"
-        >
-          <path d="M4 2.5v11a1 1 0 0 0 1.5.86l9-5.5a1 1 0 0 0 0-1.72l-9-5.5A1 1 0 0 0 4 2.5Z" />
-        </svg>
-      </button>
     </div>
   ) : (
     <div class="pb-8" />

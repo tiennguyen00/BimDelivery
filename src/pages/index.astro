@@ -1,26 +1,24 @@
 ---
 /**
- * The front door (spec 0005): six sections, in order, every word and image
+ * The front door (spec 0005): five sections, in order, every word and image
  * of them from a content entry.
  *
  * This file is the only place that knows the page's shape. It owns the tone of
  * each band (the `white` and `tint` alternation spec 0003 asks a page to set),
- * and it owns the heading ids, under one rule for all six: `<section>-heading`.
+ * and it owns the heading ids, under one rule for all five: `<section>-heading`.
  * No component here reads a tone or invents an id.
  *
  * The reference site's "Delivering Precision BIM & Revit Modeling" section is
  * deliberately absent; it was cut in the scope. So are the certification row
  * and the gold closing band: the footer already carries the badges, and the
- * page now ends on the project showcase.
- *
- * `MediaText` lives in `components/ui/` rather than `components/home/`,
- * because About needs it too.
+ * page now ends on the project showcase. The company overview band was
+ * removed as well (2026-09-22), so the intro band leads straight into the
+ * services.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/ui/Section.astro';
-import Card from '../components/ui/Card.astro';
-import MediaText from '../components/ui/MediaText.astro';
 import Hero from '../components/home/Hero.astro';
+import ServiceCard from '../components/home/ServiceCard.astro';
 import IntroBand from '../components/home/IntroBand.astro';
 import PresenceBand from '../components/home/PresenceBand.astro';
 import ProjectShowcase from '../components/home/ProjectShowcase.astro';
@@ -80,22 +78,8 @@ const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
     lang={lang}
   />
 
-  {/* 3. Company overview */}
-  <Section tone="white" labelledBy="overview-heading">
-    <MediaText
-      heading={home.overview.heading}
-      headingId="overview-heading"
-      paragraphs={home.overview.paragraphs}
-      image={{
-        src: home.overview.image.src,
-        alt: home.overview.image.alt ?? '',
-      }}
-      imageSide="end"
-    />
-  </Section>
-
   {/**
-   * 4. Services. Exactly three, guaranteed by the cross entry check in
+   * 3. Services. Exactly three, guaranteed by the cross entry check in
    * `content.ts`: a fourth entry stops the build rather than quietly
    * reflowing this row. The path is `/${slug}`, the same one `[service].astro`
    * builds its route from.
@@ -118,24 +102,31 @@ const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
     </div>
 
     <div
-      class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8"
+      class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-16"
       data-reveal-stagger
     >
+      {/**
+       * Each card stays a direct child of the stagger grid, so the reveal
+       * moves the cards one by one rather than a wrapper as one block.
+       */}
       {services.map((service) => (
-        <Card
+        <ServiceCard
           title={service.title}
-          text={service.summary}
-          image={{ src: service.image.src, alt: service.image.alt ?? '' }}
+          summary={service.summary}
+          subServices={service.subServices}
           href={`/${service.slug}`}
-          align="center"
-          elevated
+          illustration={{
+            src: home.services.illustration.src,
+            alt: home.services.illustration.alt ?? '',
+          }}
+          cue={home.services.cardCue}
         />
       ))}
     </div>
   </Section>
 
   {/**
-   * 5. Global presence. A white band under a faint diagonal
+   * 4. Global presence. A white band under a faint diagonal
    * stripe, holding the map, the copy, and the why choose list that used to
    * be its own differentiators section.
    */}
@@ -150,7 +141,7 @@ const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
   </Section>
 
   {/**
-   * 6. Project showcase. Tint, so the light tones still alternate
+   * 5. Project showcase. Tint, so the light tones still alternate
    * after the patterned presence band. It is the last band before the black
    * footer, and it is left out entirely when the language has no projects.
    */}
