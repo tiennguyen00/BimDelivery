@@ -15,6 +15,10 @@
  * takes at `lg`: reading the words before looking at the picture is the right
  * order, and the visual alternation only matters once there are two columns to
  * alternate between.
+ *
+ * The grid carries `data-reveal-stagger`, so the copy and the photo reveal one
+ * after the other on a page that imports `scripts/reveal.ts` (spec 0005). On
+ * any other page the attribute does nothing.
  */
 import { Image } from 'astro:assets';
 
@@ -42,7 +46,10 @@ const imageSizes = '(min-width: 64rem) 50vw, 100vw';
 ---
 
 {image ? (
-  <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
+  <div
+    class="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12"
+    data-reveal-stagger
+  >
     <div>
       <h2 id={headingId}>{heading}</h2>
       {paragraphs.map((paragraph) => (

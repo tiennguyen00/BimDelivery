@@ -174,3 +174,31 @@ The binding force is that this is a ratify, not a redesign: the page works, it w
 Folding everything into 0005 follows from the same force. The page is one feature with one scope row; three partial specs that each supersede a few of the others' criteria are exactly the kind of drift that let the page get ahead of its contract. Keeping the AC numbers stable and appending new ones (AC-25 onward) means the scope row, `verify.md`, and anyone who cited an AC can still find it, with the revised ones marked.
 
 Two engineer choices went against the recommendation and are recorded honestly as tradeoffs rather than argued with: the hero photo whose subject hides under the panel, and the removed rather than finite caret. Neither is wrong; the first costs some visual impact until the launch content pass, and the second costs only the typed look. The page ending without a call to action was the recommended pick, because the engineer removed it deliberately and three other paths to contact remain; it is still the first thing to revisit if the page underperforms.
+
+## Revision 2026-09-22: scroll reveals with Motion, and the carousel recorded
+
+### Context
+
+The engineer asked for basic appearance animation on the home page and wanted to choose the library. The spec said the only motion was the counter, and the project rule is zero JavaScript by default, so a reveal had to be small, a plain script, and never able to hide content. Reading the code also turned up the hero carousel, committed on 2026-09-21 (13eb97a) without a spec change: it autoplays, its dots are real buttons, and it breaks the old AC-14, AC-20, and the "nothing loops" invariant.
+
+### Options considered (the engineer chose each)
+
+**Library**: `motion`'s mini `animate` plus `inView`, about 3 KB (chosen by the engineer); no library, CSS transitions plus a 1 KB `IntersectionObserver` script like `counters.ts`, the recommended pick, lightest and with nothing new to learn but no springs or sequences later; GSAP with ScrollTrigger, the standard for rich scroll storytelling, now free, but 35 KB or more for simple reveals; CSS scroll driven animations (`animation-timeline: view()`), zero JavaScript, but not yet in every browser, so the feel would differ by browser.
+
+**What moves**: the bands below the hero (chosen); the intro band too, which doubles up with the counter; headings only, the subtlest.
+
+**Feel**: a subtle fade and 24px rise, 600ms, once (chosen); a soft spring; replay on every entry, which reads busy on a long page.
+
+**Hiding strategy** (decided in this spec): the script hides only what is below the fold when it runs (chosen), so a failed or slow script costs nothing and nothing on screen blinks; hiding in CSS behind a `js` class, the common pattern, which leaves content invisible if the module fails to load and needs a timeout to recover.
+
+**What to watch** (decided in this spec): each hidden element on its own, with a stagger delay by position (chosen); the stagger container, simpler, but on a phone the container is on screen while its later children are not, so they would animate unseen.
+
+**Carousel**: record it here (chosen), since this revision rewrites the motion rules anyway; a separate spec later, which leaves verify failing it against the old wording.
+
+**Carousel pause control**: keep as built with no pause button (chosen by the engineer); a pause toggle beside the dots, the recommended pick and the W3C carousel pattern, which meets WCAG 2.2.2; play once then stop, which still moves for more than 5 seconds; no autoplay, which meets 2.2.2 with nothing added.
+
+### Rationale
+
+The binding force is that motion must never be load bearing. Every choice follows from it: the reveal is one plain module, the HTML stays complete, the script hides only what the visitor cannot see yet, and reduced motion is a full stop, the same rule the counter already follows. Within that, the engineer picked Motion over the no library option for headroom; the cost is a dependency, held in check by importing only its two smallest functions and capping the weight at 5 KB (AC-36).
+
+The carousel is recorded as built because the spec should describe the page that exists. The missing pause control is recorded honestly as a WCAG 2.2.2 gap rather than argued away: holding on hover and focus does not help touch users. It is the first Follow-up and should close before launch.

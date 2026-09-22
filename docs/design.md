@@ -215,7 +215,7 @@ The home page has one black band, the intro band, and it is not a tone: like
 the hero and `CtaBand` it is its own component that borrows the band frame,
 carries `focus-contrast`, and holds only white text, `--color-gold-on-dark`
 words, and white cards. Nothing on it moves except the counter, which runs once,
-so the page needs no pause control. A dark `Section` tone would still be a change to spec
+so the band needs no pause control and takes no scroll reveal. A dark `Section` tone would still be a change to spec
 0003, not a page level override. It means
 bringing back inherited tone variables, a card tone reset, a light error
 colour, and a second focus colour, then computing the dark contrast pairs.
@@ -450,6 +450,10 @@ own map layout (`src/components/home/PresenceBand.astro`).
 
 - **Do** flip `imageSide` between two on one page, so the second does not read
   as the first printed again.
+- Its grid carries `data-reveal-stagger`, so the copy and the photo reveal one
+  after the other. The attribute is inert until a page imports
+  `src/scripts/reveal.ts` (today only the home page does), so About keeps a
+  still `MediaText` unless it opts in.
 - Mobile always stacks copy first, photo second, whichever side the photo takes
   at `lg`. `imageSide` only moves the photo once there are two columns.
 - **Renders correctly with no image**: the copy becomes one centred reading
@@ -532,6 +536,36 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 - When the visitor's system asks for reduced motion, every transition and
   animation is cut to 0.01ms, so state changes are instant.
 
+Motion is enhancement only. The built HTML draws every band complete, and no
+CSS rule hides anything waiting for a script. There are three moving things on
+the home page, and each one is a plain script that stops entirely for reduced
+motion:
+
+- **The scroll reveal** (`src/scripts/reveal.ts`, spec 0005). Below the hero
+  and the intro band, these reveal once as they scroll into view: the services
+  heading block and then its cards, the overview's copy and photo, the presence
+  heading and then its copy and map, the showcase heading block, its tiles, and
+  its button. An element opts in with `data-reveal`; a container whose direct
+  children reveal one after another carries `data-reveal-stagger`. Both are
+  written in markup, never in content, and do nothing on a page that does not
+  import the script. Each element fades from 0 and rises 24px over 600ms with
+  an ease out, starting when 20 percent of it is in view; a stagger child also
+  waits 80ms per hidden sibling before it. Only elements entirely below the
+  viewport when the script starts are hidden, so nothing on screen blinks. It
+  never replays, and when it ends the element holds no inline style, so hover
+  styles are untouched. Built on `motion`: `animate` from `motion/mini` and
+  `inView` only, nothing else from the package.
+- **The hero carousel** (`src/scripts/hero-carousel.ts`). With two or more
+  photos it crossfades every 6s with a 1s fade, wrapping to the first. It holds
+  while the pointer is over the band or focus is inside it; a dot or arrow shows
+  a photo at once and gives it a full 6s. With reduced motion it never
+  autoplays, and the controls still work. There is no pause button, a known
+  WCAG 2.2.2 gap spec 0005 records.
+- **The counter** (`src/scripts/counters.ts`), once per band, described under
+  `StatsBand`.
+- **Don't** give the hero or the intro band a reveal: the hero is the largest
+  contentful paint, and the intro band already moves with the counter.
+
 ## Invariants
 
 - Every colour, font size, radius, and container width resolves to a token.
@@ -550,10 +584,12 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 - A React field placed directly in an `.astro` file gets an explicit `id`.
 - Components never contain visible copy. Every word arrives through a prop or
   slot, from a content entry.
-- Exactly two scripts ship, and both only enhance markup that already works:
-  `Header` imports `src/scripts/nav.ts` (spec 0004), and `StatsBand` and the
-  home page's `IntroBand` import `src/scripts/counters.ts` (spec 0005). Remove either
-  script and the site stays usable. Any third one needs a reason this good.
+- Exactly four scripts ship, and all of them only enhance markup that already
+  works: `Header` imports `src/scripts/nav.ts` (spec 0004); `StatsBand` and the
+  home page's `IntroBand` import `src/scripts/counters.ts`, `Hero` imports
+  `src/scripts/hero-carousel.ts`, and the home page imports
+  `src/scripts/reveal.ts` (all spec 0005). Remove any script and the site stays
+  usable. Any fifth one needs a reason this good.
 - The React components render to static HTML unless a page hydrates them, and
   only feature 10's contact island may.
 

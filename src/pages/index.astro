@@ -107,7 +107,7 @@ const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
      * on an inline block, so it is exactly as wide as the words and never
      * reaches a screen reader.
      */}
-    <div class="mx-auto max-w-narrow text-center">
+    <div class="mx-auto max-w-narrow text-center" data-reveal>
       <h2
         id="services-heading"
         class="relative inline-block pb-3 text-balance after:absolute after:inset-x-0 after:bottom-0 after:h-1 after:bg-gold"
@@ -117,7 +117,10 @@ const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
       <p class="mt-8 text-lead">{home.services.intro}</p>
     </div>
 
-    <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+    <div
+      class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8"
+      data-reveal-stagger
+    >
       {services.map((service) => (
         <Card
           title={service.title}
@@ -163,3 +166,12 @@ const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
     </Section>
   )}
 </PageLayout>
+
+{/**
+ * The scroll reveal (spec 0005) is the page's choice, not a component's, so
+ * it is imported here. The `data-reveal` and `data-reveal-stagger` attributes
+ * the bands carry do nothing on a page that does not import it.
+ */}
+<script>
+  import '../scripts/reveal';
+</script>

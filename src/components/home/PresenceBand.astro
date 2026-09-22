@@ -62,13 +62,16 @@ const ruleClass =
   'relative inline-block pb-3 text-balance after:absolute after:inset-x-0 after:bottom-0 after:h-1 after:bg-gold';
 ---
 
-<div class="text-center">
+<div class="text-center" data-reveal>
   <h2 id={headingId} class={ruleClass}>
     {heading}
   </h2>
 </div>
 
-<div class="mt-12 grid grid-cols-1 gap-12 lg:mt-16 lg:grid-cols-12 lg:items-center lg:gap-16">
+<div
+  class="mt-12 grid grid-cols-1 gap-12 lg:mt-16 lg:grid-cols-12 lg:items-center lg:gap-16"
+  data-reveal-stagger
+>
   <div class="lg:col-span-5">
     {paragraphs.map((paragraph) => (
       <p class="mt-4 first:mt-0">
