@@ -238,3 +238,75 @@ The engineer wants the three service cards to match a reference card: an illustr
 Two forces decided the shape. First, contrast: once the wash is real, grey text cannot sit on it, so the rule is simple and total (everything black on the wash), which also makes the full reference look safe. Second, containment: the look belongs to one band, so it lives in a home component and the design system `Card` stays generic, the same split the page already uses for the intro band and the showcase. Motion follows the page's existing rules: nothing moves under reduced motion, and the lift uses `translate` so it can never collide with the reveal's `transform`.
 
 The illustration was recorded as the engineer chose it, with the legal risk stated plainly rather than argued away. Keeping it local at least removes the build's dependency on another company's server; replacing it is a launch blocker in the Follow-up.
+
+## Revision 2026-09-23: the heading rule draws with the scroll direction
+
+### Context
+
+Five headings on the home page carry a gold rule under them: the intro band, services, presence, its why choose `h3`, and the showcase. AC-32 fixed that treatment on 2026-09-21 and it has been still ever since. The engineer asked for the rule to draw as you reach each section, growing left to right on the way down the page and right to left on the way back up.
+
+Two things in the repo said no to that as written, and both were put to the engineer before anything was designed.
+
+The first is that the page has a stated rule against replaying. AC-34 says a reveal "never hides or replays, not on scrolling back up and not on scrolling down again", and the Consequences say plainly "Nothing blinks. The counter and each reveal run once." A rule that knows which way you are travelling has to replay; there is no other way for it to ever grow from the right. The engineer chose to give up the once only rule for this one behaviour.
+
+The second is that the intro band is specifically barred from scroll motion. AC-8 said "Nothing on the band animates except the counter of AC-6: it takes no scroll reveal", and `design.md` said "Do not give the hero or the intro band a reveal." The engineer listed the intro heading first in the request. Rather than quietly break that rule or quietly drop the heading, the ban was narrowed on purpose: the band still takes no fade-and-rise, and its heading takes the rule, because the rule belongs to the sitewide heading treatment of AC-32 rather than to the band.
+
+One thing that made the whole design cheaper was checked rather than assumed: `motion`'s `inView` hands its callback the `IntersectionObserverEntry`, and a callback that returns a function keeps the observer alive and gets a leave hook. So both "which edge did this arrive from" and "reset it once it is gone" are available with no scroll listener and no new dependency.
+
+### Options considered (per sub decision, the engineer chose each)
+
+**Where the decision lives**: revise this spec in place (chosen) · a new spec 0010 following the 0006 to 0009 pattern · a new spec that also clears the assumed 0006 and 0009. One spec stays the home page contract; the cost is that 0005 now carries nine revision dates.
+
+**The intro heading**: include it, rule only, narrowing the ban to the fade-and-rise (chosen) · leave the intro heading still and animate the other four · drop the ban entirely so the band can take a full reveal later. The middle option would have left out the heading the engineer named first; the last would put a third moving thing on a band that already runs a counter and an endless typewriter.
+
+**How often it plays**: replay on every crossing (chosen) · once per direction, then hold · once only, direction decided by the first crossing. Only the first actually delivers what was asked. The third would keep the existing invariant intact but on an ordinary first visit, which goes top to bottom, the right to left version would never be seen at all. The second is kept as the documented fallback if the real preview says the replay is too busy.
+
+**How the rule is drawn**: keep `after:` and drive it from custom properties with a CSS transition (chosen) · replace `after:` with a real `aria-hidden` span the script animates, as the stat card hover line does · CSS scroll driven animation with `animation-timeline: view()` and no script at all. The chosen option keeps AC-32 true, adds no DOM inside the headings, and lets one `@utility` replace a class string copied into four files. The scroll driven option was genuinely attractive (no JavaScript) and was ruled out on behaviour before support: it scrubs with the scrollbar, so scrolling up would shrink the line back toward its origin rather than grow it from the other edge, which is not what was asked. Firefox support is a second reason, not the first.
+
+**Where it resets**: instantly, once the heading is entirely out of view (chosen) · instantly at the same 20 percent threshold the reveal uses · visibly retract the way it came. The first is the only one that guarantees the reset is never seen, which is what keeps the page honest about never erasing something the HTML already drew. It costs a second observer per heading. The second reuses one number but would blink a thin gold line away while the heading is still partly on screen.
+
+**The existing fade-and-rise**: keep it once only and layer the rule on top (chosen) · replace the fade-and-rise on heading blocks with the rule · make the whole reveal direction aware. The last would have rewritten AC-33 to AC-35 and put replaying motion on every card and tile on the page, far beyond the request.
+
+**Sequencing**: draw after the block settles, 600ms and ease out, and no wait where there is no block (chosen) · both from the same moment · start the line partway through the block's rise. Waiting matches the shape the service card already uses, where the gold line waits 150ms for the card to lift first, and it means the line is read against a heading that has stopped moving.
+
+**How portable**: a shared `@utility` plus a `data-` attribute now (chosen) · home page only for now · a `SectionHeading.astro` component owning the markup, the id, the rule, and the attribute. The utility was chosen for the four pages still to be built; the component was more than the request and would have changed how all five call sites render their headings.
+
+**Where the code lives**: extend `reveal.ts` (chosen) · a new `heading-rule.ts` · extend it and rename it `scroll-motion.ts`. `design.md` caps the site at four scripts and says a fifth needs a strong reason, so the cap was put to the engineer rather than quietly spent. The rename is recorded as the thing to do if a third job ever lands in that file.
+
+**With no direction to read** (an anchor jump, a restored scroll position, a back navigation): grow left to right (chosen) · show it full width with no animation · treat it as arriving from below and grow right to left. Left to right is the reading direction and the ordinary scroll down case, so a jumped to heading looks like every other one.
+
+### Rationale
+
+The request was specific and the mechanism was mostly settled by what the repo already had. What actually needed deciding was the two rules it broke, and both were put to the engineer as rules rather than as details.
+
+Keeping the `::after` is what made the rest cheap. A custom property the pseudo element reads, plus a transition on `scale`, gives an animation the script never has to touch frame by frame: it writes two values and the browser does the work. That also removes the need for `animate` here, so the `motion` import list and its 5 KB cap in AC-36 are untouched. Flipping `transform-origin` only while the scale is zero is the one trick that makes the direction change invisible, and it is worth the sentence it takes to write down.
+
+The reset is where a replaying animation usually goes wrong, and it is the reason for the second observer. The draw fires at 20 percent visible, which is the right moment to start something. The reset must fire when the heading is gone, not when it is nearly gone, or a thin gold line vanishes in front of the visitor. `inView` at `amount: 'some'` gives exactly that boundary, so the extra observer buys a real guarantee rather than tidiness.
+
+The wait needed more care than it first looked. Waiting 600ms for a block to settle is right on the crossing where the block actually reveals, and wrong on every later one, because the fade-and-rise runs once and will never play again. A fixed wait would have turned into a 600ms stall on the second and third pass. Tying the wait to whether the block reveals on that entry keeps the two beat shape where it means something and drops it everywhere else, which also settles the intro heading for free: its band never reveals, so it never waits.
+
+One thing worth stating because it is easy to get wrong later: the reduced motion stop has to be the script's own `matchMedia` check, not the `global.css` cut. That cut shortens transitions to 0.01ms rather than removing them, so a script that ran anyway would flick each rule from full width to nothing and back. `design.md` already gives this exact reasoning for the hero panel; the same reason applies here for a different mechanism.
+
+On accessibility, the honest position is that this adds nothing. The rule is a pseudo element, so it never reaches assistive technology and nothing about heading order, ARIA, or tab order changes. WCAG 2.2.2 covers moving content that starts automatically and runs more than five seconds; each draw lasts 600ms and starts because the visitor scrolled, so it does not engage. That matters because the page already owes two pause controls, for the hero carousel and the intro typewriter, and it would be easy to assume a third has quietly been added. It has not.
+
+### What a cross check changed
+
+The first draft of this revision was read by a second model before it was accepted, and three of its findings changed the design rather than just its wording. They are worth recording, because each one looked right on the page and was wrong in the browser.
+
+The wait was the serious one. The draft said a heading waits 600ms "on the entry where its block plays the fade-and-rise", which assumed the heading and its block cross into view at the same moment. They do not: a heading sits at the top of its block, so the small heading passes the 20 percent threshold before the taller block does, and nothing in `reveal.ts` exposed whether the block had fired anyway. Awaiting the block's actual `animate()` promise through a shared `WeakMap` is both correct and simpler, and it deletes the wait constant along with the requirement to keep two 600ms numbers in step by hand.
+
+The reset was the second. The draft asked for an instant reset while the utility declared an unconditional `transition: scale 600ms`, which would have animated the retraction, exactly the visible erasing AC-48 exists to prevent. Putting the duration in `--rule-transition` lets the script write `0s` alongside the reset in one call, so the change is instant without the usual disable, force a reflow, restore dance.
+
+The third was smaller and would have been very visible. The draft left a heading already on screen at load "alone", which read as registering neither watch, and a heading with no reset watch stays full width for the life of the page. On a fresh load that heading is usually the intro one. Registering both watches for every heading and skipping only the opening `--rule-scale: 0` write fixes it and is less code than the rule it replaces.
+
+The cross check also confirmed what the design rests on, which is worth as much: a CSS transition on `scale` does animate when an inherited custom property changes, with no `@property` registration; flipping `transform-origin` at zero width is reliably invisible; and `inView` at `amount: 'some'` does give a leave event meaning no part is visible.
+
+### References
+
+Sources only, at the engineer's choice; no links were fetched.
+
+- `motion` 13.4.0, the installed copy: `inView(element, onStart, options)` where `onStart` receives `(element, entry)` and may return a leave handler, and `amount` takes `'some'`, `'all'`, or a number. Read from the package's own type declarations in `node_modules`, not from memory.
+- WCAG 2.2, success criterion 2.2.2 Pause, Stop, Hide, for the claim that a 600ms, scroll started animation does not create a pause control obligation. The same criterion is already cited in this spec for the hero carousel and in spec 0009 for the typewriter.
+- The project's own `docs/design.md`, `## Focus and motion` and `## Invariants`, for the four script cap, the reduced motion rule, and the "motion is enhancement only" position this revision had to stay inside.
+- This spec's AC-32 (the heading treatment), AC-33 to AC-36 (the scroll reveal), and AC-8 (the intro band), which are the criteria this revision changes.
+- The existing gold hover line on the stat cards, `IntroBand.astro`, as the in repo precedent for driving a two direction line from a single reversible property rather than juggling opacity.

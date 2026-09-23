@@ -70,6 +70,16 @@ list and only one of them is legible as a word.
 | Text gold on black | `--color-gold-on-dark` | Highlighted words on a black band (today only the home intro band) | Anything on white, tint, or a photo |
 | Accent yellow | `--color-yellow` | The real logo and feature 5's icons | Any text; anything else today |
 
+The decorative rule itself is one utility, `heading-rule` in `global.css`, and
+every section heading with a gold line under it uses it: on the home page the
+intro, services, presence, why choose, and showcase headings. It draws the line
+with `::after`, exactly as wide as the heading's own box and invisible to a
+screen reader, and it leaves `display` to the call site (`inline-block` where
+the line should hug the words, nothing where the heading is already a flex
+item). It also holds the two custom properties the reveal script writes to draw
+the line, described under `## Focus and motion`. A sixth heading anywhere on
+the site writes one class, never a string of `after:` utilities.
+
 A gold word, link, control border, or focus ring that is not
 `--color-gold-ink` is a bug, not a style preference. The reference site sets
 gold links and gold headings straight on white at 2.41:1, which fails WCAG AA
@@ -214,9 +224,11 @@ It sets only `background-image`, so it is not a third tone. Pass it through
 The home page has one black band, the intro band, and it is not a tone: like
 the hero and `CtaBand` it is its own component that borrows the band frame,
 carries `focus-contrast`, and holds only white text, `--color-gold-on-dark`
-words, and white cards. Nothing on it moves except the counter, which runs once,
-so the band needs no pause control and takes no scroll reveal. A dark `Section` tone would still be a change to spec
-0003, not a page level override. It means
+words, and white cards. Two things on it move: the counter, which runs once,
+and the gold rule under its heading, which draws as the heading arrives.
+Neither runs on a loop, so the band needs no pause control, and it takes no
+fade-and-rise scroll reveal. A dark `Section` tone would still be a change to
+spec 0003, not a page level override. It means
 bringing back inherited tone variables, a card tone reset, a light error
 colour, and a second focus colour, then computing the dark contrast pairs.
 
@@ -573,25 +585,46 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 - When the visitor's system asks for reduced motion, every transition and
   animation is cut to 0.01ms, so state changes are instant.
 
-Motion is enhancement only. The built HTML draws every band complete, and no
-CSS rule hides anything waiting for a script. Three plain scripts move things
-on the home page, and each stops entirely for reduced motion (the hero's script
-moves two things, the photos and the panel over them):
+Motion is enhancement only. The built HTML draws every band complete and every
+gold rule full width, and no CSS rule hides anything waiting for a script.
+Three plain scripts move things on the home page, and each stops entirely for
+reduced motion. Two of them move two things each: the hero's script moves the
+photos and the panel over them, and the reveal script moves the bands and the
+gold rules under the section headings.
 
-- **The scroll reveal** (`src/scripts/reveal.ts`, spec 0005). Below the hero
-  and the intro band, these reveal once as they scroll into view: the services
-  heading block and then its cards, the overview's copy and photo, the presence
-  heading and then its copy and map, the showcase heading block, its tiles, and
-  its button. An element opts in with `data-reveal`; a container whose direct
-  children reveal one after another carries `data-reveal-stagger`. Both are
+- **The scroll reveal**, the first half of `src/scripts/reveal.ts` (spec 0005).
+  Below the hero and the intro band, these fade and rise once as they scroll
+  into view: the services heading block and then its cards, the overview's
+  copy and photo, the presence heading and then its copy and map, the showcase
+  heading block, its tiles, and its button. An element opts in with
+  `data-reveal`; a container whose direct children reveal one after another
+  carries `data-reveal-stagger`. Both are
   written in markup, never in content, and do nothing on a page that does not
   import the script. Each element fades from 0 and rises 24px over 600ms with
   an ease out, starting when 20 percent of it is in view; a stagger child also
   waits 80ms per hidden sibling before it. Only elements entirely below the
-  viewport when the script starts are hidden, so nothing on screen blinks. It
-  never replays, and when it ends the element holds no inline style, so hover
-  styles are untouched. Built on `motion`: `animate` from `motion/mini` and
-  `inView` only, nothing else from the package.
+  viewport when the script starts are hidden, so nothing on screen blinks. The
+  fade-and-rise never replays, and when it ends the element holds no inline
+  style, so hover styles are untouched. Built on `motion`: `animate` from
+  `motion/mini` and `inView` only, nothing else from the package.
+- **The heading rule**, the second half of the same module (spec 0005). The
+  gold rule under a section heading draws itself from nothing to the full
+  width of the words as the heading arrives, over the same 600ms with an ease
+  out, starting at the same 20 percent. It grows left to right when the
+  visitor is scrolling down the page and right to left when they are scrolling
+  up; the direction is read once, from where the heading sat at the moment it
+  arrived, against the middle of the viewport. A heading inside a block that
+  is still fading and rising waits for that block to come to rest, so the
+  block settles and then the line is drawn under it. A rule goes back to
+  nothing only once its heading is entirely off screen, instantly and so
+  never seen, and it draws again on the next crossing: unlike the
+  fade-and-rise, this one replays for as long as the visitor keeps scrolling.
+  A heading already on screen when the script starts keeps its full width rule
+  and simply joins in from its next crossing, which is also what an anchor
+  jump, a restored scroll position, and the back button land on. The look is
+  the `heading-rule` utility and the motion hook is `data-heading-rule`,
+  written in markup and never in content: a page that takes the class without
+  importing the script gets a still, full width rule.
 - **The hero carousel** (`src/scripts/hero-carousel.ts`). With two or more
   photos it crossfades every 6s with a 1s fade, wrapping to the first. It holds
   while the pointer is over the band or focus is inside it; a dot or arrow shows
@@ -615,8 +648,11 @@ moves two things, the photos and the panel over them):
   so the script asks for itself).
 - **The counter** (`src/scripts/counters.ts`), once per band, described under
   `StatsBand`.
-- **Don't** give the hero or the intro band a reveal: the hero is the largest
-  contentful paint, and the intro band already moves with the counter.
+- **Don't** give the hero or the intro band the fade-and-rise: the hero is the
+  largest contentful paint, and the intro band already moves with the counter.
+  What is banned there is revealing the band, not all motion on it. The intro
+  heading's gold rule draws like every other section heading's, because the
+  rule belongs to the heading treatment rather than to the band.
 
 ## Invariants
 
@@ -640,8 +676,10 @@ moves two things, the photos and the panel over them):
   works: `Header` imports `src/scripts/nav.ts` (spec 0004); `StatsBand` and the
   home page's `IntroBand` import `src/scripts/counters.ts`, `Hero` imports
   `src/scripts/hero-carousel.ts`, and the home page imports
-  `src/scripts/reveal.ts` (all spec 0005). Remove any script and the site stays
-  usable. Any fifth one needs a reason this good.
+  `src/scripts/reveal.ts` (all spec 0005). `reveal.ts` holds two separate
+  halves, the fade-and-rise reveal and the heading rule, in one file so the
+  count stays four. Remove any script and the site stays usable. Any fifth one
+  needs a reason this good.
 - The React components render to static HTML unless a page hydrates them, and
   only feature 10's contact island may.
 

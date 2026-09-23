@@ -189,6 +189,44 @@
 }
 
 /**
+ * The gold rule under a section heading (spec 0005). Five headings carry it:
+ * the home intro band, services, presence, its why choose `h3`, and the
+ * showcase. It is drawn by a pseudo element, so it is exactly as wide as the
+ * heading's own box and never reaches a screen reader.
+ *
+ * Two custom properties are the whole motion contract. The rule ships drawn
+ * (`--rule-scale: 1`), so with no script, with a failed one, or with reduced
+ * motion asked for it is simply a full width line. Only `reveal.ts` ever
+ * moves it, growing it from the edge the visitor scrolled in from by writing
+ * `--rule-origin` and then `--rule-scale`.
+ *
+ * `--rule-transition` has no default of its own on purpose: the `var()`
+ * fallback below holds the 600ms draw, and the script writes `0s` beside a
+ * scale change when it needs that one change to be instant, which is how the
+ * reset back to nothing is never seen.
+ *
+ * Only `scale` is in the transition list, so a change to `--rule-origin`
+ * applies at once and the flip is never animated. `display` is left to the
+ * call site: the intro heading is a flex item, the other four are
+ * `inline-block`.
+ */
+@utility heading-rule {
+  --rule-scale: 1;
+  --rule-origin: left;
+
+  @apply relative pb-3 text-balance;
+
+  &::after {
+    @apply absolute inset-x-0 bottom-0 h-1 bg-gold;
+
+    content: '';
+    scale: var(--rule-scale) 1;
+    transform-origin: var(--rule-origin);
+    transition: scale var(--rule-transition, 600ms) ease-out;
+  }
+}
+
+/**
  * Everything a page gets for free, with no per page work: the typeface, the
  * body colour, heading sizes and colours, the focus ring, and the reduced
  * motion cut. Spacing, shadows, and durations deliberately keep Tailwind's

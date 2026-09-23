@@ -54,16 +54,17 @@ const toMapPosition = ({ lon, lat }: Region): string =>
   `--x: ${((lon + 180) / 360) * 100}%; --y: ${((MAP_LAT_TOP - lat) / (MAP_LAT_TOP - MAP_LAT_BOTTOM)) * 100}%`;
 
 /**
- * The gold rule under both headings: `after:` on an inline block, so it is
- * exactly as wide as the words and never reaches a screen reader. The same
- * treatment as the services heading.
+ * The gold rule under both headings, from the shared `heading-rule` utility
+ * in `global.css`; `inline-block` keeps it exactly as wide as the words and
+ * the rule never reaches a screen reader. The same treatment as the services
+ * heading, and each heading carries `data-heading-rule` so `reveal.ts` draws
+ * it with the scroll direction.
  */
-const ruleClass =
-  'relative inline-block pb-3 text-balance after:absolute after:inset-x-0 after:bottom-0 after:h-1 after:bg-gold';
+const ruleClass = 'heading-rule inline-block';
 ---
 
 <div class="text-center" data-reveal>
-  <h2 id={headingId} class={ruleClass}>
+  <h2 id={headingId} class={ruleClass} data-heading-rule>
     {heading}
   </h2>
 </div>
@@ -85,7 +86,10 @@ const ruleClass =
       </p>
     ))}
 
-    <h3 class:list={[ruleClass, 'mt-12 font-bold text-black']}>
+    <h3
+      class:list={[ruleClass, 'mt-12 font-bold text-black']}
+      data-heading-rule
+    >
       {whyChoose.heading}
     </h3>
 

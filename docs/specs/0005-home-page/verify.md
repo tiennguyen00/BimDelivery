@@ -194,3 +194,47 @@ the entrance rides on the carousel and the carousel needs two photos._
 ### Acceptance criteria coverage
 
 - AC-37 by the autoplay, arrow, dot, hold, reduced motion, and one photo steps · AC-34 by the no inline style step · AC-14 and AC-36 by the greps and the gates · AC-1 by the panel source step · AC-13 by the 390px step
+
+## Milestone 9: the heading rules draw with the scroll direction · added 2026-09-24 by /develop
+
+_Serve the production build (`pnpm build`, then `wrangler dev --port 8799`),
+because the rules ride on `reveal.ts` and the reveal only hides what is below
+the fold of a real page. Every check below was run in a headless Chrome on
+2026-09-24 and passed; they are written here so `/check verify` can run them
+again by hand._
+
+### In a browser
+
+- [ ] Load `/` at 1280px and scroll slowly to each of the five headings (intro, services, presence, why choose, showcase) → each block settles first, then its gold rule grows from the left edge rightwards over about 600ms → AC-45, AC-47
+- [ ] Watch the services heading closely as it arrives → the block finishes fading and rising before the line starts, not at the same time → AC-47
+- [ ] Watch the intro heading as it arrives → its rule draws with no wait, because its band never reveals → AC-8, AC-47
+- [ ] Scroll to the foot of the page, then slowly back up to each heading → every rule grows from the right edge leftwards, and no block fades or rises a second time → AC-45, AC-34
+- [ ] Watch a heading leave the top of the viewport → its rule stays full width while any part of it is still showing, and only drops to nothing once the heading is entirely gone; the drop is never seen → AC-48
+- [ ] Scroll back down just enough that the heading is partly visible again without having fully left → the rule is still full width and does not redraw → AC-48
+- [ ] Flick quickly past a heading and straight back → the line reverses mid draw rather than queueing or jumping → AC-45
+- [ ] Open `/#presence-heading`, and separately reload scrolled to the showcase and press the back button → no rule blinks; a heading reached afterwards draws normally → AC-45, AC-48
+- [ ] Watch the intro heading while its gold word types and deletes → the rule matches the heading's changing width at all times, mid draw included → AC-45
+- [ ] Repeat the first and fourth steps at 768px and at 360px → same behaviour, and nothing overflows sideways → AC-13
+- [ ] With `prefers-reduced-motion: reduce` emulated → all five rules are full width from the first paint, no heading element carries any inline style, and scrolling never changes one → AC-49
+- [ ] With JavaScript disabled, and separately with the reveal chunk blocked → all five rules are full width and still → AC-49
+- [ ] Tab through the page without scrolling first → focus rings are unchanged and no rule is disturbed → AC-49
+
+### Commands
+
+- [ ] `grep -rn "after:bg-gold" src/` → no hits, so the copied class string is gone from all four files → AC-32
+- [ ] `grep -c "heading-rule" dist/client/index.html` and `grep -o "data-heading-rule" dist/client/index.html | wc -l` → the class on five headings and the attribute on five → AC-32, AC-46
+- [ ] `ls src/scripts/` → no new script file was added by this milestone → AC-50
+- [ ] `grep -rn "from 'motion" src/` → exactly two imports, `inView` from `motion` and `animate` from `motion/mini` → AC-36, AC-50
+- [ ] `gzip -c dist/client/_astro/index.astro_astro_type_script_index_0_lang.*.js | wc -c` → at most 5120 bytes → AC-36
+- [ ] `pnpm check`, `pnpm lint`, `pnpm build` → all pass, 8 HTML files in `dist/client/`, no `astro-island` → AC-14, AC-17
+
+### Value sourcing
+
+- [ ] Which headings take it: add `heading-rule` and `data-heading-rule` to a sixth heading in markup and rebuild → it draws and animates like the other five, with no change to content or to the script → AC-46
+- [ ] The look without the motion: put `heading-rule` on a heading of a page that does not import `reveal.ts` (`/styleguide` is one) → a still, full width rule → AC-46, AC-49
+- [ ] The direction: reach one heading from below and then from above → left to right, then right to left, read from the heading's position against the middle of the viewport rather than from a scroll listener → AC-45
+- [ ] The duration and easing: change `--rule-transition`'s fallback in the `heading-rule` utility and rebuild → every draw takes the new time, and the script needs no edit → AC-47
+
+### Acceptance criteria coverage
+
+- AC-45 by the direction, flick, anchor, and typing steps · AC-46 by the sixth heading and styleguide steps · AC-47 by the two beat and intro heading steps · AC-48 by the reset boundary and partly visible steps · AC-49 by the reduced motion, no script, and tab steps · AC-32 by the greps · AC-50 and AC-36 by the script and import greps · AC-8 by the intro heading step · AC-13 by the three widths · AC-14 and AC-17 by the gates

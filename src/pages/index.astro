@@ -87,14 +87,16 @@ const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
   <Section tone="tint" labelledBy="services-heading">
     {/**
      * A centred heading with a gold rule under it, the same treatment as the
-     * intro band, then a centred intro. The rule is drawn by `after:`
-     * on an inline block, so it is exactly as wide as the words and never
-     * reaches a screen reader.
+     * intro band, then a centred intro. The rule comes from the shared
+     * `heading-rule` utility in `global.css`, and `inline-block` keeps it
+     * exactly as wide as the words. `data-heading-rule` is the hook
+     * `reveal.ts` reads to draw it with the scroll direction.
      */}
     <div class="mx-auto max-w-narrow text-center" data-reveal>
       <h2
         id="services-heading"
-        class="relative inline-block pb-3 text-balance after:absolute after:inset-x-0 after:bottom-0 after:h-1 after:bg-gold"
+        class="heading-rule inline-block"
+        data-heading-rule
       >
         {home.services.heading}
       </h2>

@@ -366,6 +366,49 @@ const headCellClass =
           </p>
         </div>
       </div>
+
+      <h3 class="mt-12">The heading rule</h3>
+      <p class="mt-3 max-w-narrow">
+        One utility, <code class="font-mono text-small">heading-rule</code>,
+        draws the gold line under every section heading. The line is a pseudo
+        element, so it is exactly as wide as the heading's own box and never
+        reaches a screen reader, and{' '}
+        <code class="font-mono text-small">display</code> is left to the call
+        site.
+      </p>
+
+      <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div class="rounded-ui border border-line bg-white p-6">
+          <h4 class="heading-rule inline-block text-h3 font-bold text-black">
+            On a light tone
+          </h4>
+          <p class="mt-6 text-small text-ink">
+            The heading sets{' '}
+            <code class="font-mono text-small">inline-block</code>, so the line
+            hugs the words rather than the column.
+          </p>
+        </div>
+
+        <div class="focus-contrast rounded-ui bg-black p-6">
+          <div class="flex justify-center">
+            <h4 class="heading-rule text-center text-h3 font-bold text-white">
+              On the black band
+            </h4>
+          </div>
+          <p class="mt-6 text-small text-white">
+            The heading is a flex item here, so it sets no display of its own
+            and the line still fits the words.
+          </p>
+        </div>
+      </div>
+
+      <p class="mt-6 max-w-narrow text-small text-ink">
+        This page does not import the reveal script, so both rules are still,
+        which is what the class alone gives you. On a page that does import it,
+        a heading also marked with the{' '}
+        <code class="font-mono text-small">data-heading-rule</code> attribute
+        draws its line in the direction the visitor is scrolling.
+      </p>
     </Section>
 
     <Section labelledBy="sg-type">
