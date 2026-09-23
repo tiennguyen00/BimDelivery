@@ -163,7 +163,7 @@ spec revision.
 
 - AC-4 by the contents and source steps · AC-12 and AC-43 by the throttled load, the `webp` check, and the domains grep · AC-38 by the contents, tab, click, and source steps (the check list part is replaced by the pipe line) · AC-39 by the guard commands and the illustration source · AC-40 to AC-42 by the hover, focus, reduced motion, touch, and reveal steps · AC-44 by the `Card` diff and the grep
 
-## The hero heading's entrance · added 2026-09-23 by /develop
+## The hero scrim panel's entrance · added 2026-09-23 by /develop
 
 _Built without a spec revision: spec 0005 owes AC-37 the sentence that records
 this. Serve the production build (`pnpm build`, then `wrangler dev`), because
@@ -171,26 +171,26 @@ the entrance rides on the carousel and the carousel needs two photos._
 
 ### In a browser
 
-- [ ] Load `/` at 1280px and watch the hero without touching it → the heading is still at the first paint, then at 6s the photo crossfades and the heading fades in from transparent while rising into place, settling well before the photo does → AC-37
+- [ ] Load `/` at 1280px and watch the hero without touching it → the panel is still at the first paint, then at 6s the photo crossfades and the panel fades in from transparent while rising into place, settling well before the photo does → AC-37
 - [ ] Click the next arrow, then the previous arrow → each click changes the photo and replays the same entrance at once → AC-20, AC-37
 - [ ] Click a dot → the same entrance, and that photo keeps a full 6s → AC-20, AC-37
-- [ ] Hold the pointer over the band (or tab to an arrow and leave focus there) for 10s → the photo and the heading both hold still; move away and the pair starts again → AC-37
-- [ ] After an entrance settles, inspect the `h1` → no inline `style`, so it is back on its own classes (the same promise the reveal makes) → AC-34
-- [ ] With `prefers-reduced-motion: reduce` emulated → the heading never moves, on load or on any click, the photo never changes on its own, and the dots and arrows still swap it → AC-14, AC-37
-- [ ] With JavaScript disabled → one photo, no controls, and the heading visible and still → AC-14, AC-35
-- [ ] At 390px → the entrance plays the same way and nothing overflows sideways as the heading rises → AC-13
+- [ ] Hold the pointer over the band (or tab to an arrow and leave focus there) for 10s → the photo and the panel both hold still; move away and the pair starts again → AC-37
+- [ ] After an entrance settles, inspect the panel → no inline `style`, so it is back on its own classes (the same promise the reveal makes); the heading and subheading keep their usual spacing, and the button below never moved → AC-34
+- [ ] With `prefers-reduced-motion: reduce` emulated → the panel never moves, on load or on any click, the photo never changes on its own, and the dots and arrows still swap it → AC-14, AC-37
+- [ ] With JavaScript disabled → one photo, no controls, and the panel visible and still → AC-14, AC-35
+- [ ] At 390px → the entrance plays the same way and nothing overflows sideways as the panel rises → AC-13
 
 ### Commands
 
-- [ ] `grep -n "data-hero-heading" src/components/home/Hero.astro src/scripts/hero-carousel.ts` → the attribute in the markup and the one lookup in the script, nowhere else → AC-14
+- [ ] `grep -rn "data-hero-panel" src/` → the attribute on the scrim panel in `Hero.astro` and the one lookup in `hero-carousel.ts`, nowhere else → AC-14
 - [ ] `grep -rn "from 'motion" src/scripts/hero-carousel.ts` → no hits, so the hero's script pulls in no library → AC-14, AC-36
 - [ ] `pnpm check`, `pnpm lint`, `pnpm build` → all pass, and the home page still loads the same module scripts it did before → AC-14, AC-17
 
 ### Value sourcing
 
-- [ ] Heading source: change `home.hero.heading` in `home.yaml` and rebuild → the new words animate, so the entrance is a replay of the content heading and never a second copy of it → AC-1
+- [ ] Panel source: change `home.hero.heading` and `home.hero.subheading` in `home.yaml` and rebuild → both new lines animate together, so the entrance replays the content panel and never a second copy of it → AC-1
 - [ ] One photo only: cut `home.hero.images` to a single entry and rebuild → no controls, no photo change, and no entrance at all → AC-20, AC-37
 
 ### Acceptance criteria coverage
 
-- AC-37 by the autoplay, arrow, dot, hold, reduced motion, and one photo steps · AC-34 by the no inline style step · AC-14 and AC-36 by the greps and the gates · AC-1 by the heading source step · AC-13 by the 390px step
+- AC-37 by the autoplay, arrow, dot, hold, reduced motion, and one photo steps · AC-34 by the no inline style step · AC-14 and AC-36 by the greps and the gates · AC-1 by the panel source step · AC-13 by the 390px step

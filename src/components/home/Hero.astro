@@ -36,11 +36,14 @@
  *   pause button: the slideshow holds still while the pointer is over the
  *   band or focus is inside it, and never plays for reduced motion.
  *
- * The heading replays its entrance on every photo change: it fades in and
- * rises into place from 24px below, the same distance, duration, and curve as
- * the scroll reveal, so the two movements on the page read as one. The script
- * finds it by `data-hero-heading`. It never plays on the first paint, because
- * the hero is the largest contentful paint and nothing there may blink, and it
+ * The scrim panel replays its entrance on every photo change: the heading and
+ * its subheading move together as one block, fading in and rising into place
+ * from 24px below, the same distance, duration, and curve as the scroll
+ * reveal, so the two movements on the page read as one. The script finds the
+ * panel by `data-hero-panel`; the button under it stays still, because it is
+ * outside the panel and a control that slides away from the pointer is worse
+ * than a still one. The entrance never plays on the first paint, because the
+ * hero is the largest contentful paint and nothing there may blink, and it
  * never plays at all for reduced motion.
  *
  * Every photo is a white background with its subject in the centre (spec
@@ -180,12 +183,13 @@ const heroWidths = (sourceWidth: number): number[] => {
   <div class="flex flex-1 flex-col items-center justify-center pt-(--header-h)">
     <div class={cx(bandPaddingClass, 'flex w-full flex-col items-center')}>
       <div
+        data-hero-panel
         class={cx(
           bandWidthClass.default,
           'rounded-ui bg-scrim px-6 py-8 text-center md:px-10 md:py-10',
         )}
       >
-        <h1 id={headingId} data-hero-heading class="text-balance text-white">
+        <h1 id={headingId} class="text-balance text-white">
           {heading}
         </h1>
         <p class="mt-6 text-lead text-white">{subheading}</p>

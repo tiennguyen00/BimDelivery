@@ -576,7 +576,7 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 Motion is enhancement only. The built HTML draws every band complete, and no
 CSS rule hides anything waiting for a script. Three plain scripts move things
 on the home page, and each stops entirely for reduced motion (the hero's script
-moves two things, the photos and the heading):
+moves two things, the photos and the panel over them):
 
 - **The scroll reveal** (`src/scripts/reveal.ts`, spec 0005). Below the hero
   and the intro band, these reveal once as they scroll into view: the services
@@ -598,18 +598,21 @@ moves two things, the photos and the heading):
   a photo at once and gives it a full 6s. With reduced motion it never
   autoplays, and the controls still work. There is no pause button, a known
   WCAG 2.2.2 gap spec 0005 records.
-- **The hero heading's entrance** (the same script). On every photo change,
-  whether the clock, a dot, or an arrow asked for it, the `h1` fades from 0 and
-  rises into place from 24px below over 600ms with an ease out, the scroll
-  reveal's language, so the two moving things match. It plays only on a change,
-  never on the first paint: the hero is the largest contentful paint and
-  nothing there may blink. The script finds the heading by `data-hero-heading`,
-  and animates it with the browser's own Web Animations rather than a class or
-  `motion`, so the hero's script stays dependency free and each new entrance
-  supersedes the one running. The animation does not fill, so the heading holds
-  no inline style once it settles. With reduced motion it does not play at all
-  (the `global.css` cut does not reach a Web Animation, so the script asks for
-  itself). The subheading and the button under it stay still.
+- **The hero scrim panel's entrance** (the same script). On every photo change,
+  whether the clock, a dot, or an arrow asked for it, the panel holding the
+  heading and its subheading fades from 0 and rises into place from 24px below
+  over 600ms with an ease out, the scroll reveal's language, so the two moving
+  things match. The two lines move together as one block, so their spacing
+  never shifts; the button below the panel is outside it and stays still, since
+  a control that slides away from the pointer is worse than a still one. It
+  plays only on a change, never on the first paint: the hero is the largest
+  contentful paint and nothing there may blink. The script finds the panel by
+  `data-hero-panel`, and animates it with the browser's own Web Animations
+  rather than a class or `motion`, so the hero's script stays dependency free
+  and each new entrance supersedes the one running. The animation does not
+  fill, so the panel holds no inline style once it settles. With reduced motion
+  it does not play at all (the `global.css` cut does not reach a Web Animation,
+  so the script asks for itself).
 - **The counter** (`src/scripts/counters.ts`), once per band, described under
   `StatsBand`.
 - **Don't** give the hero or the intro band a reveal: the hero is the largest
