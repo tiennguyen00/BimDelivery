@@ -135,12 +135,19 @@ const format = new Intl.NumberFormat(lang);
           </div>
           {/**
            * The gold hover line. On hover it runs left to right just after
-           * the card lifts; on leave it fades out in place, and only then
-           * snaps back to zero width, so it never runs backwards.
+           * the card lifts; on leave it runs straight back the way it came,
+           * right to left, at the same speed and with no wait.
+           *
+           * One property does all of it: `scale` from `origin-left`, so the
+           * browser plays the same transition in reverse. The wait belongs to
+           * the hover state alone, which is why it is `group-hover:delay-150`
+           * rather than part of a shared shorthand: on leave the element falls
+           * back to no delay and retracts at once. A line at zero width shows
+           * nothing, so it needs no opacity of its own.
            */}
           <span
             aria-hidden="true"
-            class="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gold opacity-0 [transition:opacity_300ms_ease-out,scale_0s_300ms] group-hover:scale-x-100 group-hover:opacity-100 group-hover:[transition:scale_500ms_ease-out_150ms,opacity_0s]"
+            class="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gold transition-[scale] duration-500 ease-out group-hover:scale-x-100 group-hover:delay-150"
           ></span>
         </div>
       ))}
