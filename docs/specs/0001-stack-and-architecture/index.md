@@ -92,6 +92,7 @@ Fixed now, although the delivery feature is deferred, so that feature 10 builds 
 - **Validation failure**: `400` with `{ "ok": false, "errors": { "<field>": "<message>" } }`, so the form can attach each message to its own field and a screen reader announces it, which is what feature 10's criteria require.
 - **Delivery failure**: `502` with `{ "ok": false, "error": "<message>" }`, kept distinct from a validation failure so the form can tell the visitor to try again rather than blaming their input.
 - **In Release 1** the form submits through `fetch` to this path and the endpoint does not exist yet, so the form fakes the success response locally. The code says plainly that nothing is sent, per the scope. When delivery lands, only the endpoint's insides get written; the form does not change.
+- **Extended by spec [0011](../0011-contact-page/index.md)** (feature 10, 2026-09-25): the request adds `phone`, `country`, `need`, `projectType`, `lod` (optional) and `turnstileToken` (required). A `400` carries error codes rather than messages. A rejected token returns `403`. Release 1 makes no network call at all: one `submitContact` function returns success locally. The request schema lives in `src/lib/contact.ts`. Where this section and 0011 differ, 0011 wins.
 - The endpoint must not log message bodies. It is personal data and there is no reason to keep it.
 
 ### Configuration required
