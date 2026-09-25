@@ -106,12 +106,19 @@ const [navigation, settings] = await Promise.all([
  * `is:global` because the custom property belongs on `:root`, which is not an
  * element this component renders and so cannot carry a scoped class.
  *
+ * It also sets the page's `scroll-padding-top`, so whatever the browser
+ * scrolls into view (a focused field, a focused heading, an anchor jump)
+ * stops a little below the sticky card instead of under it. The contact form
+ * moves focus to its first error and to its thank you heading (spec 0011).
+ *
  * The 64rem breakpoint is Tailwind's `lg`. It is repeated in the media query
  * below and in `src/scripts/nav.ts`; a change to the token needs all three.
  */}
 <style is:global>
   :root {
     --header-h: 4.5rem;
+
+    scroll-padding-top: calc(var(--header-h) + 1.5rem);
   }
 
   @media (min-width: 64rem) {

@@ -1,21 +1,110 @@
 ---
 /**
- * Contact Us. A stub: the frame, the metadata and the page's own heading and
- * intro, all from content. Feature 10 adds the form island and the contact
- * details.
+ * Contact Us (spec 0011): two bands, in order, then the footer. Every word,
+ * choice, and photo on them comes from a content entry.
+ *
+ * 1. Intro: the ruled `h1`, one paragraph, and a building photo on desktop.
+ * 2. Form: the dark photo band, holding the form island and three cards
+ *    (phone, address, email).
+ *
+ * This file is the only place that knows the page's shape. It owns the
+ * heading ids, under the home page's rule: `<band>-heading`. The email,
+ * phone, and address are `settings.contact`, merged in by `getContactPage`,
+ * and the "Your needs" choices are the services, in collection order.
+ *
+ * The form is the site's one React island, hydrated when it comes within
+ * 200px of the screen, so React and the Turnstile script load only on this
+ * page and only once the visitor is heading for the form.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/ui/Section.astro';
+import IntroBand from '../components/contact/IntroBand.astro';
+import FormBand from '../components/contact/FormBand.astro';
+import ContactCard from '../components/contact/ContactCard.astro';
+import { ContactForm } from '../components/react/ContactForm';
 import { resolveLocale } from '../i18n/locales';
-import { getContactPage } from '../lib/content';
+import { getContactPage, getServices } from '../lib/content';
+import { telHref } from '../lib/contact';
 
 const lang = resolveLocale(Astro.currentLocale);
-const page = await getContactPage(lang);
+
+const [page, services] = await Promise.all([
+  getContactPage(lang),
+  getServices(lang),
+]);
+
+const { form, errors, success, details } = page;
+
+const copy = {
+  labels: form.labels,
+  optionalHint: form.optionalHint,
+  selectPrompt: form.selectPrompt,
+  needOtherLabel: form.needOtherLabel,
+  submitLabel: form.submitLabel,
+  sendingLabel: form.sendingLabel,
+  errors,
+  success,
+};
+
+const needs = services.map((service) => ({
+  value: service.slug,
+  label: service.title,
+}));
 ---
 
 <PageLayout title={page.seo.title} description={page.seo.description}>
-  <Section tone="white" labelledBy="page-title">
-    <h1 id="page-title">{page.heading}</h1>
-    <p class="mt-4 max-w-narrow text-lead">{page.intro}</p>
+  <Section tone="white" labelledBy="intro-heading">
+    <IntroBand
+      heading={page.heading}
+      headingId="intro-heading"
+      intro={page.intro}
+      photo={{ src: page.photo.src, alt: page.photo.alt ?? '' }}
+    />
   </Section>
+
+  <FormBand
+    heading={form.heading}
+    headingId="form-heading"
+    background={form.background.src}
+    noScript={form.noScript}
+    email={details.email}
+    phone={details.phone}
+  >
+    <ContactForm
+      client:visible={{ rootMargin: '200px' }}
+      copy={copy}
+      needs={needs}
+      projectTypes={form.projectTypes}
+      lodOptions={form.lodOptions}
+      email={details.email}
+      lang={lang}
+    />
+
+    <ContactCard
+      slot="cards"
+      icon="headset"
+      heading={page.cards.talk.heading}
+      body={{ label: details.phone, href: telHref(details.phone) }}
+    />
+    <ContactCard
+      slot="cards"
+      icon="map-pin"
+      heading={page.cards.visit.heading}
+      body={details.address}
+    />
+    <ContactCard
+      slot="cards"
+      icon="envelope"
+      heading={{ label: details.email, href: `mailto:${details.email}` }}
+    />
+  </FormBand>
 </PageLayout>
+
+{/**
+ * The scroll reveal and the heading rule (spec 0005), the page's choice as on
+ * the About page. The intro band carries no `data-reveal`: it moves on load
+ * through the CSS `entrance` instead, so the two never touch the same thing.
+ */}
+<script>
+  import '../scripts/reveal';
+</script>

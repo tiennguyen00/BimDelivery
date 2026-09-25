@@ -1,0 +1,115 @@
+---
+/**
+ * The Contact page's second band (spec 0011): a greyscale construction photo
+ * under a dark see through layer and a faint light stripe, holding the form
+ * on the start side and the three contact cards on the end side.
+ *
+ * It is its own band, not a `Section` tone, because it is not a light
+ * surface, like the home hero and the home intro band. It borrows `Section`'s
+ * frame from `styles.ts`, so its gutters and widths cannot drift from the
+ * rest of the page, and it carries `focus-contrast`, the ring for surfaces
+ * that are not a light tone.
+ *
+ * What holds the contrast together: nothing reads straight off the photo.
+ * The layer over it is `scrim-strong` (black at 80 percent) plus the
+ * `bg-diagonal-dark` stripe, so the band's lightest possible pixel is
+ * `#3f3f3f`, and white reaches 10.5:1 and `error-on-dark` 5.19:1 there
+ * whatever the photo. The band itself is black, so a photo that fails to
+ * load leaves the same words on a darker band. Text on it is white or
+ * `error-on-dark` only; the fields and cards are white surfaces and follow
+ * the light rules.
+ *
+ * From `lg` the form takes about seven twelfths and the cards the rest. Below
+ * `lg` it is one column: heading, form, cards.
+ *
+ * The page fills two slots: the default one with the form island, and
+ * `cards` with the cards. The `<noscript>` note sits above the form, so a
+ * visitor with JavaScript off meets it before the fields they cannot use.
+ *
+ * Reveal order: the heading, then the form, then each card in turn. All
+ * inert unless the page imports `reveal.ts`.
+ */
+import { Image } from 'astro:assets';
+import {
+  bandGutterClass,
+  bandPaddingClass,
+  bandWidthClass,
+  cx,
+} from '../ui/styles';
+import { telHref } from '../../lib/contact';
+
+interface Props {
+  heading: string;
+  /** The id this band points at with `aria-labelledby`. */
+  headingId: string;
+  /** A decorative photo link; it carries no `alt`. */
+  background: string;
+  /** The note shown instead of a working form when JavaScript is off. */
+  noScript: string;
+  email: string;
+  phone: string;
+}
+
+const { heading, headingId, background, noScript, email, phone } = Astro.props;
+---
+
+<section
+  aria-labelledby={headingId}
+  class={cx(
+    'focus-contrast relative isolate bg-black',
+    bandGutterClass,
+    bandPaddingClass,
+  )}
+>
+  <Image
+    src={background}
+    alt=""
+    inferSize
+    widths={[640, 960, 1280, 1920, 2560]}
+    sizes="100vw"
+    loading="lazy"
+    class="absolute inset-0 -z-20 size-full object-cover object-center grayscale"
+  />
+  <div
+    aria-hidden="true"
+    class="bg-diagonal-dark absolute inset-0 -z-10 bg-scrim-strong"
+  ></div>
+
+  <div class={bandWidthClass.default}>
+    <h2 id={headingId} class="text-balance text-white uppercase" data-reveal>
+      {heading}
+    </h2>
+
+    <div class="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-start lg:gap-16">
+      <div class="lg:col-span-7">
+        <noscript>
+          <div class="mb-8 text-white">
+            <p>{noScript}</p>
+            <p class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+              <a
+                href={`mailto:${email}`}
+                class="font-semibold underline wrap-anywhere"
+              >
+                {email}
+              </a>
+              <a href={telHref(phone)} class="font-semibold underline">
+                {phone}
+              </a>
+            </p>
+          </div>
+        </noscript>
+
+        <div data-reveal>
+          <slot />
+        </div>
+      </div>
+
+      <div
+        class="grid grid-cols-1 gap-6 md:grid-cols-3 lg:col-span-5 lg:grid-cols-1"
+        data-reveal-stagger
+      >
+        <slot name="cards" />
+      </div>
+    </div>
+  </div>
+</section>

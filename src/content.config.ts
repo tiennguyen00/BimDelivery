@@ -324,22 +324,85 @@ const about = defineCollection({
   }),
 });
 
+/**
+ * A dropdown answer's stable key: what the form sends, never the label, so an
+ * enquiry reads the same in any language (spec 0011).
+ */
+const choiceKey = z
+  .string()
+  .regex(
+    /^[a-z0-9]+(-[a-z0-9]+)*$/,
+    'must be a lowercase key, for example `lod-300`',
+  );
+
+/**
+ * A dropdown's choices, in order. Two choices with one key would send the
+ * same answer for two different labels, so a repeat fails the build naming
+ * the key.
+ */
+const choices = z
+  .array(z.strictObject({ value: choiceKey, label: text }))
+  .min(1)
+  .superRefine((items, ctx) => {
+    items.forEach((item, index) => {
+      if (items.slice(0, index).some((other) => other.value === item.value)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [index, 'value'],
+          message: `repeats the value "${item.value}"; each value must be unique in its list`,
+        });
+      }
+    });
+  });
+
+// The Contact page's two bands (spec 0011). Strict at every level, so a
+// leftover `nameLabel` from the old four field form, or a typo, fails the
+// build by name. The email, phone, and address are `settings.contact`, and
+// the "Your needs" choices are the services, so neither is written here.
 const contact = defineCollection({
   loader: load('contact', 'yaml'),
-  schema: z.object({
+  schema: z.strictObject({
     lang,
     seo,
     heading: text,
-    intro: text,
-    form: z.object({
-      nameLabel: text,
-      emailLabel: text,
-      companyLabel: text,
-      messageLabel: text,
+    intro: emphasisText,
+    photo: photoSchema,
+    form: z.strictObject({
+      heading: text,
+      background: photoSchema,
+      labels: z.strictObject({
+        name: text,
+        company: text,
+        email: text,
+        phone: text,
+        country: text,
+        need: text,
+        projectType: text,
+        lod: text,
+        message: text,
+      }),
+      optionalHint: text,
+      selectPrompt: text,
+      needOtherLabel: text,
+      projectTypes: choices,
+      lodOptions: choices,
       submitLabel: text,
+      sendingLabel: text,
+      noScript: text,
     }),
-    errors: z.object({ required: text, email: text, deliveryFailed: text }),
-    success: z.object({ heading: text, text }),
+    errors: z.strictObject({
+      required: text,
+      email: text,
+      phone: text,
+      tooLong: text,
+      captcha: text,
+      deliveryFailed: text,
+    }),
+    success: z.strictObject({ heading: text, text }),
+    cards: z.strictObject({
+      talk: z.strictObject({ heading: text }),
+      visit: z.strictObject({ heading: text }),
+    }),
   }),
 });
 

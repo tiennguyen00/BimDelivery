@@ -77,6 +77,11 @@
   --color-field: #767676;
 
   --color-error: #b42318;
+  /* The error colour for the one dark surface that holds fields, the contact
+     page's form band (spec 0011). `error` is 1.6:1 there; this light coral
+     reaches 5.19:1 at the band's worst point (#3f3f3f, see `scrim-strong`).
+     Error text only, never on a light tone, where it drops to 2.03:1. */
+  --color-error-on-dark: #ff9b8f;
 
   /* The see through dark panel white text sits on over a photo (spec 0005,
      the home hero). Black at 60 percent: the worst case is white text over a
@@ -84,6 +89,13 @@
      measures 5.74:1. So no photo swap can ever lower the contrast, and the
      photo never needs checking. Lighter than 0.6 breaks that guarantee. */
   --color-scrim: rgb(0 0 0 / 0.6);
+  /* The darker layer over the contact page's whole form band (spec 0011),
+     where small text (labels, hints, errors) sits straight on it rather than
+     on a panel. Black at 80 percent turns a pure white photo pixel into
+     #333333, and the `bg-diagonal-dark` stripe lifts its lines to #3f3f3f:
+     white still reads at 10.5:1 there and `error-on-dark` at 5.19:1. It is
+     0.8, not 0.75, because the stripe lightens it. */
+  --color-scrim-strong: rgb(0 0 0 / 0.8);
 
   /* ---- Breakpoints --------------------------------------------------- */
   /* Three screens only: mobile is the unprefixed default, then md and lg. */
@@ -186,6 +198,36 @@
     transparent 0 9px,
     var(--color-line) 9px 10px
   );
+}
+
+/**
+ * The same stripe for a dark surface (spec 0011, the contact page's form
+ * band): white at 6 percent, 1px in every 10, at the same angle, laid over
+ * `scrim-strong`. Its lines are the band's lightest pixels (#3f3f3f over a
+ * pure white photo pixel), and every text pair there is measured against
+ * them. Never on a light tone, where it would not show.
+ */
+@utility bg-diagonal-dark {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 9px,
+    color-mix(in srgb, var(--color-white) 6%, transparent) 9px 10px
+  );
+}
+
+/**
+ * The arrow on the `Select` field (spec 0011): the icon set's own
+ * `chevron-down` path, drawn as a background so the native `<select>` keeps
+ * its keyboard, screen reader, and phone picker behaviour. A data URI cannot
+ * read a custom property, so the stroke is written as `--color-ink`'s value,
+ * `#666666`; a change to that token edits this line too. It sits at the end
+ * of the box, clear of the field's `pe-10` padding.
+ */
+@utility select-chevron {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25rem;
 }
 
 /**

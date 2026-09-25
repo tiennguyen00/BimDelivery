@@ -2,8 +2,11 @@
 # In production these are Cloudflare secrets set with:
 #   wrangler secret put RESEND_API_KEY
 #
-# Neither is needed for the site as it stands. Both are required only when the
-# contact form's delivery endpoint is built (spec 0001, deferred in the scope).
+# None is needed for the site as it stands. All three are required only when
+# the contact form's delivery endpoint is built (spec 0001, deferred in the
+# scope). TURNSTILE_SECRET_KEY is the server half of the contact form's
+# Turnstile check (spec 0011); the public site key lives in .env instead.
 
 # RESEND_API_KEY=""
 # CONTACT_TO_EMAIL=""
+# TURNSTILE_SECRET_KEY=""

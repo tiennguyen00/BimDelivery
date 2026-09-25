@@ -31,8 +31,10 @@ Building a page should be layout work, not styling decisions.
   class seems to do nothing: the fix is always a token.
 - The gold rule is the one thing the build cannot catch, because it is a choice
   between two valid tokens. Read it below before writing any gold.
-- Pages set rhythm by alternating `white` and `tint` sections. There is no dark
-  band, so no component adapts to its background.
+- Pages set rhythm by alternating `white` and `tint` sections. The dark bands
+  (the home hero and intro band, the contact form band, the footer) are their
+  own components, never a `Section` tone. The one component that adapts to
+  what it sits on is a form field, through its `surface` prop (spec 0011).
 
 ## Colour
 
@@ -55,7 +57,9 @@ a change of values rather than a change of class names everywhere.
 | `--color-line` | `#e5e5e5` | Card borders and dividers. Decorative, never a control boundary |
 | `--color-field` | `#767676` | Form field borders. A control boundary, so it has to reach 3:1 |
 | `--color-error` | `#b42318` | Error text and error borders |
+| `--color-error-on-dark` | `#ff9b8f` | Error text on the contact form band only (spec 0011). Never on a light tone (2.03:1 on white) |
 | `--color-scrim` | `rgb(0 0 0 / 0.6)` | The see through dark panel white text sits on over a photo (the home hero, spec 0005). Never lighter: 0.6 is what makes white text pass over any photo |
+| `--color-scrim-strong` | `rgb(0 0 0 / 0.8)` | The layer over the whole contact form band (spec 0011), where small text sits straight on it. With the `bg-diagonal-dark` stripe on top, the band's lightest pixel is `#3f3f3f` |
 
 ### The gold rule
 
@@ -129,6 +133,9 @@ focus indicators. Computed from the hex values above.
 | ink (text on `bg-diagonal`), worst case over a stripe line | line (`#e5e5e5`) | 4.56 | 4.5 |
 | white (the hero's heading and subheading) | scrim over any photo, worst case over pure white (composite `#666666`) | 5.74 at worst | 4.5 |
 | two colour focus ring, black inner band / white outer band (the hero photo and the gold band) | gold / any photo | black on gold 8.73; on any colour at all, one of the two bands reaches at least 4.58 | 3.0 |
+| white (the contact form band's heading, field labels and hints, noscript note, captcha link) | `scrim-strong` plus a `bg-diagonal-dark` line over a pure white photo pixel (composite `#3f3f3f`) | 10.5 at worst | 4.5 |
+| error-on-dark (the contact form band's field errors and messages) | the same worst case, `#3f3f3f` | 5.19 at worst | 4.5 |
+| gold-ink (contact card headings) / ink-strong (card values, the thank you text) | white | 5.05 / 12.63 | 4.5 |
 
 ### Contrast, the three that are deliberately never text
 
@@ -224,10 +231,20 @@ tone for it.
   over a stripe line, measures 4.56:1.
 - **Don't** use `ink-muted` for text on it: over a stripe line it drops to
   3.93:1, under the 4.5 minimum.
+- Its dark twin, `bg-diagonal-dark` (spec 0011), is white at 6 percent, 1px
+  in every 10, at the same angle, laid over `scrim-strong` on the contact form
+  band. It is not a tone either, and never goes on a light one.
 - **Don't** put a `==gold==` phrase on it either: `gold-ink` over a stripe
   line measures 4.01:1. A `**bold**` phrase is fine, it stays `ink`. Spec 0010
   (AC-4) lists the stripe as a surface for `gold-ink`; that line owes a
   correction, and until then the About certification copy carries no `==`.
+
+The contact page's form band (spec 0011, `src/components/contact/FormBand.astro`)
+is the other dark band that is not a tone: a greyscale photo under
+`scrim-strong` and `bg-diagonal-dark`, on a black band so a photo that fails
+to load changes nothing. It carries `focus-contrast`. Text on it is white or
+`error-on-dark` only; the fields' boxes and the cards are white surfaces and
+follow the light rules. Fields placed there pass `surface="dark"`.
 
 The home page has one black band, the intro band, and it is not a tone: like
 the hero and `CtaBand` it is its own component that borrows the band frame,
@@ -314,20 +331,23 @@ no page writes its own container.
 - Images are 3:2, cropped to fill, and sized for one column on mobile, two on
   tablet, three on desktop.
 
-### `TextField` and `TextArea` · `src/components/react/ui/`
+### `TextField`, `TextArea`, and `Select` · `src/components/react/ui/`
 
 | Prop | Type | Default |
 |---|---|---|
 | `name` | `string` (required) | |
 | `label` | `string` (required) | |
-| `type` (TextField only) | `'text' \| 'email'` | `'text'` |
+| `type` (TextField only) | `'text' \| 'email' \| 'tel'` | `'text'` |
 | `rows` (TextArea only) | `number` | `5` |
 | `id` | `string` | a generated id |
 | `hint` | `string` | none |
 | `error` | `string` | none |
 | `required` | `boolean` | `false` |
+| `surface` | `'light' \| 'dark'` | `'light'` |
+| `options` (Select only) | `readonly { value: string; label: string }[]` (required) | |
+| `prompt` (Select only) | `string` (required), the empty first choice | |
 
-Plus the native input or textarea props (`value`, `onChange`, `autoComplete`,
+Plus the native input, textarea, or select props (`value`, `onChange`, `autoComplete`,
 and so on).
 
 - The label is always visible. **Do not** use a placeholder as a label.
@@ -341,6 +361,19 @@ and so on).
   across roots. Inside one island the generated id is enough.
 - The component draws no required marker. If a form wants one, it passes a
   `hint` from content.
+- **The line above the box** holds the label at the start and the hint at the
+  end (`fieldHeadClass`, spec 0011), so every field has one line there and
+  the boxes of a row in a grid line up whether or not each has a hint.
+- **`surface`** is what the field sits on. `dark` makes the label and hint
+  white and the error `error-on-dark`, for the contact form band. The box is
+  identical on both: white, the `field` border, the `error` ring. The class
+  maps live in `styles.ts`, so no field names a colour of its own.
+- **`Select`** is a native `<select>` in the same box, with the icon set's
+  `chevron-down` drawn by the `select-chevron` utility in `global.css`
+  (its stroke is `--color-ink`'s value, written out because a data URI cannot
+  read a custom property). Its first choice is always an empty value labelled
+  `prompt`. Values are stable keys, labels come from content, and only the key
+  is ever sent.
 
 ### `Icon` · `src/components/ui/Icon.astro`
 
@@ -351,14 +384,15 @@ and so on).
 | `title` | `string`, the accessible name | none |
 | `class` | `string` | none |
 
-The whole set, nineteen glyphs on one 24 unit grid: `menu`, `close`,
+The whole set, twenty one glyphs on one 24 unit grid: `menu`, `close`,
 `chevron-down`, `check` (the home presence band's why choose list, spec 0005),
 `arrow-right` (the home service card's cue, spec 0005), `plus` and `minus`
 (an `Accordion` item closed and open, spec 0010), the footer's contact glyphs
 `phone`, `mail`, `globe`, the five social marks `linkedin`, `facebook`,
 `youtube`, `x`, `instagram`, and the four solid stat glyphs
 `briefcase-clock`, `users`, `building`, `map-pin` (the home intro band's
-cards). A glyph whose details are holes punched through it sets `evenodd` in
+cards), and `headset` and `envelope`, which with `map-pin` fill the contact
+page's cards (spec 0011). A glyph whose details are holes punched through it sets `evenodd` in
 the map.
 
 - Every glyph inherits `currentColor`, so an icon is coloured by the text around
@@ -581,6 +615,26 @@ capability band and ready for the service pages. The browser's own
 - The `accordion-item` utility in `global.css` hides the browser's own
   triangle and holds the slide (`## Focus and motion`).
 
+### `ContactCard` · `src/components/contact/ContactCard.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `icon` | `IconName` (required) | |
+| `heading` | `string` or a `Link` (required) | |
+| `body` | `string` or a `Link` | none |
+
+One of the contact page's three cards (spec 0011): a 56px `gold` filled icon,
+hidden from assistive tech, above an `h3`, then the value, centred on a white
+card with `shadow-lg`.
+
+- It is a white surface on a dark band, so it follows the light rules: the
+  heading bold `gold-ink` at `text-h3` (5.05:1), the value `ink-strong`
+  (12.63:1). **Never** a bright gold word here.
+- The email card's heading is the address itself, as a `mailto:` link; the
+  phone is a `tel:` link built by `telHref` in `src/lib/contact.ts`
+  (digits and a leading `+` only).
+- Long values wrap anywhere rather than overflow the card.
+
 ### `CtaBand` · `src/components/ui/CtaBand.astro`
 
 | Prop | Type | Default |
@@ -660,8 +714,8 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 - **On the two light tones**: a 2px solid `--color-gold-ink` outline with a 2px
   gap, identical on white and tint. This is the base rule in `global.css`.
 - **On every surface that is not a light tone** (today the home hero's photo,
-  the home intro band's black, the footer's black, `CtaBand`'s gold band, and
-  the `Accordion`'s gold bars): a two colour ring, a 2px `--color-black` band
+  the home intro band's black, the contact form band, the footer's black,
+  `CtaBand`'s gold band, and the `Accordion`'s gold bars): a two colour ring, a 2px `--color-black` band
   directly around the control and a 2px `--color-white` band outside it. It
   comes from the `focus-contrast` utility in `global.css`, placed on the band's
   `<section>`, so everything focusable inside inherits it and no control sets
@@ -759,6 +813,11 @@ gold rules under the section headings.
   Edge today), a panel's height slides between nothing and its content over
   300ms with an ease out, both ways. Elsewhere, and under reduced motion
   everywhere, items open and close at once.
+- The Contact page imports `reveal.ts` too (spec 0011): its intro band moves
+  on load through the `entrance` utility (heading 0, paragraph 1, photo 2)
+  and takes no `data-reveal`; in the form band the heading, then the form,
+  then each card reveal on scroll, and the intro heading's rule draws with
+  the scroll direction.
 - The About page imports `reveal.ts` too: its capability band's two columns
   reveal one after the other, its certification band's heading block,
   paragraphs, and then each badge in turn, and both bands' heading rules draw
@@ -797,7 +856,11 @@ gold rules under the section headings.
   count stays four. Remove any script and the site stays usable. Any fifth one
   needs a reason this good.
 - The React components render to static HTML unless a page hydrates them, and
-  only feature 10's contact island may.
+  only feature 10's contact island may. It is hydrated `client:visible` on
+  `/contact-us` alone, which is also the only page that loads Cloudflare's
+  Turnstile script.
+- The page scrolls focused elements clear of the sticky header:
+  `PageLayout` sets `scroll-padding-top` from `--header-h`.
 
 ## The living check
 

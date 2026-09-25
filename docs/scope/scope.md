@@ -20,7 +20,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 7 | About Us page | Release 1 | in-progress |
 | 8 | Service pages (three) | Release 1 | planned |
 | 9 | Project page | Release 1 | planned |
-| 10 | Contact page | Release 1 | planned |
+| 10 | Contact page | Release 1 | in-progress |
 | 11 | SEO foundation | Release 2 | planned |
 | 12 | Performance & image handling | Release 2 | planned |
 | 13 | Privacy policy page | Release 2 | planned |
@@ -143,7 +143,14 @@ A grid of placeholder project cards (image, title, one line) at `/project`, so t
 ### 10. Contact page
 Contact details and a form that looks and behaves real, at `/contact-us`. Nothing is delivered yet; real sending is its own later feature.
 **Done when:** the form checks required fields and email shape, shows inline errors tied to their field so a screen reader announces them, shows a clear success state on submit, and the page also lists email, phone, and address from content data. The code states plainly that nothing is sent yet.
-- [ ] Build it: `/develop contact page`
+spec [0011](../specs/0011-contact-page/index.md) · code in [src/pages/contact-us.astro](../../src/pages/contact-us.astro), [src/components/contact/](../../src/components/contact/), and [src/components/react/ContactForm.tsx](../../src/components/react/ContactForm.tsx) (shared: `src/lib/contact.ts`, content: `src/content/contact/en/contact.yaml`)
+- [x] Design it (spec): `/architect contact page`
+- [x] Build it: `/develop contact page`
+  - [x] Content and rules: the strict `contact.yaml` with placeholder copy and the two photos, `other` reserved, and `src/lib/contact.ts` (request schema, codes, the stand in `submitContact`) (AC-2, AC-3, AC-19)
+  - [x] The whole page, still: dark band tokens and stripe, `surface` and `tel` on the fields, the new `Select`, three icons, the intro and form bands, the cards, and the form island with validation, the thank you panel, failure handling, and the no JavaScript fallback (AC-1, AC-4 to AC-7, AC-10 to AC-14, AC-16 to AC-18)
+  - [x] Turnstile: the site key config, the `useTurnstile` hook, the widget, and the no token message (AC-8, AC-9)
+  - [x] The page moves, written down and gated: the load entrance and scroll reveal, `design.md` and `/styleguide`, and the check, lint, and build gates (AC-15, AC-20)
+- [ ] Verify it: `/check verify contact page`
 
 ## Release 2: findable, fast, and live
 

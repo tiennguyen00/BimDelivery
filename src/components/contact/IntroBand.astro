@@ -1,0 +1,66 @@
+---
+/**
+ * The Contact page's first band (spec 0011): the page's `h1` with the gold
+ * rule under it, one paragraph, and a building photo beside them on desktop.
+ *
+ * It renders only the inside of the band; the page wraps it in a `white`
+ * `Section` labelled by the `h1`, as the About page does with its bands.
+ *
+ * From `lg` the text takes about seven twelfths and the photo the rest,
+ * centred against the text. Below `lg` the photo is not displayed, and
+ * because it is lazy as well, a phone never asks for it. The capitals are
+ * CSS only (`uppercase`), so a screen reader reads words, not letters.
+ *
+ * On page load the heading, the paragraph, and the photo fade and rise in
+ * through the `entrance` utility (steps 0, 1, 2), pure CSS. The band never
+ * takes `data-reveal`, so the scroll reveal never touches what the entrance
+ * animates. The heading carries `data-heading-rule`, so its rule runs back
+ * and draws again with the scroll direction like every ruled heading, once
+ * the page imports `reveal.ts`.
+ */
+import { Image } from 'astro:assets';
+import Emphasis from '../ui/Emphasis.astro';
+
+interface Props {
+  heading: string;
+  /** The id the surrounding Section points at with `aria-labelledby`. */
+  headingId: string;
+  /** May carry `**bold**` and `==gold==` phrases. */
+  intro: string;
+  photo: Readonly<{ src: string; alt: string }>;
+}
+
+const { heading, headingId, intro, photo } = Astro.props;
+---
+
+<div class="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
+  <div class="lg:col-span-7">
+    <h1
+      id={headingId}
+      class="entrance heading-rule inline-block uppercase"
+      style="--entrance-step: 0"
+      data-heading-rule
+    >
+      {heading}
+    </h1>
+
+    <p class="entrance mt-8 text-lead" style="--entrance-step: 1">
+      <Emphasis text={intro} surface="light" />
+    </p>
+  </div>
+
+  <div
+    class="entrance hidden lg:col-span-5 lg:block"
+    style="--entrance-step: 2"
+  >
+    <Image
+      src={photo.src}
+      alt={photo.alt}
+      inferSize
+      widths={[480, 800, 1200]}
+      sizes="(min-width: 1024px) 32vw, 100vw"
+      loading="lazy"
+      class="aspect-4/3 w-full rounded-ui object-cover object-center"
+    />
+  </div>
+</div>

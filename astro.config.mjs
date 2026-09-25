@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig, fontProviders } from 'astro/config';
+import { defineConfig, envField, fontProviders } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
@@ -73,6 +73,23 @@ export default defineConfig({
       fallbacks: ['sans-serif'],
     },
   ],
+
+  // Astro's typed env schema, the one way code reads configuration (AGENTS.md).
+  env: {
+    schema: {
+      // The contact form's Cloudflare Turnstile widget (spec 0011). A site key
+      // is public by design and is inlined into the page's JavaScript at
+      // build, so it must exist wherever the build runs: `.env.development`
+      // holds Cloudflare's always passing test key for `pnpm dev`, a local
+      // `.env` holds one for `pnpm build`, and the live Worker's build
+      // variables hold the real key. No default, so a build without it fails
+      // rather than shipping a widget that can never pass.
+      PUBLIC_TURNSTILE_SITE_KEY: envField.string({
+        context: 'client',
+        access: 'public',
+      }),
+    },
+  },
 
   // `site` is intentionally NOT set yet: the public domain is not chosen.
   // Feature 11 (SEO foundation) sets it for canonical URLs and the sitemap.

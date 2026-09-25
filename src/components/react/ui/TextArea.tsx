@@ -1,9 +1,9 @@
 /**
- * A multi line text field (spec 0003).
+ * A multi line text field (spec 0003; `surface` from spec 0011).
  *
  * The same shape as TextField, minus `type` and plus `rows`, so the two
- * behave identically for a label, a hint, and an error. See TextField for why
- * `id` is sometimes passed explicitly.
+ * behave identically for a label, a hint, an error, and the surface under
+ * them. See TextField for why `id` is sometimes passed explicitly.
  */
 import { useId } from 'react';
 import type { TextareaHTMLAttributes } from 'react';
@@ -11,9 +11,11 @@ import {
   cx,
   fieldClass,
   fieldErrorClass,
+  fieldHeadClass,
   fieldHintClass,
   fieldLabelClass,
   fieldWrapperClass,
+  type FieldSurface,
 } from '../../ui/styles';
 import { describeField } from './field';
 
@@ -23,6 +25,7 @@ type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   id?: string;
   hint?: string;
   error?: string;
+  surface?: FieldSurface;
 };
 
 export const TextArea = ({
@@ -31,6 +34,7 @@ export const TextArea = ({
   id,
   hint,
   error,
+  surface = 'light',
   rows = 5,
   className,
   ...rest
@@ -45,14 +49,16 @@ export const TextArea = ({
 
   return (
     <div className={fieldWrapperClass}>
-      <label htmlFor={controlId} className={fieldLabelClass}>
-        {label}
-      </label>
-      {hint && (
-        <p id={hintId} className={fieldHintClass}>
-          {hint}
-        </p>
-      )}
+      <div className={fieldHeadClass}>
+        <label htmlFor={controlId} className={fieldLabelClass[surface]}>
+          {label}
+        </label>
+        {hint && (
+          <p id={hintId} className={fieldHintClass[surface]}>
+            {hint}
+          </p>
+        )}
+      </div>
       <textarea
         {...rest}
         id={controlId}
@@ -63,7 +69,7 @@ export const TextArea = ({
         className={cx(fieldClass(Boolean(error)), className)}
       />
       {error && (
-        <p id={errorId} className={fieldErrorClass}>
+        <p id={errorId} className={fieldErrorClass[surface]}>
           {error}
         </p>
       )}

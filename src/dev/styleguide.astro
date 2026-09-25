@@ -29,6 +29,10 @@ import Footer from '../components/ui/Footer.astro';
 import { Button as ReactButton } from '../components/react/ui/Button';
 import { TextField } from '../components/react/ui/TextField';
 import { TextArea } from '../components/react/ui/TextArea';
+import { Select } from '../components/react/ui/Select';
+import FormBand from '../components/contact/FormBand.astro';
+import ContactCard from '../components/contact/ContactCard.astro';
+import { telHref } from '../lib/contact';
 import { resolveLocale } from '../i18n/locales';
 import {
   getAboutPage,
@@ -76,6 +80,8 @@ const iconNames: readonly IconName[] = [
   'users',
   'building',
   'map-pin',
+  'headset',
+  'envelope',
 ];
 
 const firstService = services[0];
@@ -180,11 +186,25 @@ const colours = [
     avoid: 'Decoration',
   },
   {
+    token: '--color-error-on-dark',
+    swatch: 'bg-error-on-dark',
+    hex: '#ff9b8f',
+    use: 'Error text on the contact form band (5.19:1 at its worst point)',
+    avoid: 'Any light tone (2.03:1 on white)',
+  },
+  {
     token: '--color-scrim',
     swatch: 'bg-scrim',
     hex: 'rgb(0 0 0 / 0.6)',
     use: 'The dark panel white text sits on over a photo (the home hero)',
     avoid: 'Anything lighter: 0.6 is what keeps white text at 5.74:1',
+  },
+  {
+    token: '--color-scrim-strong',
+    swatch: 'bg-scrim-strong',
+    hex: 'rgb(0 0 0 / 0.8)',
+    use: 'The layer over the whole contact form band, under bg-diagonal-dark',
+    avoid: 'Anything lighter: the stripe already lifts its lines to #3f3f3f',
   },
 ] as const;
 
@@ -249,6 +269,16 @@ const contrastPairs = [
   {
     pair: 'white on the scrim over any photo (worst case: over pure white)',
     ratio: '5.74 at worst',
+    needs: '4.5',
+  },
+  {
+    pair: 'white on the contact form band (scrim-strong plus a stripe line over pure white)',
+    ratio: '10.5 at worst',
+    needs: '4.5',
+  },
+  {
+    pair: 'error-on-dark on the contact form band, the same worst case',
+    ratio: '5.19 at worst',
     needs: '4.5',
   },
   {
@@ -719,20 +749,20 @@ const headCellClass =
           <TextField
             id="sg-name"
             name="name"
-            label={contact.form.nameLabel}
+            label={contact.form.labels.name}
             required
           />
           <TextField
             id="sg-email"
             name="email"
             type="email"
-            label={contact.form.emailLabel}
+            label={contact.form.labels.email}
           />
           <TextField
             id="sg-company"
             name="company"
-            label={contact.form.companyLabel}
-            hint="Optional"
+            label={contact.form.labels.company}
+            hint={contact.form.optionalHint}
           />
         </div>
 
@@ -741,21 +771,21 @@ const headCellClass =
             id="sg-email-invalid"
             name="email-invalid"
             type="email"
-            label={contact.form.emailLabel}
+            label={contact.form.labels.email}
             error={contact.errors.email}
             defaultValue="not-an-email"
           />
           <TextField
             id="sg-name-invalid"
             name="name-invalid"
-            label={contact.form.nameLabel}
-            hint="Optional"
+            label={contact.form.labels.name}
+            hint={contact.form.optionalHint}
             error={contact.errors.required}
           />
           <TextArea
             id="sg-message"
             name="message"
-            label={contact.form.messageLabel}
+            label={contact.form.labels.message}
             rows={4}
           />
         </div>
@@ -771,14 +801,14 @@ const headCellClass =
           <TextField
             id="sg-white-name"
             name="white-name"
-            label={contact.form.nameLabel}
+            label={contact.form.labels.name}
             required
           />
           <TextField
             id="sg-white-company"
             name="white-company"
-            label={contact.form.companyLabel}
-            hint="Optional"
+            label={contact.form.labels.company}
+            hint={contact.form.optionalHint}
           />
         </div>
 
@@ -787,14 +817,14 @@ const headCellClass =
             id="sg-white-email-invalid"
             name="white-email-invalid"
             type="email"
-            label={contact.form.emailLabel}
+            label={contact.form.labels.email}
             error={contact.errors.email}
             defaultValue="not-an-email"
           />
           <TextArea
             id="sg-white-message"
             name="white-message"
-            label={contact.form.messageLabel}
+            label={contact.form.labels.message}
             rows={4}
           />
         </div>
@@ -1100,5 +1130,113 @@ const headCellClass =
         </Button>
       </div>
     </Section>
+
+    <Section tone="tint" labelledBy="sg-form-band-intro">
+      <h2 id="sg-form-band-intro">The contact form band</h2>
+      <p class="mt-4 max-w-narrow">
+        The one dark band that holds fields (spec 0011): a greyscale photo under{' '}
+        <code class="font-mono text-small">--color-scrim-strong</code> and the{' '}
+        <code class="font-mono text-small">bg-diagonal-dark</code> stripe. Its
+        lightest pixel is #3f3f3f, where white reads at 10.5:1 and{' '}
+        <code class="font-mono text-small">--color-error-on-dark</code> at
+        5.19:1.
+      </p>
+      <p class="mt-3 max-w-narrow text-small text-ink">
+        The fields pass <code class="font-mono text-small">surface="dark"</code>
+        : white label and hint, light error, the same white box. The hint sits
+        on the label's line, so a row lines up with or without one. The cards
+        are white surfaces and follow the light rules. Tab through: the band
+        carries <code class="font-mono text-small">focus-contrast</code>.
+      </p>
+    </Section>
+
+    <FormBand
+      heading={contact.form.heading}
+      headingId="sg-form-band-heading"
+      background={contact.form.background.src}
+      noScript={contact.form.noScript}
+      email={contact.details.email}
+      phone={contact.details.phone}
+    >
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <TextField
+          id="sg-dark-name"
+          name="dark-name"
+          label={contact.form.labels.name}
+          surface="dark"
+          aria-required="true"
+        />
+        <TextField
+          id="sg-dark-phone"
+          name="dark-phone"
+          type="tel"
+          label={contact.form.labels.phone}
+          hint={contact.form.optionalHint}
+          surface="dark"
+        />
+        <TextField
+          id="sg-dark-email-invalid"
+          name="dark-email-invalid"
+          type="email"
+          label={contact.form.labels.email}
+          error={contact.errors.email}
+          defaultValue="not-an-email"
+          surface="dark"
+        />
+        <Select
+          id="sg-dark-lod"
+          name="dark-lod"
+          label={contact.form.labels.lod}
+          hint={contact.form.optionalHint}
+          options={contact.form.lodOptions}
+          prompt={contact.form.selectPrompt}
+          surface="dark"
+        />
+        <Select
+          id="sg-dark-project-invalid"
+          name="dark-project-invalid"
+          label={contact.form.labels.projectType}
+          hint={contact.form.optionalHint}
+          options={contact.form.projectTypes}
+          prompt={contact.form.selectPrompt}
+          error={contact.errors.required}
+          surface="dark"
+        />
+        <div class="md:col-span-2">
+          <TextArea
+            id="sg-dark-message"
+            name="dark-message"
+            label={contact.form.labels.message}
+            error={contact.errors.tooLong}
+            rows={3}
+            surface="dark"
+          />
+        </div>
+      </div>
+
+      <ContactCard
+        slot="cards"
+        icon="headset"
+        heading={contact.cards.talk.heading}
+        body={{
+          label: contact.details.phone,
+          href: telHref(contact.details.phone),
+        }}
+      />
+      <ContactCard
+        slot="cards"
+        icon="map-pin"
+        heading={contact.cards.visit.heading}
+        body={contact.details.address}
+      />
+      <ContactCard
+        slot="cards"
+        icon="envelope"
+        heading={{
+          label: contact.details.email,
+          href: `mailto:${contact.details.email}`,
+        }}
+      />
+    </FormBand>
   </main>
 </BaseLayout>

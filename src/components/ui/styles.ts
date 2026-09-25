@@ -101,8 +101,48 @@ export const fieldClass = (invalid = false): string =>
     invalid ? 'border-error ring-1 ring-error ring-inset' : 'border-field',
   );
 
-/** Field label, hint, and error, shared so the two field components match. */
-export const fieldLabelClass = cx('text-small font-semibold text-ink-strong');
-export const fieldHintClass = cx('text-small text-ink-muted');
-export const fieldErrorClass = cx('text-small text-error');
+/**
+ * A native `<select>` in the same box as every other field, with the site's
+ * own `chevron-down` in place of the browser's arrow (spec 0011). The arrow
+ * is the `select-chevron` utility in `global.css`, so it is drawn in
+ * `--color-ink` from a token and needs no bracket class here. The end
+ * padding keeps a long choice clear of it.
+ */
+export const selectClass = (invalid = false): string =>
+  cx(
+    fieldClass(invalid),
+    'cursor-pointer appearance-none select-chevron pe-10',
+  );
+
+/**
+ * What a field sits on (spec 0011). The control box is identical on both:
+ * white, with the `field` border and the `error` ring. Only the words around
+ * it change. On `dark`, the contact page's form band, the label and hint are
+ * white (10.5:1 at the band's worst point) and the error is `error-on-dark`
+ * (5.19:1), because `error` and `ink` would vanish there.
+ */
+export type FieldSurface = 'light' | 'dark';
+
+/** Field label, hint, and error, shared so every field component matches. */
+export const fieldLabelClass: Readonly<Record<FieldSurface, string>> = {
+  light: cx('text-small font-semibold text-ink-strong'),
+  dark: cx('text-small font-semibold text-white'),
+};
+export const fieldHintClass: Readonly<Record<FieldSurface, string>> = {
+  light: cx('text-small text-ink-muted'),
+  dark: cx('text-small text-white'),
+};
+export const fieldErrorClass: Readonly<Record<FieldSurface, string>> = {
+  light: cx('text-small text-error'),
+  dark: cx('text-small text-error-on-dark'),
+};
 export const fieldWrapperClass = cx('flex flex-col gap-1.5');
+
+/**
+ * The line above a field's box: the label at the start and the hint, when
+ * there is one, at the end (spec 0011). One line either way, so in a grid of
+ * fields the boxes of a row line up whether or not each has a hint.
+ */
+export const fieldHeadClass = cx(
+  'flex flex-wrap items-baseline justify-between gap-x-3',
+);

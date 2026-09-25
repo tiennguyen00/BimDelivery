@@ -3,17 +3,73 @@ seo:
   title: Contact Us | BIM Delivery
   description: Tell us about your project and get a reply within one business day. Email, phone, or use the form on this page.
 heading: Contact us
-intro: Tell us about your project. We reply within one business day.
+intro: Planning a new build, a retrofit, or a scan of an existing site? Tell us what you need and we will come back within **one business day** with a clear next step. Whether it is a ==Revit model==, a ==Scan to BIM== survey, or ==BIM coordination== for a live project, the same team reads every message.
+photo:
+  src: https://images.pexels.com/photos/323705/pexels-photo-323705.jpeg?auto=compress&cs=tinysrgb&w=1600
+  alt: A modern glass and steel office building seen from below against a pale sky
 form:
-  nameLabel: Your name
-  emailLabel: Email address
-  companyLabel: Company
-  messageLabel: How can we help?
+  heading: Send us a message
+  background:
+    src: https://images.pexels.com/photos/2138126/pexels-photo-2138126.jpeg?auto=compress&cs=tinysrgb&w=2560
+    decorative: true
+  labels:
+    name: Your name
+    company: Company
+    email: Email address
+    phone: Phone number
+    country: Country
+    need: Your needs
+    projectType: Project type
+    lod: Level of development
+    message: Project description
+  optionalHint: Optional
+  selectPrompt: Choose one
+  needOtherLabel: Other
+  projectTypes:
+    - value: residential
+      label: Residential
+    - value: commercial
+      label: Commercial
+    - value: industrial
+      label: Industrial
+    - value: healthcare
+      label: Healthcare
+    - value: education
+      label: Education
+    - value: infrastructure
+      label: Infrastructure
+    - value: other
+      label: Other
+  lodOptions:
+    - value: lod-100
+      label: LOD 100
+    - value: lod-200
+      label: LOD 200
+    - value: lod-300
+      label: LOD 300
+    - value: lod-350
+      label: LOD 350
+    - value: lod-400
+      label: LOD 400
+    - value: lod-500
+      label: LOD 500
+    - value: not-sure
+      label: Not sure yet
   submitLabel: Send message
+  sendingLabel: Sending…
+  noScript: This form needs JavaScript to send. You can reach us directly instead.
 errors:
   required: Please fill in this field.
   email: Please enter a valid email address.
+  phone: Please enter a phone number with at least 6 digits, using only numbers, spaces, and + ( ) - .
+  tooLong: This is longer than we can take. Please shorten it.
+  captcha: We could not confirm you are not a robot. Please try again, or email us at
   deliveryFailed: Your message could not be sent. Please try again, or email us directly.
 success:
   heading: Thank you
   text: We have your message and will reply within one business day.
+cards:
+  talk:
+    heading: Talk to us
+  visit:
+    heading: Visit us

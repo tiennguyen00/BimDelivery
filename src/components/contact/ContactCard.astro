@@ -1,0 +1,57 @@
+---
+/**
+ * One of the Contact page's three cards (spec 0011): a large gold icon above
+ * a heading, then an optional value, centred on a white card.
+ *
+ * The heading and the value are each plain text or a link, because the email
+ * card's heading is the address itself, and the phone is a `tel:` link a
+ * phone can dial.
+ *
+ * The card is a white surface on the dark form band, so it follows the light
+ * rules, not the band's: the heading is bold `gold-ink` at `text-h3` (5.05:1,
+ * the gold rule), the value `ink-strong` (12.63:1), and the icon a `gold`
+ * fill, which is decoration and hidden from assistive tech. A link keeps the
+ * shared focus ring, the two colour one the band passes down through
+ * `focus-contrast`.
+ */
+import Icon, { type IconName } from '../ui/Icon.astro';
+import type { Link } from '../../lib/content';
+
+type CardText = string | Link;
+
+interface Props {
+  icon: IconName;
+  heading: CardText;
+  body?: CardText;
+}
+
+const { icon, heading, body } = Astro.props;
+
+const linkClass = 'underline-offset-4 hover:underline';
+---
+
+<div class="flex flex-col items-center rounded-ui bg-white px-6 py-8 text-center shadow-lg">
+  <Icon name={icon} size={56} class="fill-gold" />
+
+  <h3 class="mt-4 font-bold text-gold-ink wrap-anywhere">
+    {typeof heading === 'string' ? (
+      heading
+    ) : (
+      <a href={heading.href} class={linkClass}>
+        {heading.label}
+      </a>
+    )}
+  </h3>
+
+  {body !== undefined && (
+    <p class="mt-2 text-ink-strong wrap-anywhere">
+      {typeof body === 'string' ? (
+        body
+      ) : (
+        <a href={body.href} class={linkClass}>
+          {body.label}
+        </a>
+      )}
+    </p>
+  )}
+</div>

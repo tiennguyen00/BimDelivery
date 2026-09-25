@@ -21,6 +21,10 @@ import type { Locale } from '../i18n/locales';
 /**
  * Top level paths a service slug may not take, since services live at
  * `/<slug>`. Whoever adds a new top level page adds its path here.
+ *
+ * `other` is not a path: it is the contact form's "Your needs" answer for
+ * anything that is not a service (spec 0011), so a service may not take it
+ * either, or two choices would send the same key.
  */
 const RESERVED_PATHS: readonly string[] = [
   'about-us',
@@ -29,6 +33,7 @@ const RESERVED_PATHS: readonly string[] = [
   'privacy',
   'api',
   '404',
+  'other',
 ];
 
 // Types
