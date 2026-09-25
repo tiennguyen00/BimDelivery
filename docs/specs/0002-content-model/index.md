@@ -1,7 +1,7 @@
 # 0002. Model site content as typed, per language content collections
 
 **Date**: 2026-09-19
-**Status**: In Progress
+**Status**: Accepted
 **Scope feature**: 3, Content model (`docs/scope/scope.md`)
 
 ## Summary

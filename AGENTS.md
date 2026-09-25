@@ -41,6 +41,8 @@ Skateboard: ship the smallest genuinely usable whole site, then grow it release 
 pnpm install
 pnpm dev                              # localhost:4321 (agents: astro dev --background)
 pnpm check                            # astro check, the type gate
+pnpm lint                             # eslint, clean before commit
+pnpm format:check                     # prettier, read only
 pnpm build                            # pages land in dist/client/
 pnpm exec wrangler deploy --dry-run   # confirm the deploy config
 ```
@@ -59,6 +61,8 @@ Stored in `docs/specs/`, one folder per decision: `docs/specs/NNNN-title/index.m
 - Expected failures return an explicit result (a union or `Result` type) instead of throwing; throw only for real bugs.
 - Every page route produces an HTML file at build. Never switch `output` to `'server'`; after touching the adapter or `output`, confirm `dist/client/` has one HTML file per route.
 - Zero JavaScript by default: nav, dropdown, mobile menu, and counters are plain scripts. React only for the contact form island in `src/components/react/`.
+- `motion` is the one animation dependency, imported only by `src/scripts/reveal.ts` (`animate` from `motion/mini` and `inView`, nothing else).
+- Design system: build all UI to `docs/design.md` (art direction and the build mandate); token values live in CSS (`src/styles/global.css`).
 - Page content comes from content collections, never hardcoded in layouts. Every entry carries a required language field.
 - Code must run on `workerd`: use only Node APIs that `nodejs_compat` provides.
 - Secrets never go in the repo: Cloudflare secrets in production, `.dev.vars` locally, read through Astro's typed env schema.
@@ -90,9 +94,12 @@ Chosen by `/audit`, installed by `/develop tooling`:
 - [workers-best-practices](.agents/skills/workers-best-practices/): `cloudflare/skills`, code that runs on `workerd`
 - [resend](.agents/skills/resend/): `resend/resend-skills`, the contact form's email delivery
 - [vercel-react-best-practices](.agents/skills/vercel-react-best-practices/): `vercel-labs/agent-skills`, the React contact form island
+- [motion](.agents/skills/motion/): `motiondivision/ai-kit`, the vanilla `motion` API behind `reveal.ts`, CSS springs, and animation performance audits
 
 ## Context files
 
 <!-- Nested AGENTS.md files are listed here as they are created -->
 
 _Drafted by /audit from the repo, worth a quick human pass. Edit freely: once a line stops matching this draft, later runs treat it as curated and will flag rather than overwrite it._
+
+- [src/scripts/AGENTS.md](src/scripts/AGENTS.md): the plain browser scripts, how they enhance finished markup and stay out of the way

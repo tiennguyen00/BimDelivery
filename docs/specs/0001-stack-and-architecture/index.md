@@ -1,7 +1,7 @@
 # 0001. Adopt a prerendered Astro site on Cloudflare
 
 **Date**: 2026-09-19
-**Status**: In Progress
+**Status**: Accepted
 **Scope feature**: 1, Stack and architecture (`docs/scope/scope.md`)
 
 ## Summary

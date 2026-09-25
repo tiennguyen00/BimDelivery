@@ -49,6 +49,12 @@
       "skillPath": "skills/document/SKILL.md",
       "computedHash": "a47c5d29a1263d987c2fa05dbc993a5276aaf6c4ddc54fbd329463a5f3a1aa77"
     },
+    "motion": {
+      "source": "motiondivision/ai-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/motion/skills/motion/SKILL.md",
+      "computedHash": "1a47caa7bd3700a00f9939d85ea790f9e35cf51000c2e1da11521589f589fb0b"
+    },
     "pnpm": {
       "source": "antfu/skills",
       "sourceType": "github",
