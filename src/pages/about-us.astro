@@ -30,6 +30,13 @@ const [about, stats, settings] = await Promise.all([
   getSettings(lang),
 ]);
 
+/**
+ * The about band's entrance steps before its numbers (the heading, then the
+ * paragraph; `AboutBand` owns them). The capability band carries on after
+ * the last number.
+ */
+const ABOUT_ENTRANCE_STEPS = 2;
+
 const badges = settings.footer.certification.badges.map((badge) => ({
   src: badge.src,
   alt: badge.alt ?? '',
@@ -57,6 +64,7 @@ const badges = settings.footer.certification.badges.map((badge) => ({
       headingId="capability-heading"
       paragraphs={about.capability.paragraphs}
       accordion={about.capability.accordion}
+      entranceFrom={ABOUT_ENTRANCE_STEPS + stats.length}
     />
   </Section>
 
@@ -74,6 +82,8 @@ const badges = settings.footer.certification.badges.map((badge) => ({
  * The scroll reveal and the heading rule (spec 0005), the page's choice as on
  * the home page. The about band carries no `data-reveal`: it moves on load
  * through the CSS `entrance` instead, so the two never touch the same thing.
+ * The capability band is the one band with both (spec 0012, assumed): on
+ * screen at load the entrance moves it, below the fold the scroll reveal.
  */}
 <script>
   import '../scripts/reveal';

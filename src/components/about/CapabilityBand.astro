@@ -17,6 +17,14 @@
  * after the other, and the heading carries `data-heading-rule`, so its rule
  * draws with the scroll direction. Both are inert unless the page imports
  * `reveal.ts`.
+ *
+ * `entranceFrom` also gives each column the `entrance` utility (spec 0012,
+ * assumed), with steps counting up from it. On a desktop the band is on
+ * screen at load, where the scroll reveal leaves it alone, so the entrance is
+ * what moves it; below the fold the scroll reveal hides and reveals it, and
+ * the entrance plays unseen underneath. The two never fight: the entrance
+ * moves `translate`, the scroll reveal `transform` and `opacity` inline.
+ * Left out, the columns do not move on load.
  */
 import Accordion from '../ui/Accordion.astro';
 import Emphasis from '../ui/Emphasis.astro';
@@ -28,19 +36,28 @@ interface Props {
   /** Each may carry `**bold**` and `==gold==` phrases. */
   paragraphs: readonly string[];
   accordion: readonly Readonly<{ title: string; text: string }>[];
+  /** The start column's `--entrance-step`; the end column adds one. */
+  entranceFrom?: number;
 }
 
-const { heading, headingId, paragraphs, accordion } = Astro.props;
+const { heading, headingId, paragraphs, accordion, entranceFrom } = Astro.props;
 
 /** The accordion's shared `<details name>`, unique on the page. */
 const ACCORDION_NAME = 'about-capability';
+
+const entranceClass = entranceFrom !== undefined && 'entrance';
+
+const entranceStyle = (column: number): string | undefined =>
+  entranceFrom === undefined
+    ? undefined
+    : `--entrance-step: ${entranceFrom + column}`;
 ---
 
 <div
   class="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-start lg:gap-16"
   data-reveal-stagger
 >
-  <div>
+  <div class:list={[entranceClass]} style={entranceStyle(0)}>
     <h2 id={headingId} class="heading-rule uppercase" data-heading-rule>
       {heading}
     </h2>
@@ -54,5 +71,7 @@ const ACCORDION_NAME = 'about-capability';
     </div>
   </div>
 
-  <Accordion name={ACCORDION_NAME} items={accordion} />
+  <div class:list={[entranceClass]} style={entranceStyle(1)}>
+    <Accordion name={ACCORDION_NAME} items={accordion} />
+  </div>
 </div>

@@ -318,7 +318,12 @@
  * plays, and with reduced motion asked for it does not run at all, so
  * everything is simply there. It moves by `translate`, never `transform`, so
  * nothing around it shifts and it composes with anything else that moves.
- * Never put it on an element that also takes `data-reveal`.
+ * Never put it on an element that also takes `data-reveal`. The one written
+ * exception is the About page's capability band (spec 0012, assumed), whose
+ * columns take both, because the band is on screen at load on a desktop and
+ * below the fold on a phone: the scroll reveal leaves on screen columns alone,
+ * and under a column it hides, this animation runs from opacity 0 to the
+ * scroll reveal's inline 0, unseen.
  */
 @utility entrance {
   @media (prefers-reduced-motion: no-preference) {

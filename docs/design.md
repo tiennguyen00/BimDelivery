@@ -807,7 +807,12 @@ gold rules under the section headings.
   motion it does not run, so everything is simply there. It moves by
   `translate`, so nothing around it shifts. **Never** combine it with
   `data-reveal` on one element; the About band takes no scroll reveal for that
-  reason.
+  reason. The one exception is the capability band below it (spec 0012,
+  assumed): its two columns take the entrance at the steps after the last
+  number (`entranceFrom`, `2 + stats.length`) and stay in the scroll reveal's
+  stagger, because the band is on screen at load on a desktop, where the
+  scroll reveal never moves anything, and below the fold on a phone. Whichever
+  applies moves it; the other stays out of sight.
 - **The accordion slide**, in the `accordion-item` utility (spec 0010). Where
   the browser supports `::details-content` and `interpolate-size` (Chrome and
   Edge today), a panel's height slides between nothing and its content over
@@ -819,7 +824,8 @@ gold rules under the section headings.
   then each card reveal on scroll, and the intro heading's rule draws with
   the scroll direction.
 - The About page imports `reveal.ts` too: its capability band's two columns
-  reveal one after the other, its certification band's heading block,
+  reveal one after the other when they start below the fold (and move by the
+  load entrance when they start on screen, above), its certification band's heading block,
   paragraphs, and then each badge in turn, and both bands' heading rules draw
   with the scroll direction.
 - **Don't** give the hero or the intro band the fade-and-rise: the hero is the
