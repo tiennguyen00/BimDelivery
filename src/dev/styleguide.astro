@@ -20,6 +20,8 @@ import Button from '../components/ui/Button.astro';
 import Card from '../components/ui/Card.astro';
 import MediaText from '../components/ui/MediaText.astro';
 import StatsBand from '../components/ui/StatsBand.astro';
+import Accordion from '../components/ui/Accordion.astro';
+import Emphasis from '../components/ui/Emphasis.astro';
 import CtaBand from '../components/ui/CtaBand.astro';
 import Icon, { type IconName } from '../components/ui/Icon.astro';
 import Header from '../components/ui/Header.astro';
@@ -29,6 +31,7 @@ import { TextField } from '../components/react/ui/TextField';
 import { TextArea } from '../components/react/ui/TextArea';
 import { resolveLocale } from '../i18n/locales';
 import {
+  getAboutPage,
   getContactPage,
   getHomePage,
   getNavigation,
@@ -40,7 +43,7 @@ import {
 
 const lang = resolveLocale(Astro.currentLocale);
 
-const [home, services, projects, contact, navigation, settings, stats] =
+const [home, services, projects, contact, navigation, settings, stats, about] =
   await Promise.all([
     getHomePage(lang),
     getServices(lang),
@@ -49,6 +52,7 @@ const [home, services, projects, contact, navigation, settings, stats] =
     getNavigation(lang),
     getSettings(lang),
     getStats(lang),
+    getAboutPage(lang),
   ]);
 
 /** The whole icon map, in the order Icon.astro declares it. */
@@ -56,6 +60,13 @@ const iconNames: readonly IconName[] = [
   'menu',
   'close',
   'chevron-down',
+  'check',
+  'arrow-right',
+  'plus',
+  'minus',
+  'phone',
+  'mail',
+  'globe',
   'linkedin',
   'facebook',
   'youtube',
@@ -407,7 +418,8 @@ const headCellClass =
         which is what the class alone gives you. On a page that does import it,
         a heading also marked with the{' '}
         <code class="font-mono text-small">data-heading-rule</code> attribute
-        draws its line in the direction the visitor is scrolling.
+        draws its line as the visitor scrolls down and takes it back as they
+        scroll up.
       </p>
     </Section>
 
@@ -834,11 +846,11 @@ const headCellClass =
     <Section labelledBy="sg-icons">
       <h2 id="sg-icons">Icons</h2>
       <p class="mt-4 max-w-narrow">
-        The whole set. There is no icon library: eight glyphs is not enough to
-        earn a dependency, and a fixed map means a name outside it is a type
-        error rather than a blank square. Every glyph inherits{' '}
+        The whole set. There is no icon library: a couple of dozen glyphs is not
+        enough to earn a dependency, and a fixed map means a name outside it is
+        a type error rather than a blank square. Every glyph inherits{' '}
         <code class="font-mono text-small">currentColor</code>, so the two rows
-        below are the same twelve glyphs.
+        below are the same glyphs.
       </p>
 
       <ul class="mt-8 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-4 lg:grid-cols-6">
@@ -897,6 +909,23 @@ const headCellClass =
           currentPath="/"
         />
         <Footer legal={navigation.legal} settings={settings} />
+      </div>
+
+      <h3 class="mt-12">The footer with its certification panel hidden</h3>
+      <p class="mt-4 max-w-narrow">
+        What <code class="font-mono text-small">/about-us</code> shows (spec
+        0010): that page has the badges in a band of its own, so it passes{' '}
+        <code class="font-mono text-small">
+          footerCertification=&#123;false&#125;
+        </code>
+        and the brand and contact columns share the row.
+      </p>
+      <div class="mt-8 overflow-hidden rounded-ui border border-line">
+        <Footer
+          legal={navigation.legal}
+          settings={settings}
+          showCertification={false}
+        />
       </div>
     </Section>
 
@@ -960,6 +989,55 @@ const headCellClass =
           items={stats}
           lang={lang}
         />
+      </div>
+
+      <h3 class="mt-12">With no heading, and the load entrance</h3>
+      <p class="mt-4 max-w-narrow">
+        As the About band uses it (spec 0010): no{' '}
+        <code class="font-mono text-small">h2</code>, so the list is named by
+        the section around it, and{' '}
+        <code class="font-mono text-small">entranceFrom</code> gives each figure
+        the CSS <code class="font-mono text-small">entrance</code>, 80ms apart.
+        Reload at the top of this tile to see them rise in.
+      </p>
+      <div class="mt-8">
+        <StatsBand items={stats} lang={lang} entranceFrom={0} />
+      </div>
+    </Section>
+
+    <Section tone="tint" labelledBy="sg-emphasis">
+      <h2 id="sg-emphasis">Marked text</h2>
+      <p class="mt-4 max-w-narrow">
+        <code class="font-mono text-small">Emphasis</code> renders one line of
+        content copy with its two marks:{' '}
+        <code class="font-mono text-small">**bold**</code> in the surrounding
+        colour and <code class="font-mono text-small">==gold==</code> in the
+        gold the surface allows. The real About intro, on a light tone and then
+        on black, where the same mark turns{' '}
+        <code class="font-mono text-small">--color-gold-on-dark</code>.
+      </p>
+      <p class="mt-8 max-w-narrow">
+        <Emphasis text={about.intro} surface="light" />
+      </p>
+      <p class="mt-6 max-w-narrow rounded-ui bg-black p-6 text-white">
+        <Emphasis text={about.intro} surface="dark" />
+      </p>
+    </Section>
+
+    <Section labelledBy="sg-accordion">
+      <h2 id="sg-accordion">Accordion</h2>
+      <p class="mt-4 max-w-narrow">
+        The browser's own <code class="font-mono text-small">details</code>, one
+        open at a time through a shared{' '}
+        <code class="font-mono text-small">name</code>, the first open on load.
+        Closed items are gold bars, the open one a white card. Tab to a summary:
+        the ring is the two colour one, because the group carries{' '}
+        <code class="font-mono text-small">focus-contrast</code>. Enter or Space
+        toggles. In Chrome and Edge the panel slides; elsewhere, and with reduce
+        motion on, it opens at once.
+      </p>
+      <div class="mt-8 max-w-narrow">
+        <Accordion name="sg-accordion" items={about.capability.accordion} />
       </div>
     </Section>
 

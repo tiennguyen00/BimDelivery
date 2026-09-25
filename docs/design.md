@@ -67,7 +67,7 @@ list and only one of them is legible as a word.
 | Fill gold | `--color-gold` | Button fills, highlight fills behind black text, decorative rules, icon fills | Any text; any control border; any focus ring |
 | Fill gold, hover | `--color-gold-deep` | The primary button's hover fill | Everything else |
 | Text gold | `--color-gold-ink` | Emphasised words, links, the secondary button's border and label, the focus ring | Large flat fills, where it reads muddy rather than gold |
-| Text gold on black | `--color-gold-on-dark` | Highlighted words on a black band (today only the home intro band) | Anything on white, tint, or a photo |
+| Text gold on black | `--color-gold-on-dark` | Highlighted words on a black band (the home intro band and the footer) | Anything on white, tint, or a photo |
 | Accent yellow | `--color-yellow` | The real logo and feature 5's icons | Any text; anything else today |
 
 The decorative rule itself is one utility, `heading-rule` in `global.css`, and
@@ -120,9 +120,12 @@ focus indicators. Computed from the hex values above.
 | focus ring gold-ink | white / tint | 5.05 / 4.79 | 3.0 |
 | white (the gold band's link label) | black / ink-strong (hover) | 21.00 / 12.63 | 4.5 |
 | black (the gold band's heading and text) | gold | 8.73 | 4.5 |
+| black (the service card's wash) | gold at 70 percent over the card's white (composite `#e9b74d`) | 11.35 | 4.5 |
 | white (intro band heading and copy) | black | 21.00 | 4.5 |
 | gold-on-dark (intro band highlighted words) | black | 8.73 | 4.5 |
 | gold-ink (intro band card numbers) / ink-strong (card labels) | white | 5.05 / 12.63 | 4.5 |
+| gold-ink (`StatsBand` numbers, the open accordion title, a `==` phrase) / ink-strong (`StatsBand` labels) | white | 5.05 / 12.63 | 4.5 |
+| black (a closed accordion item's title) | gold | 8.73 | 4.5 |
 | ink (text on `bg-diagonal`), worst case over a stripe line | line (`#e5e5e5`) | 4.56 | 4.5 |
 | white (the hero's heading and subheading) | scrim over any photo, worst case over pure white (composite `#666666`) | 5.74 at worst | 4.5 |
 | two colour focus ring, black inner band / white outer band (the hero photo and the gold band) | gold / any photo | black on gold 8.73; on any colour at all, one of the two bands reaches at least 4.58 | 3.0 |
@@ -212,14 +215,19 @@ background, none takes a tone prop, and none reads a tone variable. Components
 name their colours directly (`text-ink`, `border-gold-ink`).
 
 A tone may carry one pattern on top: `bg-diagonal` (`global.css`, spec 0005),
-a 1px `line` stripe every 10px at 45 degrees, today on the home presence band.
-It sets only `background-image`, so it is not a third tone. Pass it through
-`Section`'s `class`; **do not** add a tone for it.
+a 1px `line` stripe every 10px at 45 degrees, today on the home presence band
+and the About page's certification band. It sets only `background-image`, so
+it is not a third tone. Pass it through `Section`'s `class`; **do not** add a
+tone for it.
 
 - **Do** keep text on `bg-diagonal` at `ink` or stronger. Its worst case, `ink`
   over a stripe line, measures 4.56:1.
 - **Don't** use `ink-muted` for text on it: over a stripe line it drops to
   3.93:1, under the 4.5 minimum.
+- **Don't** put a `==gold==` phrase on it either: `gold-ink` over a stripe
+  line measures 4.01:1. A `**bold**` phrase is fine, it stays `ink`. Spec 0010
+  (AC-4) lists the stripe as a surface for `gold-ink`; that line owes a
+  correction, and until then the About certification copy carries no `==`.
 
 The home page has one black band, the intro band, and it is not a tone: like
 the hero and `CtaBand` it is its own component that borrows the band frame,
@@ -234,8 +242,9 @@ colour, and a second focus colour, then computing the dark contrast pairs.
 
 ## Components
 
-Four base pieces, plus the four the site shell adds (spec 0004) and the three
-the home page promotes into the system (spec 0005). The form fields
+Four base pieces, plus the four the site shell adds (spec 0004), the three
+the home page promotes into the system (spec 0005), and the two the About page
+adds (spec 0010, `Emphasis` and `Accordion`). The form fields
 are React because the contact island (feature 10) needs them, and the button
 exists in both idioms sharing one class map so they cannot drift apart;
 everything else is Astro.
@@ -342,13 +351,15 @@ and so on).
 | `title` | `string`, the accessible name | none |
 | `class` | `string` | none |
 
-The whole set, fourteen glyphs on one 24 unit grid: `menu`, `close`,
+The whole set, nineteen glyphs on one 24 unit grid: `menu`, `close`,
 `chevron-down`, `check` (the home presence band's why choose list, spec 0005),
-`arrow-right` (the home service card's cue, spec 0005),
-the five social marks `linkedin`, `facebook`, `youtube`,
-`x`, `instagram`, and the four solid stat glyphs `briefcase-clock`, `users`,
-`building`, `map-pin` (the home intro band's cards). A glyph whose details are
-holes punched through it sets `evenodd` in the map.
+`arrow-right` (the home service card's cue, spec 0005), `plus` and `minus`
+(an `Accordion` item closed and open, spec 0010), the footer's contact glyphs
+`phone`, `mail`, `globe`, the five social marks `linkedin`, `facebook`,
+`youtube`, `x`, `instagram`, and the four solid stat glyphs
+`briefcase-clock`, `users`, `building`, `map-pin` (the home intro band's
+cards). A glyph whose details are holes punched through it sets `evenodd` in
+the map.
 
 - Every glyph inherits `currentColor`, so an icon is coloured by the text around
   it. **Do not** give an icon a colour of its own. The one exception is a
@@ -370,10 +381,13 @@ holes punched through it sets `evenodd` in the map.
 |---|---|---|
 | `title` | `string` (required) | |
 | `description` | `string` | none |
+| `footerCertification` | `boolean`, passed to `Footer`'s `showCertification` | `true` |
 
 The frame every public page sits inside: the skip link, `Header`,
 `<main id="main" tabindex="-1">`, `Footer`. It reads the navigation and the
-settings itself, so a page passes only its own title and description.
+settings itself, so a page passes only its own title and description, plus
+`footerCertification={false}` on the one page that shows the badges itself
+(About, spec 0010).
 
 - **Do** import this in every page under `src/pages/`. `BaseLayout` is the bare
   document shell and is for the dev only style guide. A page that imports the
@@ -433,9 +447,18 @@ Sticky, one constant height, white, and it registers **no scroll listener**.
 | `ui` | `NavUi` (required) | |
 | `legal` | `readonly Link[]` (required, may be empty) | |
 | `settings` | `Settings` (required) | |
+| `showCertification` | `boolean` | `true` |
 
-Four columns at `lg`, two at `md`, one below: brand, site links, service links,
-contact. Tone `tint`.
+A black band: brand, contact, and certification, three columns at `lg`, two
+at `md`, one below. It carries `focus-contrast`, and its marked copy goes
+through `Emphasis` on the `dark` surface.
+
+- **The hidden panel** (spec 0010): with `showCertification` off, the
+  certification column is left out and the brand and contact columns share
+  the row, two at `md` and at `lg`. Only `/about-us` turns it off, through
+  `PageLayout`'s `footerCertification`, because that page shows the same
+  badges in a band of its own. Every other page's footer is unchanged, and the
+  badges appear once per page.
 
 - Both link columns come from the same `getNavigation` call the header uses, so
   the two can never fall out of step and a fourth service file appears in both.
@@ -457,8 +480,9 @@ contact. Tone `tint`.
 | `imageSide` | `'start' \| 'end'` | `'start'` |
 
 A heading, paragraphs, an optional slot for a list, and an optional photo
-beside them. The home overview uses it (spec 0005) and About (feature 7)
-reuses it. The home presence band used it until spec 0005's revision gave that band its
+beside them. The home overview used it (spec 0005) until that band was cut,
+and today only `/styleguide` shows it; spec 0010 gave About its own bands
+instead. The home presence band used it until spec 0005's revision gave that band its
 own map layout (`src/components/home/PresenceBand.astro`).
 
 - **Do** flip `imageSide` between two on one page, so the second does not read
@@ -479,13 +503,21 @@ own map layout (`src/components/home/PresenceBand.astro`).
 
 | Prop | Type | Default |
 |---|---|---|
-| `heading` | `string` (required) | |
-| `headingId` | `string` (required), the id the section points at | |
+| `heading` | `string` | none, and then no `h2` |
+| `headingId` | `string`, the id the section points at | none |
 | `items` | `readonly StatItem[]` (required) | |
 | `lang` | `Locale` (required) | |
+| `entranceFrom` | `number`, the first figure's `--entrance-step` | none, and then no load entrance |
 
-A heading and one figure per stat, two columns on mobile and four at `md`.
-About (feature 7) reuses it; its entry already carries a `statsHeading`.
+One figure per stat under an optional heading, two columns on mobile and four
+at `md`, centred and never wider than `content`. The About page's first band
+uses it with no heading (spec 0010), so the list is named by that band's `h1`.
+
+- **The look** (spec 0010): each number bold `gold-ink` at `text-h1` (5.05:1
+  on white), each label semibold `ink-strong` (12.63:1). Gold here is always
+  `gold-ink`, never the brighter fill gold the reference shows.
+- `entranceFrom` gives every figure the `entrance` utility with steps counting
+  up from it, so the figures follow whatever the band animated before them.
 
 - **The finished numbers are rendered at build**, already grouped for `lang`
   (so `1200` reads as `1,200`). `src/scripts/counters.ts` animates them when
@@ -501,6 +533,53 @@ About (feature 7) reuses it; its entry already carries a `statsHeading`.
   **Do not** drop either when restyling.
 - Each stat is a `<dl>` group, label as the term and number as the definition,
   shown in reverse so the number sits on top. **Do not** flatten it to `<div>`s.
+
+### `Emphasis` · `src/components/ui/Emphasis.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `text` | `string` (required), one line of content copy | |
+| `surface` | `'light' \| 'dark'` (required) | |
+| `strongClass` | `string`, extra classes for the `**` runs | none |
+
+The one place marked copy becomes markup (spec 0010). Content marks a phrase
+with one of two pairs, and the schema's `emphasisText` checks every line at
+build (`src/lib/emphasis.ts`):
+
+- `**phrase**` is semibold in the surrounding colour. The home presence band
+  passes `strongClass="text-ink-strong"` to keep its darker bold.
+- `==phrase==` is semibold gold, and the surface picks which: `gold-ink` on
+  white and tint, `gold-on-dark` on black. That is why `surface` has no
+  default.
+- Marks must close with the same mark and may never nest or overlap. A line
+  that breaks either rule fails the build, quoting the line.
+- It renders inline runs and no wrapper, so the caller owns the `<p>` and its
+  colour. **Do not** write a `splitEmphasis` loop in a component again.
+- **Don't** put a `==` phrase on `bg-diagonal` (see `## Tones`).
+
+### `Accordion` · `src/components/ui/Accordion.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `name` | `string` (required), the group's shared `<details name>` | |
+| `items` | `readonly { title: string; text: string }[]` (required) | |
+
+Disclosure items, one open at a time (spec 0010), for the About page's
+capability band and ready for the service pages. The browser's own
+`<details>` and `<summary>`, with no script.
+
+- Every item shares `name`, so opening one closes the other; the first ships
+  `open`. A closed item's text stays in the HTML.
+- **Closed**: a `gold` filled bar, the title bold `black` at `text-h3`
+  (8.73:1), a `plus` in a white circle at the end. **Open**: a white card with
+  a `line` border and `shadow-lg`, the title `gold-ink` (5.05:1), the circle
+  `tint`, a `minus`, and the text below with its marks.
+- The whole summary is the target, at least 44px tall, and toggles with a
+  click, a tap, Enter, or Space. It holds plain text, never a heading.
+- The group carries `focus-contrast`, so a summary gets the two colour ring:
+  the `gold-ink` ring would vanish against a closed gold bar (2.10:1).
+- The `accordion-item` utility in `global.css` hides the browser's own
+  triangle and holds the slide (`## Focus and motion`).
 
 ### `CtaBand` · `src/components/ui/CtaBand.astro`
 
@@ -554,11 +633,20 @@ bottom so the cues of a row line up. White, `shadow-lg`, `rounded-ui`.
 - At rest: title `ink-strong`, summary `ink-muted`, list `ink`, cue and arrow
   `gold-ink`.
 - **Hover and keyboard focus look the same**: a wash from `tint` at the top to
-  `gold` at the bottom fades in over 200ms, a 4px `gold` border appears on the
-  left and right (an overlay, so nothing shifts), the shadow deepens to
-  `shadow-xl`, and the card rises 4px. Focus also shows the `gold-ink` ring.
-- **On the wash every word and icon is `black`**, at least 8.73:1 at the wash's
-  darkest point. **Never** put grey on it: `ink-muted` on `gold` is 2.06:1.
+  `gold` at 70 percent at the bottom rises from the card's bottom edge to its
+  top over 200ms, a 4px `gold` border appears on the left and right (an
+  overlay, so nothing shifts), the shadow deepens to `shadow-xl`, and the card
+  rises 4px. Focus also shows the `gold-ink` ring.
+- **The wash rises, it does not fade**: the layer is scaled to nothing at rest
+  and grows back from `origin-bottom`, the `scale` property and the same idiom
+  as `heading-rule`, so it stays clear of the card's own `translate` lift and of
+  the scroll reveal's `transform`. Leaving the card runs it back down the way it
+  came. With reduced motion asked for, the full wash is simply there.
+- **On the wash every word and icon is `black`**, at least 11.35:1 at the wash's
+  darkest point, which is `gold` at 70 percent over the card's white (the
+  composite `#e9b74d`, measured in the browser). Solid `gold` was darker at
+  8.73:1; the wash was lightened on 2026-09-24 and every figure here went up
+  with it. **Never** put grey on it: `ink-muted` on `gold` is 2.06:1.
 - The lift is the `translate` property under `motion-safe`, never `transform`,
   so it composes with the scroll reveal. With reduced motion the colours still
   change, at once, and the card does not rise. `hover:` applies only where a
@@ -572,7 +660,8 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 - **On the two light tones**: a 2px solid `--color-gold-ink` outline with a 2px
   gap, identical on white and tint. This is the base rule in `global.css`.
 - **On every surface that is not a light tone** (today the home hero's photo,
-  the home intro band's black, and `CtaBand`'s gold band): a two colour ring, a 2px `--color-black` band
+  the home intro band's black, the footer's black, `CtaBand`'s gold band, and
+  the `Accordion`'s gold bars): a two colour ring, a 2px `--color-black` band
   directly around the control and a 2px `--color-white` band outside it. It
   comes from the `focus-contrast` utility in `global.css`, placed on the band's
   `<section>`, so everything focusable inside inherits it and no control sets
@@ -610,18 +699,25 @@ gold rules under the section headings.
 - **The heading rule**, the second half of the same module (spec 0005). The
   gold rule under a section heading draws itself from nothing to the full
   width of the words as the heading arrives, over the same 600ms with an ease
-  out, starting at the same 20 percent. It grows left to right when the
-  visitor is scrolling down the page and right to left when they are scrolling
-  up; the direction is read once, from where the heading sat at the moment it
-  arrived, against the middle of the viewport. A heading inside a block that
+  out, starting at the same 20 percent. When the visitor is scrolling down the
+  page it grows left to right, from nothing to full width. When they are
+  scrolling up it plays the same draw in reverse: as soon as the heading
+  starts to sink below the foot of the viewport, the rule runs back from full
+  width to nothing, its right end travelling to the left edge, over the same
+  600ms. Which way the heading went is read from where it sat against the
+  middle of the viewport, never from a scroll listener. A heading the visitor
+  scrolls past through the top of the viewport keeps its full rule, so it is
+  already drawn when they scroll back up to it. A heading inside a block that
   is still fading and rising waits for that block to come to rest, so the
-  block settles and then the line is drawn under it. A rule goes back to
-  nothing only once its heading is entirely off screen, instantly and so
-  never seen, and it draws again on the next crossing: unlike the
-  fade-and-rise, this one replays for as long as the visitor keeps scrolling.
-  A heading already on screen when the script starts keeps its full width rule
-  and simply joins in from its next crossing, which is also what an anchor
-  jump, a restored scroll position, and the back button land on. The look is
+  block settles and then the line is drawn under it. A rule that sinks out of
+  view before it has finished running back is set to nothing instantly, one
+  scrolled past through the top too fast to have drawn is set to full width
+  instantly, both only while entirely off screen and so never seen, and it
+  draws again on the next crossing: unlike the fade-and-rise, this one
+  replays for as long as the visitor keeps scrolling. A heading already on
+  screen or above the viewport when the script starts keeps its full width
+  rule, which is also what an anchor jump, a restored scroll position, and
+  the back button land on. The look is
   the `heading-rule` utility and the motion hook is `data-heading-rule`,
   written in markup and never in content: a page that takes the class without
   importing the script gets a still, full width rule.
@@ -648,6 +744,25 @@ gold rules under the section headings.
   so the script asks for itself).
 - **The counter** (`src/scripts/counters.ts`), once per band, described under
   `StatsBand`.
+- **The load entrance**, the `entrance` utility in `global.css` (spec 0010),
+  and no script at all. An element fades from 0 and rises 24px into place over
+  600ms with an ease out, the scroll reveal's language, waiting 80ms per
+  `--entrance-step`, which the caller sets in a `style` attribute. Today the
+  About band: the `h1` at step 0, the paragraph at 1, the numbers from 2 (by
+  `StatsBand`'s `entranceFrom`). It runs with JavaScript off, and under reduced
+  motion it does not run, so everything is simply there. It moves by
+  `translate`, so nothing around it shifts. **Never** combine it with
+  `data-reveal` on one element; the About band takes no scroll reveal for that
+  reason.
+- **The accordion slide**, in the `accordion-item` utility (spec 0010). Where
+  the browser supports `::details-content` and `interpolate-size` (Chrome and
+  Edge today), a panel's height slides between nothing and its content over
+  300ms with an ease out, both ways. Elsewhere, and under reduced motion
+  everywhere, items open and close at once.
+- The About page imports `reveal.ts` too: its capability band's two columns
+  reveal one after the other, its certification band's heading block,
+  paragraphs, and then each badge in turn, and both bands' heading rules draw
+  with the scroll direction.
 - **Don't** give the hero or the intro band the fade-and-rise: the hero is the
   largest contentful paint, and the intro band already moves with the counter.
   What is banned there is revealing the band, not all motion on it. The intro
@@ -675,8 +790,9 @@ gold rules under the section headings.
 - Exactly four scripts ship, and all of them only enhance markup that already
   works: `Header` imports `src/scripts/nav.ts` (spec 0004); `StatsBand` and the
   home page's `IntroBand` import `src/scripts/counters.ts`, `Hero` imports
-  `src/scripts/hero-carousel.ts`, and the home page imports
-  `src/scripts/reveal.ts` (all spec 0005). `reveal.ts` holds two separate
+  `src/scripts/hero-carousel.ts`, and the home and About pages import
+  `src/scripts/reveal.ts` (all spec 0005; About by spec 0010, which adds no
+  script: its entrance and accordion are CSS and HTML). `reveal.ts` holds two separate
   halves, the fade-and-rise reveal and the heading rule, in one file so the
   count stays four. Remove any script and the site stays usable. Any fifth one
   needs a reason this good.

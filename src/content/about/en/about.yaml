@@ -1,0 +1,29 @@
+# The About Us page (spec 0010): three bands, top to bottom. The numbers in
+# the first band are the shared `stats` entry, and the badges in the last are
+# the footer's (`settings.footer.certification.badges`), so neither is here.
+#
+# Placeholder copy shaped like the reference, to be replaced with the real
+# story before launch. A `**phrase**` renders bold, a `==phrase==` bold gold.
+lang: en
+seo:
+  title: About Us | BIM Delivery
+  description: Who we are, how we work, and why architects, engineers, and contractors trust BIM Delivery with their models.
+heading: About BIM Delivery
+intro: '**BIM Delivery** is a team of architects, engineers, and BIM specialists who turn design intent into ==accurate, buildable models==. For more than a decade we have supported architects, engineers, contractors, and owners with Revit modeling, scan to BIM, and coordination, working as an extension of your own team. We follow your standards, meet your deadlines, and hand over models that ==stay useful long after the drawings are issued==.'
+capability:
+  heading: Your BIM partner from concept to handover
+  paragraphs:
+    - We bring together **design knowledge** and **production discipline**. Every model is built to your templates, naming, and level of development, and checked before it reaches you, so your team spends its time on decisions rather than on fixing files.
+    - Whether you need one model built from a point cloud or a team that coordinates every trade on a large project, we scale to the work and keep you informed at every milestone. ==Clear scope, steady communication, and no surprises at handover.==
+  accordion:
+    - title: Experience
+      text: Our team has delivered ==more than a thousand projects== across residential, commercial, healthcare, education, and infrastructure work. We have modeled from sketches, drawings, and laser scans, and supported projects from early design through construction and facility management.
+    - title: Expertise
+      text: We work in ==Revit, Navisworks, AutoCAD, and ReCap==, and follow recognized BIM information management practice. Our specialists cover **architectural, structural, and MEP modeling**, clash detection, quantity takeoff, and construction documentation.
+certification:
+  heading: Certified quality you can rely on
+  paragraphs:
+    # PLACEHOLDER: the ISO names below are not confirmed certifications. Swap
+    # them for the real ones (and the footer's badges) before launch.
+    - '**BIM Delivery** works to management systems built on ISO 9001 for quality, ISO 19650 for BIM information management, and ISO/IEC 27001 for information security.'
+    - These standards shape how we plan, model, check, and hand over every project, so you get consistent results and your data stays protected. Placeholder badges until the real certifications are confirmed.

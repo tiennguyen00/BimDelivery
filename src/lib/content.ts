@@ -259,11 +259,8 @@ export const getStats = async (lang: Locale): Promise<readonly StatItem[]> =>
 export const getHomePage = async (lang: Locale) =>
   (await loadSingle('home', lang, 'home')).data;
 
-export const getAboutPage = async (lang: Locale) => {
-  const entry = await loadSingle('about', lang, 'about');
-  const { Content } = await render(entry);
-  return { ...entry.data, Content };
-};
+export const getAboutPage = async (lang: Locale) =>
+  (await loadSingle('about', lang, 'about')).data;
 
 /** The contact page copy, plus the email, phone, and address from site settings. */
 export const getContactPage = async (lang: Locale) => {

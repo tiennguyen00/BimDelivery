@@ -13,11 +13,11 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 |---|---------|-------|--------|
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
-| 3 | Content model | Foundation | in-progress |
-| 4 | Design system & UI foundation | Foundation | in-progress |
+| 3 | Content model | Foundation | done |
+| 4 | Design system & UI foundation | Foundation | done |
 | 5 | Site shell: nav, dropdown, footer | Release 1 | in-progress |
 | 6 | Home page | Release 1 | in-progress |
-| 7 | About Us page | Release 1 | planned |
+| 7 | About Us page | Release 1 | in-progress |
 | 8 | Service pages (three) | Release 1 | planned |
 | 9 | Project page | Release 1 | planned |
 | 10 | Contact page | Release 1 | planned |
@@ -110,13 +110,25 @@ spec [0005](../specs/0005-home-page/index.md) (ratified 2026-09-21 as the six se
   - [x] The service cards, gold hover (spec 0005, milestone 8): the tint to gold wash, gold side borders, black text, and the 4px lift on hover and focus with the reduced motion cut; the `goldHover` draft removed from `Card`; `design.md` updated; then the preview and gates (AC-13, AC-14, AC-17, AC-40 to AC-42, AC-44)
   - [x] The hero scrim panel's entrance (2026-09-23, built without a spec revision): on every photo change the panel holding the heading and its subheading fades in and rises 24px into place over 600ms with an ease out, the scroll reveal's language, found by `data-hero-panel` and animated with the browser's own Web Animations so the hero's script stays dependency free; the button below the panel stays still; never on the first paint, never with reduced motion, and no inline style left behind. `design.md` updated; spec 0005 owes the AC-37 revision that records it (AC-14, AC-17, AC-37)
   - [x] The intro card hover line, reversed (2026-09-23, built without a spec revision): the gold line under each stat card now runs back the way it came when the pointer leaves, right to left over the same 500ms, instead of fading out in place and only then snapping to zero width; one `scale` transition from `origin-left` plays both directions, so the opacity juggling is gone and the 150ms wait that lets the card lift first belongs to the hover state alone
-  - [x] The heading rules draw with the scroll direction (spec 0005, milestone 9, 2026-09-23): one shared `heading-rule` utility replaces the `after:` class string copied into four files, and `reveal.ts` gains a second half that draws each section heading's gold rule left to right on the way down the page and right to left on the way up, replaying on every crossing and resetting only while the heading is entirely off screen. The intro band's motion ban narrows to the fade-and-rise. No fifth script and no new dependency (AC-8, AC-32, AC-34, AC-45 to AC-50). Built with one change to build step 54: the wait a heading owes its block is recorded when the block is hidden, not when the block starts moving, because a heading crosses its own threshold about 20px of scroll before its taller block does and would otherwise draw its line under a block that is still invisible. AC-47's behaviour is unchanged and was measured in the browser; spec 0005 owes that wording fix
+  - [x] The heading rules draw with the scroll direction (spec 0005, milestone 9, 2026-09-23): one shared `heading-rule` utility replaces the `after:` class string copied into four files, and `reveal.ts` gains When the visitor is scrolling down the
+  page it grows left to right, from nothing to full width. When they are
+  scrolling up it plays the same draw in reverse: as soon as the heading
+  starts to sink below the foot of the viewport, the rule runs back from full
+  width to nothing, its right end travelling to the left edge, over the same
+  600ms. The intro band's motion ban narrows to the fade-and-rise. No fifth script and no new dependency (AC-8, AC-32, AC-34, AC-45 to AC-50). Built with one change to build step 54: the wait a heading owes its block is recorded when the block is hidden, not when the block starts moving, because a heading crosses its own threshold about 20px of scroll before its taller block does and would otherwise draw its line under a block that is still invisible. AC-47's behaviour is unchanged and was measured in the browser; spec 0005 owes that wording fix
+  - [x] The service card wash rises (2026-09-24, built without a spec revision): the hover and focus wash grows from the card's bottom edge to its top over the same 200ms instead of fading in place, one `scale` transition from `origin-bottom` on the wash layer (the `heading-rule` idiom, so it stays clear of the card's own `translate` lift and of the reveal's `transform`), and it runs back down the way it came when the pointer leaves. The wash also ends at `gold` at 70 percent rather than solid `gold`, a lighter amber whose darkest point measures #e9b74d in the browser, so `black` on it reads 11.35:1 instead of 8.73:1. `design.md` updated; spec 0005 owes the AC-40 and AC-41 revision that records both (AC-14, AC-17, AC-40 to AC-42)
 - [ ] Verify it: `/check verify home page`
 
 ### 7. About Us page
 Who the company is, in placeholder copy: the story, capability highlights, and the same stats and trust cues the home page uses.
 **Done when:** `/about-us` renders from content data across the three breakpoints, reuses design system sections rather than new one off layout, and carries its own page title and description.
-- [ ] Build it: `/develop about us page`
+spec [0010](../specs/0010-about-us-page/index.md) · code in [src/pages/about-us.astro](../../src/pages/about-us.astro) and [src/components/about/](../../src/components/about/) (shared: `src/components/ui/Emphasis.astro`, `src/components/ui/Accordion.astro`, `src/lib/emphasis.ts`, content: `src/content/about/en/about.yaml`)
+- [x] Design it (spec): `/architect about us page`
+- [x] Build it: `/develop about us page`
+  - [x] The whole page, still: the `==gold==` mark and the shared `Emphasis` component, the strict `about.yaml` with reference shaped placeholder copy, the `plus` and `minus` glyphs, the restyled `StatsBand`, the `<details>` `Accordion`, the footer's hidden certification panel, and the three about bands composed in `about-us.astro`, previewed at 375 to 1920 (AC-1 to AC-5, AC-7, AC-8, AC-10, AC-11, AC-14 to AC-17)
+  - [x] The page moves: the CSS `entrance` on load for the about band, the scroll reveal and rule draw hooks on the lower bands, the accordion's CSS slide, checked with JavaScript off and reduced motion on (AC-6, AC-9, AC-12, AC-13)
+  - [x] Written down and gated: `design.md` and `/styleguide` entries, the gold class search, and the check, lint, and build gates (AC-16, AC-18)
+- [ ] Verify it: `/check verify about us page`
 
 ### 8. Service pages (three)
 One service page template, filled three times, at `//revit-modeling, /scan-to-bim, /bim-coordination`, `/service-2`, and `/service-3`: what the service is, what you get, a placeholder process, and a call to action back to contact.

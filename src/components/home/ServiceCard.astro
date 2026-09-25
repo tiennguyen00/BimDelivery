@@ -12,14 +12,26 @@
  * It is not `Card` because the wash, the gold borders, and the black text on
  * hover are this band's look only; `Card` stays as spec 0003 left it.
  *
- * Hover and keyboard focus show the same thing: a wash from `tint` to `gold`,
- * gold side borders, every word and icon in `black` (at least 8.73:1 on the
- * wash; `ink-muted` would drop to 2.06:1 on gold, so no grey is ever used
- * here), and a 4px lift. Focus adds the `gold-ink` ring. The lift is the
- * `translate` property, not `transform`, so it composes with the scroll
- * reveal's inline `transform`, and only runs under `motion-safe`. Tailwind's
- * `hover:` applies only on devices that can hover, so a tap never leaves the
- * card stuck in its hover state.
+ * Hover and keyboard focus show the same thing: a wash from `tint` to `gold`
+ * at 70 percent, gold side borders, every word and icon in `black`, and a 4px
+ * lift. Focus adds the `gold-ink` ring.
+ *
+ * The wash rises from the card's bottom edge instead of fading in place: the
+ * layer is scaled to nothing at rest and grows back to full height, which is
+ * the `scale` property from `origin-bottom`, the same idiom as the
+ * `heading-rule` utility in `global.css`. Scaling the layer, not the card,
+ * keeps this clear of the card's own `translate` lift and of the scroll
+ * reveal's inline `transform`. With reduced motion asked for, nothing
+ * transitions, so the full wash is simply there.
+ *
+ * The wash ends at `gold` at 70 percent rather than solid `gold`, a lighter
+ * amber the card's white shows through. Its darkest point composites to
+ * #e9b74d, so `black` on it measures 11.35:1, better than the 8.73:1 solid
+ * `gold` gives; `ink-muted` would drop to 2.06:1 on gold, so no grey is ever
+ * used here. The lift is the `translate` property, not `transform`, so it
+ * composes with the scroll reveal's inline `transform`, and only runs under
+ * `motion-safe`. Tailwind's `hover:` applies only on devices that can hover,
+ * so a tap never leaves the card stuck in its hover state.
  */
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
@@ -40,14 +52,14 @@ const { title, summary, subServices, href, illustration, cue } = Astro.props;
 const lastIndex = subServices.length - 1;
 ---
 
-<article class="group relative isolate flex h-full flex-col items-center overflow-hidden rounded-ui bg-white px-6 pt-8 pb-6 text-center shadow-lg transition-[translate,box-shadow] duration-200 before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:bg-linear-to-b before:from-tint before:to-gold before:opacity-0 before:transition-opacity before:duration-200 hover:shadow-xl hover:before:opacity-100 motion-safe:hover:-translate-y-1 motion-reduce:transition-none motion-reduce:before:transition-none link-focus:shadow-xl link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-gold-ink link-focus:before:opacity-100 motion-safe:link-focus:-translate-y-1">
+<article class="group relative isolate flex h-full flex-col items-center overflow-hidden rounded-ui bg-white px-6 pt-8 pb-6 text-center shadow-lg transition-[translate,box-shadow] duration-200 before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:origin-bottom before:scale-y-0 before:bg-linear-to-b before:from-tint before:to-gold/70 before:transition-[scale] before:duration-200 before:ease-out hover:shadow-xl hover:before:scale-y-100 motion-safe:hover:-translate-y-1 motion-reduce:transition-none motion-reduce:before:transition-none link-focus:shadow-xl link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-gold-ink link-focus:before:scale-y-100 motion-safe:link-focus:-translate-y-1">
   {/**
    * The side borders are an overlay rather than the card's own border, so
    * they appear without moving a single pixel of the content.
    */}
   <span
     aria-hidden="true"
-    class="pointer-events-none absolute inset-0 rounded-ui border-x-4 border-transparent transition-colors duration-200 group-hover:border-gold group-has-[a:focus-visible]:border-gold motion-reduce:transition-none"
+    class="pointer-events-none absolute inset-0 rounded-ui border-x-8 border-transparent transition-colors duration-200 group-hover:border-gold group-has-[a:focus-visible]:border-gold motion-reduce:transition-none"
   ></span>
 
   <Image

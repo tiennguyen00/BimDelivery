@@ -25,9 +25,14 @@ import '../lib/content-gate';
 interface Props {
   title: string;
   description?: string;
+  /**
+   * The footer's certification column. Only the About page turns it off,
+   * because it shows the same badges in a band of its own (spec 0010).
+   */
+  footerCertification?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, footerCertification = true } = Astro.props;
 
 const lang = resolveLocale(Astro.currentLocale);
 const [navigation, settings] = await Promise.all([
@@ -83,7 +88,11 @@ const [navigation, settings] = await Promise.all([
     <slot />
   </main>
 
-  <Footer legal={navigation.legal} settings={settings} />
+  <Footer
+    legal={navigation.legal}
+    settings={settings}
+    showCertification={footerCertification}
+  />
 </BaseLayout>
 
 {/**

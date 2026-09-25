@@ -1,9 +1,9 @@
 /**
  * Two small enhancements to the home page (spec 0005), in one module so the
- * site still ships exactly four scripts: the scroll reveal, which fades and
+ * site still ships four scripts (flexiable base on other features later): the scroll reveal, which fades and
  * rises a band into place as it arrives, and the heading rule, which draws
- * the gold line under a section heading in the direction the visitor is
- * scrolling.
+ * the gold line under a section heading as the visitor scrolls down and
+ * takes it back as they scroll up.
  *
  * The two halves are marked below and are otherwise separate. They share
  * exactly three things, and nothing else crosses between them:
@@ -157,14 +157,16 @@ const startReveals = (): void => {
 };
 
 /* ------------------------------------------------------------------------ *
- * The heading rule: the gold line under a section heading draws itself in
- * the direction the visitor arrived from, and draws again every time the
- * heading comes back.
+ * The heading rule: the gold line under a section heading follows the
+ * scroll. On the way down the page it draws itself from nothing to full
+ * width, left to right; on the way back up it takes itself back from full
+ * width to nothing, its right end running leftwards, the same draw played
+ * in reverse. It does both every time the heading passes.
  *
  * The `heading-rule` utility in `global.css` holds the whole look and ships
- * the line full width. This half only moves `--rule-scale` between nothing
- * and full, says which edge it grows from through `--rule-origin`, and
- * writes `--rule-transition: 0s` when one change has to be instant.
+ * the line full width, growing from its left edge. This half only moves
+ * `--rule-scale` between nothing and full, and writes
+ * `--rule-transition: 0s` when one change has to be instant.
  *
  * It reads `data-heading-rule`, written in markup and never in content,
  * exactly as `data-reveal` is. A page that does not import this module
@@ -182,13 +184,22 @@ const isOnScreen = (element: Element): boolean => {
 };
 
 /**
+ * Which way a heading went, read from a rectangle rather than a scroll
+ * listener: at or below the middle of the viewport it is on the lower side,
+ * so it came up from below or has just sunk back down there, which is the
+ * visitor scrolling up the page.
+ */
+const isLow = ({ top }: DOMRectReadOnly): boolean =>
+  top >= window.innerHeight / 2;
+
+/**
  * Takes the rule back to nothing with no transition at all, so the
  * retraction is never seen. Both properties are written in the same call:
  * CSS reads the transition from the style a change lands in, so the pair
  * takes effect together and nothing has to be reflowed in between.
  *
- * This is both the opening write, for a heading that starts off screen, and
- * the reset once a heading has left the viewport entirely.
+ * This is both the opening write, for a heading that starts below the
+ * viewport, and the reset once a heading has sunk out of it entirely.
  */
 const retract = (heading: HTMLElement): void => {
   retracted.add(heading);
@@ -197,17 +208,28 @@ const retract = (heading: HTMLElement): void => {
 };
 
 /**
- * Which edge the line grows from. The entry's own rectangle says where the
- * heading was at the moment it arrived: at or below the middle of the
- * viewport it came up from below, so the line runs left to right, the way
- * the page is read; above the middle the visitor is scrolling up the page,
- * so it runs back the other way. A heading already on screen when this
- * module runs is never retracted and so never draws, which is what covers an
- * anchor jump, a restored scroll position, and the back button: there is no
- * direction to read, and the rule simply stays full width.
+ * The other instant write: the rule straight to full width, for a heading
+ * that went off the top of the viewport before it could draw, because the
+ * visitor scrolled past faster than its block came to rest. It is out of
+ * sight, and when the visitor scrolls back up to it the rule is already
+ * there, like the rule of every other heading they have passed.
  */
-const originFor = (entry: IntersectionObserverEntry): string =>
-  entry.boundingClientRect.top >= window.innerHeight / 2 ? 'left' : 'right';
+const complete = (heading: HTMLElement): void => {
+  retracted.delete(heading);
+  heading.style.setProperty('--rule-transition', '0s');
+  heading.style.setProperty('--rule-scale', '1');
+};
+
+/**
+ * Takes the rule back to nothing where the visitor can see it, at the
+ * draw's own 600ms and ease out, so the right end runs back to the left
+ * edge it grew from.
+ */
+const undraw = (heading: HTMLElement): void => {
+  retracted.add(heading);
+  heading.style.removeProperty('--rule-transition');
+  heading.style.setProperty('--rule-scale', '0');
+};
 
 /**
  * The fade and rise of the block around this heading, if it has one to come.
@@ -229,16 +251,11 @@ const settlingAbove = (node: Element | null): Promise<void> | undefined =>
  * hidden. Afterwards that promise is already settled, so every later
  * crossing draws with no wait and nothing has to remember that it waited.
  *
- * The origin is only ever written here, with the rule at nothing, so the
- * flip from one edge to the other is never visible, and removing
- * `--rule-transition` hands the duration back to the utility's own default.
+ * Removing `--rule-transition` hands the duration back to the utility's own
+ * default.
  */
-const draw = async (
-  heading: HTMLElement,
-  entry: IntersectionObserverEntry,
-): Promise<void> => {
-  // Already full width: the heading never left the viewport, so there is
-  // nothing to draw and the origin must not be touched.
+const draw = async (heading: HTMLElement): Promise<void> => {
+  // Already full width: the heading never left, so there is nothing to draw.
   if (!retracted.has(heading)) return;
 
   await settlingAbove(heading);
@@ -248,7 +265,6 @@ const draw = async (
 
   retracted.delete(heading);
   heading.style.removeProperty('--rule-transition');
-  heading.style.setProperty('--rule-origin', originFor(entry));
   heading.style.setProperty('--rule-scale', '1');
 };
 
@@ -256,30 +272,61 @@ const draw = async (
  * `inView` keeps watching an element only while its callback returns a
  * function. The draw watch returns this one, so that the rule draws on every
  * crossing rather than only the first; leaving the draw threshold is
- * deliberately not the moment to reset, so it has nothing to do.
+ * deliberately not the moment to undraw, because by then the rule, at the
+ * foot of the heading, is already below the fold.
  */
 const keepWatching = (): void => undefined;
 
 /**
- * Two watches on every marked heading, including one already on screen.
+ * Three watches on every marked heading, including one already on screen.
  *
  * The first draws, at the same threshold a block reveals at, so the two
- * moving things on a band arrive together. The second exists for its leave
- * handler alone, which fires only when no part of the heading is on screen:
- * a stricter test than the draw threshold, and the only moment at which
- * taking the rule away cannot be seen.
+ * moving things on a band arrive together.
+ *
+ * The second is the way back. It sees the heading whole, so its leave
+ * handler fires the moment any of the heading, rule first, sinks below the
+ * viewport: the visitor is scrolling up, and the rule runs back while it is
+ * still in sight. Coming whole into view again draws it, which is what
+ * a visitor who scrolls up a little and then down again sees. Leaving
+ * through the top of the viewport does nothing, so a heading the visitor
+ * has scrolled past keeps its full rule and is already drawn when they
+ * scroll back up to it.
+ *
+ * The third exists for its leave handler alone, which fires only when no
+ * part of the heading is on screen, the one moment an instant change cannot
+ * be seen. Below the viewport it resets a rule that sank out of view too
+ * fast to have finished running back; above it, it completes a rule that
+ * never got to draw.
  */
 const watch = (heading: HTMLElement): void => {
   inView(
     heading,
-    (_element, entry) => {
-      void draw(heading, entry);
+    () => {
+      void draw(heading);
       return keepWatching;
     },
     { amount: AMOUNT },
   );
 
-  inView(heading, () => () => retract(heading), { amount: 'some' });
+  inView(
+    heading,
+    () => {
+      void draw(heading);
+      return (entry) => {
+        if (isLow(entry.boundingClientRect)) undraw(heading);
+      };
+    },
+    { amount: 'all' },
+  );
+
+  inView(
+    heading,
+    () => (entry) => {
+      if (isLow(entry.boundingClientRect)) retract(heading);
+      else if (retracted.has(heading)) complete(heading);
+    },
+    { amount: 'some' },
+  );
 };
 
 const startRules = (): void => {
@@ -290,13 +337,20 @@ const startRules = (): void => {
   ];
 
   /**
-   * Only a heading that is off screen is taken back to nothing, so nothing
-   * the HTML already drew is erased in front of the visitor. One already on
-   * screen keeps its full width rule; its draw watch fires at once and finds
-   * nothing to do, and it behaves like any other heading from its next
+   * Only a heading below the viewport is taken back to nothing, so nothing
+   * the HTML already drew is erased in front of the visitor, and a heading
+   * above it, one the visitor is already past (a restored scroll position,
+   * the back button), keeps its full rule for the way back up. One already
+   * on screen keeps its full width rule; its draw watches fire at once and
+   * find nothing to do, and it behaves like any other heading from its next
    * crossing.
    */
-  headings.filter((heading) => !isOnScreen(heading)).forEach(retract);
+  headings
+    .filter(
+      (heading) =>
+        !isOnScreen(heading) && isLow(heading.getBoundingClientRect()),
+    )
+    .forEach(retract);
   headings.forEach(watch);
 };
 

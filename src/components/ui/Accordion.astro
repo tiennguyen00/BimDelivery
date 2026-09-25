@@ -1,0 +1,66 @@
+---
+/**
+ * A group of disclosure items, one open at a time (spec 0010). The About
+ * page's capability band uses it first; the service pages can reuse it.
+ *
+ * It is the browser's own `<details>` and `<summary>`, with no script at
+ * all. Every item shares one `name`, so opening one closes the other (the
+ * browser does that), and the first item ships with `open`. Where the
+ * browser does not know the shared `name` yet, items simply open
+ * independently, which loses nothing. A closed item's text stays in the
+ * HTML, so find in page and a screen reader still reach it.
+ *
+ * - Closed, an item is a bar filled with `--color-gold`: its title bold and
+ *   `black` (8.73:1), a `plus` in a white circle at the end.
+ * - Open, it is a white card with a `line` border and a shadow: the title
+ *   turns `gold-ink` (5.05:1), the circle `tint`, the icon a `minus`, and the
+ *   text sits below.
+ * - The icons take the title's colour and are decorative (`Icon` hides
+ *   them), because the browser already announces the summary as expandable
+ *   and its state.
+ *
+ * The group carries `focus-contrast`: the default `gold-ink` ring would
+ * vanish against a closed gold bar (2.10:1), so every summary gets the two
+ * colour ring instead.
+ *
+ * The summary holds plain text, not a heading: a heading inside a `summary`
+ * loses its role in some screen readers, and the band's own `h2` already
+ * names the group. The `accordion-item` utility in `global.css` hides the
+ * browser's disclosure triangle and, where the browser can, slides the panel
+ * open and closed.
+ */
+import Emphasis from './Emphasis.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  /** The group's shared `<details name>`; unique on the page. */
+  name: string;
+  /** Each text may carry `**bold**` and `==gold==` phrases. */
+  items: readonly Readonly<{ title: string; text: string }>[];
+}
+
+const { name, items } = Astro.props;
+---
+
+<div class="focus-contrast flex flex-col gap-4">
+  {items.map((item, index) => (
+    <details
+      name={name}
+      open={index === 1}
+      class="group accordion-item rounded-ui border border-transparent bg-gold open:border-line open:bg-white open:shadow-lg"
+    >
+      <summary class="flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-ui px-6 py-4 text-h3 font-bold text-black group-open:text-gold-ink">
+        <span>{item.title}</span>
+        <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-white group-open:bg-tint">
+          <Icon name="plus" size={20} class="group-open:hidden" />
+          <Icon name="minus" size={20} class="hidden group-open:block" />
+        </span>
+      </summary>
+      <div class="px-6 pb-6">
+        <p>
+          <Emphasis text={item.text} surface="light" />
+        </p>
+      </div>
+    </details>
+  ))}
+</div>

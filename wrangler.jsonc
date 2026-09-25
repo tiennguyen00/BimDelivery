@@ -40,4 +40,20 @@
   "observability": {
     "enabled": true,
   },
+
+  // The "dev link": a second Worker, bim-delivery-site-dev, for sharing work in
+  // progress at https://bim-delivery-site-dev.bimdelivery.workers.dev. The Vite
+  // plugin picks the environment at build time, not at deploy:
+  //   CLOUDFLARE_ENV=dev pnpm build && pnpm exec wrangler deploy
+  "env": {
+    "dev": {
+      // The Vite plugin copies the top-level routes into every environment, so
+      // clear them here or the dev Worker would claim bimdelivery.vn.
+      "routes": [],
+      "workers_dev": true,
+      "observability": {
+        "enabled": true,
+      },
+    },
+  },
 }

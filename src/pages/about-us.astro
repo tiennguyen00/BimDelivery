@@ -1,21 +1,80 @@
 ---
 /**
- * About Us. A stub: the frame, the metadata and the page's own heading and
- * intro, all from content. Feature 7 fills in the story, the highlights and
- * the stats.
+ * About Us (spec 0010): three bands, in order, every word, number, and badge
+ * of them from a content entry.
+ *
+ * 1. About: the `h1`, one paragraph, and the shared numbers.
+ * 2. Capability: a ruled heading and paragraphs beside the accordion.
+ * 3. Certification: a ruled heading, paragraphs, and the badges, on the
+ *    diagonal stripe.
+ *
+ * This file is the only place that knows the page's shape. It owns each
+ * band's tone and the heading ids, under the home page's rule:
+ * `<band>-heading`. The numbers are the `stats` entry the home page also
+ * shows, and the badges the footer's list, so the footer's own badge panel is
+ * turned off here (`footerCertification`) and they appear once.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/ui/Section.astro';
+import AboutBand from '../components/about/AboutBand.astro';
+import CapabilityBand from '../components/about/CapabilityBand.astro';
+import CertificationBand from '../components/about/CertificationBand.astro';
 import { resolveLocale } from '../i18n/locales';
-import { getAboutPage } from '../lib/content';
+import { getAboutPage, getSettings, getStats } from '../lib/content';
 
 const lang = resolveLocale(Astro.currentLocale);
-const about = await getAboutPage(lang);
+
+const [about, stats, settings] = await Promise.all([
+  getAboutPage(lang),
+  getStats(lang),
+  getSettings(lang),
+]);
+
+const badges = settings.footer.certification.badges.map((badge) => ({
+  src: badge.src,
+  alt: badge.alt ?? '',
+}));
 ---
 
-<PageLayout title={about.seo.title} description={about.seo.description}>
-  <Section tone="white" labelledBy="page-title">
-    <h1 id="page-title">{about.heading}</h1>
-    <p class="mt-4 max-w-narrow text-lead">{about.intro}</p>
+<PageLayout
+  title={about.seo.title}
+  description={about.seo.description}
+  footerCertification={false}
+>
+  <Section tone="white" labelledBy="about-heading">
+    <AboutBand
+      heading={about.heading}
+      headingId="about-heading"
+      intro={about.intro}
+      stats={stats}
+      lang={lang}
+    />
+  </Section>
+
+  <Section tone="white" labelledBy="capability-heading">
+    <CapabilityBand
+      heading={about.capability.heading}
+      headingId="capability-heading"
+      paragraphs={about.capability.paragraphs}
+      accordion={about.capability.accordion}
+    />
+  </Section>
+
+  <Section tone="white" labelledBy="certification-heading" class="bg-diagonal">
+    <CertificationBand
+      heading={about.certification.heading}
+      headingId="certification-heading"
+      paragraphs={about.certification.paragraphs}
+      badges={badges}
+    />
   </Section>
 </PageLayout>
+
+{/**
+ * The scroll reveal and the heading rule (spec 0005), the page's choice as on
+ * the home page. The about band carries no `data-reveal`: it moves on load
+ * through the CSS `entrance` instead, so the two never touch the same thing.
+ */}
+<script>
+  import '../scripts/reveal';
+</script>

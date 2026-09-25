@@ -1,0 +1,58 @@
+---
+/**
+ * The About page's second band (spec 0010): a ruled heading and paragraphs on
+ * the start side, the Experience and Expertise accordion on the end side.
+ * Two equal columns from `lg`; below it one column, the text first.
+ *
+ * It renders only the inside of the band; the page wraps it in a `white`
+ * `Section` labelled by the `h2`.
+ *
+ * The heading's gold rule is the shared `heading-rule` utility, and the
+ * heading is a plain block, so the rule spans the whole column. The
+ * paragraphs sit beside a 4px gold bar, drawn by a `::before` filled with
+ * `--color-gold`: a decorative fill, never a gold border, so it stays within
+ * the gold rule.
+ *
+ * The grid carries `data-reveal-stagger`, so the two columns reveal one
+ * after the other, and the heading carries `data-heading-rule`, so its rule
+ * draws with the scroll direction. Both are inert unless the page imports
+ * `reveal.ts`.
+ */
+import Accordion from '../ui/Accordion.astro';
+import Emphasis from '../ui/Emphasis.astro';
+
+interface Props {
+  heading: string;
+  /** The id the surrounding Section points at with `aria-labelledby`. */
+  headingId: string;
+  /** Each may carry `**bold**` and `==gold==` phrases. */
+  paragraphs: readonly string[];
+  accordion: readonly Readonly<{ title: string; text: string }>[];
+}
+
+const { heading, headingId, paragraphs, accordion } = Astro.props;
+
+/** The accordion's shared `<details name>`, unique on the page. */
+const ACCORDION_NAME = 'about-capability';
+---
+
+<div
+  class="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-start lg:gap-16"
+  data-reveal-stagger
+>
+  <div>
+    <h2 id={headingId} class="heading-rule uppercase" data-heading-rule>
+      {heading}
+    </h2>
+
+    <div class="relative mt-8 flex flex-col gap-4 ps-6 before:absolute before:inset-y-0 before:inset-s-0 before:w-1 before:bg-gold">
+      {paragraphs.map((paragraph) => (
+        <p>
+          <Emphasis text={paragraph} surface="light" />
+        </p>
+      ))}
+    </div>
+  </div>
+
+  <Accordion name={ACCORDION_NAME} items={accordion} />
+</div>

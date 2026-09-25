@@ -15,9 +15,9 @@
  * Mobile stacks copy first and map second, the same reading order as
  * `MediaText`: the words say where the company works, the map illustrates it.
  */
+import Emphasis from '../ui/Emphasis.astro';
 import Icon from '../ui/Icon.astro';
 import WorldMap from '../../assets/images/home/world-map.svg';
-import { splitEmphasis } from '../../lib/emphasis';
 
 interface Region {
   name: string;
@@ -29,7 +29,7 @@ interface Props {
   heading: string;
   /** The id the surrounding Section points at with `aria-labelledby`. */
   headingId: string;
-  /** Each may carry `**bold**` phrases. */
+  /** Each may carry `**bold**` and `==gold==` phrases. */
   paragraphs: readonly string[];
   regions: readonly Region[];
   whyChoose: { heading: string; items: readonly string[] };
@@ -76,13 +76,11 @@ const ruleClass = 'heading-rule inline-block';
   <div class="lg:col-span-5">
     {paragraphs.map((paragraph) => (
       <p class="mt-4 first:mt-0">
-        {splitEmphasis(paragraph).map((run) =>
-          run.strong ? (
-            <strong class="font-semibold text-ink-strong">{run.text}</strong>
-          ) : (
-            run.text
-          ),
-        )}
+        <Emphasis
+          text={paragraph}
+          surface="light"
+          strongClass="text-ink-strong"
+        />
       </p>
     ))}
 

@@ -7,26 +7,35 @@
  * The site links are the header's job alone; the footer does not repeat them.
  * Legal links (the privacy page, feature 13) still sit in the bottom row.
  *
- * Colour on black follows the home intro band: copy is white and the
- * `**bold**` phrases in the content are `gold-on-dark`, the one gold allowed
- * on black. The band carries `focus-contrast`, so every link here gets the
- * two colour focus ring rather than the gold-ink one that would vanish.
+ * Colour on black follows the home intro band: copy is white, and the
+ * marked phrases go through `Emphasis` on its `dark` surface, so a
+ * `==gold==` phrase is `gold-on-dark`, the one gold allowed on black, and a
+ * `**bold**` one stays white. The band carries `focus-contrast`, so every
+ * link here gets the two colour focus ring rather than the gold-ink one that
+ * would vanish.
  *
  * The badges are drawn for a light ground, so they sit on a white panel of
  * their own instead of being recoloured.
+ *
+ * `showCertification` exists for the About page (spec 0010), which shows the
+ * same badges in a band of its own. Off, the certification column is left
+ * out and the brand and contact columns share the row, so the badges appear
+ * once per page.
  */
 import { Image } from 'astro:assets';
+import Emphasis from './Emphasis.astro';
 import Icon from './Icon.astro';
 import { bandGutterClass, bandWidthClass, cx } from './styles';
-import { splitEmphasis } from '../../lib/emphasis';
 import type { Link, Settings, SocialNetwork } from '../../lib/content';
 
 interface Props {
   legal?: readonly Link[];
   settings: Settings;
+  /** Leave out the certification column. Only `/about-us` turns it off. */
+  showCertification?: boolean;
 }
 
-const { legal = [], settings } = Astro.props;
+const { legal = [], settings, showCertification = true } = Astro.props;
 const { contact, footer } = settings;
 
 /**
@@ -57,7 +66,15 @@ const contactIconClass = 'shrink-0 text-gold-on-dark';
 
 <footer class="focus-contrast bg-black text-small text-white">
   <div class={cx(bandWidthClass.default, bandGutterClass, 'py-16 md:py-20')}>
-    <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3 lg:gap-16">
+    <div
+      class={
+        showCertification
+          ? cx(
+              'grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3 lg:gap-16',
+            )
+          : cx('grid grid-cols-1 gap-12 md:grid-cols-2 lg:gap-16')
+      }
+    >
       <div>
         <Image
           src={settings.logoOnDark.src}
@@ -67,13 +84,7 @@ const contactIconClass = 'shrink-0 text-gold-on-dark';
         <div class="mt-8 flex flex-col gap-4 font-semibold">
           {footer.intro.map((line) => (
             <p>
-              {splitEmphasis(line).map((run) =>
-                run.strong ? (
-                  <span class="text-gold-on-dark">{run.text}</span>
-                ) : (
-                  run.text
-                ),
-              )}
+              <Emphasis text={line} surface="dark" />
             </p>
           ))}
         </div>
@@ -130,30 +141,26 @@ const contactIconClass = 'shrink-0 text-gold-on-dark';
         </ul>
       </div>
 
-      <div class="md:col-span-2 lg:col-span-1">
-        <h2 class={headingClass}>{footer.certification.heading}</h2>
-        <p class="mt-6">
-          {splitEmphasis(footer.certification.text).map((run) =>
-            run.strong ? (
-              <strong class="font-semibold">{run.text}</strong>
-            ) : (
-              run.text
-            ),
-          )}
-        </p>
-        <ul class="mt-8 flex max-w-sm list-none flex-wrap justify-center gap-4 bg-white p-4">
-          {footer.certification.badges.map((badge) => (
-            <li>
-              <Image
-                src={badge.src}
-                alt={badge.alt ?? ''}
-                loading="lazy"
-                class="h-24 w-auto"
-              />
-            </li>
-          ))}
-        </ul>
-      </div>
+      {showCertification && (
+        <div class="md:col-span-2 lg:col-span-1">
+          <h2 class={headingClass}>{footer.certification.heading}</h2>
+          <p class="mt-6">
+            <Emphasis text={footer.certification.text} surface="dark" />
+          </p>
+          <ul class="mt-8 flex max-w-sm list-none flex-wrap justify-center gap-4 bg-white p-4">
+            {footer.certification.badges.map((badge) => (
+              <li>
+                <Image
+                  src={badge.src}
+                  alt={badge.alt ?? ''}
+                  loading="lazy"
+                  class="h-24 w-auto"
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
 
     <div class="mt-12 flex flex-col gap-2 border-t border-white/20 pt-6 md:flex-row md:items-center md:justify-between">

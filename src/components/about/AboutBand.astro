@@ -1,0 +1,52 @@
+---
+/**
+ * The About page's first band (spec 0010): the page's `h1`, centred and in
+ * capitals, one paragraph across the band, and the company's numbers under
+ * it.
+ *
+ * It renders only the inside of the band; the page wraps it in a `white`
+ * `Section` labelled by the `h1`, as the home page does with its bands.
+ *
+ * The capitals are CSS only (`uppercase`), so the HTML keeps the heading as
+ * written and a screen reader reads words, not letters.
+ *
+ * On page load the heading, then the paragraph, then each number fade and
+ * rise in through the `entrance` utility in `global.css`, pure CSS, 80ms
+ * apart (`--entrance-step` 0, 1, then 2 onwards for the numbers). The band
+ * never takes `data-reveal`, so the scroll reveal never touches what the
+ * entrance animates. With reduced motion asked for, everything is simply
+ * there.
+ */
+import Emphasis from '../ui/Emphasis.astro';
+import StatsBand from '../ui/StatsBand.astro';
+import type { Locale } from '../../i18n/locales';
+import type { StatItem } from '../../lib/content';
+
+interface Props {
+  heading: string;
+  /** The id the surrounding Section points at with `aria-labelledby`. */
+  headingId: string;
+  /** May carry `**bold**` and `==gold==` phrases. */
+  intro: string;
+  stats: readonly StatItem[];
+  lang: Locale;
+}
+
+const { heading, headingId, intro, stats, lang } = Astro.props;
+---
+
+<h1
+  id={headingId}
+  class="entrance text-center text-balance uppercase"
+  style="--entrance-step: 0"
+>
+  {heading}
+</h1>
+
+<p class="entrance mt-8 text-lead" style="--entrance-step: 1">
+  <Emphasis text={intro} surface="light" />
+</p>
+
+<div class="mt-12 lg:mt-16">
+  <StatsBand items={stats} lang={lang} entranceFrom={2} />
+</div>

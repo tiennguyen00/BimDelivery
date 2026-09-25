@@ -32,9 +32,14 @@ const link = z.object({
 
 const text = z.string().min(1);
 
-/** Copy that may carry `**bold**` phrases (spec 0005); every mark needs a partner. */
+/**
+ * Copy that may carry `**bold**` and `==gold==` phrases (specs 0005 and
+ * 0010). Every mark needs a partner of its own kind, and marks never nest or
+ * overlap. The message quotes the line, so the build names the text to fix.
+ */
 const emphasisText = text.refine(hasBalancedEmphasis, {
-  message: 'has a `**` with no closing `**`',
+  error: (issue) =>
+    `has a \`**\` or \`==\` mark that is not closed by the same mark, or one mark inside another: "${String(issue.input)}"`,
 });
 
 /**
@@ -145,8 +150,8 @@ const settings = defineCollection({
           url: z.url({ protocol: /^https$/ }),
         }),
       ),
-      // The black footer band. A `**phrase**` in `intro` or the
-      // certification text renders in gold.
+      // The black footer band. In `intro` and the certification text a
+      // `==phrase==` renders in gold and a `**phrase**` in bold white.
       footer: z.strictObject({
         intro: z.array(emphasisText).min(1),
         contactHeading: text,
@@ -293,18 +298,30 @@ const home = defineCollection({
     }),
 });
 
+// The About page's three bands (spec 0010). Strict at every level, so a
+// leftover `image`, `highlights`, or `statsHeading` from the old page, or a
+// typo, fails the build by name. Its numbers are the shared `stats` entry and
+// its badges the footer's, so neither is written here.
 const about = defineCollection({
-  loader: load('about', 'md'),
-  schema: () =>
-    z.object({
-      lang,
-      seo,
+  loader: load('about', 'yaml'),
+  schema: z.strictObject({
+    lang,
+    seo,
+    heading: text,
+    intro: emphasisText,
+    capability: z.strictObject({
       heading: text,
-      intro: text,
-      image: photoSchema,
-      highlights: z.array(titledText).min(1),
-      statsHeading: text,
+      paragraphs: z.array(emphasisText).min(1),
+      /** The first item is the one open on load. */
+      accordion: z
+        .array(z.strictObject({ title: text, text: emphasisText }))
+        .min(1),
     }),
+    certification: z.strictObject({
+      heading: text,
+      paragraphs: z.array(emphasisText).min(1),
+    }),
+  }),
 });
 
 const contact = defineCollection({
