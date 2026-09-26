@@ -30,15 +30,15 @@ Motion adds no script: the top band fades and rises in on page load with pure CS
 - **AC-5**: The about band is a white `Section` labelled by its `h1`. The `h1` (`about.heading`) is centred and shown in capitals by CSS only (the HTML keeps the text as written, so a screen reader does not spell it out). Under it, `about.intro` as one left aligned paragraph across the band's width, with its marks (AC-4). Under that, every `stats` item in one `<dl>`, centred and no wider than the `content` width (75rem): the number in `gold-ink`, bold, at `text-h1` size, grouped for the page's language (`1200` reads `1,200`) with its suffix; the label under it in semibold `ink-strong`. The label is the `<dt>` and the number the `<dd>`, shown number first. Two columns below `md`, four at `md` and up. The finished numbers are in the built HTML.
 - **AC-6**: The numbers count up once, the first time they enter the viewport, through the existing `counters.ts`. With JavaScript unavailable or reduced motion asked for, the finished numbers are simply shown.
 - **AC-7**: The capability band is a white `Section` labelled by its `h2`. At `lg` (1024px) and up it has two equal columns; below `lg` it is one column, text first, then the accordion. The left column holds the `h2` (`about.capability.heading`) with the shared `heading-rule` spanning the full column width, then each of `about.capability.paragraphs` left aligned (never justified), with their marks, beside a 4px gold bar down their left edge. The bar is a decorative fill (a pseudo element with the `--color-gold` fill), never a `border-gold` class.
-- **AC-8**: The right column is the accordion: one `<details>` per `about.capability.accordion` item, all sharing one `name` so opening one closes any other, with the first item carrying `open` in the built HTML. The whole `<summary>` bar is the click target, at least 44px tall, and toggles with a click, a tap, Enter, or Space. Closed, an item is a bar filled with `--color-gold`, its title bold, black, at `text-h3` size, with a `plus` icon in a white circle at its right. Open, the item is a white card with a `line` border and a shadow, its title in `gold-ink`, the icon a `minus`, and the item's text below with its marks. The icons are decorative (`aria-hidden`). The summary holds plain text, not a heading element. The accordion's focus ring is the two colour `focus-contrast` ring, because the default `gold-ink` ring would sit on gold. No script runs the accordion.
+- **AC-8**: The right column is the accordion: one `<details>` per `about.capability.accordion` item, all sharing one `name` so opening one closes any other, with the second item carrying `open` in the built HTML (with a single item, none starts open). The whole `<summary>` bar is the click target, at least 44px tall, and toggles with a click, a tap, Enter, or Space. Closed, an item is a bar filled with `--color-gold`, its title bold, black, at `text-h3` size, with a `plus` icon in a white circle at its right. Open, the item is a white card with a `line` border and a shadow, its title in `gold-ink`, the icon a `minus`, and the item's text below with its marks. The icons are decorative (`aria-hidden`). The summary holds plain text, not a heading element. The accordion's focus ring is the two colour `focus-contrast` ring, because the default `gold-ink` ring would sit on gold. No script runs the accordion.
 - **AC-9**: Where the browser supports `::details-content` and `interpolate-size`, an item's panel slides open and closed over 300ms with an ease out. Elsewhere it opens and closes instantly, and with reduced motion asked for it opens and closes instantly everywhere. A closed item's text stays in the HTML.
-- **AC-10**: The certification band is a white `Section` with the `bg-diagonal` stripe, labelled by its `h2`. The `h2` (`about.certification.heading`) is centred, shown in capitals by CSS only, with the `heading-rule` hugging the words (`inline-block`). Under it, each of `about.certification.paragraphs` left aligned across the band's width, with their marks. Under that, every badge in `settings.footer.certification.badges`, in order, in one centred row that wraps: each an optimised `Image` with its `alt`, lazy loaded, about 10rem tall at `lg` and 7rem below `md`, so up to five sit in one row at 1024px and up.
+- **AC-10**: The certification band is a white `Section` with the `bg-diagonal` stripe, labelled by its `h2`. The `h2` (`about.certification.heading`) is centred, shown in capitals by CSS only, with the `heading-rule` hugging the words (`inline-block`). Under it, each of `about.certification.paragraphs` left aligned across the band's width, with their marks. Under that, every badge in `settings.footer.certification.badges`, in order, in one centred row that wraps: each an optimised `Image` with its `alt`, lazy loaded, 7rem tall below `md`, 8rem from `md`, and 9rem from `lg`, so up to five sit in one row in the band's 800px at 1024px and up.
 - **AC-11**: On `/about-us` the footer leaves out its certification panel, and its brand and contact columns share the row between them. Every other page's footer is unchanged.
 - **AC-12**: On page load, with no script involved, the about band's heading, then its paragraph, then each number in turn fade in from transparent and rise 24px into place over 600ms with an ease out, each starting 80ms after the one before (the scroll reveal's own timing). It runs with JavaScript off. With reduced motion asked for, nothing moves and everything is simply shown. The movement uses `translate`, so nothing around it shifts.
-- **AC-13**: The capability and certification bands use the existing scroll reveal (`reveal.ts`), imported by the page: the capability band's two columns reveal one after the other; in the certification band the heading block, then the paragraphs, then each badge in turn; and the certification heading's rule and the capability heading's rule draw with the scroll direction (`data-heading-rule`). No new script and no new dependency. With JavaScript off, a failed script, or reduced motion, both bands are fully shown.
+- **AC-13**: The capability and certification bands use the existing scroll reveal (`reveal.ts`), imported by the page: the capability band's two columns reveal one after the other when they start below the fold, and when they start on screen at load (a desktop) they move by the load entrance instead, at the steps right after the last number (amended by spec [0012](../0012-capability-band-entrance/index.md): these two columns are the one element pair that takes both the `entrance` utility and the scroll reveal); in the certification band the heading block, then the paragraphs, then each badge in turn; and the certification heading's rule and the capability heading's rule draw with the scroll direction (`data-heading-rule`). No new script and no new dependency. With JavaScript off, a failed script, or reduced motion, both bands are fully shown.
 - **AC-14**: The page has one `h1` (the about band) and one `h2` per lower band, and each `Section` points at its heading with `aria-labelledby`.
 - **AC-15**: At 375px, 768px, 1024px, and 1920px wide the page has no sideways scroll and no overlapping text. At 1920px the bands use the site's default band width (75 percent of the screen, 1440px), matching the reference.
-- **AC-16**: The gold rule in `docs/design.md` holds: every gold word, number, and title on a light surface is `gold-ink`, and a search of `src/` for the forbidden classes it lists finds nothing.
+- **AC-16**: The gold rule in `docs/design.md` holds: every gold word, number, and title on a light surface is `gold-ink`, and a search of `src/` for the forbidden classes it lists finds nothing but the one written exception: the home service card's hover and focus side bars (`group-hover:border-gold` and `group-has-[a:focus-visible]:border-gold` in `ServiceCard.astro`), a decorative fill on an overlay that carries no text and is not a control border.
 - **AC-17**: The placeholder copy follows the reference's structure and length, is written for BIM Delivery (no other company's name), and marks its ISO names as placeholders: a YAML comment above them says so, and the certification band's last paragraph ends with the same "placeholder until confirmed" sentence the footer uses.
 - **AC-18**: `docs/design.md` and the dev `/styleguide` cover the second mark, the accordion, the `entrance` utility, the new `StatsBand` look, and the footer's hidden panel. `pnpm check`, `pnpm lint`, and `pnpm build` pass, and `dist/client/about-us/index.html` exists.
 
@@ -51,7 +51,7 @@ The page is three band components composed in `about-us.astro` from a strict `ab
 **Settled choices** (the engineer's picks and the calls made at write time, reasons in `rationale.md`):
 
 - Three bands only, in the reference order. Numbers from the shared `stats` entry (four, not the reference's three). Badges from the footer's list, with the footer's panel hidden on this page. Reference shaped placeholder copy for BIM Delivery.
-- Headings in capitals, paragraphs left aligned. Accordion: `<details>` sharing a `name`, one open at a time, the first open on load, the whole bar clickable, a CSS only slide. Two columns stack below 1024px.
+- Headings in capitals, paragraphs left aligned. Accordion: `<details>` sharing a `name`, one open at a time, the second open on load, the whole bar clickable, a CSS only slide. Two columns stack below 1024px.
 - A second mark, `==gold==`, in the one shared marked text helper.
 - Load entrance by CSS keyframes, the lower bands by the existing scroll reveal.
 - `about` becomes strict YAML; the photo, highlights, stats heading, and story body are dropped.
@@ -70,7 +70,7 @@ The page is three band components composed in `about-us.astro` from a strict `ab
 | Order | Band | Tone | Component | Motion |
 |---|---|---|---|---|
 | 1 | About: `h1`, intro, numbers | `white` | `src/components/about/AboutBand.astro` (uses `StatsBand`) | CSS load entrance, counter |
-| 2 | Capability: ruled `h2` and paragraphs, accordion | `white` | `src/components/about/CapabilityBand.astro` (uses `Accordion`) | scroll reveal, rule draw |
+| 2 | Capability: ruled `h2` and paragraphs, accordion | `white` | `src/components/about/CapabilityBand.astro` (uses `Accordion`) | load entrance on screen, scroll reveal below the fold (spec 0012), rule draw |
 | 3 | Certification: ruled `h2`, paragraphs, badges | `white` with `bg-diagonal` | `src/components/about/CertificationBand.astro` | scroll reveal, rule draw |
 
 **Component inventory**:
@@ -80,7 +80,7 @@ The page is three band components composed in `about-us.astro` from a strict `ab
 | `Section`, `Icon`, `heading-rule`, `bg-diagonal`, `focus-contrast` | existing | none, except two new glyphs in `Icon`: `plus` and `minus` (stroke) |
 | `StatsBand` (`src/components/ui/`) | existing, used only by `/styleguide` today | `heading` becomes optional (absent: no `h2`, the list is labelled by the enclosing section); numbers `gold-ink`, labels semibold `ink-strong`, width capped at `content`; an optional `entranceFrom?: number` prop gives each figure the `entrance` utility with steps counting up from it |
 | `Emphasis` (`src/components/ui/Emphasis.astro`) | new | renders one marked line; prop `surface: 'light' \| 'dark'` picks `gold-ink` or `gold-on-dark` for the gold mark |
-| `Accordion` (`src/components/ui/Accordion.astro`) | new | props `name: string`, `items: readonly { title: string; text: string }[]`; renders the `<details>` group of AC-8 and AC-9; the first item open |
+| `Accordion` (`src/components/ui/Accordion.astro`) | new | props `name: string`, `items: readonly { title: string; text: string }[]`; renders the `<details>` group of AC-8 and AC-9; the second item open |
 | `Footer`, `PageLayout` | existing | `Footer` gains `showCertification?: boolean` (default `true`); `PageLayout` gains `footerCertification?: boolean` (default `true`) and passes it on; with it `false` the footer grid drops to two columns at `lg` |
 | `PresenceBand`, `Footer` marked text | existing | their hand written `splitEmphasis` loops are replaced by `Emphasis` |
 | `AboutBand`, `CapabilityBand`, `CertificationBand` (`src/components/about/`) | new | one per band, as the home page does |
@@ -98,7 +98,7 @@ The page is three band components composed in `about-us.astro` from a strict `ab
 | `capability` | `z.strictObject` | yes | |
 | `capability.heading` | `text` | yes | the band's `h2` |
 | `capability.paragraphs` | `emphasisText[]`, min 1 | yes | left column |
-| `capability.accordion` | `{ title: text, text: emphasisText }[]`, min 1 | yes | first is open on load |
+| `capability.accordion` | `{ title: text, text: emphasisText }[]`, min 1 | yes | the second is open on load |
 | `certification` | `z.strictObject` | yes | |
 | `certification.heading` | `text` | yes | the band's `h2` |
 | `certification.paragraphs` | `emphasisText[]`, min 1 | yes | |
@@ -107,7 +107,7 @@ Removed: `image`, `highlights`, `statsHeading`, and the Markdown body. `getAbout
 
 Marked text (`src/lib/emphasis.ts`): `splitEmphasis(line)` returns `readonly { text: string; mark: 'none' | 'strong' | 'gold' }[]`, scanning for `**` and `==` in one pass. `hasBalancedEmphasis(line)` becomes true only when every mark closes with the same mark before any other mark opens. The `emphasisText` schema keeps using it, with a message naming both marks. The `strong: boolean` field goes; `Emphasis` is its only reader.
 
-**State transitions**: an accordion item is `closed` or `open`. Clicking or pressing Enter or Space on a closed item's summary opens it and closes the open sibling (the browser does this through the shared `name`); doing so on the open item closes it, leaving none open. On load the first item is `open`. Nothing else has state.
+**State transitions**: an accordion item is `closed` or `open`. Clicking or pressing Enter or Space on a closed item's summary opens it and closes the open sibling (the browser does this through the shared `name`); doing so on the open item closes it, leaving none open. On load the second item is `open`. Nothing else has state.
 
 **API surface**: none. The page is prerendered (spec 0001), adds no endpoint, and calls nothing at runtime.
 
@@ -122,7 +122,7 @@ Marked text (`src/lib/emphasis.ts`): `splitEmphasis(line)` returns `readonly { t
 | | capability heading, paragraphs | `about.capability.heading`, `.paragraphs` |
 | | accordion titles and texts | `about.capability.accordion[]` |
 | | accordion group `name` | a constant in `CapabilityBand`, `about-capability` |
-| | which item is open on load | its position: index 0 |
+| | which item is open on load | its position: index 1 |
 | | certification heading, paragraphs | `about.certification.heading`, `.paragraphs` |
 | | badge images, alt text, order | `settings.footer.certification.badges[]` |
 | | footer panel hidden | `footerCertification={false}` passed by `about-us.astro` |
@@ -142,7 +142,7 @@ Marked text (`src/lib/emphasis.ts`): `splitEmphasis(line)` returns `readonly { t
 - The `about` entry is strict; the page reads nothing from it that the schema does not name.
 - The certification badges have one source, `settings.footer.certification.badges`, and appear once per page.
 - No CSS rule hides content waiting for a script; the only hiding is inside the `entrance` keyframes and the scroll reveal, which never hides what is already on screen.
-- No forbidden gold class anywhere in `src/` (AC-16).
+- No forbidden gold class anywhere in `src/`, apart from the service card's side bars (AC-16).
 - Still exactly the scripts the site ships today; this page adds none.
 
 **Security model**: a public, prerendered page. No visitor input, no personal data, no runtime request, no authentication. Content is read at build only. No compliance scope applies. The ISO names are unconfirmed claims, which is why AC-17 marks them as placeholders.
@@ -152,7 +152,7 @@ Marked text (`src/lib/emphasis.ts`): `splitEmphasis(line)` returns `readonly { t
 **Critical test scenarios**:
 
 - Happy path: open `/about-us` at 1920x1080; three bands in order, the top band fades and rises in on load, the four numbers count up, scroll down and the lower bands reveal with their rules drawing, verifies **AC-1**, **AC-5**, **AC-6**, **AC-12**, **AC-13**, **AC-15**.
-- Accordion: the first item is open on load; open the second with the mouse and then with Tab and Enter, the first closes; the slide plays in Chrome, verifies **AC-8**, **AC-9**.
+- Accordion: the second item is open on load; open the first with the mouse and then with Tab and Enter, the second closes; the slide plays in Chrome, verifies **AC-8**, **AC-9**.
 - No JavaScript and reduced motion: every band, number, and badge is fully shown, the accordion still opens, and nothing animates under reduced motion, verifies **AC-6**, **AC-8**, **AC-12**, **AC-13**.
 - Build failure: add `image:` back to `about.yaml`, then write `==ISO 9001` with no closing mark; each build fails naming the key or the text, verifies **AC-3**, **AC-4**.
 - Footer: `/about-us` footer has no badge panel, `/` and `/contact-us` still do, verifies **AC-11**.

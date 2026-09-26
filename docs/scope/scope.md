@@ -122,14 +122,14 @@ spec [0005](../specs/0005-home-page/index.md) (ratified 2026-09-21 as the six se
 ### 7. About Us page
 Who the company is, in placeholder copy: the story, capability highlights, and the same stats and trust cues the home page uses.
 **Done when:** `/about-us` renders from content data across the three breakpoints, reuses design system sections rather than new one off layout, and carries its own page title and description.
-spec [0010](../specs/0010-about-us-page/index.md) · assumed decision (spec [0012](../specs/0012-capability-band-entrance/index.md)) · code in [src/pages/about-us.astro](../../src/pages/about-us.astro) and [src/components/about/](../../src/components/about/) (shared: `src/components/ui/Emphasis.astro`, `src/components/ui/Accordion.astro`, `src/lib/emphasis.ts`, content: `src/content/about/en/about.yaml`)
+spec [0010](../specs/0010-about-us-page/index.md) · amended by spec [0012](../specs/0012-capability-band-entrance/index.md) · code in [src/pages/about-us.astro](../../src/pages/about-us.astro) and [src/components/about/](../../src/components/about/) (shared: `src/components/ui/Emphasis.astro`, `src/components/ui/Accordion.astro`, `src/lib/emphasis.ts`, content: `src/content/about/en/about.yaml`)
 - [x] Design it (spec): `/architect about us page`
 - [x] Build it: `/develop about us page`
   - [x] The whole page, still: the `==gold==` mark and the shared `Emphasis` component, the strict `about.yaml` with reference shaped placeholder copy, the `plus` and `minus` glyphs, the restyled `StatsBand`, the `<details>` `Accordion`, the footer's hidden certification panel, and the three about bands composed in `about-us.astro`, previewed at 375 to 1920 (AC-1 to AC-5, AC-7, AC-8, AC-10, AC-11, AC-14 to AC-17)
   - [x] The page moves: the CSS `entrance` on load for the about band, the scroll reveal and rule draw hooks on the lower bands, the accordion's CSS slide, checked with JavaScript off and reduced motion on (AC-6, AC-9, AC-12, AC-13)
   - [x] Written down and gated: `design.md` and `/styleguide` entries, the gold class search, and the check, lint, and build gates (AC-16, AC-18)
-  - [x] The capability band's load entrance on screens where it starts in view, alongside its scroll reveal (spec 0012, assumed)
-- [ ] Verify it: `/check verify about us page`
+  - [x] The capability band's load entrance on screens where it starts in view, alongside its scroll reveal (spec 0012, ratified)
+- [x] Verify it: `/check verify about us page`
 
 ### 8. Service pages (three)
 One service page template, filled three times, at `//revit-modeling, /scan-to-bim, /bim-coordination`, `/service-2`, and `/service-3`: what the service is, what you get, a placeholder process, and a call to action back to contact.

@@ -90,7 +90,11 @@ gold links and gold headings straight on white at 2.41:1, which fails WCAG AA
 at every text size. Splitting gold in two is what lets the site read like the
 reference and still pass.
 
-To check: search `src/` for these exact whole classes and expect no hits.
+To check: search `src/` for these exact whole classes and expect one hit only,
+the written exception: the home service card's hover and focus side bars
+(`group-hover:border-gold` and `group-has-[a:focus-visible]:border-gold` in
+`ServiceCard.astro`, spec 0010 AC-16), a decorative fill on an overlay with no
+text, never a control border.
 
 ```
 text-gold  text-gold-deep  text-yellow
@@ -807,8 +811,8 @@ gold rules under the section headings.
   motion it does not run, so everything is simply there. It moves by
   `translate`, so nothing around it shifts. **Never** combine it with
   `data-reveal` on one element; the About band takes no scroll reveal for that
-  reason. The one exception is the capability band below it (spec 0012,
-  assumed): its two columns take the entrance at the steps after the last
+  reason. The one exception is the capability band below it (spec 0012):
+  its two columns take the entrance at the steps after the last
   number (`entranceFrom`, `2 + stats.length`) and stay in the scroll reveal's
   stagger, because the band is on screen at load on a desktop, where the
   scroll reveal never moves anything, and below the fold on a phone. Whichever
