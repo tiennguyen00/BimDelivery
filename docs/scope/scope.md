@@ -18,7 +18,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 5 | Site shell: nav, dropdown, footer | Release 1 | in-progress |
 | 6 | Home page | Release 1 | in-progress |
 | 7 | About Us page | Release 1 | in-progress |
-| 8 | Service pages (three) | Release 1 | planned |
+| 8 | Service pages (three) | Release 1 | in-progress |
 | 9 | Project page | Release 1 | planned |
 | 10 | Contact page | Release 1 | in-progress |
 | 11 | SEO foundation | Release 2 | planned |
@@ -134,7 +134,14 @@ spec [0010](../specs/0010-about-us-page/index.md) · amended by spec [0012](../s
 ### 8. Service pages (three)
 One service page template, filled three times, at `//revit-modeling, /scan-to-bim, /bim-coordination`, `/service-2`, and `/service-3`: what the service is, what you get, a placeholder process, and a call to action back to contact.
 **Done when:** all three URLs render from one template plus three data entries; each has its own title, description, and heading; adding a fourth is a data entry and a route, not a new layout; each links back to `/contact-us`.
+spec [0013](../specs/0013-service-pages/index.md)
+- [x] Design it (spec): `/architect service pages`
 - [ ] Build it: `/develop service pages`
+  - [ ] The whole pages, still: the new glyphs and `strokeWidth`, the `panel` token and `bg-dots-dark`, `PatternBand`, the strict YAML services entries with ordered blocks each naming its layout, the presence override, the generalised carousel and `CarouselDots`, `PresenceBand` moved to `ui`, the six band components, `planServicePage`, and the route's `bands` map, with the reorder, restyle, and presence drills (AC-1 to AC-14, AC-16 to AC-18, AC-21, AC-22)
+  - [ ] The pages move: the intro's load entrance, the scroll reveal and rule hooks on the lower bands, the entrance on the block after the intro, checked with JavaScript off and reduced motion (AC-7, AC-15)
+  - [ ] Services come and go: `home.services.featured` checked in `getHomePage`, spec 0005's exactly three check removed, the home row for one to three cards, the change recipes in `src/content/README.md`, and the add and remove a service drills (AC-23 to AC-25)
+  - [ ] Written down and gated: `design.md`, the `entrance` comment in `global.css`, `/styleguide` tiles, the gold class search, and the check, lint, and build gates (AC-1, AC-19, AC-20)
+- [ ] Verify it: `/check verify service pages`
 
 ### 9. Project page
 A grid of placeholder project cards (image, title, one line) at `/project`, so the site can show work before detail pages exist.
@@ -198,6 +205,8 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Real brand**: the real logo, brand colours, and typeface replace the palette borrowed from paviliusbim.com before launch; update the tokens, both contrast tables, and walk `/styleguide` again (from spec 0003)
 - **A dark section tone**: bring back a dark band for a section such as the home page's closing call to action. It means reintroducing inherited tone variables, a card tone reset, and a second focus colour, then computing the dark contrast pairs. Gold reads well on black at 8.73:1 if you want it. Less urgent since spec 0005: the closing call to action now ends on a self contained gold band, so the dark tone is no longer the only way to close a page (from specs 0003 and 0005)
 - **Testimonials and client logos**
+- **Carousel pause control**: a visible pause for the shared carousel, closing the WCAG 2.2.2 gap on the home hero and the three service intros (from spec 0013)
+- **Redirects for removed pages**: once the site is live, a removed service's old URL (or any removed page) redirects instead of returning the 404 page; decide the mechanism with the SEO foundation or launch (from spec 0013)
 - **Error monitoring**: know when a real visitor hits a broken page · needs a decision
 
 ## Legend
