@@ -89,6 +89,19 @@ const secondService = services[1];
 const firstProject = projects[0];
 
 /**
+ * The first service's intro photo and closing call to action (spec 0013),
+ * for the `Card` and `CtaBand` tiles. Every service opens with an intro, but
+ * a `process` block is optional, so the `CtaBand` tile is skipped when the
+ * service has none.
+ */
+const firstServicePhoto = firstService?.sections.find(
+  (block) => block.type === 'intro',
+)?.images[0];
+const firstServiceCta = firstService?.sections.find(
+  (block) => block.type === 'process',
+)?.cta;
+
+/**
  * Every swatch carries what the colour is for and what it must never be,
  * because the two golds look alike in a list and only one of them is legible
  * as a word.
@@ -658,10 +671,12 @@ const headCellClass =
           <Card
             title={firstService.title}
             text={firstService.summary}
-            image={{
-              src: firstService.image.src,
-              alt: firstService.image.alt ?? '',
-            }}
+            image={
+              firstServicePhoto && {
+                src: firstServicePhoto.src,
+                alt: firstServicePhoto.alt ?? '',
+              }
+            }
             href={`/${firstService.slug}`}
           />
         )}
@@ -701,10 +716,12 @@ const headCellClass =
           <Card
             title={firstService.title}
             text={firstService.summary}
-            image={{
-              src: firstService.image.src,
-              alt: firstService.image.alt ?? '',
-            }}
+            image={
+              firstServicePhoto && {
+                src: firstServicePhoto.src,
+                alt: firstServicePhoto.alt ?? '',
+              }
+            }
             href={`/${firstService.slug}`}
           />
         )}
@@ -1089,14 +1106,16 @@ const headCellClass =
         only.
       </p>
 
-      <div class="mt-8 overflow-hidden rounded-ui border border-line">
-        <CtaBand
-          heading={firstService.cta.heading}
-          headingId="sg-ctaband-heading"
-          text={firstService.cta.text}
-          button={firstService.cta.button}
-        />
-      </div>
+      {firstServiceCta && (
+        <div class="mt-8 overflow-hidden rounded-ui border border-line">
+          <CtaBand
+            heading={firstServiceCta.heading}
+            headingId="sg-ctaband-heading"
+            text={firstServiceCta.text}
+            button={firstServiceCta.button}
+          />
+        </div>
+      )}
     </Section>
 
     <Section labelledBy="sg-photo-focus">

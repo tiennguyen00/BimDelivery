@@ -1,0 +1,48 @@
+---
+/**
+ * The dots under a photo carousel (spec 0013): the home hero and each
+ * service page's intro share this row, and `src/scripts/carousel.ts` runs
+ * both.
+ *
+ * One real button per photo, named "Show photo N of M", each a 24px hit area
+ * around a small mark: black at 30 percent, or solid black for the photo
+ * showing (`aria-current`). Black, not gold, because the dots sit on white
+ * photos or a white band, where a gold dot would be 2.41:1, under the 3:1 a
+ * control's state needs.
+ *
+ * The row ships `invisible`, so with no JavaScript there is nothing dead to
+ * tab to; the script reveals it once the carousel runs. A carousel with one
+ * photo renders no dots at all, so leave this out there.
+ *
+ * The label is fixed English, the same string the hero always used. Moving
+ * it into content is a follow up owed before a second language (spec 0013).
+ */
+import { cx } from './styles';
+
+interface Props {
+  /** One dot per photo, two or more. */
+  count: number;
+  class?: string;
+}
+
+const { count, class: className } = Astro.props;
+
+const dots = Array.from({ length: count }, (_, index) => index);
+---
+
+<div
+  data-carousel-controls
+  class={cx('invisible flex items-center justify-center gap-1', className)}
+>
+  {dots.map((index) => (
+    <button
+      type="button"
+      data-carousel-dot
+      aria-label={`Show photo ${index + 1} of ${count}`}
+      aria-current={index === 0 ? 'true' : 'false'}
+      class="group grid size-6 cursor-pointer place-items-center rounded-full"
+    >
+      <span class="size-2.5 rounded-full bg-black/30 transition-colors group-aria-current:bg-black" />
+    </button>
+  ))}
+</div>

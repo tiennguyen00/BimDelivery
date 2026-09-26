@@ -21,8 +21,13 @@ placeholders until real project photography arrives.
 | Home overview              | <https://www.pexels.com/photo/three-people-collaborating-on-a-project-6615107/>                                            | Pexels License |
 | About                      | <https://www.pexels.com/photo/professional-individuals-working-together-5582590/>                                          | Pexels License |
 | Service: Revit Modeling    | <https://www.pexels.com/photo/men-sitting-at-a-table-and-looking-at-a-laptop-displaying-a-3d-project-of-a-house-15764095/> | Pexels License |
+| Revit Modeling, photo 2    | <https://www.pexels.com/photo/architect-working-on-a-computer-15764116/>                                                   | Pexels License |
+| Revit Modeling, photo 3    | <https://www.pexels.com/photo/top-view-of-an-architect-sitting-at-a-desk-and-creating-a-project-9618456/>                  | Pexels License |
 | Service: Scan to BIM       | <https://www.pexels.com/photo/a-man-surveying-the-area-5802822/>                                                           | Pexels License |
+| Scan to BIM, photo 2       | <https://www.pexels.com/photo/gray-concrete-building-interior-236709/>                                                     | Pexels License |
 | Service: BIM Coordination  | <https://www.pexels.com/photo/metal-beams-in-a-construction-site-3818947/>                                                 | Pexels License |
+| BIM Coordination, photo 2  | <https://www.pexels.com/photo/two-man-holding-white-paper-1216589/>                                                        | Pexels License |
+| BIM Coordination, photo 3  | <https://www.pexels.com/photo/engineers-looking-at-blueprint-3862135/>                                                     | Pexels License |
 | Project: Harbour Tower     | <https://www.pexels.com/photo/facade-of-architectural-glass-building-8171870/>                                             | Pexels License |
 | Project: Riverside Offices | <https://www.pexels.com/photo/modern-building-with-a-glass-facade-reflecting-other-buildings-in-city-9321327/>             | Pexels License |
 | Project: Midtown Retrofit  | <https://www.pexels.com/photo/modern-high-rise-construction-site-with-crane-33628380/>                                     | Pexels License |
@@ -30,6 +35,22 @@ placeholders until real project photography arrives.
 | Project: College Hall      | <https://www.pexels.com/photo/modern-office-building-17097090/>                                                            | Pexels License |
 | Contact intro              | <https://www.pexels.com/photo/323705/>                                                                                     | Pexels License |
 | Contact form band          | <https://www.pexels.com/photo/2138126/>                                                                                    | Pexels License |
+
+## Icons copied from open licence sets (spec 0013)
+
+The service pages' glyphs are copied into the fixed map in
+`src/components/ui/Icon.astro`, each with a comment naming its source. No
+icon package is installed; only the path data is copied.
+
+- [Tabler Icons](https://tabler.io/icons) 3.48.0, MIT licence, © Paweł Kuna.
+  Outline: `map` (as `blueprint`), `crane`, `home-check` (as
+  `building-check`), `scan-cube` (as `scan`), `clipboard-check`, `ruler`,
+  `layers-intersect` (as `clash`), `stack-2` (as `layers`), `messages`.
+  Filled: `user`.
+- [Material Icons](https://fonts.google.com/icons) by Google, filled,
+  Apache License 2.0, where Tabler has no solid match: `co_present` (as
+  `presenter`), `architecture` (as `compass`), `engineering` (as
+  `hard-hat`), `manage_accounts` (as `users-gear`).
 
 ## Generated from public domain data
 

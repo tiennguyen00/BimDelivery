@@ -14,7 +14,7 @@
  * The checks and transforms are plain functions over arrays; only the thin
  * `load*` wrappers touch Astro.
  */
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import type { CollectionEntry, CollectionKey } from 'astro:content';
 import type { Locale } from '../i18n/locales';
 
@@ -39,7 +39,6 @@ const RESERVED_PATHS: readonly string[] = [
 // Types
 
 type Entry<C extends CollectionKey> = CollectionEntry<C>;
-type RenderedContent = Awaited<ReturnType<typeof render>>['Content'];
 
 export type Link = Readonly<{ label: string; href: string }>;
 
@@ -66,7 +65,7 @@ export type SocialNetwork = Settings['social'][number]['network'];
 export type StatItem = Readonly<Entry<'stats'>['data']['items'][number]>;
 
 export type Service = Readonly<Entry<'services'>['data']> &
-  Readonly<{ id: string; Content: RenderedContent }>;
+  Readonly<{ id: string }>;
 
 export type ServiceLookup =
   | Readonly<{ ok: true; service: Service }>
@@ -282,18 +281,15 @@ export const getProjectPage = async (lang: Locale) =>
 export const getNotFoundPage = async (lang: Locale) =>
   (await loadSingle('notFound', lang, 'not-found')).data;
 
-/** Every service in `lang`, sorted by `order`, each with its renderable write up. */
+/** Every service in `lang`, sorted by `order`. */
 export const getServices = async (
   lang: Locale,
 ): Promise<readonly Service[]> => {
   const entries = inLang(lang, await loadChecked('services'));
   checkServices(lang, entries);
-  return Promise.all(
-    entries.toSorted(byOrder).map(async (entry) => {
-      const { Content } = await render(entry);
-      return { ...entry.data, id: entry.id, Content };
-    }),
-  );
+  return entries
+    .toSorted(byOrder)
+    .map((entry) => ({ ...entry.data, id: entry.id }));
 };
 
 export const getServiceBySlug = async (

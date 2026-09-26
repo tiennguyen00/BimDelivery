@@ -1,0 +1,26 @@
+---
+/**
+ * A service page's presence in the `map` layout (spec 0013): a thin adapter
+ * onto the shared `PresenceBand`, the home page's band, so the two can never
+ * drift apart.
+ *
+ * The plan has already resolved the copy: the block's own `content`, or
+ * `home.presence` when it has none. The route wraps it in a striped
+ * `Section`, white or `tint` by the band before it.
+ */
+import PresenceBand from '../ui/PresenceBand.astro';
+import type { BandProps } from '../../lib/service-page';
+
+type Props = BandProps<'presence/map'>;
+
+const { block, headingId } = Astro.props;
+const { content } = block;
+---
+
+<PresenceBand
+  heading={content.heading}
+  headingId={headingId}
+  paragraphs={content.paragraphs}
+  regions={content.regions}
+  whyChoose={content.whyChoose}
+/>

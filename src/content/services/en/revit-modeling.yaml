@@ -1,0 +1,105 @@
+# Placeholder copy following the reference's structure and length (spec
+# 0013). The real service description replaces it before launch.
+lang: en
+slug: revit-modeling
+title: Revit Modeling
+summary: Accurate Revit models from drawings, sketches, or design intent.
+order: 1
+seo:
+  title: Revit Modeling | BIM Delivery
+  description: Accurate Revit models built from your drawings and standards, ready for design development, documentation, and construction.
+subServices:
+  - Architectural modeling
+  - Structural modeling
+  - MEP modeling
+  - Revit families and content
+sections:
+  - type: intro
+    layout: carousel
+    heading: Revit modeling services
+    paragraphs:
+      - BIM Delivery builds **architectural, structural, and MEP models in Revit** from your drawings, sketches, point clouds, or design intent. Every model follows your templates, naming, and level of detail, so it drops straight into the way your team already works.
+      - From early design to handover, our modelers work as an extension of your office. We model from **LOD 100 to LOD 500**, set up sheets and views to your standards, and check each milestone before it reaches you.
+      - The result is a coordinated, data rich model that helps you **cut rework, find problems early, and keep delivery on schedule**, whatever the size of the project.
+    images:
+      - src: https://images.pexels.com/photos/15764095/pexels-photo-15764095.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: Two people discussing a 3D house model on a laptop
+      - src: https://images.pexels.com/photos/15764116/pexels-photo-15764116.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A designer at a desk with a house elevation drawing on a large monitor and a rendered view on a laptop beside it
+      - src: https://images.pexels.com/photos/9618456/pexels-photo-9618456.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: Seen from above, an architect marking up a printed site plan with drafting tools laid out beside it
+  - type: features
+    layout: cards
+    surface: dark
+    heading: Revit modeling for ==every stage== of a project
+    paragraphs:
+      - A Revit model earns its keep long after the first drawing. We shape each model around the stage your project is in, so it answers the questions that stage asks, from **feasibility and design** through **construction** and on into **operation**.
+      - Tell us where your project stands and we will scope the model, its level of detail, and its deliverables to match, so you pay for the model you need and nothing more.
+    subheading: What we model at ==each stage==
+    cards:
+      - icon: blueprint
+        title: Pre construction
+        points:
+          - Concept and schematic design models
+          - Design development models to LOD 300
+          - Coordinated drawings and sheet sets
+          - Quantity takeoffs for early cost plans
+      - icon: crane
+        title: Construction
+        points:
+          - Construction documentation to LOD 350 and 400
+          - Shop drawings and fabrication models
+          - Phasing and sequencing models
+          - Model updates as design changes arrive
+      - icon: building-check
+        title: Post construction
+        points:
+          - As built models to LOD 500
+          - Asset data for facility management
+          - Record drawings for handover
+          - Models ready for future fit out and renovation
+  - type: audiences
+    layout: grid
+    heading: Who we ==work with==
+    intro: Our Revit teams support everyone who designs, builds, and runs a building. Here is how we help each of them.
+    items:
+      - icon: compass
+        title: Architects
+        text: Design models and drawing sets built to your templates, so your team can stay focused on **design**.
+      - icon: users-gear
+        title: Engineers
+        text: Structural and MEP models that stay in step with the architecture every time it changes.
+      - icon: hard-hat
+        title: Contractors
+        text: Construction ready models and shop drawings that answer questions **before** they reach site.
+      - icon: building
+        title: Developers
+        text: Clear models that show scope, cost, and progress before money is committed.
+      - icon: users
+        title: Facility managers
+        text: As built models that carry the asset data you need to run and maintain the building.
+      - icon: presenter
+        title: Consultants
+        text: Extra modeling capacity on call when a deadline lands on an already busy team.
+  - type: process
+    layout: timeline
+    surface: dark
+    heading: How a Revit project ==runs==
+    intro: The same four steps on every project, so you always know what happens next and when.
+    steps:
+      - title: Brief
+        text: We review your inputs, standards, and deadline, and agree the scope with you.
+      - title: Model
+        text: Our team builds the model in stages, with a quality check at each milestone.
+      - title: Review
+        text: You review each stage, and we fold your comments into the next one.
+      - title: Deliver
+        text: We hand over the final model, the sheets, and a report of any open questions.
+    cta:
+      heading: Start a Revit Modeling project
+      text: Send us your drawings or scans and we will reply with a plan and a quote.
+      button:
+        label: Contact us
+        href: /contact-us
+  - type: presence
+    layout: map

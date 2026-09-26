@@ -29,8 +29,9 @@
  * - The carousel is an enhancement. The markup shows the first photo and hides
  *   the rest (transparent, `aria-hidden`), and the controls start `invisible`,
  *   so with no JavaScript the hero is one still photo with nothing dead to
- *   tab to. `src/scripts/hero-carousel.ts` reveals the controls and runs it.
- *   The controls are real buttons, one dot per photo, each with a 24px hit
+ *   tab to. `src/scripts/carousel.ts`, the script the service intros share
+ *   (spec 0013), reveals the controls and runs it. The controls are real
+ *   buttons: the shared `CarouselDots` row, one dot per photo with a 24px hit
  *   area around its small visible mark, plus a previous and a next arrow on
  *   the sides that fade in while the pointer is over the band. There is no
  *   pause button: the slideshow holds still while the pointer is over the
@@ -40,7 +41,7 @@
  * its subheading move together as one block, fading in and rising into place
  * from 24px below, the same distance, duration, and curve as the scroll
  * reveal, so the two movements on the page read as one. The script finds the
- * panel by `data-hero-panel`; the button under it stays still, because it is
+ * panel by `data-carousel-panel`; the button under it stays still, because it is
  * outside the panel and a control that slides away from the pointer is worse
  * than a still one. The entrance never plays on the first paint, because the
  * hero is the largest contentful paint and nothing there may blink, and it
@@ -58,6 +59,7 @@
  */
 import { Image, inferRemoteSize } from 'astro:assets';
 import Button from '../ui/Button.astro';
+import CarouselDots from '../ui/CarouselDots.astro';
 import {
   bandGutterClass,
   bandPaddingClass,
@@ -116,7 +118,7 @@ const heroWidths = (sourceWidth: number): number[] => {
 
 <section
   aria-labelledby={headingId}
-  data-hero-carousel={hasCarousel ? '' : undefined}
+  data-carousel={hasCarousel ? '' : undefined}
   class={cx(
     'group/hero focus-contrast relative isolate -mt-(--header-h) flex min-h-svh flex-col bg-black lg:min-h-[80svh]',
     bandGutterClass,
@@ -133,7 +135,7 @@ const heroWidths = (sourceWidth: number): number[] => {
       loading={index === 0 ? 'eager' : 'lazy'}
       fetchpriority={index === 0 ? 'high' : undefined}
       aria-hidden={index === 0 ? undefined : 'true'}
-      data-hero-slide
+      data-carousel-slide
       class={cx(
         'absolute inset-0 -z-10 size-full object-cover object-center transition-opacity duration-1000',
         index === 0 ? 'opacity-100' : 'opacity-0',
@@ -145,7 +147,7 @@ const heroWidths = (sourceWidth: number): number[] => {
     <>
       <button
         type="button"
-        data-hero-arrow="prev"
+        data-carousel-arrow="prev"
         aria-label="Show the previous photo"
         class={cx(heroArrowClass, 'inset-s-4 lg:inset-s-8')}
       >
@@ -162,7 +164,7 @@ const heroWidths = (sourceWidth: number): number[] => {
       </button>
       <button
         type="button"
-        data-hero-arrow="next"
+        data-carousel-arrow="next"
         aria-label="Show the next photo"
         class={cx(heroArrowClass, 'inset-e-4 lg:inset-e-8')}
       >
@@ -183,7 +185,7 @@ const heroWidths = (sourceWidth: number): number[] => {
   <div class="flex flex-1 flex-col items-center justify-center pt-(--header-h)">
     <div class={cx(bandPaddingClass, 'flex w-full flex-col items-center')}>
       <div
-        data-hero-panel
+        data-carousel-panel
         class={cx(
           bandWidthClass.default,
           'rounded-ui bg-scrim px-6 py-8 text-center md:px-10 md:py-10',
@@ -202,22 +204,7 @@ const heroWidths = (sourceWidth: number): number[] => {
   </div>
 
   {hasCarousel ? (
-    <div
-      data-hero-controls
-      class="invisible flex items-center justify-center gap-1 pb-8"
-    >
-      {slides.map((_, index) => (
-        <button
-          type="button"
-          data-hero-dot
-          aria-label={`Show photo ${index + 1} of ${slides.length}`}
-          aria-current={index === 0 ? 'true' : 'false'}
-          class="group grid size-6 cursor-pointer place-items-center rounded-full"
-        >
-          <span class="size-2.5 rounded-full bg-black/30 transition-colors group-aria-current:bg-black" />
-        </button>
-      ))}
-    </div>
+    <CarouselDots count={slides.length} class="pb-8" />
   ) : (
     <div class="pb-8" />
   )}
@@ -228,5 +215,5 @@ const heroWidths = (sourceWidth: number): number[] => {
  * importing a module, which Astro bundles and serves.
  */}
 <script>
-  import '../../scripts/hero-carousel';
+  import '../../scripts/carousel';
 </script>

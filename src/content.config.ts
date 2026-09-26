@@ -100,9 +100,15 @@ const photoSchema = withAlt(
   }),
 );
 
-const titledText = z.object({ title: text, text });
+// Strict, like every shape the service entries use (spec 0013): a typo
+// inside a step or the closing call to action fails the build by name.
+const titledText = z.strictObject({ title: text, text });
 
-const callToAction = z.object({ heading: text, text, button: link });
+const callToAction = z.strictObject({
+  heading: text,
+  text,
+  button: z.strictObject(link.shape),
+});
 
 /**
  * Ids are the file path without its extension, for example `en/home`, for
@@ -201,6 +207,61 @@ const navigation = defineCollection({
  */
 const statIcons = ['briefcase-clock', 'users', 'building', 'map-pin'] as const;
 
+/**
+ * The service pages' glyphs (spec 0013), split by how they are drawn, so a
+ * card or tile can only take a line icon and an audience item a solid one.
+ * Either list grows by adding a glyph to the map and its name here.
+ */
+const lineIcons = [
+  'blueprint',
+  'crane',
+  'building-check',
+  'scan',
+  'clipboard-check',
+  'ruler',
+  'clash',
+  'layers',
+  'messages',
+] as const;
+
+const solidIcons = [
+  'user',
+  'presenter',
+  'compass',
+  'hard-hat',
+  'users',
+  'users-gear',
+  'building',
+] as const;
+
+/**
+ * The presence band's copy (spec 0005): the home page's band, and a service
+ * page's presence block when it carries its own (spec 0013). Strict at every
+ * level, so an override is a complete presence, every field and no other.
+ */
+const presenceContent = z.strictObject({
+  heading: text,
+  /** A phrase wrapped in `**` renders bold. */
+  paragraphs: z.array(emphasisText).min(1),
+  /**
+   * Each region is a marker on the map, placed by longitude and latitude.
+   * The latitude range is the map's own: the SVG stops at 84 north and 56
+   * south, so a marker outside it would sit off the map. Six at most, so the
+   * names still have room to sit apart.
+   */
+  regions: z
+    .array(
+      z.strictObject({
+        name: text,
+        lon: z.number().min(-180).max(180),
+        lat: z.number().min(-56).max(84),
+      }),
+    )
+    .min(1)
+    .max(6),
+  whyChoose: z.strictObject({ heading: text, items: z.array(text).min(1) }),
+});
+
 const stats = defineCollection({
   loader: load('stats', 'yaml'),
   schema: z.object({
@@ -265,28 +326,9 @@ const home = defineCollection({
       }),
       // The presence band (spec 0005), which absorbed the old differentiators
       // section. Strict, so a leftover `text` or `image` key fails by name.
-      presence: z.strictObject({
-        heading: text,
-        /** A phrase wrapped in `**` renders bold. */
-        paragraphs: z.array(emphasisText).min(1),
-        /**
-         * Each region is a marker on the map, placed by longitude and
-         * latitude. The latitude range is the map's own: the SVG stops at 84
-         * north and 56 south, so a marker outside it would sit off the map.
-         * Six at most, so the names still have room to sit apart.
-         */
-        regions: z
-          .array(
-            z.object({
-              name: text,
-              lon: z.number().min(-180).max(180),
-              lat: z.number().min(-56).max(84),
-            }),
-          )
-          .min(1)
-          .max(6),
-        whyChoose: z.object({ heading: text, items: z.array(text).min(1) }),
-      }),
+      // Shared with the service pages, which show it unless a presence block
+      // carries its own (spec 0013).
+      presence: presenceContent,
       // The last band on the page (spec 0005): the three lowest `order`
       // projects, then one link to the full list. The tiles' words come from
       // the `projects` entries; only the band's own copy lives here.
@@ -424,28 +466,226 @@ const notFound = defineCollection({
 
 // Many entry collections
 
+/**
+ * A service page's sections (spec 0013): typed blocks, each naming the
+ * `layout` that draws it. The route maps every `type/layout` pair to one band
+ * component, so a look only one service wants is a new layout here, never an
+ * edit to a shared one.
+ *
+ * A type with one layout is a strict object whose `layout` is a literal. A
+ * type with two or more is a discriminated union on `layout` of strict
+ * objects, as `features` is. When a type gains its second layout its member
+ * changes from the first form to the second, and no YAML changes.
+ */
+const surface = z.enum(['light', 'dark']);
+
+const introCarousel = z.strictObject({
+  type: z.literal('intro'),
+  layout: z.literal('carousel'),
+  /** The page's `h1`. */
+  heading: text,
+  paragraphs: z.array(emphasisText).min(1),
+  /** The carousel's photos, in order; the first is the one that loads first. */
+  images: z.array(photoSchema).min(1).max(3),
+});
+
+const featuresCards = z.strictObject({
+  type: z.literal('features'),
+  layout: z.literal('cards'),
+  surface,
+  heading: emphasisText,
+  paragraphs: z.array(emphasisText).min(1),
+  subheading: emphasisText,
+  cards: z
+    .array(
+      z.strictObject({
+        icon: z.enum(lineIcons),
+        title: text,
+        points: z.array(text).min(1),
+      }),
+    )
+    .min(2)
+    .max(4),
+});
+
+const featuresSplit = z.strictObject({
+  type: z.literal('features'),
+  layout: z.literal('split'),
+  surface,
+  heading: emphasisText,
+  paragraphs: z.array(emphasisText).min(1),
+  items: z
+    .array(
+      z.strictObject({
+        icon: z.enum(lineIcons),
+        title: text,
+        text: emphasisText,
+      }),
+    )
+    .min(2)
+    .max(6),
+});
+
+const audiencesGrid = z.strictObject({
+  type: z.literal('audiences'),
+  layout: z.literal('grid'),
+  heading: emphasisText,
+  intro: emphasisText,
+  items: z
+    .array(
+      z.strictObject({
+        icon: z.enum(solidIcons),
+        title: text,
+        text: emphasisText,
+      }),
+    )
+    .min(1)
+    .max(6),
+});
+
+const processTimeline = z.strictObject({
+  type: z.literal('process'),
+  layout: z.literal('timeline'),
+  surface,
+  heading: emphasisText,
+  intro: emphasisText.optional(),
+  /** Numbered by position, so reordering them renumbers them. */
+  steps: z.array(titledText).min(2).max(5),
+  cta: callToAction,
+});
+
+const presenceMap = z.strictObject({
+  type: z.literal('presence'),
+  layout: z.literal('map'),
+  /** Absent: the page shows `home.presence`. Present: this service only. */
+  content: presenceContent.optional(),
+});
+
+const block = z.discriminatedUnion('type', [
+  introCarousel,
+  z.discriminatedUnion('layout', [featuresCards, featuresSplit]),
+  audiencesGrid,
+  processTimeline,
+  presenceMap,
+]);
+
+/** The only fields a `==` mark may sit in on a `light` surface block. */
+const LIGHT_MARK_FIELDS: readonly string[] = ['heading', 'subheading'];
+
+type Path = readonly (string | number)[];
+
+/** Every string inside a value, each with its path from that value. */
+const stringsIn = (
+  value: unknown,
+  path: Path,
+): readonly Readonly<{ path: Path; text: string }>[] => {
+  if (typeof value === 'string') return [{ path, text: value }];
+  if (Array.isArray(value)) {
+    return value.flatMap((item: unknown, index) =>
+      stringsIn(item, [...path, index]),
+    );
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.entries(value).flatMap(([key, item]) =>
+      stringsIn(item, [...path, key]),
+    );
+  }
+  return [];
+};
+
+/**
+ * The rules that need the whole list (spec 0013, AC-4), still one entry at a
+ * time, so they live here rather than in `content.ts`:
+ *
+ * - exactly one `intro`, and it comes first, so a page has one `h1`;
+ * - at most one `presence`;
+ * - on a `surface: light` block, a `==` mark only in `heading` or
+ *   `subheading`: the stripe drops `gold-ink` to 4.01:1, which passes for
+ *   large text only.
+ */
+const sections = z
+  .array(block)
+  .min(1)
+  .superRefine((blocks, ctx) => {
+    const indexesOf = (type: string): readonly number[] =>
+      blocks.flatMap((item, index) => (item.type === type ? [index] : []));
+
+    const intros = indexesOf('intro');
+    if (intros.length === 0) {
+      ctx.addIssue({
+        code: 'custom',
+        path: [],
+        message: 'needs one `intro` block, as the first section',
+      });
+    }
+    intros.forEach((index, nth) => {
+      if (nth > 0) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [index, 'type'],
+          message:
+            'is a second `intro` block; a service page has exactly one, as its first section',
+        });
+      } else if (index !== 0) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [index, 'type'],
+          message: 'the `intro` block must be the first section',
+        });
+      }
+    });
+
+    indexesOf('presence')
+      .slice(1)
+      .forEach((index) => {
+        ctx.addIssue({
+          code: 'custom',
+          path: [index, 'type'],
+          message:
+            'is a second `presence` block; a service page has at most one',
+        });
+      });
+
+    blocks.forEach((item, index) => {
+      if (!('surface' in item) || item.surface !== 'light') return;
+      Object.entries(item)
+        .filter(([key]) => !LIGHT_MARK_FIELDS.includes(key))
+        .flatMap(([key, value]) => stringsIn(value, [index, key]))
+        .filter(({ text: line }) => line.includes('=='))
+        .forEach(({ path, text: line }) => {
+          ctx.addIssue({
+            code: 'custom',
+            path: [...path],
+            message: `has a \`==\` mark on a \`surface: light\` block, where gold words may only sit in \`heading\` or \`subheading\`: "${line}"`,
+          });
+        });
+    });
+  });
+
 const services = defineCollection({
-  loader: load('services', 'md'),
-  schema: () =>
-    z.object({
-      lang,
-      slug: z
-        .string()
-        .regex(
-          /^[a-z0-9]+(-[a-z0-9]+)*$/,
-          'must be kebab case, for example `scan-to-bim`',
-        ),
-      title: text,
-      summary: text,
-      order: z.number().int().positive(),
-      seo,
-      image: photoSchema,
-      deliverables: z.array(text).min(1),
-      /** The kinds of work the home service card lists (spec 0005). */
-      subServices: z.array(text).min(3).max(6),
-      process: z.array(titledText).min(1),
-      cta: callToAction,
-    }),
+  loader: load('services', 'yaml'),
+  // Strict at every level (spec 0013): a leftover `image`, `deliverables`,
+  // `process`, or `cta` from the old Markdown entries, or a typo anywhere,
+  // fails the build by name.
+  schema: z.strictObject({
+    lang,
+    slug: z
+      .string()
+      .regex(
+        /^[a-z0-9]+(-[a-z0-9]+)*$/,
+        'must be kebab case, for example `scan-to-bim`',
+      ),
+    /** The nav, the home card, and the contact form's choices. */
+    title: text,
+    /** The home card only. */
+    summary: text,
+    order: z.number().int().positive(),
+    seo: z.strictObject(seo.shape),
+    /** The kinds of work the home service card lists (spec 0005); home only. */
+    subServices: z.array(text).min(3).max(6),
+    /** The page, drawn in this order. */
+    sections,
+  }),
 });
 
 const projects = defineCollection({

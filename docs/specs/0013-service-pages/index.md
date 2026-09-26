@@ -1,7 +1,7 @@
 # 0013. Compose each service page from its own ordered content blocks, each drawn by a named layout
 
 **Date**: 2026-09-26 (revised the same day: every block names a layout, a service can override the presence band, and the home page lists which services get a card, so each service changes on its own and whole services can come and go; first written 2026-09-26)
-**Status**: Proposed
+**Status**: In Progress
 **Scope feature**: 8, Service pages (three) (`docs/scope/scope.md`); also amends feature 6, Home page (spec 0005 AC-4's count rule)
 
 ## Summary
@@ -282,14 +282,14 @@ Skateboard: first all three pages stand up whole with no motion, then the motion
 
 **Milestone 1: the whole pages, still**
 
-1. [ ] Add the `strokeWidth` prop to `Icon` and copy in the fourteen new glyphs with their source comments; add the icons section to `CREDITS.md`, satisfies **AC-18**.
-2. [ ] Add `--color-panel` and `bg-dots-dark` to `global.css`, the surface class maps to `styles.ts`, and `PatternBand`, satisfies **AC-8**.
-3. [ ] Prove the nested discriminated union in the installed Zod with one bad entry per AC-4 rule (fallback in *Data model sketch*), then write the strict services schema (every block with its `layout`, the icon lists, the presence `content`, and the `sections` rules), extract `presenceContent` and point `home.presence` at it, switch the loader to YAML, write the three YAML entries with the placeholder copy, Pexels photos, and credits, delete the `.md` files, drop `render` from `getServices`, and point `/styleguide`'s `Card` and `CtaBand` tiles at the new fields, satisfies **AC-3**, **AC-4**, **AC-14**.
-4. [ ] Rename `hero-carousel.ts` to `carousel.ts` with the `data-carousel-*` hooks, add `CarouselDots`, and move `Hero` onto both; confirm the hero is unchanged, satisfies **AC-7**.
-5. [ ] Move `PresenceBand` to `src/components/ui/` and update `index.astro`, satisfies **AC-13**.
-6. [ ] Build `IntroCarousel`, `FeaturesCards`, `FeaturesSplit`, `AudiencesGrid`, `ProcessTimeline`, and the `PresenceMap` adapter, all on the shared props, satisfies **AC-6**, **AC-9** to **AC-13**.
-7. [ ] Write `src/lib/service-page.ts` (the key types, `BAND_BACKGROUND`, `planServicePage`) and rewrite `[service].astro` around the `bands` map, satisfies **AC-1**, **AC-2**, **AC-5**, **AC-13**, **AC-16**, **AC-21**, **AC-22**.
-8. [ ] Preview all three pages at 375, 768, 1024, and 1920 against the screenshots; run the reorder, the build failures, the restyle, and the presence override drills, satisfies **AC-2**, **AC-4**, **AC-17**, **AC-21**, **AC-22**.
+1. [x] Add the `strokeWidth` prop to `Icon` and copy in the fourteen new glyphs with their source comments; add the icons section to `CREDITS.md`, satisfies **AC-18**.
+2. [x] Add `--color-panel` and `bg-dots-dark` to `global.css`, the surface class maps to `styles.ts`, and `PatternBand`, satisfies **AC-8**.
+3. [x] Prove the nested discriminated union in the installed Zod with one bad entry per AC-4 rule (fallback in *Data model sketch*), then write the strict services schema (every block with its `layout`, the icon lists, the presence `content`, and the `sections` rules), extract `presenceContent` and point `home.presence` at it, switch the loader to YAML, write the three YAML entries with the placeholder copy, Pexels photos, and credits, delete the `.md` files, drop `render` from `getServices`, and point `/styleguide`'s `Card` and `CtaBand` tiles at the new fields, satisfies **AC-3**, **AC-4**, **AC-14**.
+4. [x] Rename `hero-carousel.ts` to `carousel.ts` with the `data-carousel-*` hooks, add `CarouselDots`, and move `Hero` onto both; confirm the hero is unchanged, satisfies **AC-7**.
+5. [x] Move `PresenceBand` to `src/components/ui/` and update `index.astro`, satisfies **AC-13**.
+6. [x] Build `IntroCarousel`, `FeaturesCards`, `FeaturesSplit`, `AudiencesGrid`, `ProcessTimeline`, and the `PresenceMap` adapter, all on the shared props, satisfies **AC-6**, **AC-9** to **AC-13**.
+7. [x] Write `src/lib/service-page.ts` (the key types, `BAND_BACKGROUND`, `planServicePage`) and rewrite `[service].astro` around the `bands` map, satisfies **AC-1**, **AC-2**, **AC-5**, **AC-13**, **AC-16**, **AC-21**, **AC-22**.
+8. [x] Preview all three pages at 375, 768, 1024, and 1920 against the screenshots; run the reorder, the build failures, the restyle, and the presence override drills, satisfies **AC-2**, **AC-4**, **AC-17**, **AC-21**, **AC-22**.
 
 **Milestone 2: the pages move**
 

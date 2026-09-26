@@ -1,10 +1,21 @@
 ---
 /**
- * Every service page, from one template (spec 0004).
+ * Every service page, from one route (specs 0004 and 0013).
  *
- * A stub: the frame, the metadata and the page's own heading and intro, all
- * from the service's own content file. Feature 8 adds the deliverables, the
- * process and the call to action.
+ * The page is its entry's `sections`, drawn in list order. Each block names
+ * its `type` and `layout`, and the `bands` map below turns that pair into the
+ * one band component that draws it. Everything else the route needs, the
+ * heading ids, the backgrounds and tones, the resolved presence copy, and the
+ * load entrance steps, comes from `planServicePage`, a pure function. So this
+ * file holds no per service code and no visible copy: a service page needs
+ * no code edit to exist, and reordering, adding, or removing a section is an
+ * edit to its YAML file.
+ *
+ * `bands` is the only place that names band components. A look only one
+ * service wants is a new layout: a schema member, a component here, and an
+ * entry in `bands` and in `BAND_BACKGROUND`. The type checker names every
+ * one of those until all exist. An existing band component changes only when
+ * every service using it should change.
  *
  * This file sits at the root of `src/pages/`, so its pattern is `/<slug>`.
  * That is safe because Astro matches static routes before dynamic ones:
@@ -13,14 +24,24 @@
  * safer would change every service URL, so leave it where it is. The reverse
  * risk, a service slug claiming a page's path, is caught at build by the
  * reserved path list in `src/lib/content.ts`.
- *
- * Adding a fourth service is one content file. No edit here.
  */
 import type { GetStaticPaths } from 'astro';
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/ui/Section.astro';
+import PatternBand from '../components/ui/PatternBand.astro';
+import IntroCarousel from '../components/service/IntroCarousel.astro';
+import FeaturesCards from '../components/service/FeaturesCards.astro';
+import FeaturesSplit from '../components/service/FeaturesSplit.astro';
+import AudiencesGrid from '../components/service/AudiencesGrid.astro';
+import ProcessTimeline from '../components/service/ProcessTimeline.astro';
+import PresenceMap from '../components/service/PresenceMap.astro';
 import { DEFAULT_LOCALE } from '../i18n/locales';
-import { getServices, type Service } from '../lib/content';
+import { getHomePage, getServices, type Service } from '../lib/content';
+import {
+  planServicePage,
+  type BandProps,
+  type BlockKey,
+} from '../lib/service-page';
 
 /**
  * `getStaticPaths` runs outside any page's request, so there is no
@@ -41,11 +62,50 @@ interface Props {
 }
 
 const { service } = Astro.props;
+
+/**
+ * One band component per `type/layout`. Every key the schema allows must be
+ * here, each taking the props of its own block, and nothing else may be, so
+ * a missing or extra entry fails `pnpm check`.
+ */
+const bands = {
+  'intro/carousel': IntroCarousel,
+  'features/cards': FeaturesCards,
+  'features/split': FeaturesSplit,
+  'audiences/grid': AudiencesGrid,
+  'process/timeline': ProcessTimeline,
+  'presence/map': PresenceMap,
+} as const satisfies { [K in BlockKey]: (props: BandProps<K>) => unknown };
+
+const home = await getHomePage(service.lang);
+const plan = planServicePage(service.sections, home.presence);
 ---
 
 <PageLayout title={service.seo.title} description={service.seo.description}>
-  <Section tone="white" labelledBy="page-title">
-    <h1 id="page-title">{service.title}</h1>
-    <p class="mt-4 max-w-narrow text-lead">{service.summary}</p>
-  </Section>
+  {plan.map(({ key, block, headingId, background, entranceFrom }) => {
+    /**
+     * The one widening cast: `key` is the block's own `type/layout`, so the
+     * component looked up by it always takes exactly this block's props.
+     */
+    const Band = bands[key] as (props: BandProps<BlockKey>) => unknown;
+    const props = { block, headingId, entranceFrom };
+
+    return background.kind === 'surface' ? (
+      <PatternBand surface={background.surface} labelledBy={headingId}>
+        <Band {...props} />
+      </PatternBand>
+    ) : background.kind === 'striped' ? (
+      <Section
+        tone={background.tone}
+        labelledBy={headingId}
+        class="bg-diagonal"
+      >
+        <Band {...props} />
+      </Section>
+    ) : (
+      <Section tone="white" labelledBy={headingId}>
+        <Band {...props} />
+      </Section>
+    );
+  })}
 </PageLayout>

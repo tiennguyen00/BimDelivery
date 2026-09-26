@@ -1,0 +1,44 @@
+---
+/**
+ * A service page's audiences in the `grid` layout (spec 0013): a centred
+ * ruled heading, a left aligned intro, then who the service is for.
+ *
+ * It renders only the inside of the band; the route wraps it in a white
+ * `Section`, so every colour here is a light tone's and the gold is
+ * `gold-ink`.
+ *
+ * The items are one column below `md` and three from it, so six read as two
+ * rows of three. Each is centred: its solid icon at 64px filled with
+ * `--color-gold` (`fill-gold`, a fill and so within the gold rule), the title
+ * as an `h3`, and its text with its marks.
+ */
+import Emphasis from '../ui/Emphasis.astro';
+import Icon from '../ui/Icon.astro';
+import type { BandProps } from '../../lib/service-page';
+
+type Props = BandProps<'audiences/grid'>;
+
+const { block, headingId } = Astro.props;
+---
+
+<div class="text-center">
+  <h2 id={headingId} class="heading-rule inline-block">
+    <Emphasis text={block.heading} surface="light" />
+  </h2>
+</div>
+
+<p class="mt-8">
+  <Emphasis text={block.intro} surface="light" />
+</p>
+
+<div class="mt-12 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-3">
+  {block.items.map((item) => (
+    <div class="flex flex-col items-center text-center">
+      <Icon name={item.icon} size={64} class="fill-gold" />
+      <h3 class="mt-4">{item.title}</h3>
+      <p class="mt-2">
+        <Emphasis text={item.text} surface="light" />
+      </p>
+    </div>
+  ))}
+</div>

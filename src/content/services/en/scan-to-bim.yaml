@@ -1,0 +1,97 @@
+# Placeholder copy following the reference's structure and length (spec
+# 0013). The real service description replaces it before launch.
+#
+# Sections 2 and 4 sit on `surface: light`, the white band under the
+# diagonal stripe, so a `==` mark may only appear in their `heading` (the
+# build checks it).
+lang: en
+slug: scan-to-bim
+title: Scan to BIM
+summary: Turn point cloud surveys into reliable as built Revit models.
+order: 2
+seo:
+  title: Scan to BIM | BIM Delivery
+  description: Turn laser scan point clouds into accurate as built Revit models for renovation, retrofit, and facility management projects.
+subServices:
+  - Point cloud to Revit models
+  - As built documentation
+  - Existing conditions for renovation
+  - Model accuracy checks against the scan
+sections:
+  - type: intro
+    layout: carousel
+    heading: Scan to BIM services
+    paragraphs:
+      - BIM Delivery turns **laser scan point clouds** of existing buildings into accurate **as built Revit models** you can design against with confidence. We work from scans in every common format, from a single floor to a whole campus.
+      - Every model is checked back against the scan, so walls, levels, openings, and services sit where they really are. You get the tolerance you asked for, written down in a report, not guessed.
+      - Renovation, retrofit, and facility teams use our models to **plan work, avoid surprises on site, and keep a true record** of the buildings they look after.
+    images:
+      - src: https://images.pexels.com/photos/5802822/pexels-photo-5802822.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A surveyor setting up a measuring instrument on a tripod at a construction site
+      - src: https://images.pexels.com/photos/236709/pexels-photo-236709.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: The long, empty hall of an old industrial building, with steel columns and cranes under a glass roof
+  - type: features
+    layout: split
+    surface: light
+    heading: From point cloud to ==reliable model==
+    paragraphs:
+      - A scan captures everything; a model has to decide what matters. We agree the level of detail, the tolerance, and the elements to model before we start, then build only what your project needs.
+      - The result is a clean, **lightweight Revit model** that matches the building on site and opens quickly on every machine in your team.
+    items:
+      - icon: scan
+        title: Point cloud to Revit
+        text: Architectural, structural, and MEP elements modeled from registered scans in **RCP, E57**, and other common formats.
+      - icon: ruler
+        title: Accuracy you can check
+        text: Deviation checks against the scan, with a report showing where the model sits within your tolerance.
+      - icon: layers
+        title: As built documentation
+        text: Plans, sections, and elevations drawn from the model and set up to your own standards.
+      - icon: clipboard-check
+        title: Existing conditions
+        text: A dependable base for renovation, retrofit, and fit out design, before anyone opens a wall.
+  - type: audiences
+    layout: grid
+    heading: Who ==Scan to BIM== is for
+    intro: Anyone who needs to know exactly what is already built before they change it, manage it, or sell it.
+    items:
+      - icon: compass
+        title: Architects
+        text: A true model of the existing building to design your renovation or extension against.
+      - icon: users-gear
+        title: Engineers
+        text: Accurate structure and services to plan upgrades, reinforcement, and new routes.
+      - icon: hard-hat
+        title: Contractors
+        text: Existing conditions you can price and plan from, with fewer surprises once work starts.
+      - icon: building
+        title: Building owners
+        text: A reliable record of every building in your portfolio, ready for the **next project**.
+      - icon: users
+        title: Facility managers
+        text: Models carrying room, asset, and equipment data for day to day operations.
+      - icon: user
+        title: Surveyors
+        text: A modeling partner that turns your registered scans into Revit deliverables on time.
+  - type: process
+    layout: timeline
+    surface: light
+    heading: How a Scan to BIM project ==runs==
+    intro: Four clear steps from the scan you send us to the model you build on.
+    steps:
+      - title: Receive the scan
+        text: You share the registered point cloud, or we arrange a survey partner for you.
+      - title: Agree the detail
+        text: Together we set the level of detail, the tolerance, and the elements to model.
+      - title: Model and check
+        text: We model from the scan and check every element against it before review.
+      - title: Deliver
+        text: You receive the model, the drawings, and the accuracy report.
+    cta:
+      heading: Start a Scan to BIM project
+      text: Send us your point cloud or tell us about the building, and we will reply with a plan and a quote.
+      button:
+        label: Contact us
+        href: /contact-us
+  - type: presence
+    layout: map

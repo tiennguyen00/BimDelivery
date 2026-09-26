@@ -1,19 +1,26 @@
 /**
- * The home hero's photo carousel.
+ * The site's photo carousel: the home hero (spec 0005) and each service
+ * page's intro (spec 0013), one script for both.
  *
  * Like `counters.ts`, this module enhances markup that is already correct.
- * `Hero.astro` renders every photo stacked, with the first one showing and the
- * rest transparent and hidden from assistive tech. With no JavaScript, or a
- * failed script, the visitor sees the first photo and no controls, which is
- * the hero as it was before the carousel.
+ * The component renders every photo stacked inside a `data-carousel` root,
+ * with the first one showing and the rest transparent and hidden from
+ * assistive tech. With no JavaScript, or a failed script, the visitor sees
+ * the first photo and no controls, which is the band as it was before the
+ * carousel.
  *
- * Once running it reveals the controls (one dot per photo, plus the previous
- * and next arrows), crossfades to the next photo every `INTERVAL_MS`, and
- * replays the scrim panel's entrance with each change so the words arrive with
- * the photo rather than sitting still through all of them.
+ * Hooks, all inside the root: `data-carousel-slide` on each photo,
+ * `data-carousel-controls` and `data-carousel-dot` from `CarouselDots`, and
+ * two optional ones only the hero has, `data-carousel-arrow` (`prev` or
+ * `next`) and `data-carousel-panel`.
+ *
+ * Once running it reveals the controls (one dot per photo, plus any arrows),
+ * crossfades to the next photo every `INTERVAL_MS`, and, where there is a
+ * panel, replays its entrance with each change so the words arrive with the
+ * photo rather than sitting still through all of them.
  *
  * There is no pause button. Instead the slideshow holds still while the
- * pointer is over the band or keyboard focus is inside it, so whoever is
+ * pointer is over the root or keyboard focus is inside it, so whoever is
  * reading or using the controls is never interrupted. A visitor who asks for
  * less motion never gets the autoplay at all; the dots and arrows still work,
  * and `global.css` already cuts the fade to an instant swap.
@@ -45,13 +52,17 @@ const wantsMotion = (): boolean =>
   !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const setUp = (root: HTMLElement): void => {
-  const slides = [...root.querySelectorAll<HTMLElement>('[data-hero-slide]')];
-  const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-hero-dot]')];
-  const controls = root.querySelector<HTMLElement>('[data-hero-controls]');
-  const arrows = [
-    ...root.querySelectorAll<HTMLButtonElement>('[data-hero-arrow]'),
+  const slides = [
+    ...root.querySelectorAll<HTMLElement>('[data-carousel-slide]'),
   ];
-  const panel = root.querySelector<HTMLElement>('[data-hero-panel]');
+  const dots = [
+    ...root.querySelectorAll<HTMLButtonElement>('[data-carousel-dot]'),
+  ];
+  const controls = root.querySelector<HTMLElement>('[data-carousel-controls]');
+  const arrows = [
+    ...root.querySelectorAll<HTMLButtonElement>('[data-carousel-arrow]'),
+  ];
+  const panel = root.querySelector<HTMLElement>('[data-carousel-panel]');
   if (slides.length < 2 || !controls) return;
 
   // State lives in this closure, one carousel per call.
@@ -131,7 +142,7 @@ const setUp = (root: HTMLElement): void => {
   });
 
   arrows.forEach((arrow) => {
-    const step = arrow.dataset.heroArrow === 'prev' ? -1 : 1;
+    const step = arrow.dataset.carouselArrow === 'prev' ? -1 : 1;
     arrow.addEventListener('click', () => {
       change(stepIndex(current, step, slides.length));
       sync();
@@ -161,7 +172,7 @@ const setUp = (root: HTMLElement): void => {
   sync();
 };
 
-document.querySelectorAll<HTMLElement>('[data-hero-carousel]').forEach(setUp);
+document.querySelectorAll<HTMLElement>('[data-carousel]').forEach(setUp);
 
 // Makes this file a module, so its names stay private instead of sharing one
 // global scope with the other scripts (`counters.ts` also has `wantsMotion`).

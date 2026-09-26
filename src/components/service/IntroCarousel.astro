@@ -1,0 +1,98 @@
+---
+/**
+ * A service page's intro in the `carousel` layout (spec 0013): the page's
+ * `h1`, its paragraphs, and a photo carousel beside them.
+ *
+ * It renders only the inside of the band; the route wraps it in a white
+ * `Section` labelled by the `h1`.
+ *
+ * From `lg` the copy takes about seven twelfths on the start side and the
+ * carousel the rest, centred against the copy; below `lg` one column: the
+ * heading, the paragraphs, then the carousel. The `h1` is in capitals by CSS
+ * only (`uppercase`), so a screen reader reads words, not letters, and it
+ * carries no gold rule. Each paragraph sits beside its own 4px gold bar, a
+ * `::before` filled with `--color-gold`: a decorative fill, never a gold
+ * border. Its `**bold**` phrases are semibold `ink-strong`.
+ *
+ * The carousel is the home hero's, through the same script
+ * (`src/scripts/carousel.ts`) and the same `CarouselDots`: every photo
+ * stacked in a 4:3 box, the first showing and the rest transparent and
+ * hidden from assistive tech, so with no JavaScript it is one still photo
+ * and no dots. The first photo loads eagerly at a high fetch priority and
+ * the rest lazily. The photos are sized like the contact intro's, about a
+ * third of the screen from `lg`. With one photo there is no carousel at all,
+ * and no dots.
+ */
+import { Image, inferRemoteSize } from 'astro:assets';
+import CarouselDots from '../ui/CarouselDots.astro';
+import Emphasis from '../ui/Emphasis.astro';
+import { cx } from '../ui/styles';
+import type { BandProps } from '../../lib/service-page';
+
+type Props = BandProps<'intro/carousel'>;
+
+const { block, headingId } = Astro.props;
+
+// Read once at build from each link, like a local file's metadata.
+const slides = await Promise.all(
+  block.images.map(async (image) => ({
+    src: image.src,
+    alt: image.alt ?? '',
+    source: await inferRemoteSize(image.src),
+  })),
+);
+const hasCarousel = slides.length > 1;
+---
+
+<div class="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
+  <div class="lg:col-span-7">
+    <h1 id={headingId} class="text-balance uppercase">
+      {block.heading}
+    </h1>
+
+    <div class="mt-8 flex flex-col gap-6">
+      {block.paragraphs.map((paragraph) => (
+        <p class="relative ps-6 before:absolute before:inset-y-0 before:inset-s-0 before:w-1 before:bg-gold">
+          <Emphasis
+            text={paragraph}
+            surface="light"
+            strongClass="text-ink-strong"
+          />
+        </p>
+      ))}
+    </div>
+  </div>
+
+  <div class="lg:col-span-5" data-carousel={hasCarousel ? '' : undefined}>
+    <div class="relative aspect-4/3 overflow-hidden rounded-ui bg-tint">
+      {slides.map(({ src, alt, source }, index) => (
+        <Image
+          src={src}
+          alt={alt}
+          width={source.width}
+          height={source.height}
+          widths={[480, 800, 1200]}
+          sizes="(min-width: 1024px) 32vw, 100vw"
+          loading={index === 0 ? 'eager' : 'lazy'}
+          fetchpriority={index === 0 ? 'high' : undefined}
+          aria-hidden={index === 0 ? undefined : 'true'}
+          data-carousel-slide
+          class={cx(
+            'absolute inset-0 size-full object-cover object-center transition-opacity duration-1000',
+            index === 0 ? 'opacity-100' : 'opacity-0',
+          )}
+        />
+      ))}
+    </div>
+
+    {hasCarousel && <CarouselDots count={slides.length} class="mt-4" />}
+  </div>
+</div>
+
+{/**
+ * The same shape as the hero: one `<script>` importing a module, which Astro
+ * bundles once however many carousels the page has.
+ */}
+<script>
+  import '../../scripts/carousel';
+</script>

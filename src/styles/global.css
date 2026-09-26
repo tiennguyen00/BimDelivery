@@ -96,6 +96,10 @@
      white still reads at 10.5:1 there and `error-on-dark` at 5.19:1. It is
      0.8, not 0.75, because the stripe lightens it. */
   --color-scrim-strong: rgb(0 0 0 / 0.8);
+  /* The fill of a card or tile on a dark service band (spec 0013), a step up
+     from the black under it so the piece reads as a surface. White on it
+     measures 18.1:1 and `gold-on-dark` 7.5:1. Never on a light tone. */
+  --color-panel: #161616;
 
   /* ---- Breakpoints --------------------------------------------------- */
   /* Three screens only: mobile is the unprefixed default, then md and lg. */
@@ -213,6 +217,24 @@
     transparent 0 9px,
     color-mix(in srgb, var(--color-white) 6%, transparent) 9px 10px
   );
+}
+
+/**
+ * A dot grid for a black band (spec 0013, the dark `PatternBand`): a dot of
+ * white at 14 percent, 2px across, every 12px, laid on `bg-black`. It sets
+ * only `background-image` and `background-size`, so it stacks on the band's
+ * own colour. A dot's centre is the band's lightest pixel, `#242424`, and
+ * every text pair on it is measured there: white 15.5:1, `gold-on-dark`
+ * 6.4:1. The half pixel after the dot's edge softens it without making it
+ * any lighter. Never on a light tone, where it would not show.
+ */
+@utility bg-dots-dark {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-white) 14%, transparent) 1px,
+    transparent 1.5px
+  );
+  background-size: 12px 12px;
 }
 
 /**

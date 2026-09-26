@@ -15,7 +15,7 @@ import {
   fieldHintClass,
   fieldLabelClass,
   fieldWrapperClass,
-  type FieldSurface,
+  type Surface,
 } from '../../ui/styles';
 import { describeField } from './field';
 
@@ -25,7 +25,7 @@ type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   id?: string;
   hint?: string;
   error?: string;
-  surface?: FieldSurface;
+  surface?: Surface;
 };
 
 export const TextArea = ({

@@ -115,24 +115,28 @@ export const selectClass = (invalid = false): string =>
   );
 
 /**
- * What a field sits on (spec 0011). The control box is identical on both:
- * white, with the `field` border and the `error` ring. Only the words around
- * it change. On `dark`, the contact page's form band, the label and hint are
- * white (10.5:1 at the band's worst point) and the error is `error-on-dark`
- * (5.19:1), because `error` and `ink` would vanish there.
+ * What a piece sits on: a light tone, or a dark band. One type for the form
+ * fields (spec 0011) and the service bands (spec 0013), whose content files
+ * name it in their `surface` field.
+ *
+ * For a field, the control box is identical on both: white, with the `field`
+ * border and the `error` ring. Only the words around it change. On `dark`,
+ * the contact page's form band, the label and hint are white (10.5:1 at the
+ * band's worst point) and the error is `error-on-dark` (5.19:1), because
+ * `error` and `ink` would vanish there.
  */
-export type FieldSurface = 'light' | 'dark';
+export type Surface = 'light' | 'dark';
 
 /** Field label, hint, and error, shared so every field component matches. */
-export const fieldLabelClass: Readonly<Record<FieldSurface, string>> = {
+export const fieldLabelClass: Readonly<Record<Surface, string>> = {
   light: cx('text-small font-semibold text-ink-strong'),
   dark: cx('text-small font-semibold text-white'),
 };
-export const fieldHintClass: Readonly<Record<FieldSurface, string>> = {
+export const fieldHintClass: Readonly<Record<Surface, string>> = {
   light: cx('text-small text-ink-muted'),
   dark: cx('text-small text-white'),
 };
-export const fieldErrorClass: Readonly<Record<FieldSurface, string>> = {
+export const fieldErrorClass: Readonly<Record<Surface, string>> = {
   light: cx('text-small text-error'),
   dark: cx('text-small text-error-on-dark'),
 };
@@ -146,3 +150,49 @@ export const fieldWrapperClass = cx('flex flex-col gap-1.5');
 export const fieldHeadClass = cx(
   'flex flex-wrap items-baseline justify-between gap-x-3',
 );
+
+/**
+ * The service bands on a `PatternBand` (spec 0013), keyed by the band's
+ * `surface`. A band component reads its block's `surface` and only these
+ * maps, so no band names a colour that depends on what it sits on.
+ *
+ * On `dark`, black under the `bg-dots-dark` dots, every word is white: 15.5:1
+ * at the dots' lightest pixel (`#242424`) and 18.1:1 on a `panel`. On
+ * `light`, white under the `bg-diagonal` stripe, headings are black and body
+ * text `ink`, which holds 4.56:1 over a stripe line; `ink-muted` would not.
+ */
+export const bandHeadingClass: Readonly<Record<Surface, string>> = {
+  light: cx('text-black'),
+  dark: cx('text-white'),
+};
+export const bandBodyClass: Readonly<Record<Surface, string>> = {
+  light: cx('text-ink'),
+  dark: cx('text-white'),
+};
+
+/**
+ * A card (`FeaturesCards`) and a tile (`FeaturesSplit`): fill, border, and
+ * corners. On `dark` both are a `panel` fill with a white hairline at 10
+ * percent, since a shadow does not read on black; on `light` both are white
+ * with the `line` border, and the larger card also lifts off the stripe with
+ * `shadow-lg`.
+ */
+export const bandCardClass: Readonly<Record<Surface, string>> = {
+  light: cx('rounded-card border border-line bg-white shadow-lg'),
+  dark: cx('rounded-card border border-white/10 bg-panel'),
+};
+export const bandTileClass: Readonly<Record<Surface, string>> = {
+  light: cx('rounded-ui border border-line bg-white'),
+  dark: cx('rounded-ui border border-white/10 bg-panel'),
+};
+
+/**
+ * A line icon's colour. The glyph is a stroke, which counts as a line, so on
+ * a light surface it takes `gold-ink` like the presence band's `check`; on
+ * black the bright gold reads (6.4:1 at the dots' lightest pixel, 7.5:1 on a
+ * `panel`).
+ */
+export const bandIconClass: Readonly<Record<Surface, string>> = {
+  light: cx('text-gold-ink'),
+  dark: cx('text-gold-on-dark'),
+};

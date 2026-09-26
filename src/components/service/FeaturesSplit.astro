@@ -1,0 +1,67 @@
+---
+/**
+ * A service page's features in the `split` layout (spec 0013): the ruled
+ * heading and paragraphs on the start side, the items as tiles on the end
+ * side.
+ *
+ * It renders only the inside of the band; the route wraps it in a
+ * `PatternBand` on the block's `surface`, and every colour that depends on it
+ * comes from the class maps in `styles.ts`.
+ *
+ * From `lg` the copy takes about five twelfths and the tiles the rest; the
+ * tiles run two columns from `md` and one below. Below `lg` everything is
+ * one column, the copy first. Each tile holds a 40px line icon with a 1.5
+ * stroke, the title as an `h3`, and its text with its marks.
+ */
+import Emphasis from '../ui/Emphasis.astro';
+import Icon from '../ui/Icon.astro';
+import {
+  bandBodyClass,
+  bandHeadingClass,
+  bandIconClass,
+  bandTileClass,
+  cx,
+} from '../ui/styles';
+import type { BandProps } from '../../lib/service-page';
+
+type Props = BandProps<'features/split'>;
+
+const { block, headingId } = Astro.props;
+const { surface } = block;
+---
+
+<div class="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
+  <div class="lg:col-span-5">
+    <h2
+      id={headingId}
+      class={cx('heading-rule inline-block', bandHeadingClass[surface])}
+    >
+      <Emphasis text={block.heading} surface={surface} />
+    </h2>
+
+    <div class={cx('mt-8 flex flex-col gap-4', bandBodyClass[surface])}>
+      {block.paragraphs.map((paragraph) => (
+        <p>
+          <Emphasis text={paragraph} surface={surface} />
+        </p>
+      ))}
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:col-span-7">
+    {block.items.map((item) => (
+      <div class={cx('flex flex-col p-6', bandTileClass[surface])}>
+        <Icon
+          name={item.icon}
+          size={40}
+          strokeWidth={1.5}
+          class={bandIconClass[surface]}
+        />
+        <h3 class={cx('mt-4', bandHeadingClass[surface])}>{item.title}</h3>
+        <p class={cx('mt-2', bandBodyClass[surface])}>
+          <Emphasis text={item.text} surface={surface} />
+        </p>
+      </div>
+    ))}
+  </div>
+</div>

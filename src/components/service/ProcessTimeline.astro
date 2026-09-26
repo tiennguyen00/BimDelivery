@@ -1,0 +1,69 @@
+---
+/**
+ * A service page's process in the `timeline` layout (spec 0013): a centred
+ * ruled heading and an optional intro, the numbered steps joined by a gold
+ * line, then the closing call to action back to the contact page.
+ *
+ * It renders only the inside of the band; the route wraps it in a
+ * `PatternBand` on the block's `surface`, and every colour that depends on it
+ * comes from the class maps in `styles.ts`. The number circles, the line,
+ * and the button are gold fills carrying black, the same on either surface.
+ *
+ * The steps are an `<ol>`. From `lg` they sit in one row of equal columns,
+ * however many there are (`lg:grid-flow-col lg:auto-cols-fr`); below it they
+ * are a list running down the page. Each step draws the stretch of line from
+ * its own circle's centre to the next one's with an `::after`, so the line
+ * joins exactly the circles there are and the last step draws none. That is
+ * why the spacing between steps is padding rather than a gap: the stretch is
+ * the step's own width (a row) or height (a list), which then reaches the
+ * next centre exactly. The circles sit above it.
+ *
+ * Each number is the step's position plus one, written as text, so a screen
+ * reader reads it with the step.
+ */
+import Button from '../ui/Button.astro';
+import Emphasis from '../ui/Emphasis.astro';
+import { bandBodyClass, bandHeadingClass, cx } from '../ui/styles';
+import type { BandProps } from '../../lib/service-page';
+
+type Props = BandProps<'process/timeline'>;
+
+const { block, headingId } = Astro.props;
+const { surface, cta } = block;
+---
+
+<div class="mx-auto max-w-narrow text-center">
+  <h2
+    id={headingId}
+    class={cx('heading-rule inline-block', bandHeadingClass[surface])}
+  >
+    <Emphasis text={block.heading} surface={surface} />
+  </h2>
+  {block.intro && (
+    <p class={cx('mt-8', bandBodyClass[surface])}>
+      <Emphasis text={block.intro} surface={surface} />
+    </p>
+  )}
+</div>
+
+<ol class="mt-12 grid grid-cols-1 lg:auto-cols-fr lg:grid-flow-col">
+  {block.steps.map((step, index) => (
+    <li class="relative flex gap-6 pb-10 after:absolute after:inset-s-7 after:top-7 after:h-full after:w-1 after:-translate-x-1/2 after:bg-gold last:pb-0 last:after:hidden lg:flex-col lg:items-center lg:gap-6 lg:px-4 lg:pb-0 lg:text-center lg:after:inset-s-1/2 lg:after:h-1 lg:after:w-full lg:after:translate-x-0 lg:after:-translate-y-1/2">
+      <span class="relative z-10 grid size-14 shrink-0 place-items-center rounded-full bg-gold text-h3 font-bold text-black">
+        {index + 1}
+      </span>
+      <div>
+        <h3 class={bandHeadingClass[surface]}>{step.title}</h3>
+        <p class={cx('mt-2', bandBodyClass[surface])}>{step.text}</p>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<div class="mx-auto mt-16 max-w-narrow text-center">
+  <h3 class={bandHeadingClass[surface]}>{cta.heading}</h3>
+  <p class={cx('mt-4', bandBodyClass[surface])}>{cta.text}</p>
+  <Button href={cta.button.href} class="mt-8">
+    {cta.button.label}
+  </Button>
+</div>

@@ -1,0 +1,89 @@
+---
+/**
+ * A service page's features in the `cards` layout (spec 0013): a centred
+ * ruled heading, the paragraphs, a centred ruled subheading, then one card
+ * per stage.
+ *
+ * It renders only the inside of the band; the route wraps it in a
+ * `PatternBand` on the block's `surface`. Every colour that depends on that
+ * surface comes from the class maps in `styles.ts`, so this file names none
+ * of its own: white words on `dark`, black headings and `ink` text on
+ * `light`, and a `==` phrase in whichever gold `Emphasis` picks.
+ *
+ * The cards are one column below `lg` and one row of equal columns from it,
+ * however many there are (`lg:grid-flow-col lg:auto-cols-fr`): literal
+ * classes that fit any count, never a class built from the count. Each card,
+ * top to bottom and centred: the line icon at 80px with a thin 1.25 stroke,
+ * the title as an `h4` in the `text-h3` style, then the points as a bulleted
+ * list, left aligned.
+ */
+import Emphasis from '../ui/Emphasis.astro';
+import Icon from '../ui/Icon.astro';
+import {
+  bandBodyClass,
+  bandCardClass,
+  bandHeadingClass,
+  bandIconClass,
+  cx,
+} from '../ui/styles';
+import type { BandProps } from '../../lib/service-page';
+
+type Props = BandProps<'features/cards'>;
+
+const { block, headingId } = Astro.props;
+const { surface } = block;
+---
+
+<div class="text-center">
+  <h2
+    id={headingId}
+    class={cx('heading-rule inline-block', bandHeadingClass[surface])}
+  >
+    <Emphasis text={block.heading} surface={surface} />
+  </h2>
+</div>
+
+<div class={cx('mt-8 flex flex-col gap-4', bandBodyClass[surface])}>
+  {block.paragraphs.map((paragraph) => (
+    <p>
+      <Emphasis text={paragraph} surface={surface} />
+    </p>
+  ))}
+</div>
+
+<div class="mt-16 text-center">
+  <h3 class={cx('heading-rule inline-block', bandHeadingClass[surface])}>
+    <Emphasis text={block.subheading} surface={surface} />
+  </h3>
+</div>
+
+<div class="mt-12 grid grid-cols-1 gap-6 lg:auto-cols-fr lg:grid-flow-col lg:gap-8">
+  {block.cards.map((card) => (
+    <div
+      class={cx(
+        'flex flex-col items-center px-6 py-10 text-center',
+        bandCardClass[surface],
+      )}
+    >
+      <Icon
+        name={card.icon}
+        size={80}
+        strokeWidth={1.25}
+        class={bandIconClass[surface]}
+      />
+      <h4 class={cx('mt-6 text-h3 font-bold', bandHeadingClass[surface])}>
+        {card.title}
+      </h4>
+      <ul
+        class={cx(
+          'mx-auto mt-4 flex w-fit max-w-full list-disc flex-col gap-2 ps-5 text-left',
+          bandBodyClass[surface],
+        )}
+      >
+        {card.points.map((point) => (
+          <li>{point}</li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>

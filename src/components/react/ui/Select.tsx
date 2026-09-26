@@ -25,7 +25,7 @@ import {
   fieldLabelClass,
   fieldWrapperClass,
   selectClass,
-  type FieldSurface,
+  type Surface,
 } from '../../ui/styles';
 import { describeField } from './field';
 
@@ -40,7 +40,7 @@ type Props = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'multiple'> & {
   id?: string;
   hint?: string;
   error?: string;
-  surface?: FieldSurface;
+  surface?: Surface;
 };
 
 export const Select = ({

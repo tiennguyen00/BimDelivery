@@ -3,12 +3,14 @@
  * The site's whole icon set, as one fixed map (spec 0004, plus the four stat
  * glyphs the home page's intro band adds, the accordion's `plus` and
  * `minus` from spec 0010, and the contact cards' `headset` and `envelope`
- * from spec 0011).
+ * from spec 0011, and the service pages' fourteen from spec 0013).
  *
- * There is no icon library. A dozen glyphs is not enough to earn a dependency,
- * and a fixed map means `IconName` is a union over real keys: a typo, or a
- * social network nobody drew, is a type error rather than a blank square at
- * runtime.
+ * There is no icon library. A few dozen glyphs is not enough to earn a
+ * dependency, and a fixed map means `IconName` is a union over real keys: a
+ * typo, or a social network nobody drew, is a type error rather than a blank
+ * square at runtime. Spec 0013's glyphs are copied into the map from open
+ * licence sets instead of drawn here, each with a comment naming its set,
+ * source glyph, and licence; `src/assets/images/CREDITS.md` lists them too.
  *
  * Every glyph is drawn on the same 24 unit grid and inherits `currentColor`,
  * so an icon is coloured by the text around it and never names a colour of its
@@ -112,6 +114,92 @@ const ICONS = {
     mode: 'fill',
     evenodd: true,
   },
+  /**
+   * The service pages' line glyphs (spec 0013): the `features` cards and
+   * tiles, listed as `lineIcons` in `content.config.ts`. Copied, not drawn:
+   * each is the named Tabler Icons outline glyph (3.48.0, MIT), its separate
+   * paths joined into one `d` and the empty bounding box path dropped. They
+   * are strokes on the same 24 unit grid, so `strokeWidth` thins them for the
+   * large sizes the bands use.
+   */
+  /** Tabler `map`, a folded sheet of drawings. MIT. */
+  blueprint: {
+    d: 'M3 7l6 -3l6 3l6 -3v13l-6 3l-6 -3l-6 3v-13 M9 4v13 M15 7v13',
+    mode: 'stroke',
+  },
+  /** Tabler `crane`. MIT. */
+  crane: {
+    d: 'M6 21h6 M9 21v-18l-6 6h18 M9 3l10 6 M17 9v4a2 2 0 1 1 -2 2',
+    mode: 'stroke',
+  },
+  /** Tabler `home-check`. MIT. */
+  'building-check': {
+    d: 'M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2 M19 13.488v-1.488h2l-9 -9l-9 9h2v7a2 2 0 0 0 2 2h4.525 M15 19l2 2l4 -4',
+    mode: 'stroke',
+  },
+  /** Tabler `scan-cube`, a model inside the scan's corners. MIT. */
+  scan: {
+    d: 'M8.504 9.426l3 -1.714a1 1 0 0 1 .992 0l3 1.714a1 1 0 0 1 .504 .868v3.411a1 1 0 0 1 -.504 .868l-3 1.715a1 1 0 0 1 -.992 0l-3 -1.715a1 1 0 0 1 -.504 -.868v-3.41a1 1 0 0 1 .504 -.869 M15.75 9.964l-3.75 2.036 M12 12l-3.75 -2.036 M12 12v4.071 M3 7v-2a2 2 0 0 1 2 -2h2 M3 17v2a2 2 0 0 0 2 2h2 M17 3h2a2 2 0 0 1 2 2v2 M17 21h2a2 2 0 0 0 2 -2v-2',
+    mode: 'stroke',
+  },
+  /** Tabler `clipboard-check`. MIT. */
+  'clipboard-check': {
+    d: 'M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2 M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2 M9 14l2 2l4 -4',
+    mode: 'stroke',
+  },
+  /** Tabler `ruler`, a set square with its marks. MIT. */
+  ruler: {
+    d: 'M5 4h14a1 1 0 0 1 1 1v5a1 1 0 0 1 -1 1h-7a1 1 0 0 0 -1 1v7a1 1 0 0 1 -1 1h-5a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1 M4 8l2 0 M4 12l3 0 M4 16l2 0 M8 4l0 2 M12 4l0 3 M16 4l0 2',
+    mode: 'stroke',
+  },
+  /** Tabler `layers-intersect`, two elements overlapping. MIT. */
+  clash: {
+    d: 'M8 6a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2l0 -8 M4 10a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2l0 -8',
+    mode: 'stroke',
+  },
+  /** Tabler `stack-2`. MIT. */
+  layers: {
+    d: 'M12 4l-8 4l8 4l8 -4l-8 -4 M4 12l8 4l8 -4 M4 16l8 4l8 -4',
+    mode: 'stroke',
+  },
+  /** Tabler `messages`. MIT. */
+  messages: {
+    d: 'M21 14l-3 -3h-7a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1h9a1 1 0 0 1 1 1v10 M14 15v2a1 1 0 0 1 -1 1h-7l-3 3v-10a1 1 0 0 1 1 -1h2',
+    mode: 'stroke',
+  },
+  /**
+   * The service pages' solid glyphs (spec 0013): the `audiences` items,
+   * listed as `solidIcons` beside the existing `users` and `building`.
+   * Copied from Tabler Icons filled (3.48.0, MIT), or from Material Icons
+   * filled (Google, Apache 2.0) where Tabler has no solid match. Material's
+   * `<circle>` elements are rewritten as two arcs so each glyph stays one
+   * path; their holes come from path direction, so none needs `evenodd`.
+   */
+  /** Tabler filled `user`. MIT. */
+  user: {
+    d: 'M12 2a5 5 0 1 1 -5 5l.005 -.217a5 5 0 0 1 4.995 -4.783z M14 14a5 5 0 0 1 5 5v1a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-1a5 5 0 0 1 5 -5h4z',
+    mode: 'fill',
+  },
+  /** Material Icons filled `co_present`, a person before a board. Apache 2.0. */
+  presenter: {
+    d: 'M21 3H3c-1.1 0-2 .9-2 2v8h2V5h18v16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z M5 10a4 4 0 1 0 8 0a4 4 0 1 0 -8 0z M15.39 16.56C13.71 15.7 11.53 15 9 15s-4.71.7-6.39 1.56A2.97 2.97 0 0 0 1 19.22V22h16v-2.78c0-1.12-.61-2.15-1.61-2.66z',
+    mode: 'fill',
+  },
+  /** Material Icons filled `architecture`, a drafting compass. Apache 2.0. */
+  compass: {
+    d: 'M6.36 18.78 6.61 21l1.62-1.54 2.77-7.6c-.68-.17-1.28-.51-1.77-.98l-2.87 7.9zm8.41-7.9c-.49.47-1.1.81-1.77.98l2.77 7.6L17.39 21l.26-2.22-2.88-7.9zM15 8c0-1.3-.84-2.4-2-2.82V3h-2v2.18C9.84 5.6 9 6.7 9 8c0 1.66 1.34 3 3 3s3-1.34 3-3zm-3 1c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z',
+    mode: 'fill',
+  },
+  /** Material Icons filled `engineering`, a person in a hard hat. Apache 2.0. */
+  'hard-hat': {
+    d: 'M9 15c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm13.1-8.16c.01-.11.02-.22.02-.34 0-.12-.01-.23-.03-.34l.74-.58c.07-.05.08-.15.04-.22l-.7-1.21c-.04-.08-.14-.1-.21-.08l-.86.35c-.18-.14-.38-.25-.59-.34l-.13-.93A.182.182 0 0 0 20.2 3h-1.4c-.09 0-.16.06-.17.15l-.13.93c-.21.09-.41.21-.59.34l-.87-.35c-.08-.03-.17 0-.21.08l-.7 1.21c-.04.08-.03.17.04.22l.74.58a1.953 1.953 0 0 0 0 .68l-.74.58c-.07.05-.08.15-.04.22l.7 1.21c.04.08.14.1.21.08l.87-.35c.18.14.38.25.59.34l.13.93c.01.09.08.15.17.15h1.4c.09 0 .16-.06.17-.15l.13-.93c.21-.09.41-.21.59-.34l.87.35c.08.03.17 0 .21-.08l.7-1.21c.04-.08.03-.17-.04-.22l-.73-.58zm-2.6.91a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm.42 3.93-.5-.87c-.03-.06-.1-.08-.15-.06l-.62.25c-.13-.1-.27-.18-.42-.24l-.09-.66A.15.15 0 0 0 18 10h-1c-.06 0-.11.04-.12.11l-.09.66c-.15.06-.29.15-.42.24l-.62-.25c-.06-.02-.12 0-.15.06l-.5.87c-.03.06-.02.12.03.16l.53.41c-.01.08-.02.16-.02.24 0 .08.01.17.02.24l-.53.41c-.05.04-.06.11-.03.16l.5.87c.03.06.1.08.15.06l.62-.25c.13.1.27.18.42.24l.09.66c.01.07.06.11.12.11h1c.06 0 .12-.04.12-.11l.09-.66c.15-.06.29-.15.42-.24l.62.25c.06.02.12 0 .15-.06l.5-.87c.03-.06.02-.12-.03-.16l-.52-.41c.01-.08.02-.16.02-.24 0-.08-.01-.17-.02-.24l.53-.41c.05-.04.06-.11.04-.17zm-2.42 1.65c-.46 0-.83-.38-.83-.83 0-.46.38-.83.83-.83s.83.38.83.83c0 .46-.37.83-.83.83zM4.74 9h8.53c.27 0 .49-.22.49-.49v-.02a.49.49 0 0 0-.49-.49H13c0-1.48-.81-2.75-2-3.45v.95c0 .28-.22.5-.5.5s-.5-.22-.5-.5V4.14C9.68 4.06 9.35 4 9 4s-.68.06-1 .14V5.5c0 .28-.22.5-.5.5S7 5.78 7 5.5v-.95C5.81 5.25 5 6.52 5 8h-.26a.49.49 0 0 0-.49.49v.03c0 .26.22.48.49.48zM9 13c1.86 0 3.41-1.28 3.86-3H5.14c.45 1.72 2 3 3.86 3z',
+    mode: 'fill',
+  },
+  /** Material Icons filled `manage_accounts`, a person with a gear. Apache 2.0. */
+  'users-gear': {
+    d: 'M6 8a4 4 0 1 0 8 0a4 4 0 1 0 -8 0z M10.67 13.02c-.22-.01-.44-.02-.67-.02-2.42 0-4.68.67-6.61 1.82-.88.52-1.39 1.5-1.39 2.53V20h9.26a6.963 6.963 0 0 1-.59-6.98zM20.75 16c0-.22-.03-.42-.06-.63l1.14-1.01-1-1.73-1.45.49c-.32-.27-.68-.48-1.08-.63L18 11h-2l-.3 1.49c-.4.15-.76.36-1.08.63l-1.45-.49-1 1.73 1.14 1.01c-.03.21-.06.41-.06.63s.03.42.06.63l-1.14 1.01 1 1.73 1.45-.49c.32.27.68.48 1.08.63L16 21h2l.3-1.49c.4-.15.76-.36 1.08-.63l1.45.49 1-1.73-1.14-1.01c.03-.21.06-.41.06-.63zM17 18c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z',
+    mode: 'fill',
+  },
 } as const satisfies Record<string, IconDef>;
 
 export type IconName = keyof typeof ICONS;
@@ -126,10 +214,22 @@ interface Props {
    * visible text sits beside it.
    */
   title?: string;
+  /**
+   * The stroke width on the 24 unit grid (spec 0013). A stroke glyph drawn at
+   * 80px keeps a 2 unit line nearly 7px thick, so the service bands pass a
+   * thinner one. A fill glyph ignores it.
+   */
+  strokeWidth?: number;
   class?: string;
 }
 
-const { name, size = 24, title, class: className } = Astro.props;
+const {
+  name,
+  size = 24,
+  title,
+  strokeWidth = 2,
+  class: className,
+} = Astro.props;
 
 const icon: IconDef = ICONS[name];
 const stroke = icon.mode === 'stroke';
@@ -143,7 +243,7 @@ const stroke = icon.mode === 'stroke';
   class={className}
   fill={stroke ? 'none' : 'currentColor'}
   stroke={stroke ? 'currentColor' : undefined}
-  stroke-width={stroke ? 2 : undefined}
+  stroke-width={stroke ? strokeWidth : undefined}
   stroke-linecap={stroke ? 'round' : undefined}
   stroke-linejoin={stroke ? 'round' : undefined}
   role={title ? 'img' : undefined}

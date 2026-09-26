@@ -4,9 +4,14 @@
  * world map with the company's regions marked on the start side, and the copy
  * plus the why choose list on the end side.
  *
- * It renders only the inside of the band. The page wraps it in a `white`
- * `Section` carrying `bg-diagonal`, so the tone, gutters, and stripe stay the
- * page's choice and this component never reads a tone.
+ * It lives in `ui` because two pages show it (spec 0013): the home page, and
+ * each service page's presence block, fed that block's own copy or the home
+ * page's.
+ *
+ * It renders only the inside of the band. The page wraps it in a `Section`
+ * carrying `bg-diagonal` (`white`, or `tint` after a striped band on a
+ * service page), so the tone, gutters, and stripe stay the page's choice and
+ * this component never reads a tone.
  *
  * The map is decoration and hidden from assistive tech; the regions on it are
  * a real `<ul>` of names, so a screen reader hears the places the map stands
@@ -15,8 +20,8 @@
  * Mobile stacks copy first and map second, the same reading order as
  * `MediaText`: the words say where the company works, the map illustrates it.
  */
-import Emphasis from '../ui/Emphasis.astro';
-import Icon from '../ui/Icon.astro';
+import Emphasis from './Emphasis.astro';
+import Icon from './Icon.astro';
 import WorldMap from '../../assets/images/home/world-map.svg';
 
 interface Region {
