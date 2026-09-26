@@ -304,8 +304,8 @@ Skateboard: first all three pages stand up whole with no motion, then the motion
 
 **Milestone 4: written down and gated**
 
-14. [ ] Update `docs/design.md` (`PatternBand`, `bg-dots-dark`, `panel` and the measured pairs, the service bands' `surface`, `CarouselDots` and the carousel, the glyphs and `strokeWidth`, `PresenceBand`'s home, the service pages' motion, the entrance rule's second user, the scripts list for the rename, the home services row with one or two cards), rewrite the `entrance` utility's comment in `global.css` to name both pairings, and add `/styleguide` tiles for `PatternBand` on both surfaces and the new glyphs, satisfies **AC-20**.
-15. [ ] Search `src/` for the forbidden gold classes, run `pnpm check`, `pnpm lint`, and `pnpm build`, and confirm the three `dist/client/<slug>/index.html` files, satisfies **AC-1**, **AC-19**, **AC-20**.
+14. [x] Update `docs/design.md` (`PatternBand`, `bg-dots-dark`, `panel` and the measured pairs, the service bands' `surface`, `CarouselDots` and the carousel, the glyphs and `strokeWidth`, `PresenceBand`'s home, the service pages' motion, the entrance rule's second user, the scripts list for the rename, the home services row with one or two cards), rewrite the `entrance` utility's comment in `global.css` to name both pairings, and add `/styleguide` tiles for `PatternBand` on both surfaces and the new glyphs, satisfies **AC-20**.
+15. [x] Search `src/` for the forbidden gold classes, run `pnpm check`, `pnpm lint`, and `pnpm build`, and confirm the three `dist/client/<slug>/index.html` files, satisfies **AC-1**, **AC-19**, **AC-20**.
 
 ## Consequences
 

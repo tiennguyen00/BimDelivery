@@ -136,11 +136,11 @@ One service page template, filled three times, at `//revit-modeling, /scan-to-bi
 **Done when:** all three URLs render from one template plus three data entries; each has its own title, description, and heading; adding a fourth is a data entry and a route, not a new layout; each links back to `/contact-us`.
 spec [0013](../specs/0013-service-pages/index.md) · code in [src/pages/[service].astro](../../src/pages/%5Bservice%5D.astro) and [src/components/service/](../../src/components/service/) (shared: `src/lib/service-page.ts`, `src/components/ui/PatternBand.astro`, `src/components/ui/CarouselDots.astro`, `src/components/ui/PresenceBand.astro`, `src/scripts/carousel.ts`, content: `src/content/services/en/`)
 - [x] Design it (spec): `/architect service pages`
-- [ ] Build it: `/develop service pages`
+- [x] Build it: `/develop service pages`
   - [x] The whole pages, still: the new glyphs and `strokeWidth`, the `panel` token and `bg-dots-dark`, `PatternBand`, the strict YAML services entries with ordered blocks each naming its layout, the presence override, the generalised carousel and `CarouselDots`, `PresenceBand` moved to `ui`, the six band components, `planServicePage`, and the route's `bands` map, with the reorder, restyle, and presence drills (AC-1 to AC-14, AC-16 to AC-18, AC-21, AC-22)
   - [x] The pages move: the intro's load entrance, the scroll reveal and rule hooks on the lower bands, the entrance on the block after the intro, checked with JavaScript off and reduced motion (AC-7, AC-15)
   - [x] Services come and go: `home.services.featured` checked in `getHomePage`, spec 0005's exactly three check removed, the home row for one to three cards, the change recipes in `src/content/README.md`, and the add and remove a service drills (AC-23 to AC-25)
-  - [ ] Written down and gated: `design.md`, the `entrance` comment in `global.css`, `/styleguide` tiles, the gold class search, and the check, lint, and build gates (AC-1, AC-19, AC-20)
+  - [x] Written down and gated: `design.md`, the `entrance` comment in `global.css`, `/styleguide` tiles, the gold class search, and the check, lint, and build gates (AC-1, AC-19, AC-20)
 - [ ] Verify it: `/check verify service pages`
 
 ### 9. Project page

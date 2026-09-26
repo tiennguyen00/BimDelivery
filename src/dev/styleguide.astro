@@ -32,6 +32,9 @@ import { TextArea } from '../components/react/ui/TextArea';
 import { Select } from '../components/react/ui/Select';
 import FormBand from '../components/contact/FormBand.astro';
 import ContactCard from '../components/contact/ContactCard.astro';
+import PatternBand from '../components/ui/PatternBand.astro';
+import FeaturesCards from '../components/service/FeaturesCards.astro';
+import type { BlockAt } from '../lib/service-page';
 import { telHref } from '../lib/contact';
 import { resolveLocale } from '../i18n/locales';
 import {
@@ -82,6 +85,33 @@ const iconNames: readonly IconName[] = [
   'map-pin',
   'headset',
   'envelope',
+  'blueprint',
+  'crane',
+  'building-check',
+  'scan',
+  'clipboard-check',
+  'ruler',
+  'clash',
+  'layers',
+  'messages',
+  'user',
+  'presenter',
+  'compass',
+  'hard-hat',
+  'users-gear',
+];
+
+/** The service pages' line glyphs, for the `strokeWidth` row. */
+const lineIconNames: readonly IconName[] = [
+  'blueprint',
+  'crane',
+  'building-check',
+  'scan',
+  'clipboard-check',
+  'ruler',
+  'clash',
+  'layers',
+  'messages',
 ];
 
 const firstService = services[0];
@@ -100,6 +130,18 @@ const firstServicePhoto = firstService?.sections.find(
 const firstServiceCta = firstService?.sections.find(
   (block) => block.type === 'process',
 )?.cta;
+
+/**
+ * The first features block drawn as cards, for the `PatternBand` tiles. The
+ * same block is shown on both surfaces, so the tile proves that only the
+ * `surface` field changes how a band looks.
+ */
+const cardsBlock = services
+  .flatMap((service) => service.sections)
+  .find(
+    (block): block is BlockAt<'features/cards'> =>
+      block.type === 'features' && block.layout === 'cards',
+  );
 
 /**
  * Every swatch carries what the colour is for and what it must never be,
@@ -219,6 +261,13 @@ const colours = [
     use: 'The layer over the whole contact form band, under bg-diagonal-dark',
     avoid: 'Anything lighter: the stripe already lifts its lines to #3f3f3f',
   },
+  {
+    token: '--color-panel',
+    swatch: 'bg-panel',
+    hex: '#161616',
+    use: 'A card or tile on a dark pattern band (white 18.10, gold-on-dark 7.52)',
+    avoid: 'Any light tone',
+  },
 ] as const;
 
 const typeScale = [
@@ -292,6 +341,16 @@ const contrastPairs = [
   {
     pair: 'error-on-dark on the contact form band, the same worst case',
     ratio: '5.19 at worst',
+    needs: '4.5',
+  },
+  {
+    pair: 'white on the dark pattern band (a dot centre, #242424) / on a panel',
+    ratio: '15.52 / 18.10',
+    needs: '4.5',
+  },
+  {
+    pair: 'gold-on-dark on the dark pattern band (a dot centre) / on a panel',
+    ratio: '6.45 / 7.52',
     needs: '4.5',
   },
   {
@@ -917,7 +976,69 @@ const headCellClass =
           </li>
         ))}
       </ul>
+
+      <h3 class="mt-12">The service line glyphs and strokeWidth</h3>
+      <p class="mt-3 max-w-narrow text-small text-ink">
+        Copied from Tabler Icons (MIT); the solid audience glyphs come from
+        Tabler filled or Material Icons (Apache 2.0). At 80px a 2 unit stroke is
+        nearly 7px thick, so a features card passes{' '}
+        <code class="font-mono text-small">strokeWidth</code> 1.25 and a tile
+        1.5. The rows below are 80px at 1.25, then 40px at 1.5.
+      </p>
+      <ul class="mt-6 flex list-none flex-wrap gap-6 p-0 text-gold-ink">
+        {lineIconNames.map((name) => (
+          <li>
+            <Icon name={name} size={80} strokeWidth={1.25} />
+          </li>
+        ))}
+      </ul>
+      <ul class="mt-6 flex list-none flex-wrap gap-6 p-0 text-gold-ink">
+        {lineIconNames.map((name) => (
+          <li>
+            <Icon name={name} size={40} strokeWidth={1.5} />
+          </li>
+        ))}
+      </ul>
     </Section>
+
+    <Section tone="tint" labelledBy="sg-pattern-intro">
+      <h2 id="sg-pattern-intro">Pattern bands</h2>
+      <p class="mt-4 max-w-narrow">
+        <code class="font-mono text-small">PatternBand</code> is the surface of
+        the service pages' features and process bands (spec 0013), named by the
+        content's <code class="font-mono text-small">surface</code> field.{' '}
+        <code class="font-mono text-small">dark</code> is black under{' '}
+        <code class="font-mono text-small">bg-dots-dark</code>, whose lightest
+        pixel is #242424, with{' '}
+        <code class="font-mono text-small">--color-panel</code> cards;{' '}
+        <code class="font-mono text-small">light</code> is white under the
+        diagonal stripe.
+      </p>
+      <p class="mt-3 max-w-narrow text-small text-ink">
+        Both bands below draw the same Revit Modeling features block through the
+        real <code class="font-mono text-small">FeaturesCards</code>; only its{' '}
+        <code class="font-mono text-small">surface</code> differs. The dark band
+        carries <code class="font-mono text-small">focus-contrast</code>. This
+        page does not import the reveal script, so nothing moves.
+      </p>
+    </Section>
+
+    {cardsBlock && (
+      <>
+        <PatternBand surface="dark" labelledBy="sg-pattern-dark-heading">
+          <FeaturesCards
+            block={{ ...cardsBlock, surface: 'dark' }}
+            headingId="sg-pattern-dark-heading"
+          />
+        </PatternBand>
+        <PatternBand surface="light" labelledBy="sg-pattern-light-heading">
+          <FeaturesCards
+            block={{ ...cardsBlock, surface: 'light' }}
+            headingId="sg-pattern-light-heading"
+          />
+        </PatternBand>
+      </>
+    )}
 
     <Section tone="tint" labelledBy="sg-shell">
       <h2 id="sg-shell">The site shell</h2>

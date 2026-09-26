@@ -32,9 +32,11 @@ Building a page should be layout work, not styling decisions.
 - The gold rule is the one thing the build cannot catch, because it is a choice
   between two valid tokens. Read it below before writing any gold.
 - Pages set rhythm by alternating `white` and `tint` sections. The dark bands
-  (the home hero and intro band, the contact form band, the footer) are their
-  own components, never a `Section` tone. The one component that adapts to
-  what it sits on is a form field, through its `surface` prop (spec 0011).
+  (the home hero and intro band, the contact form band, the dark
+  `PatternBand`, the footer) are their own components, never a `Section`
+  tone. Two families adapt to what they sit on, each through a `surface`
+  prop and the class maps in `styles.ts`: the form fields (spec 0011) and the
+  service bands (spec 0013).
 
 ## Colour
 
@@ -60,6 +62,7 @@ a change of values rather than a change of class names everywhere.
 | `--color-error-on-dark` | `#ff9b8f` | Error text on the contact form band only (spec 0011). Never on a light tone (2.03:1 on white) |
 | `--color-scrim` | `rgb(0 0 0 / 0.6)` | The see through dark panel white text sits on over a photo (the home hero, spec 0005). Never lighter: 0.6 is what makes white text pass over any photo |
 | `--color-scrim-strong` | `rgb(0 0 0 / 0.8)` | The layer over the whole contact form band (spec 0011), where small text sits straight on it. With the `bg-diagonal-dark` stripe on top, the band's lightest pixel is `#3f3f3f` |
+| `--color-panel` | `#161616` | The fill of a card or tile on a dark `PatternBand` (spec 0013), a step up from the black so the piece reads as a surface. Never on a light tone |
 
 ### The gold rule
 
@@ -140,6 +143,9 @@ focus indicators. Computed from the hex values above.
 | white (the contact form band's heading, field labels and hints, noscript note, captcha link) | `scrim-strong` plus a `bg-diagonal-dark` line over a pure white photo pixel (composite `#3f3f3f`) | 10.5 at worst | 4.5 |
 | error-on-dark (the contact form band's field errors and messages) | the same worst case, `#3f3f3f` | 5.19 at worst | 4.5 |
 | gold-ink (contact card headings) / ink-strong (card values, the thank you text) | white | 5.05 / 12.63 | 4.5 |
+| white (every heading and word on a dark `PatternBand`) | `bg-dots-dark`'s lightest pixel, a dot's centre (`#242424`, measured at 1x and 2x) / `panel` | 15.52 / 18.10 | 4.5 |
+| gold-on-dark (a `==` phrase and the line icons on a dark `PatternBand`) | the same `#242424` / `panel` | 6.45 / 7.52 | 4.5 |
+| black (a process step's number) | gold (its circle) | 8.73 | 4.5 |
 
 ### Contrast, the three that are deliberately never text
 
@@ -250,6 +256,26 @@ to load changes nothing. It carries `focus-contrast`. Text on it is white or
 `error-on-dark` only; the fields' boxes and the cards are white surfaces and
 follow the light rules. Fields placed there pass `surface="dark"`.
 
+The service pages' features and process bands sit on `PatternBand` (spec
+0013, `src/components/ui/PatternBand.astro`), named by the content's
+`surface` field. It is not a tone either:
+
+- **`dark`** is a black band under `bg-dots-dark`: a dot of white at 14
+  percent, 2px across, every 12px, which sets only `background-image` and
+  `background-size`. A dot's centre is the band's lightest pixel, `#242424`
+  (measured), and every pair on it is measured there. It carries
+  `focus-contrast` and borrows the band frame. Words on it are white, and a
+  `==` phrase and the line icons `gold-on-dark`; cards and tiles are a
+  `panel` fill with a white hairline at 10 percent. **Never** put
+  `bg-dots-dark` on a light tone.
+- **`light`** is a white `Section` under `bg-diagonal`, so every rule above
+  holds: headings black, body text `ink`, a `==` phrase only in a heading
+  (the build rejects one anywhere else on a `light` block), and cards and
+  tiles white with the `line` border.
+- When a presence band follows a `light` pattern band, the route turns its
+  stripe's tone to `tint`, so two stripes never run into each other on one
+  tone.
+
 The home page has one black band, the intro band, and it is not a tone: like
 the hero and `CtaBand` it is its own component that borrows the band frame,
 carries `focus-contrast`, and holds only white text, `--color-gold-on-dark`
@@ -264,8 +290,10 @@ colour, and a second focus colour, then computing the dark contrast pairs.
 ## Components
 
 Four base pieces, plus the four the site shell adds (spec 0004), the three
-the home page promotes into the system (spec 0005), and the two the About page
-adds (spec 0010, `Emphasis` and `Accordion`). The form fields
+the home page promotes into the system (spec 0005), the two the About page
+adds (spec 0010, `Emphasis` and `Accordion`), and the service pages'
+`PatternBand`, `CarouselDots`, and `PresenceBand`, now shared (spec 0013),
+plus their band family in `src/components/service/`. The form fields
 are React because the contact island (feature 10) needs them, and the button
 exists in both idioms sharing one class map so they cannot drift apart;
 everything else is Astro.
@@ -386,9 +414,10 @@ and so on).
 | `name` | `IconName` (required) | |
 | `size` | `number`, the edge length in pixels | `24` |
 | `title` | `string`, the accessible name | none |
+| `strokeWidth` | `number`, on the 24 unit grid; fill glyphs ignore it | `2` |
 | `class` | `string` | none |
 
-The whole set, twenty one glyphs on one 24 unit grid: `menu`, `close`,
+The whole set, thirty five glyphs on one 24 unit grid: `menu`, `close`,
 `chevron-down`, `check` (the home presence band's why choose list, spec 0005),
 `arrow-right` (the home service card's cue, spec 0005), `plus` and `minus`
 (an `Accordion` item closed and open, spec 0010), the footer's contact glyphs
@@ -398,6 +427,25 @@ The whole set, twenty one glyphs on one 24 unit grid: `menu`, `close`,
 cards), and `headset` and `envelope`, which with `map-pin` fill the contact
 page's cards (spec 0011). A glyph whose details are holes punched through it sets `evenodd` in
 the map.
+
+The service pages add fourteen (spec 0013), copied from open licence sets
+rather than drawn, each with a comment in the map naming its set, source
+glyph, and licence, and listed in `src/assets/images/CREDITS.md`:
+
+- **Line glyphs** (Tabler Icons outline, MIT), the `lineIcons` a features
+  card or tile may take: `blueprint`, `crane`, `building-check`, `scan`,
+  `clipboard-check`, `ruler`, `clash`, `layers`, `messages`. The cards draw
+  them at 80px with `strokeWidth` 1.25 and the tiles at 40px with 1.5, since a
+  2 unit line at 80px would be nearly 7px thick. Coloured by the band's
+  surface: `gold-on-dark` on `dark`, `gold-ink` on `light`.
+- **Solid glyphs** (Tabler filled, or Material Icons filled under Apache 2.0
+  where Tabler has no solid match), the `solidIcons` an audience item may
+  take with the existing `users` and `building`: `user`, `presenter`,
+  `compass`, `hard-hat`, `users-gear`. Drawn at 64px with `fill-gold`.
+
+A glyph name is checked twice: the schema lists which glyphs a block may
+take, and passing it to `Icon` is type checked against the map. A new glyph
+is a path in the map and its name in the list.
 
 - Every glyph inherits `currentColor`, so an icon is coloured by the text around
   it. **Do not** give an icon a colour of its own. The one exception is a
@@ -521,7 +569,7 @@ A heading, paragraphs, an optional slot for a list, and an optional photo
 beside them. The home overview used it (spec 0005) until that band was cut,
 and today only `/styleguide` shows it; spec 0010 gave About its own bands
 instead. The home presence band used it until spec 0005's revision gave that band its
-own map layout (`src/components/home/PresenceBand.astro`).
+own map layout (`PresenceBand`, below).
 
 - **Do** flip `imageSide` between two on one page, so the second does not read
   as the first printed again.
@@ -649,8 +697,9 @@ card with `shadow-lg`.
 | `button` | `Link` (required) | |
 
 The closing call to action: a self contained gold band, always gold, taking no
-tone. The service pages (feature 8) reuse it; every service entry carries a
-`cta` block of this shape.
+tone. Today only `/styleguide` shows it. Spec 0005 kept it for the service
+pages, but spec 0013 closed them inside their process band instead, so no
+page uses it; its future (a service block type, or deletion) is a follow up.
 
 - **It is not a `Section` with a third tone**, and that is the point. Two tones
   and both light is what lets every other component name its colours directly
@@ -676,6 +725,7 @@ tone. The service pages (feature 8) reuse it; every service entry carries a
 | `href` | `string` (required) | |
 | `illustration` | `{ src: ImageMetadata; alt: string }` (required) | |
 | `cue` | `string` (required) | |
+| `class` | `string`, merged onto the card's root | none |
 
 The home services band's card (spec 0005), home only. Top to bottom and
 centred: the shared illustration at 160px tall, the title as an `h3`, the
@@ -710,6 +760,82 @@ bottom so the cues of a row line up. White, `shadow-lg`, `rounded-ui`.
   change, at once, and the card does not rise. `hover:` applies only where a
   pointer can hover, so a tap never leaves a card stuck gold.
 - Each card stays a direct child of the band's `data-reveal-stagger` grid.
+- **The row shows what `home.services.featured` lists** (spec 0013), one to
+  three cards in that order, never every service. Three fill the row as
+  always. With one or two, each card keeps its width in a row of three and
+  the set sits centred, never leaving an empty cell on one side: the grid
+  switches to six columns at `lg`, each card spans two, and the first card's
+  start column centres the set (four columns and a span of two for a single
+  card at `md`). The classes are a map keyed by the count in `index.astro`,
+  handed to each card through `class`.
+
+### `PatternBand` · `src/components/ui/PatternBand.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `surface` | `'light' \| 'dark'` (required) | |
+| `labelledBy` | `string` (required), the id of the band's heading | |
+| `class` | `string` | none |
+
+A band on a pattern (spec 0013), the surface of the service pages' features
+and process bands. `dark` renders its own black `<section>` under
+`bg-dots-dark`, with `focus-contrast` and the band frame; `light` renders a
+white `Section` under `bg-diagonal`. See `## Tones` for what may sit on each.
+
+- It owns the surface, nothing inside it. What sits there reads the same
+  `surface` through the band class maps in `styles.ts` (`bandHeadingClass`,
+  `bandBodyClass`, `bandCardClass`, `bandTileClass`, `bandIconClass`), so no
+  band component names a colour that depends on the surface.
+- **Do not** add a tone to `Section` for it, and **do not** use it for a
+  light band with no pattern; that is a plain `Section`.
+
+### `CarouselDots` · `src/components/ui/CarouselDots.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `count` | `number` (required), one dot per photo, two or more | |
+| `class` | `string` | none |
+
+The dots under a photo carousel, shared by the home hero and each service
+intro (spec 0013), run by `src/scripts/carousel.ts`.
+
+- One real button per photo, named "Show photo N of M", a 24px hit area
+  around a small mark: black at 30 percent, or solid black for the photo
+  showing (`aria-current`). Black, not gold: a gold dot on white would be
+  2.41:1, under the 3:1 a control's state needs.
+- The row ships `invisible` and the script reveals it, so with no JavaScript
+  there is nothing dead to tab to. **Do not** render it for a single photo.
+- The label is fixed English, a follow up owed before a second language.
+
+### `PresenceBand` · `src/components/ui/PresenceBand.astro`
+
+The global presence band's inside (spec 0005): a ruled heading, the dotted
+world map with its regions, and the copy with the why choose list. It moved
+from `src/components/home/` to `ui` when the service pages began to show it
+too (spec 0013), unchanged. The page wraps it in a striped `Section`, and its
+copy is `home.presence`, or a service's own presence `content`.
+
+### The service bands · `src/components/service/`
+
+One component per `type/layout` a service entry's `sections` may name (spec
+0013): `IntroCarousel`, `FeaturesCards`, `FeaturesSplit`, `AudiencesGrid`,
+`ProcessTimeline`, and `PresenceMap`, the thin adapter onto `PresenceBand`.
+Each takes the same props, `block` (its own block), `headingId`, and
+`entranceFrom?`, and renders only the inside of its band; the route owns the
+band, its tone, and its heading id.
+
+- **A look only one service wants is a new layout**, never an edit to a
+  shared band component. An existing component changes only when every
+  service using it should change.
+- The surfaced bands (features, process) read their block's `surface` and
+  only the band class maps in `styles.ts`: white words and `panel` cards on
+  `dark`, black headings, `ink` text, and white cards on `light`.
+- Grids that fit any count use literal classes (`lg:grid-flow-col
+  lg:auto-cols-fr`), never a class built from a list's length.
+- The intro's paragraphs each sit beside a 4px gold bar, a `::before` filled
+  with `--color-gold`; the audience icons are `fill-gold`; the process circles
+  and the line joining them are gold fills carrying black numbers. All are
+  fills, within the gold rule.
 
 ## Focus and motion
 
@@ -718,8 +844,9 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 - **On the two light tones**: a 2px solid `--color-gold-ink` outline with a 2px
   gap, identical on white and tint. This is the base rule in `global.css`.
 - **On every surface that is not a light tone** (today the home hero's photo,
-  the home intro band's black, the contact form band, the footer's black,
-  `CtaBand`'s gold band, and the `Accordion`'s gold bars): a two colour ring, a 2px `--color-black` band
+  the home intro band's black, the contact form band, the dark `PatternBand`,
+  the footer's black, `CtaBand`'s gold band, and the `Accordion`'s gold
+  bars): a two colour ring, a 2px `--color-black` band
   directly around the control and a 2px `--color-white` band outside it. It
   comes from the `focus-contrast` utility in `global.css`, placed on the band's
   `<section>`, so everything focusable inside inherits it and no control sets
@@ -735,9 +862,10 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 Motion is enhancement only. The built HTML draws every band complete and every
 gold rule full width, and no CSS rule hides anything waiting for a script.
 Three plain scripts move things on the home page, and each stops entirely for
-reduced motion. Two of them move two things each: the hero's script moves the
-photos and the panel over them, and the reveal script moves the bands and the
-gold rules under the section headings.
+reduced motion. Two of them move two things each: the carousel script moves the
+hero's photos and the panel over them, and the reveal script moves the bands
+and the gold rules under the section headings. The service pages use the same
+carousel and reveal scripts and add none (spec 0013).
 
 - **The scroll reveal**, the first half of `src/scripts/reveal.ts` (spec 0005).
   Below the hero and the intro band, these fade and rise once as they scroll
@@ -779,12 +907,17 @@ gold rules under the section headings.
   the `heading-rule` utility and the motion hook is `data-heading-rule`,
   written in markup and never in content: a page that takes the class without
   importing the script gets a still, full width rule.
-- **The hero carousel** (`src/scripts/hero-carousel.ts`). With two or more
-  photos it crossfades every 6s with a 1s fade, wrapping to the first. It holds
-  while the pointer is over the band or focus is inside it; a dot or arrow shows
-  a photo at once and gives it a full 6s. With reduced motion it never
-  autoplays, and the controls still work. There is no pause button, a known
-  WCAG 2.2.2 gap spec 0005 records.
+- **The carousel** (`src/scripts/carousel.ts`, the hero's script generalised
+  by spec 0013), on the home hero and each service intro. It finds its root
+  by `data-carousel` and inside it `data-carousel-slide`, the `CarouselDots`
+  hooks, and two only the hero has, `data-carousel-arrow` and
+  `data-carousel-panel`. With two or more photos it crossfades every 6s with
+  a 1s fade, wrapping to the first. It holds while the pointer is over the
+  root or focus is inside it; a dot or arrow shows a photo at once and gives
+  it a full 6s. With reduced motion it never autoplays, and the controls
+  still work. There is no pause button, a known WCAG 2.2.2 gap spec 0005
+  records and spec 0013 carries to the service intros; a pause control is a
+  follow up.
 - **The hero scrim panel's entrance** (the same script). On every photo change,
   whether the clock, a dot, or an arrow asked for it, the panel holding the
   heading and its subheading fades from 0 and rises into place from 24px below
@@ -794,7 +927,7 @@ gold rules under the section headings.
   a control that slides away from the pointer is worse than a still one. It
   plays only on a change, never on the first paint: the hero is the largest
   contentful paint and nothing there may blink. The script finds the panel by
-  `data-hero-panel`, and animates it with the browser's own Web Animations
+  `data-carousel-panel`, and animates it with the browser's own Web Animations
   rather than a class or `motion`, so the hero's script stays dependency free
   and each new entrance supersedes the one running. The animation does not
   fill, so the panel holds no inline style once it settles. With reduced motion
@@ -811,12 +944,19 @@ gold rules under the section headings.
   motion it does not run, so everything is simply there. It moves by
   `translate`, so nothing around it shifts. **Never** combine it with
   `data-reveal` on one element; the About band takes no scroll reveal for that
-  reason. The one exception is the capability band below it (spec 0012):
-  its two columns take the entrance at the steps after the last
-  number (`entranceFrom`, `2 + stats.length`) and stay in the scroll reveal's
-  stagger, because the band is on screen at load on a desktop, where the
-  scroll reveal never moves anything, and below the fold on a phone. Whichever
-  applies moves it; the other stays out of sight.
+  reason. The rule has two written exceptions, both for a band that is on
+  screen at load on a desktop, where the scroll reveal never moves anything,
+  and below the fold on a phone. Whichever applies moves it; the other stays
+  out of sight.
+  - The About capability band (spec 0012): its two columns take the entrance
+    at the steps after the last number (`entranceFrom`, `2 + stats.length`)
+    and stay in the scroll reveal's stagger.
+  - The block right after a service intro (spec 0013, the same rule
+    generalised): each of its reveal units, a `data-reveal` element or a
+    direct child of a `data-reveal-stagger`, takes the entrance at the steps
+    after the intro's last (`entranceFrom`, from `planServicePage`, the
+    helpers in `src/components/service/entrance.ts`). A presence block in
+    that place takes none.
 - **The accordion slide**, in the `accordion-item` utility (spec 0010). Where
   the browser supports `::details-content` and `interpolate-size` (Chrome and
   Edge today), a panel's height slides between nothing and its content over
@@ -832,6 +972,14 @@ gold rules under the section headings.
   load entrance when they start on screen, above), its certification band's heading block,
   paragraphs, and then each badge in turn, and both bands' heading rules draw
   with the scroll direction.
+- The service pages import `reveal.ts` too (spec 0013): the intro's heading,
+  then each paragraph, then the carousel move on load through the `entrance`
+  utility (steps 0, 1 to n, then n + 1) and take no `data-reveal`. In each
+  lower band the heading block reveals, then its cards, tiles, items, or
+  steps one after another, then the process band's closing, and every ruled
+  heading's rule draws with the scroll direction. A process step brings its
+  stretch of the gold line with it as it fades in. The block after the
+  intro also takes the entrance, above.
 - **Don't** give the hero or the intro band the fade-and-rise: the hero is the
   largest contentful paint, and the intro band already moves with the counter.
   What is banned there is revealing the band, not all motion on it. The intro
@@ -858,10 +1006,12 @@ gold rules under the section headings.
   slot, from a content entry.
 - Exactly four scripts ship, and all of them only enhance markup that already
   works: `Header` imports `src/scripts/nav.ts` (spec 0004); `StatsBand` and the
-  home page's `IntroBand` import `src/scripts/counters.ts`, `Hero` imports
-  `src/scripts/hero-carousel.ts`, and the home and About pages import
-  `src/scripts/reveal.ts` (all spec 0005; About by spec 0010, which adds no
-  script: its entrance and accordion are CSS and HTML). `reveal.ts` holds two separate
+  home page's `IntroBand` import `src/scripts/counters.ts`, `Hero` and the
+  service pages' `IntroCarousel` import `src/scripts/carousel.ts` (the hero's
+  script, renamed and shared by spec 0013), and the home, About, Contact, and
+  service pages import `src/scripts/reveal.ts` (all spec 0005; About by spec
+  0010, which adds no script: its entrance and accordion are CSS and HTML;
+  the service pages by spec 0013, which adds none either). `reveal.ts` holds two separate
   halves, the fade-and-rise reveal and the heading rule, in one file so the
   count stays four. Remove any script and the site stays usable. Any fifth one
   needs a reason this good.
