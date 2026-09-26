@@ -39,6 +39,12 @@ services:
     src: ../../../assets/images/services/service-illustration.png
     decorative: true
   cardCue: Learn more
+  # The services that get a card, in this order: one to three service ids.
+  # A new service reaches the home page only once it is listed here.
+  featured:
+    - en/revit-modeling
+    - en/scan-to-bim
+    - en/bim-coordination
 presence:
   heading: Delivering BIM excellence across the globe
   paragraphs:

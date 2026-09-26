@@ -45,14 +45,32 @@ interface Props {
   /** Shared by every card; `alt` is `''` for the shipped decorative one. */
   illustration: { src: ImageMetadata; alt: string };
   cue: string;
+  /**
+   * Extra classes on the card's root, for the grid it sits in: the home row
+   * places one or two cards by column (spec 0013). Nothing else changes.
+   */
+  class?: string;
 }
 
-const { title, summary, subServices, href, illustration, cue } = Astro.props;
+const {
+  title,
+  summary,
+  subServices,
+  href,
+  illustration,
+  cue,
+  class: className,
+} = Astro.props;
 
 const lastIndex = subServices.length - 1;
 ---
 
-<article class="group relative isolate flex h-full flex-col items-center overflow-hidden rounded-ui bg-white px-6 pt-8 pb-6 text-center shadow-lg transition-[translate,box-shadow] duration-200 before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:origin-bottom before:scale-y-0 before:bg-linear-to-b before:from-tint before:to-gold/70 before:transition-[scale] before:duration-200 before:ease-out hover:shadow-xl hover:before:scale-y-100 motion-safe:hover:-translate-y-1 motion-reduce:transition-none motion-reduce:before:transition-none link-focus:shadow-xl link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-gold-ink link-focus:before:scale-y-100 motion-safe:link-focus:-translate-y-1">
+<article
+  class:list={[
+    'group relative isolate flex h-full flex-col items-center overflow-hidden rounded-ui bg-white px-6 pt-8 pb-6 text-center shadow-lg transition-[translate,box-shadow] duration-200 before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:origin-bottom before:scale-y-0 before:bg-linear-to-b before:from-tint before:to-gold/70 before:transition-[scale] before:duration-200 before:ease-out hover:shadow-xl hover:before:scale-y-100 motion-safe:hover:-translate-y-1 motion-reduce:transition-none motion-reduce:before:transition-none link-focus:shadow-xl link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-gold-ink link-focus:before:scale-y-100 motion-safe:link-focus:-translate-y-1',
+    className,
+  ]}
+>
   {/**
    * The side borders are an overlay rather than the card's own border, so
    * they appear without moving a single pixel of the content.

@@ -23,19 +23,13 @@ import IntroBand from '../components/home/IntroBand.astro';
 import PresenceBand from '../components/ui/PresenceBand.astro';
 import ProjectShowcase from '../components/home/ProjectShowcase.astro';
 import { resolveLocale } from '../i18n/locales';
-import {
-  getHomePage,
-  getProjects,
-  getServices,
-  getStats,
-} from '../lib/content';
+import { getHomePage, getProjects, getStats } from '../lib/content';
 
 const lang = resolveLocale(Astro.currentLocale);
 
-const [home, stats, services, projects] = await Promise.all([
+const [home, stats, projects] = await Promise.all([
   getHomePage(lang),
   getStats(lang),
-  getServices(lang),
   getProjects(lang),
 ]);
 
@@ -45,6 +39,41 @@ const [home, stats, services, projects] = await Promise.all([
  */
 const FEATURED_PROJECTS_COUNT = 3;
 const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
+
+/**
+ * The services row's grid for one, two, or three cards (spec 0013). Three
+ * fill today's row. With fewer, each card keeps the width it has in a row of
+ * three and the set sits centred, never leaving an empty cell on one side: a
+ * card spanning two of six columns is exactly as wide as one of three with
+ * the same gap, and the first card's start column centres the set. At `md`
+ * one card spans two of four columns, its width in the two column row.
+ */
+const SERVICE_ROWS = {
+  1: {
+    grid: 'grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-6 lg:gap-16',
+    first: 'md:col-span-2 md:col-start-2 lg:col-span-2 lg:col-start-3',
+    rest: undefined,
+  },
+  2: {
+    grid: 'grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-6 lg:gap-16',
+    first: 'lg:col-span-2 lg:col-start-2',
+    rest: 'lg:col-span-2',
+  },
+  3: {
+    grid: 'grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-16',
+    first: undefined,
+    rest: undefined,
+  },
+} as const;
+
+const featuredServices = home.services.featured;
+/** The schema allows one to three, so anything else is three. */
+const serviceRow =
+  featuredServices.length === 1
+    ? SERVICE_ROWS[1]
+    : featuredServices.length === 2
+      ? SERVICE_ROWS[2]
+      : SERVICE_ROWS[3];
 ---
 
 <PageLayout title={home.seo.title} description={home.seo.description}>
@@ -79,10 +108,10 @@ const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
   />
 
   {/**
-   * 3. Services. Exactly three, guaranteed by the cross entry check in
-   * `content.ts`: a fourth entry stops the build rather than quietly
-   * reflowing this row. The path is `/${slug}`, the same one `[service].astro`
-   * builds its route from.
+   * 3. Services. The ones `home.services.featured` lists, one to three, in
+   * that order (spec 0013), so a new service reaches this row only when it is
+   * listed, and the row never reflows into something nobody chose. The path
+   * is `/${slug}`, the same one `[service].astro` builds its route from.
    */}
   <Section tone="tint" labelledBy="services-heading">
     {/**
@@ -103,16 +132,14 @@ const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
       <p class="mt-8 text-lead">{home.services.intro}</p>
     </div>
 
-    <div
-      class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-16"
-      data-reveal-stagger
-    >
+    <div class:list={['mt-12', serviceRow.grid]} data-reveal-stagger>
       {/**
        * Each card stays a direct child of the stagger grid, so the reveal
        * moves the cards one by one rather than a wrapper as one block.
        */}
-      {services.map((service) => (
+      {featuredServices.map((service, index) => (
         <ServiceCard
+          class={index === 0 ? serviceRow.first : serviceRow.rest}
           title={service.title}
           summary={service.summary}
           subServices={service.subServices}

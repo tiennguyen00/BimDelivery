@@ -323,6 +323,13 @@ const home = defineCollection({
         intro: text,
         illustration: imageSchema(image),
         cardCue: text,
+        /**
+         * The services that get a card, in this order (spec 0013), by id,
+         * such as `en/revit-modeling`. One to three, so a new service reaches
+         * the home page only when it is listed here. `getHomePage` checks
+         * every id itself; Astro would only log a missing one.
+         */
+        featured: z.array(reference('services')).min(1).max(3),
       }),
       // The presence band (spec 0005), which absorbed the old differentiators
       // section. Strict, so a leftover `text` or `image` key fails by name.

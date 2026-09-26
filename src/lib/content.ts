@@ -122,37 +122,15 @@ const checkUnique = <T extends { id: string; filePath?: string }>(
 };
 
 /**
- * The home page's services row is a contract of exactly three (spec 0005).
- *
- * This is a deliberate speed bump, not a limit on the business. The scope
- * elsewhere calls adding a service easy, and it nearly is: a data entry and a
- * route. What it is not is a silent change to the home page, where three cards
- * fill a row and a fourth reflows it into something nobody chose. So a fourth
- * entry stops the build and asks the question: a two by two grid, or a curated
- * three with the rest on the service pages?
- *
- * When that call is made, this rule goes and the home page's grid changes with
- * it. Until then, failing here is cheaper than finding out in production.
+ * Nothing counts the services (spec 0013). The home page shows the ones
+ * `home.services.featured` lists (`resolveFeaturedServices`), and the nav,
+ * the contact choices, and the routes show every one, so adding or removing a
+ * service is a content edit.
  */
-const HOME_SERVICES_COUNT = 3;
-
-const checkServiceCount = (
-  lang: Locale,
-  entries: readonly Entry<'services'>[],
-): void => {
-  if (entries.length === HOME_SERVICES_COUNT) return;
-  throw new Error(
-    `[content] services (${lang}): found ${entries.length} entries, but the home page's ` +
-      `services row needs exactly ${HOME_SERVICES_COUNT}. Either add or remove an entry in ` +
-      `src/content/services/${lang}/, or decide what the home page shows with four or more ` +
-      'services and relax this rule in src/lib/content.ts (spec 0005).',
-  );
-};
 const checkServices = (
   lang: Locale,
   entries: readonly Entry<'services'>[],
 ): void => {
-  checkServiceCount(lang, entries);
   checkUnique('services', lang, 'slug', entries, (entry) => entry.data.slug);
   checkUnique('services', lang, 'order', entries, (entry) => entry.data.order);
   const reserved = entries.find((entry) =>
@@ -227,6 +205,40 @@ const resolveProjectService = (
   };
 };
 
+/**
+ * The home page's services, in `featured` order (spec 0013). Checked here
+ * rather than trusted to `reference()`, which only logs a missing id: each id
+ * must name a service, in the home page's own language, once.
+ */
+const resolveFeaturedServices = (
+  file: string,
+  lang: Locale,
+  featured: readonly Readonly<{ id: string }>[],
+  services: readonly Entry<'services'>[],
+): readonly Service[] =>
+  featured.map(({ id }, index) => {
+    if (featured.slice(0, index).some((earlier) => earlier.id === id)) {
+      throw new Error(
+        `[content] home: ${file} lists the service "${id}" twice in services.featured. ` +
+          'List each service once.',
+      );
+    }
+    const target = services.find((service) => service.id === id);
+    if (!target) {
+      throw new Error(
+        `[content] home: ${file} lists the service "${id}" in services.featured, which does not exist. ` +
+          `Use an id such as "${lang}/revit-modeling", or remove the line.`,
+      );
+    }
+    if (target.data.lang !== lang) {
+      throw new Error(
+        `[content] home: ${file} (lang "${lang}") lists ${fileOf(target)} (lang "${target.data.lang}") ` +
+          'in services.featured. The home page and its services must share a language.',
+      );
+    }
+    return { ...target.data, id: target.id };
+  });
+
 // Astro wrappers
 
 /** Reads a whole collection and checks every entry's language folder, in every language. */
@@ -260,8 +272,20 @@ export const getSettings = async (lang: Locale) =>
 export const getStats = async (lang: Locale): Promise<readonly StatItem[]> =>
   (await loadSingle('stats', lang, 'stats')).data.items;
 
-export const getHomePage = async (lang: Locale) =>
-  (await loadSingle('home', lang, 'home')).data;
+/** The home page, with `services.featured` resolved to its services, in order. */
+export const getHomePage = async (lang: Locale) => {
+  const [entry, services] = await Promise.all([
+    loadSingle('home', lang, 'home'),
+    loadChecked('services'),
+  ]);
+  const featured = resolveFeaturedServices(
+    fileOf(entry),
+    lang,
+    entry.data.services.featured,
+    services,
+  );
+  return { ...entry.data, services: { ...entry.data.services, featured } };
+};
 
 export const getAboutPage = async (lang: Locale) =>
   (await loadSingle('about', lang, 'about')).data;

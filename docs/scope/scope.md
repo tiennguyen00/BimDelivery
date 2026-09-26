@@ -139,7 +139,7 @@ spec [0013](../specs/0013-service-pages/index.md) · code in [src/pages/[service
 - [ ] Build it: `/develop service pages`
   - [x] The whole pages, still: the new glyphs and `strokeWidth`, the `panel` token and `bg-dots-dark`, `PatternBand`, the strict YAML services entries with ordered blocks each naming its layout, the presence override, the generalised carousel and `CarouselDots`, `PresenceBand` moved to `ui`, the six band components, `planServicePage`, and the route's `bands` map, with the reorder, restyle, and presence drills (AC-1 to AC-14, AC-16 to AC-18, AC-21, AC-22)
   - [x] The pages move: the intro's load entrance, the scroll reveal and rule hooks on the lower bands, the entrance on the block after the intro, checked with JavaScript off and reduced motion (AC-7, AC-15)
-  - [ ] Services come and go: `home.services.featured` checked in `getHomePage`, spec 0005's exactly three check removed, the home row for one to three cards, the change recipes in `src/content/README.md`, and the add and remove a service drills (AC-23 to AC-25)
+  - [x] Services come and go: `home.services.featured` checked in `getHomePage`, spec 0005's exactly three check removed, the home row for one to three cards, the change recipes in `src/content/README.md`, and the add and remove a service drills (AC-23 to AC-25)
   - [ ] Written down and gated: `design.md`, the `entrance` comment in `global.css`, `/styleguide` tiles, the gold class search, and the check, lint, and build gates (AC-1, AC-19, AC-20)
 - [ ] Verify it: `/check verify service pages`
 

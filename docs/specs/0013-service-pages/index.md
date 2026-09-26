@@ -298,9 +298,9 @@ Skateboard: first all three pages stand up whole with no motion, then the motion
 
 **Milestone 3: services come and go**
 
-11. [ ] Add `home.services.featured` to the schema and `home.yaml` (the three services in today's order); have `getHomePage` resolve and check it; remove `checkServiceCount` and `HOME_SERVICES_COUNT`; add `ServiceCard`'s `class` prop; point the home row at `featured` with the *Home row classes* map and rewrite its comment, satisfies **AC-23**.
-12. [ ] Rewrite the services lines of `src/content/README.md` into the change recipes, satisfies **AC-25**.
-13. [ ] Preview the home row with one and two services listed, and run the add a service and remove a service drills, satisfies **AC-23**, **AC-24**.
+11. [x] Add `home.services.featured` to the schema and `home.yaml` (the three services in today's order); have `getHomePage` resolve and check it; remove `checkServiceCount` and `HOME_SERVICES_COUNT`; add `ServiceCard`'s `class` prop; point the home row at `featured` with the *Home row classes* map and rewrite its comment, satisfies **AC-23**.
+12. [x] Rewrite the services lines of `src/content/README.md` into the change recipes, satisfies **AC-25**.
+13. [x] Preview the home row with one and two services listed, and run the add a service and remove a service drills, satisfies **AC-23**, **AC-24**.
 
 **Milestone 4: written down and gated**
 
