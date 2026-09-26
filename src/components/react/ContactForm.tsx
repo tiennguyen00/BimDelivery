@@ -322,7 +322,10 @@ export const ContactForm = ({
           )}
         </div>
 
-        <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-end">
+        {/* Wraps, so where the lg form column is narrower than the widget and
+            the button side by side, the button drops under the widget instead
+            of pushing the widget out of the column (spec 0011, AC-17). */}
+        <div className="mt-6 flex flex-col gap-4 md:flex-row md:flex-wrap md:items-start md:justify-end">
           <div className="flex flex-col gap-2">
             <div ref={turnstile.containerRef} className="min-h-16.25 w-75" />
             <div
