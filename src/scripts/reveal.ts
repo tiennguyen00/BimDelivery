@@ -193,6 +193,25 @@ const isLow = ({ top }: DOMRectReadOnly): boolean =>
   top >= window.innerHeight / 2;
 
 /**
+ * How far above the bottom of the viewport the way back starts. The rule is
+ * the foot of the heading, so a heading leaving through the viewport's own
+ * bottom edge takes its rule out of sight first; a quarter of the way up
+ * leaves the line on screen for the whole of its run back.
+ */
+const UNDRAW_MARGIN = '0px 0px -25% 0px';
+
+/**
+ * The heading left its watch through the bottom, which is the visitor
+ * scrolling up. Read against the watch's own shrunk bounds, not the middle of
+ * the viewport, so a heading that wraps to several lines still counts.
+ */
+const sankBelow = ({
+  boundingClientRect,
+  rootBounds,
+}: IntersectionObserverEntry): boolean =>
+  boundingClientRect.bottom > (rootBounds?.bottom ?? window.innerHeight);
+
+/**
  * Takes the rule back to nothing with no transition at all, so the
  * retraction is never seen. Both properties are written in the same call:
  * CSS reads the transition from the style a change lands in, so the pair
@@ -283,14 +302,14 @@ const keepWatching = (): void => undefined;
  * The first draws, at the same threshold a block reveals at, so the two
  * moving things on a band arrive together.
  *
- * The second is the way back. It sees the heading whole, so its leave
- * handler fires the moment any of the heading, rule first, sinks below the
- * viewport: the visitor is scrolling up, and the rule runs back while it is
- * still in sight. Coming whole into view again draws it, which is what
- * a visitor who scrolls up a little and then down again sees. Leaving
- * through the top of the viewport does nothing, so a heading the visitor
- * has scrolled past keeps its full rule and is already drawn when they
- * scroll back up to it.
+ * The second is the way back. It sees the heading whole against a viewport
+ * cut short by `UNDRAW_MARGIN`, so its leave handler fires the moment the
+ * rule sinks below that line: the visitor is scrolling up, and the rule runs
+ * back while it is still in sight. Coming whole into view again draws it,
+ * which is what a visitor who scrolls up a little and then down again sees.
+ * Leaving through the top of the viewport does nothing, so a heading the
+ * visitor has scrolled past keeps its full rule and is already drawn when
+ * they scroll back up to it.
  *
  * The third exists for its leave handler alone, which fires only when no
  * part of the heading is on screen, the one moment an instant change cannot
@@ -313,10 +332,10 @@ const watch = (heading: HTMLElement): void => {
     () => {
       void draw(heading);
       return (entry) => {
-        if (isLow(entry.boundingClientRect)) undraw(heading);
+        if (sankBelow(entry)) undraw(heading);
       };
     },
-    { amount: 'all' },
+    { amount: 'all', margin: UNDRAW_MARGIN },
   );
 
   inView(
