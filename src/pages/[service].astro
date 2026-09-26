@@ -109,3 +109,14 @@ const plan = planServicePage(service.sections, home.presence);
     );
   })}
 </PageLayout>
+
+{/**
+ * The scroll reveal and the heading rule (spec 0005), the page's choice as on
+ * the other pages. The intro takes no `data-reveal`: it moves on load
+ * through the CSS `entrance` instead. The block right after it takes both,
+ * spec 0012's rule generalised (`entranceFrom`): on screen at load the
+ * entrance moves it, below the fold the scroll reveal.
+ */}
+<script>
+  import '../scripts/reveal';
+</script>

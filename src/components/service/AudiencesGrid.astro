@@ -11,29 +11,51 @@
  * rows of three. Each is centred: its solid icon at 64px filled with
  * `--color-gold` (`fill-gold`, a fill and so within the gold rule), the title
  * as an `h3`, and its text with its marks.
+ *
+ * Motion: the heading and the intro reveal as one, then the items one after
+ * another, and the heading draws its rule with the scroll direction.
+ * `entranceFrom` also gives each of those units the load entrance
+ * (`entrance.ts`).
  */
 import Emphasis from '../ui/Emphasis.astro';
 import Icon from '../ui/Icon.astro';
+import { cx } from '../ui/styles';
+import { entranceClass, entranceStyle } from './entrance';
 import type { BandProps } from '../../lib/service-page';
 
 type Props = BandProps<'audiences/grid'>;
 
-const { block, headingId } = Astro.props;
+const { block, headingId, entranceFrom } = Astro.props;
 ---
 
-<div class="text-center">
-  <h2 id={headingId} class="heading-rule inline-block">
-    <Emphasis text={block.heading} surface="light" />
-  </h2>
+<div
+  class={entranceClass(entranceFrom)}
+  style={entranceStyle(entranceFrom, 0)}
+  data-reveal
+>
+  <div class="text-center">
+    <h2 id={headingId} class="heading-rule inline-block" data-heading-rule>
+      <Emphasis text={block.heading} surface="light" />
+    </h2>
+  </div>
+
+  <p class="mt-8">
+    <Emphasis text={block.intro} surface="light" />
+  </p>
 </div>
 
-<p class="mt-8">
-  <Emphasis text={block.intro} surface="light" />
-</p>
-
-<div class="mt-12 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-3">
-  {block.items.map((item) => (
-    <div class="flex flex-col items-center text-center">
+<div
+  class="mt-12 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-3"
+  data-reveal-stagger
+>
+  {block.items.map((item, index) => (
+    <div
+      class={cx(
+        'flex flex-col items-center text-center',
+        entranceClass(entranceFrom),
+      )}
+      style={entranceStyle(entranceFrom, index + 1)}
+    >
       <Icon name={item.icon} size={64} class="fill-gold" />
       <h3 class="mt-4">{item.title}</h3>
       <p class="mt-2">

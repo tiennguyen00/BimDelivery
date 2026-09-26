@@ -20,22 +20,34 @@
  *
  * Each number is the step's position plus one, written as text, so a screen
  * reader reads it with the step.
+ *
+ * Motion: the heading block reveals, then the steps one after another, then
+ * the closing, and the heading draws its rule with the scroll direction. A
+ * step fading in brings its stretch of line with it, so the line grows step
+ * by step. `entranceFrom` also gives each of those units the load entrance
+ * (`entrance.ts`).
  */
 import Button from '../ui/Button.astro';
 import Emphasis from '../ui/Emphasis.astro';
 import { bandBodyClass, bandHeadingClass, cx } from '../ui/styles';
+import { entranceClass, entranceStyle } from './entrance';
 import type { BandProps } from '../../lib/service-page';
 
 type Props = BandProps<'process/timeline'>;
 
-const { block, headingId } = Astro.props;
+const { block, headingId, entranceFrom } = Astro.props;
 const { surface, cta } = block;
 ---
 
-<div class="mx-auto max-w-narrow text-center">
+<div
+  class={cx('mx-auto max-w-narrow text-center', entranceClass(entranceFrom))}
+  style={entranceStyle(entranceFrom, 0)}
+  data-reveal
+>
   <h2
     id={headingId}
     class={cx('heading-rule inline-block', bandHeadingClass[surface])}
+    data-heading-rule
   >
     <Emphasis text={block.heading} surface={surface} />
   </h2>
@@ -46,9 +58,18 @@ const { surface, cta } = block;
   )}
 </div>
 
-<ol class="mt-12 grid grid-cols-1 lg:auto-cols-fr lg:grid-flow-col">
+<ol
+  class="mt-12 grid grid-cols-1 lg:auto-cols-fr lg:grid-flow-col"
+  data-reveal-stagger
+>
   {block.steps.map((step, index) => (
-    <li class="relative flex gap-6 pb-10 after:absolute after:inset-s-7 after:top-7 after:h-full after:w-1 after:-translate-x-1/2 after:bg-gold last:pb-0 last:after:hidden lg:flex-col lg:items-center lg:gap-6 lg:px-4 lg:pb-0 lg:text-center lg:after:inset-s-1/2 lg:after:h-1 lg:after:w-full lg:after:translate-x-0 lg:after:-translate-y-1/2">
+    <li
+      class={cx(
+        'relative flex gap-6 pb-10 after:absolute after:inset-s-7 after:top-7 after:h-full after:w-1 after:-translate-x-1/2 after:bg-gold last:pb-0 last:after:hidden lg:flex-col lg:items-center lg:gap-6 lg:px-4 lg:pb-0 lg:text-center lg:after:inset-s-1/2 lg:after:h-1 lg:after:w-full lg:after:translate-x-0 lg:after:-translate-y-1/2',
+        entranceClass(entranceFrom),
+      )}
+      style={entranceStyle(entranceFrom, index + 1)}
+    >
       <span class="relative z-10 grid size-14 shrink-0 place-items-center rounded-full bg-gold text-h3 font-bold text-black">
         {index + 1}
       </span>
@@ -60,7 +81,14 @@ const { surface, cta } = block;
   ))}
 </ol>
 
-<div class="mx-auto mt-16 max-w-narrow text-center">
+<div
+  class={cx(
+    'mx-auto mt-16 max-w-narrow text-center',
+    entranceClass(entranceFrom),
+  )}
+  style={entranceStyle(entranceFrom, block.steps.length + 1)}
+  data-reveal
+>
   <h3 class={bandHeadingClass[surface]}>{cta.heading}</h3>
   <p class={cx('mt-4', bandBodyClass[surface])}>{cta.text}</p>
   <Button href={cta.button.href} class="mt-8">

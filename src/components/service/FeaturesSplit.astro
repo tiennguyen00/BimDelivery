@@ -12,6 +12,10 @@
  * tiles run two columns from `md` and one below. Below `lg` everything is
  * one column, the copy first. Each tile holds a 40px line icon with a 1.5
  * stroke, the title as an `h3`, and its text with its marks.
+ *
+ * Motion: the copy reveals as one, then the tiles one after another, and the
+ * heading draws its rule with the scroll direction. `entranceFrom` also gives
+ * each of those units the load entrance (`entrance.ts`).
  */
 import Emphasis from '../ui/Emphasis.astro';
 import Icon from '../ui/Icon.astro';
@@ -22,19 +26,25 @@ import {
   bandTileClass,
   cx,
 } from '../ui/styles';
+import { entranceClass, entranceStyle } from './entrance';
 import type { BandProps } from '../../lib/service-page';
 
 type Props = BandProps<'features/split'>;
 
-const { block, headingId } = Astro.props;
+const { block, headingId, entranceFrom } = Astro.props;
 const { surface } = block;
 ---
 
 <div class="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
-  <div class="lg:col-span-5">
+  <div
+    class={cx('lg:col-span-5', entranceClass(entranceFrom))}
+    style={entranceStyle(entranceFrom, 0)}
+    data-reveal
+  >
     <h2
       id={headingId}
       class={cx('heading-rule inline-block', bandHeadingClass[surface])}
+      data-heading-rule
     >
       <Emphasis text={block.heading} surface={surface} />
     </h2>
@@ -48,9 +58,19 @@ const { surface } = block;
     </div>
   </div>
 
-  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:col-span-7">
-    {block.items.map((item) => (
-      <div class={cx('flex flex-col p-6', bandTileClass[surface])}>
+  <div
+    class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:col-span-7"
+    data-reveal-stagger
+  >
+    {block.items.map((item, index) => (
+      <div
+        class={cx(
+          'flex flex-col p-6',
+          bandTileClass[surface],
+          entranceClass(entranceFrom),
+        )}
+        style={entranceStyle(entranceFrom, index + 1)}
+      >
         <Icon
           name={item.icon}
           size={40}

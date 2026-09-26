@@ -16,6 +16,11 @@
  * top to bottom and centred: the line icon at 80px with a thin 1.25 stroke,
  * the title as an `h4` in the `text-h3` style, then the points as a bulleted
  * list, left aligned.
+ *
+ * Motion: the heading block (the heading, the paragraphs, and the
+ * subheading) reveals as one, then the cards one after another, and both
+ * ruled headings draw their rule with the scroll direction. `entranceFrom`
+ * also gives each of those units the load entrance (`entrance.ts`).
  */
 import Emphasis from '../ui/Emphasis.astro';
 import Icon from '../ui/Icon.astro';
@@ -26,44 +31,60 @@ import {
   bandIconClass,
   cx,
 } from '../ui/styles';
+import { entranceClass, entranceStyle } from './entrance';
 import type { BandProps } from '../../lib/service-page';
 
 type Props = BandProps<'features/cards'>;
 
-const { block, headingId } = Astro.props;
+const { block, headingId, entranceFrom } = Astro.props;
 const { surface } = block;
 ---
 
-<div class="text-center">
-  <h2
-    id={headingId}
-    class={cx('heading-rule inline-block', bandHeadingClass[surface])}
-  >
-    <Emphasis text={block.heading} surface={surface} />
-  </h2>
+<div
+  class={entranceClass(entranceFrom)}
+  style={entranceStyle(entranceFrom, 0)}
+  data-reveal
+>
+  <div class="text-center">
+    <h2
+      id={headingId}
+      class={cx('heading-rule inline-block', bandHeadingClass[surface])}
+      data-heading-rule
+    >
+      <Emphasis text={block.heading} surface={surface} />
+    </h2>
+  </div>
+
+  <div class={cx('mt-8 flex flex-col gap-4', bandBodyClass[surface])}>
+    {block.paragraphs.map((paragraph) => (
+      <p>
+        <Emphasis text={paragraph} surface={surface} />
+      </p>
+    ))}
+  </div>
+
+  <div class="mt-16 text-center">
+    <h3
+      class={cx('heading-rule inline-block', bandHeadingClass[surface])}
+      data-heading-rule
+    >
+      <Emphasis text={block.subheading} surface={surface} />
+    </h3>
+  </div>
 </div>
 
-<div class={cx('mt-8 flex flex-col gap-4', bandBodyClass[surface])}>
-  {block.paragraphs.map((paragraph) => (
-    <p>
-      <Emphasis text={paragraph} surface={surface} />
-    </p>
-  ))}
-</div>
-
-<div class="mt-16 text-center">
-  <h3 class={cx('heading-rule inline-block', bandHeadingClass[surface])}>
-    <Emphasis text={block.subheading} surface={surface} />
-  </h3>
-</div>
-
-<div class="mt-12 grid grid-cols-1 gap-6 lg:auto-cols-fr lg:grid-flow-col lg:gap-8">
-  {block.cards.map((card) => (
+<div
+  class="mt-12 grid grid-cols-1 gap-6 lg:auto-cols-fr lg:grid-flow-col lg:gap-8"
+  data-reveal-stagger
+>
+  {block.cards.map((card, index) => (
     <div
       class={cx(
         'flex flex-col items-center px-6 py-10 text-center',
         bandCardClass[surface],
+        entranceClass(entranceFrom),
       )}
+      style={entranceStyle(entranceFrom, index + 1)}
     >
       <Icon
         name={card.icon}

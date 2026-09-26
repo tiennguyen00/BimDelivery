@@ -293,8 +293,8 @@ Skateboard: first all three pages stand up whole with no motion, then the motion
 
 **Milestone 2: the pages move**
 
-9. [ ] Add the `entrance` steps to `IntroCarousel`; the reveal and rule hooks to the lower bands; `entranceFrom` from the plan on the block after the intro; import `reveal.ts` in the route, satisfies **AC-15**.
-10. [ ] Check in the browser with JavaScript off and with reduced motion on, on a 1920x1080 and a 375x812 screen, satisfies **AC-7**, **AC-15**.
+9. [x] Add the `entrance` steps to `IntroCarousel`; the reveal and rule hooks to the lower bands; `entranceFrom` from the plan on the block after the intro; import `reveal.ts` in the route, satisfies **AC-15**.
+10. [x] Check in the browser with JavaScript off and with reduced motion on, on a 1920x1080 and a 375x812 screen, satisfies **AC-7**, **AC-15**.
 
 **Milestone 3: services come and go**
 
