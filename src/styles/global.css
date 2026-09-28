@@ -335,21 +335,24 @@
  * language, with no script at all. Callers set `--entrance-step` in a
  * `style` attribute, and each step waits 80ms, the scroll reveal's stagger.
  * Today the About band's heading, paragraph, and numbers, the Contact intro,
- * and each service page's intro (spec 0013).
+ * each service page's intro (spec 0013), and the Project page's intro and
+ * first row of tiles (spec 0014).
  *
  * It hides nothing outside the animation itself: with JavaScript off it still
  * plays, and with reduced motion asked for it does not run at all, so
  * everything is simply there. It moves by `translate`, never `transform`, so
  * nothing around it shifts and it composes with anything else that moves.
  *
- * Never put it on an element that also takes `data-reveal`, with two written
- * exceptions, both for a band that is on screen at load on a desktop and
- * below the fold on a phone:
+ * Never put it on an element that also takes `data-reveal`, with three
+ * written exceptions, all for a band that is on screen at load on a desktop
+ * and below the fold on a phone:
  *
  * - the About page's capability band (spec 0012), whose two columns take
  *   both;
  * - the block right after a service intro (spec 0013, the same rule
- *   generalised), whose every reveal unit takes both.
+ *   generalised), whose every reveal unit takes both;
+ * - the Project page's gallery (spec 0014), whose first three tiles take
+ *   both, and only those three.
  *
  * The scroll reveal leaves on screen units alone, and under a unit it hides,
  * this animation runs from opacity 0 to the scroll reveal's inline 0, unseen.

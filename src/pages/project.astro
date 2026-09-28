@@ -38,7 +38,11 @@ const [page, projects] = await Promise.all([
   </Section>
 
   {projects.length > 0 ? (
-    <ProjectGallery labelledBy="project-heading" projects={projects} />
+    <ProjectGallery
+      labelledBy="project-heading"
+      projects={projects}
+      entranceFrom={2}
+    />
   ) : (
     <Section tone="white" width="narrow" labelledBy="project-empty-heading">
       <div class="text-center">
@@ -57,3 +61,14 @@ const [page, projects] = await Promise.all([
     button={page.cta.button}
   />
 </PageLayout>
+
+{/**
+ * The scroll reveal and the heading rule (spec 0005), the page's choice as on
+ * the About and Contact pages. The intro moves on load through the CSS
+ * `entrance` (steps 0, 1) and the first row of tiles follows it (steps 2 to
+ * 4); every tile below the fold reveals through the list's stagger. The empty
+ * state and the gold band do not move.
+ */}
+<script>
+  import '../scripts/reveal';
+</script>

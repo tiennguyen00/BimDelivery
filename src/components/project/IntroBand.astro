@@ -7,6 +7,13 @@
  * `Section` labelled by the `h1`, as the About and Contact pages do with
  * their intro bands. The capitals are CSS only (`uppercase`), so a screen
  * reader reads words, not letters.
+ *
+ * On page load the heading and the paragraph fade and rise in through the
+ * `entrance` utility (steps 0, 1), pure CSS. The band never takes
+ * `data-reveal`, so the scroll reveal never touches what the entrance
+ * animates. The heading carries `data-heading-rule`, so its rule runs back
+ * and draws again with the scroll direction like every ruled heading, once
+ * the page imports `reveal.ts`.
  */
 import Emphasis from '../ui/Emphasis.astro';
 
@@ -21,10 +28,15 @@ interface Props {
 const { heading, headingId, intro } = Astro.props;
 ---
 
-<h1 id={headingId} class="heading-rule inline-block uppercase">
+<h1
+  id={headingId}
+  class="entrance heading-rule inline-block uppercase"
+  style="--entrance-step: 0"
+  data-heading-rule
+>
   {heading}
 </h1>
 
-<p class="mt-8 max-w-narrow text-lead">
+<p class="entrance mt-8 max-w-narrow text-lead" style="--entrance-step: 1">
   <Emphasis text={intro} surface="light" />
 </p>

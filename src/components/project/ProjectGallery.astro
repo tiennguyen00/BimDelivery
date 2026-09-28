@@ -22,9 +22,17 @@
  * The tiles are not links: there are no project detail pages yet. A tile
  * holds nothing focusable, and since it is not a link it must not look like
  * one, so nothing on it changes on hover.
+ *
+ * Motion: the list is a `data-reveal-stagger` container, so below the fold
+ * each tile fades and rises in after the one before as it scrolls into view.
+ * The first row also takes the load entrance, counting up from
+ * `entranceFrom`, the spec 0012/0013 rule for a band on screen at load on a
+ * desktop and below the fold on a phone. Only the first row, never every
+ * tile, so a long list never stacks up seconds of delay.
  */
 import { Image } from 'astro:assets';
 import type { Project } from '../../lib/content';
+import { entranceClass, entranceStyle } from '../ui/entrance';
 import { bandGutterClass, bandPaddingBottomClass, cx } from '../ui/styles';
 
 interface Props {
@@ -32,15 +40,21 @@ interface Props {
   labelledBy: string;
   /** One or more, in `order`. */
   projects: readonly Project[];
+  /** The first tile's `--entrance-step`; without it no tile moves on load. */
+  entranceFrom?: number;
 }
 
-const { labelledBy, projects } = Astro.props;
+const { labelledBy, projects, entranceFrom } = Astro.props;
 
 /**
  * The tiles a desktop shows at load, its first row. They are the page's
- * largest paint there, so their photos load eagerly; every later one is lazy.
+ * largest paint there, so their photos load eagerly and they take the load
+ * entrance; every later one is lazy and moves only by the scroll reveal.
  */
 const FIRST_ROW = 3;
+
+const entranceAt = (index: number): number | undefined =>
+  index < FIRST_ROW ? entranceFrom : undefined;
 
 /** One column, then two at `md`, then three at `lg`, matching the grid. */
 const imageSizes = '(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw';
@@ -50,9 +64,16 @@ const imageSizes = '(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw';
   <ul
     aria-labelledby={labelledBy}
     class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3"
+    data-reveal-stagger
   >
     {projects.map((project, index) => (
-      <li class="relative isolate flex aspect-5/4 flex-col justify-end overflow-hidden rounded-ui bg-black">
+      <li
+        class={cx(
+          'relative isolate flex aspect-5/4 flex-col justify-end overflow-hidden rounded-ui bg-black',
+          entranceClass(entranceAt(index)),
+        )}
+        style={entranceStyle(entranceAt(index), index)}
+      >
         <Image
           src={project.image.src}
           alt={project.image.alt ?? ''}

@@ -14,6 +14,9 @@
  *
  * Without `entranceFrom` both return nothing and the unit does not move on
  * load.
+ *
+ * It lives in `ui` because two pages share it (spec 0014): the service bands,
+ * and the Project page's gallery, whose first three tiles take it.
  */
 
 export const entranceClass = (
