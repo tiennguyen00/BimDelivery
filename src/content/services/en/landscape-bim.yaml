@@ -1,0 +1,104 @@
+# The client's service copy (BIM Delivery services.pdf) fills the intro, the
+# features band, and the audiences. The coordination tiles, reports, and
+# process keep the placeholder copy until the client sends more (spec 0013).
+lang: en
+slug: landscape-bim
+title: Landscape BIM
+summary: Coordinated 3D site and landscape models, from terrain to planting and hardscape.
+order: 3
+seo:
+  title: Landscape BIM Services | BIM Delivery
+  description: Landscape BIM modeling and documentation, with terrain, hardscape, planting, and outdoor structures coordinated with every discipline.
+subServices:
+  - 3D site and landscape models
+  - Terrain, levels, and paths
+  - Hardscape and planting areas
+  - Outdoor structures
+sections:
+  - type: intro
+    layout: carousel
+    heading: Landscape BIM services
+    paragraphs:
+      - BIM brings landscape design, site information, and building elements together within a **coordinated 3D environment**. It allows landscape designers and project teams to better understand how outdoor spaces interact with the surrounding architecture, terrain, infrastructure, and other disciplines.
+      - For landscape projects, BIM can be used to develop **3D site and landscape models, terrain, hardscape, planting areas, outdoor structures, levels, paths**, and other landscape elements. These models provide a clear representation of the proposed design while allowing project information to be organized and updated throughout the design process.
+      - At BIM Delivery, we support landscape designers and multidisciplinary design teams with Landscape BIM modeling and documentation services. We can work from CAD drawings and design information to develop **detailed and coordinated landscape BIM models** and documentation, helping our clients manage complex projects and deliver their designs more efficiently.
+    images:
+      - src: https://images.pexels.com/photos/3818947/pexels-photo-3818947.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: Steel beams and columns of a building frame under construction
+      - src: https://images.pexels.com/photos/1216589/pexels-photo-1216589.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: Two engineers in hard hats reading a drawing on site, under ducts and pipes running across the ceiling
+      - src: https://images.pexels.com/photos/3862135/pexels-photo-3862135.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: Two engineers leaning over a large printed drawing spread out on a table
+  - type: features
+    layout: split
+    surface: dark
+    heading: Coordination that ==prevents rework==
+    paragraphs:
+      - One of the key advantages of BIM for landscape design is **improved coordination** between the landscape and other project disciplines. Landscape elements can be reviewed alongside architectural and structural models, helping teams ==identify potential conflicts and resolve design issues== before construction.
+      - You get ==clear reports and tracked issues==, not just a long list of clashes, so every meeting ends with decisions and owners.
+    items:
+      - icon: layers
+        title: Site and landscape models
+        text: Terrain, hardscape, planting areas, and outdoor structures in **one coordinated model**.
+      - icon: ruler
+        title: Terrain, levels, and paths
+        text: Levels, slopes, and paths modeled so the site meets the buildings where it should.
+      - icon: blueprint
+        title: Landscape documentation
+        text: Plans, sections, and details drawn from the model and set up to your standards.
+      - icon: clash
+        title: Clash detection
+        text: Hard and soft clash runs, grouped and ranked so the **real problems** surface first.
+      - icon: clipboard-check
+        title: Issue reports
+        text: Clear reports with views, owners, and due dates, shared in the format your team uses.
+      - icon: building-check
+        title: Construction ready model
+        text: A final model signed off by every discipline before work starts on site.
+  - type: audiences
+    layout: grid
+    heading: Who we ==work with==
+    intro: Landscape designers and multidisciplinary design teams whose outdoor spaces meet the architecture, terrain, and infrastructure around them.
+    items:
+      - icon: compass
+        title: Landscape designers
+        text: Your design developed into a detailed, coordinated model, so your team can stay focused on **design**.
+      - icon: users
+        title: Multidisciplinary teams
+        text: Landscape reviewed alongside the architecture and structure, with conflicts resolved before construction.
+      - icon: user
+        title: Architects
+        text: Outdoor spaces that fit the building, its levels, and its entrances.
+      - icon: hard-hat
+        title: General contractors
+        text: One coordinated site model and a clear issue log across every trade on your project.
+      - icon: building
+        title: Developers
+        text: Fewer change orders and delays, and a budget that holds through construction.
+      - icon: presenter
+        title: Project managers
+        text: Coordination progress you can report on, meeting by meeting.
+  - type: process
+    layout: timeline
+    surface: dark
+    heading: How a Landscape BIM project ==runs==
+    intro: A steady cycle that repeats until every clash is closed and every discipline has signed off.
+    steps:
+      - title: Collect
+        text: We gather your CAD drawings, design information, and the latest model from every discipline.
+      - title: Model
+        text: We build the landscape model, aligned to the shared levels and grids of the project.
+      - title: Detect
+        text: Clash runs find the conflicts, grouped and ranked by what matters most.
+      - title: Resolve
+        text: Each issue goes to its owner and is tracked until the fix is in the model.
+      - title: Sign off
+        text: Every discipline approves the coordinated model before it goes to site.
+    cta:
+      heading: Start a Landscape BIM project
+      text: Tell us about your site and its design, and we will reply with a plan and a quote.
+      button:
+        label: Contact us
+        href: /contact-us
+  - type: presence
+    layout: map

@@ -189,7 +189,7 @@ const resolveProjectService = (
   if (!target) {
     throw new Error(
       `[content] projects: ${fileOf(project)} points to service "${project.data.service.id}", ` +
-        'which does not exist. Use a service id such as "en/revit-modeling".',
+        'which does not exist. Use a service id such as "en/architectural-bim".',
     );
   }
   if (target.data.lang !== project.data.lang) {
@@ -227,7 +227,7 @@ const resolveFeaturedServices = (
     if (!target) {
       throw new Error(
         `[content] home: ${file} lists the service "${id}" in services.featured, which does not exist. ` +
-          `Use an id such as "${lang}/revit-modeling", or remove the line.`,
+          `Use an id such as "${lang}/architectural-bim", or remove the line.`,
       );
     }
     if (target.data.lang !== lang) {

@@ -1,0 +1,98 @@
+# The client's service copy (BIM Delivery services.pdf) fills the intro, the
+# features band, and the audiences. The process keeps the placeholder shape
+# until the client sends more (spec 0013).
+#
+# Sections 2 and 4 sit on `surface: light`, the white band under the
+# diagonal stripe, so a `==` mark may only appear in their `heading` (the
+# build checks it).
+lang: en
+slug: interior-bim
+title: Interior BIM
+summary: Detailed 3D interior models, layouts, and documentation from your design concepts.
+order: 2
+seo:
+  title: Interior BIM Services | BIM Delivery
+  description: Interior BIM modeling and documentation, from design concepts to detailed 3D interior models, layouts, finishes, and construction documentation.
+subServices:
+  - 3D interior models
+  - Furniture and equipment layouts
+  - Reflected ceiling plans
+  - Joinery, finishes, and material specifications
+sections:
+  - type: intro
+    layout: carousel
+    heading: Interior BIM services
+    paragraphs:
+      - Building Information Modeling (BIM) provides a smarter and more coordinated approach to interior design and documentation. By creating a **detailed 3D digital model** of an interior space, BIM allows designers, architects, engineers, and contractors to work with consistent and coordinated project information throughout the design and construction process.
+      - For interior design projects, BIM can support the development of **3D interior models, detailed drawings, furniture and equipment layouts, material specifications, reflected ceiling plans, joinery, finishes, and construction documentation**. Design elements can be modeled with relevant information, making it easier to coordinate and manage changes throughout the project.
+      - At BIM Delivery, we support interior design teams by providing BIM modeling and documentation services from design concepts to detailed BIM models and construction documentation, helping our clients **improve coordination, efficiency, and project delivery**.
+    images:
+      - src: https://images.pexels.com/photos/5802822/pexels-photo-5802822.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A surveyor setting up a measuring instrument on a tripod at a construction site
+      - src: https://images.pexels.com/photos/236709/pexels-photo-236709.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: The long, empty hall of an old industrial building, with steel columns and cranes under a glass roof
+  - type: features
+    layout: split
+    surface: light
+    heading: From design concept to ==coordinated model==
+    paragraphs:
+      - BIM also helps identify design conflicts and coordination issues at an early stage, reducing rework and improving communication between different project disciplines. The BIM model can be used as a **reliable reference** for design development, visualization, quantity information, and construction documentation.
+      - We agree the level of detail and the elements to model before we start, then build only what your project needs, as a clean, **lightweight Revit model** that opens quickly on every machine in your team.
+    items:
+      - icon: layers
+        title: 3D interior models
+        text: Interior spaces modeled with **relevant information** on every element, ready to coordinate and update as the design changes.
+      - icon: blueprint
+        title: Layouts and ceiling plans
+        text: Furniture and equipment layouts and reflected ceiling plans, drawn from the model.
+      - icon: ruler
+        title: Joinery and finishes
+        text: Joinery, finishes, and material specifications modeled and scheduled to your standards.
+      - icon: clipboard-check
+        title: Construction documentation
+        text: Detailed drawings and construction documentation set up to your own standards.
+  - type: audiences
+    layout: grid
+    heading: Who ==Interior BIM== is for
+    intro: Designers, architects, engineers, and contractors who need consistent, coordinated information for every interior space.
+    items:
+      - icon: compass
+        title: Interior designers
+        text: Your design concepts developed into detailed models and drawings, so your team can stay focused on **design**.
+      - icon: user
+        title: Architects
+        text: A coordinated interior model that stays in step with the building around it.
+      - icon: users-gear
+        title: Engineers
+        text: Ceilings, fixtures, and equipment coordinated with your services before anything is installed.
+      - icon: hard-hat
+        title: Contractors
+        text: Layouts, finishes, and joinery you can price and plan from, with fewer surprises once work starts.
+      - icon: building
+        title: Building owners
+        text: A reliable record of every building in your portfolio, ready for the **next project**.
+      - icon: users
+        title: Facility managers
+        text: Models carrying room, asset, and equipment data for day to day operations.
+  - type: process
+    layout: timeline
+    surface: light
+    heading: How an Interior BIM project ==runs==
+    intro: Four clear steps from the design you send us to the model you build on.
+    steps:
+      - title: Share the design
+        text: You share your design concepts, drawings, CAD files, and standards.
+      - title: Agree the detail
+        text: Together we set the level of detail, the deliverables, and the elements to model.
+      - title: Model and check
+        text: We model the interior and check every element against your design before review.
+      - title: Deliver
+        text: You receive the model, the drawings, and the schedules.
+    cta:
+      heading: Start an Interior BIM project
+      text: Send us your design concepts or drawings, and we will reply with a plan and a quote.
+      button:
+        label: Contact us
+        href: /contact-us
+  - type: presence
+    layout: map

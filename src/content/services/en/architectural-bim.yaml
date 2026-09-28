@@ -1,26 +1,27 @@
-# Placeholder copy following the reference's structure and length (spec
-# 0013). The real service description replaces it before launch.
+# The client's service copy (BIM Delivery services.pdf) fills the intro and
+# the features paragraphs. The stage cards, audiences, and process keep the
+# placeholder copy until the client sends more (spec 0013).
 lang: en
-slug: revit-modeling
-title: Revit Modeling
-summary: Accurate Revit models from drawings, sketches, or design intent.
+slug: architectural-bim
+title: Architectural BIM
+summary: Coordinated 3D building models and construction documentation from your drawings.
 order: 1
 seo:
-  title: Revit Modeling | BIM Delivery
-  description: Accurate Revit models built from your drawings and standards, ready for design development, documentation, and construction.
+  title: Architectural BIM Services | BIM Delivery
+  description: Architectural BIM modeling and documentation, from CAD drawings and design information to detailed models and construction documentation.
 subServices:
-  - Architectural modeling
-  - Structural modeling
-  - MEP modeling
-  - Revit families and content
+  - 3D building models
+  - Floor plans, elevations, and sections
+  - Architectural details and schedules
+  - Construction documentation
 sections:
   - type: intro
     layout: carousel
-    heading: Revit modeling services
+    heading: Architectural BIM services
     paragraphs:
-      - BIM Delivery builds **architectural, structural, and MEP models in Revit** from your drawings, sketches, point clouds, or design intent. Every model follows your templates, naming, and level of detail, so it drops straight into the way your team already works.
-      - From early design to handover, our modelers work as an extension of your office. We model from **LOD 100 to LOD 500**, set up sheets and views to your standards, and check each milestone before it reaches you.
-      - The result is a coordinated, data rich model that helps you **cut rework, find problems early, and keep delivery on schedule**, whatever the size of the project.
+      - Building Information Modeling (BIM) provides a smarter and more coordinated approach to architectural design and documentation. By creating a **detailed 3D digital model** of a building, BIM allows architects, engineers, contractors, and other project stakeholders to work with consistent and coordinated project information throughout the design and construction process.
+      - For architectural projects, BIM can support the development of **3D building models, floor plans, elevations, sections, architectural details, schedules, and construction documentation**. Building elements can be modeled with relevant information, making it easier to develop, coordinate, and manage design changes throughout the project.
+      - At BIM Delivery, we support architecture firms by providing BIM modeling and documentation services from CAD drawings and design information to detailed BIM models and construction documentation, helping our clients **improve coordination, increase production capacity, and deliver projects more efficiently**.
     images:
       - src: https://images.pexels.com/photos/15764095/pexels-photo-15764095.jpeg?auto=compress&cs=tinysrgb&w=1600
         alt: Two people discussing a 3D house model on a laptop
@@ -31,9 +32,9 @@ sections:
   - type: features
     layout: cards
     surface: dark
-    heading: Revit modeling for ==every stage== of a project
+    heading: Architectural BIM for ==every stage== of a project
     paragraphs:
-      - A Revit model earns its keep long after the first drawing. We shape each model around the stage your project is in, so it answers the questions that stage asks, from **feasibility and design** through **construction** and on into **operation**.
+      - BIM also helps identify design and coordination issues at an early stage, ==reducing rework== and improving communication between different project disciplines. The BIM model can be used as a **reliable reference** for design development, visualization, coordination, quantity information, and construction documentation.
       - Tell us where your project stands and we will scope the model, its level of detail, and its deliverables to match, so you pay for the model you need and nothing more.
     subheading: What we model at ==each stage==
     cards:
@@ -61,17 +62,17 @@ sections:
   - type: audiences
     layout: grid
     heading: Who we ==work with==
-    intro: Our Revit teams support everyone who designs, builds, and runs a building. Here is how we help each of them.
+    intro: Our BIM teams support everyone who designs, builds, and runs a building. Here is how we help each of them.
     items:
       - icon: compass
         title: Architects
         text: Design models and drawing sets built to your templates, so your team can stay focused on **design**.
       - icon: users-gear
         title: Engineers
-        text: Structural and MEP models that stay in step with the architecture every time it changes.
+        text: Architectural models that stay in step with your structural and MEP design every time it changes.
       - icon: hard-hat
         title: Contractors
-        text: Construction ready models and shop drawings that answer questions **before** they reach site.
+        text: Construction ready models and documentation that answer questions **before** they reach site.
       - icon: building
         title: Developers
         text: Clear models that show scope, cost, and progress before money is committed.
@@ -84,7 +85,7 @@ sections:
   - type: process
     layout: timeline
     surface: dark
-    heading: How a Revit project ==runs==
+    heading: How an Architectural BIM project ==runs==
     intro: The same four steps on every project, so you always know what happens next and when.
     steps:
       - title: Brief
@@ -96,8 +97,8 @@ sections:
       - title: Deliver
         text: We hand over the final model, the sheets, and a report of any open questions.
     cta:
-      heading: Start a Revit Modeling project
-      text: Send us your drawings or scans and we will reply with a plan and a quote.
+      heading: Start an Architectural BIM project
+      text: Send us your CAD drawings or design information and we will reply with a plan and a quote.
       button:
         label: Contact us
         href: /contact-us

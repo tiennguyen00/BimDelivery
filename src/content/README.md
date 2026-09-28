@@ -10,7 +10,7 @@ collection, one folder per language inside it:
   `../../../assets/images/services/scan-to-bim.jpg`. Record every new stock
   photo in `src/assets/images/CREDITS.md`.
 - Every image needs a non empty `alt`, or `decorative: true`.
-- A project points to its service by id: `service: en/revit-modeling`.
+- A project points to its service by id: `service: en/architectural-bim`.
 - A service is one YAML file built from ordered sections. See the recipes
   under Services below.
 - A broken entry fails `pnpm build` with a message naming the file.

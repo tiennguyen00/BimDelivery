@@ -325,7 +325,7 @@ const home = defineCollection({
         cardCue: text,
         /**
          * The services that get a card, in this order (spec 0013), by id,
-         * such as `en/revit-modeling`. One to three, so a new service reaches
+         * such as `en/architectural-bim`. One to three, so a new service reaches
          * the home page only when it is listed here. `getHomePage` checks
          * every id itself; Astro would only log a missing one.
          */
@@ -684,7 +684,7 @@ const services = defineCollection({
       .string()
       .regex(
         /^[a-z0-9]+(-[a-z0-9]+)*$/,
-        'must be kebab case, for example `scan-to-bim`',
+        'must be kebab case, for example `interior-bim`',
       ),
     /** The nav, the home card, and the contact form's choices. */
     title: text,
