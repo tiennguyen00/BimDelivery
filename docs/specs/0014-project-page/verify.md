@@ -14,7 +14,9 @@ Serve the real build as the `verify` skill describes (`pnpm build`, then `pnpm e
 - [ ] Each tile → a 5:4 box with rounded corners; the photo covers it; a see through dark strip flush with the bottom holds the service in small capitals and the title as an `h2`, all white; no summary → AC-6 (value: photo, alt, service line, title)
 - [ ] Inspect the tile photos → `alt` from content, `sizes="(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw"`, widths 400 to 1600; the first three `loading="eager"`, the last three lazy → AC-6 (value: eager or lazy)
 - [ ] Change one project's `service` temporarily → its tile's service line follows the referenced service's `title` → AC-6 (value: service line from `getProjects`)
-- [ ] Hover a tile → nothing changes, the cursor stays the default → AC-7
+- [ ] Hover a tile with a mouse → only its photo slowly zooms (about 105%, half a second), the corners stay rounded the whole way, the caption and the neighbouring tiles stay put, the cursor stays an arrow; move away → it eases back → AC-7
+- [ ] Reduced motion on, hover a tile → nothing grows at all; in touch emulation, tap a tile → nothing changes → AC-7
+- [ ] If a WebKit browser (Safari) is to hand, hover a tile → no square corners flash while the photo grows → AC-7
 - [ ] Tab from the header → the next stop after the header is the gold band's "Contact us"; no stop inside the wall → AC-7, AC-11
 - [ ] At 360, 768, 1024, and 1920 wide → one, two, three, three columns (two from 768, three from 1024), no sideways scroll, every tile exactly 5:4, every caption wholly inside its tile → AC-5, AC-8
 - [ ] Set one title to exactly 60 characters temporarily → at every width above its caption still fits inside the tile (at 1024 it takes about 185 of the tile's 252px) → AC-8
@@ -43,4 +45,4 @@ Serve the real build as the `verify` skill describes (`pnpm build`, then `pnpm e
 
 ## Acceptance-criteria coverage
 
-- AC-1: the 1920 bands step · AC-2: the seo step, the no copy grep · AC-3: the two build guards · AC-4: the intro step · AC-5: the wall, order, and width steps · AC-6: the tile, photo, and service steps · AC-7: hover and Tab · AC-8: widths, the 60 character title, throttled load · AC-9: the empty drill · AC-10: the gold band step · AC-11: the heading outline, Tab · AC-12: the load, phone, JavaScript off, reduced motion, and service page steps · AC-13: the showcase and credits steps · AC-14: styleguide and `design.md` · AC-15: the gate commands
+- AC-1: the 1920 bands step · AC-2: the seo step, the no copy grep · AC-3: the two build guards · AC-4: the intro step · AC-5: the wall, order, and width steps · AC-6: the tile, photo, and service steps · AC-7: the hover zoom, reduced motion and touch, WebKit corners, and Tab · AC-8: widths, the 60 character title, throttled load · AC-9: the empty drill · AC-10: the gold band step · AC-11: the heading outline, Tab · AC-12: the load, phone, JavaScript off, reduced motion, and service page steps · AC-13: the showcase and credits steps · AC-14: styleguide and `design.md` · AC-15: the gate commands
