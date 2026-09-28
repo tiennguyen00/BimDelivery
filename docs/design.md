@@ -869,10 +869,17 @@ project as a photo tile, one column, then two at `md`, then three at `lg`.
   which is what keeps the caption inside the tile at every width.
 - **The seams are 8px** (`gap-2`), the grid gap's one written exception.
 - **Tiles are not links yet**, since there are no project detail pages. A tile
-  holds nothing focusable and **never changes on hover**: something that is
-  not a link must not look like one. When detail pages arrive, each tile
-  becomes one link (a "Read more" label from content), with a hover treatment
-  and the light tone focus ring.
+  holds nothing focusable and **never promises a click**: the cursor stays
+  the default and there is no link label. Its one hover response is a **slow
+  zoom of the photo alone** (`motion-safe:group-hover:scale-105`, 500ms, ease
+  out, the `<li>` a `group`), clipped by the rounded corners; the box, the
+  caption, and the layout never move, and reduced motion gets no zoom at all.
+  It bends the "not a link, do not look like one" rule the way the home intro
+  cards do, gently, and it is what the tiles keep once they link (spec 0014,
+  revised 2026-09-28). The home showcase photo still stays still. When detail
+  pages arrive, each tile becomes one link (a "Read more" label from content),
+  keeping the zoom and adding the pointer cursor and the light tone focus
+  ring.
 - The first three tiles load eagerly (a desktop's largest paint) and every
   later one lazily. The page never renders the wall with no projects; it
   shows the empty state instead.
@@ -1029,7 +1036,9 @@ carousel and reveal scripts and add none (spec 0013).
   no `data-reveal`; the first row of tiles follows (above). Below the fold
   each tile reveals after the one before as it scrolls into view, and the
   `h1`'s rule draws with the scroll direction. The empty state and the gold
-  band do not move, and the tiles have no hover motion.
+  band do not move. On hover a tile's photo slowly zooms to 105%
+  (`motion-safe` only); the zoom moves the `Image` by `scale`, the entrance
+  and the reveal move the `<li>`, so neither overwrites the other.
 - **Don't** give the hero or the intro band the fade-and-rise: the hero is the
   largest contentful paint, and the intro band already moves with the counter.
   What is banned there is revealing the band, not all motion on it. The intro

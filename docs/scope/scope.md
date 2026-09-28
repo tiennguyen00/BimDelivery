@@ -152,6 +152,7 @@ spec [0014](../specs/0014-project-page/index.md) · code in [src/pages/project.a
   - [x] The whole page, still: the strict `projectPage` with an emphasis intro and a `cta`, the 60 character title cap, a sixth placeholder project, `bandPaddingBottomClass`, the intro band, the full width 5:4 gallery with scrim strip captions and no links, the empty state, and `CtaBand`, composed in `project.astro` and previewed at 360 to 1920 with the long title, empty, and build guard drills (AC-1 to AC-11, AC-13)
   - [x] The page moves: `entrance.ts` moved to `ui`, the load entrance on the intro and the first three tiles, the scroll reveal stagger on the tiles, the `h1` rule drawing, checked with JavaScript off and reduced motion (AC-12)
   - [x] Written down and gated: `design.md` (the gallery, the 8px gap exception, the contrast row, motion, the scripts invariant), the `/styleguide` tile, and the check, lint, build, and gold class gates (AC-14, AC-15)
+  - [x] The tiles answer a hover (AC-7 revised 2026-09-28): the slow photo zoom on each tile, `motion-safe`, default cursor, checked with a mouse, reduced motion, and touch; the "no hover" lines in `design.md`, `/styleguide`, and the component comment reworded (AC-7, AC-14)
 - [ ] Verify it: `/check verify project page`
 
 ### 10. Contact page

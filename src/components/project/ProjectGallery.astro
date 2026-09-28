@@ -20,8 +20,14 @@
  * caption inside the tile at every width.
  *
  * The tiles are not links: there are no project detail pages yet. A tile
- * holds nothing focusable, and since it is not a link it must not look like
- * one, so nothing on it changes on hover.
+ * holds nothing focusable and never promises a click (the cursor stays the
+ * default). Its one hover response is a slow zoom of the photo alone, 105%
+ * over 500ms, `motion-safe` so reduced motion gets no zoom at all; the box,
+ * the caption, and the layout never move. The zoom takes only the `Image`,
+ * by `scale`, while the entrance and the reveal take only the `<li>`, so
+ * neither overwrites the other. `isolate` stays with `overflow-hidden` on the
+ * `<li>`: the stacking context keeps the growing photo clipped to the rounded
+ * corners (without it WebKit can draw square corners mid transition).
  *
  * Motion: the list is a `data-reveal-stagger` container, so below the fold
  * each tile fades and rises in after the one before as it scrolls into view.
@@ -69,7 +75,7 @@ const imageSizes = '(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw';
     {projects.map((project, index) => (
       <li
         class={cx(
-          'relative isolate flex aspect-5/4 flex-col justify-end overflow-hidden rounded-ui bg-black',
+          'group relative isolate flex aspect-5/4 flex-col justify-end overflow-hidden rounded-ui bg-black',
           entranceClass(entranceAt(index)),
         )}
         style={entranceStyle(entranceAt(index), index)}
@@ -81,7 +87,7 @@ const imageSizes = '(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw';
           widths={[400, 640, 960, 1280, 1600]}
           sizes={imageSizes}
           loading={index < FIRST_ROW ? 'eager' : 'lazy'}
-          class="absolute inset-0 -z-10 size-full object-cover object-center"
+          class="absolute inset-0 -z-10 size-full object-cover object-center transition-[scale] duration-500 ease-out motion-safe:group-hover:scale-105"
         />
         <div class="bg-scrim px-5 py-4 text-white md:px-6 md:py-5">
           <p class="text-small font-semibold tracking-wide uppercase">
