@@ -138,7 +138,7 @@ focus indicators. Computed from the hex values above.
 | gold-ink (`StatsBand` numbers, the open accordion title, a `==` phrase) / ink-strong (`StatsBand` labels) | white | 5.05 / 12.63 | 4.5 |
 | black (a closed accordion item's title) | gold | 8.73 | 4.5 |
 | ink (text on `bg-diagonal`), worst case over a stripe line | line (`#e5e5e5`) | 4.56 | 4.5 |
-| white (the hero's heading and subheading) | scrim over any photo, worst case over pure white (composite `#666666`) | 5.74 at worst | 4.5 |
+| white (the hero's heading and subheading, the Project page's tile captions) | scrim over any photo, worst case over pure white (composite `#666666`) | 5.74 at worst | 4.5 |
 | two colour focus ring, black inner band / white outer band (the hero photo and the gold band) | gold / any photo | black on gold 8.73; on any colour at all, one of the two bands reaches at least 4.58 | 3.0 |
 | white (the contact form band's heading, field labels and hints, noscript note, captcha link) | `scrim-strong` plus a `bg-diagonal-dark` line over a pure white photo pixel (composite `#3f3f3f`) | 10.5 at worst | 4.5 |
 | error-on-dark (the contact form band's field errors and messages) | the same worst case, `#3f3f3f` | 5.19 at worst | 4.5 |
@@ -198,6 +198,10 @@ constrained and `min-h-11` (the 44px tap target) relies on it.
 | Section side gutters | 16px | 24px | 32px |
 | Card padding | 24px | 24px | 24px |
 | Grid gaps | 24px | 24px | 24px |
+
+One written exception to the grid gap: the Project page's photo wall
+(`ProjectGallery`, spec 0014) uses an 8px gap (`gap-2`) across and down, so
+the photos read as one wall split by thin white seams. No other grid does.
 
 There is no vertical margin between sections. Adjacent sections of the same
 tone are fine; alternating white and tint is the default rhythm a page should
@@ -837,6 +841,42 @@ band, its tone, and its heading id.
   and the line joining them are gold fills carrying black numbers. All are
   fills, within the gold rule.
 
+### `ProjectGallery` · `src/components/project/ProjectGallery.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `labelledBy` | `string` (required), the page's `h1` id | |
+| `projects` | `readonly Project[]` (required), one or more | |
+| `entranceFrom` | `number` | none |
+
+The Project page's photo wall (spec 0014), after the reference gallery: every
+project as a photo tile, one column, then two at `md`, then three at `lg`.
+
+- **Its own band, not a `Section`**: white, with the band frame's side gutters
+  and bottom padding (`bandPaddingBottomClass` in `styles.ts`) and no top
+  padding, since it sits straight under the intro. It takes **no maximum
+  width**, the one band that does not, so the wall runs the full window width
+  inside the gutters. The list is labelled by the page's `h1`; the wall adds
+  no name of its own.
+- **Every tile is a fixed 5:4 box** (`aspect-5/4`), `rounded-ui`, on a black
+  fill that shows only while the photo loads. The box is reserved before the
+  photo arrives, so nothing shifts. The photo covers the box, centred, so a
+  tall tower or a wide campus is cropped; choose photos with that in mind.
+- **The caption is a full width `bg-scrim` strip** flush with the tile's
+  bottom edge: the service as a small uppercase line, then the project title
+  as an `h2` at `text-h3`, all white (5.74:1 at worst over any photo). No
+  summary. Project titles are capped at 60 characters in the content schema,
+  which is what keeps the caption inside the tile at every width.
+- **The seams are 8px** (`gap-2`), the grid gap's one written exception.
+- **Tiles are not links yet**, since there are no project detail pages. A tile
+  holds nothing focusable and **never changes on hover**: something that is
+  not a link must not look like one. When detail pages arrive, each tile
+  becomes one link (a "Read more" label from content), with a hover treatment
+  and the light tone focus ring.
+- The first three tiles load eagerly (a desktop's largest paint) and every
+  later one lazily. The page never renders the wall with no projects; it
+  shows the empty state instead.
+
 ## Focus and motion
 
 Two rules, chosen by the surface, and no exceptions (spec 0005):
@@ -944,7 +984,7 @@ carousel and reveal scripts and add none (spec 0013).
   motion it does not run, so everything is simply there. It moves by
   `translate`, so nothing around it shifts. **Never** combine it with
   `data-reveal` on one element; the About band takes no scroll reveal for that
-  reason. The rule has two written exceptions, both for a band that is on
+  reason. The rule has three written exceptions, all for a band that is on
   screen at load on a desktop, where the scroll reveal never moves anything,
   and below the fold on a phone. Whichever applies moves it; the other stays
   out of sight.
@@ -955,8 +995,12 @@ carousel and reveal scripts and add none (spec 0013).
     generalised): each of its reveal units, a `data-reveal` element or a
     direct child of a `data-reveal-stagger`, takes the entrance at the steps
     after the intro's last (`entranceFrom`, from `planServicePage`, the
-    helpers in `src/components/service/entrance.ts`). A presence block in
-    that place takes none.
+    helpers in `src/components/ui/entrance.ts`, moved there from `service`
+    by spec 0014). A presence block in that place takes none.
+  - The Project page's gallery (spec 0014): its first three tiles, a
+    desktop's first row, take the entrance at steps 2 to 4 (`entranceFrom`,
+    the same helpers) and stay in the list's scroll reveal stagger. Only
+    those three, never every tile, so a long list never stacks up delay.
 - **The accordion slide**, in the `accordion-item` utility (spec 0010). Where
   the browser supports `::details-content` and `interpolate-size` (Chrome and
   Edge today), a panel's height slides between nothing and its content over
@@ -980,6 +1024,12 @@ carousel and reveal scripts and add none (spec 0013).
   heading's rule draws with the scroll direction. A process step brings its
   stretch of the gold line with it as it fades in. The block after the
   intro also takes the entrance, above.
+- The Project page imports `reveal.ts` too (spec 0014): the intro's `h1` and
+  paragraph move on load through the `entrance` utility (steps 0, 1) and take
+  no `data-reveal`; the first row of tiles follows (above). Below the fold
+  each tile reveals after the one before as it scrolls into view, and the
+  `h1`'s rule draws with the scroll direction. The empty state and the gold
+  band do not move, and the tiles have no hover motion.
 - **Don't** give the hero or the intro band the fade-and-rise: the hero is the
   largest contentful paint, and the intro band already moves with the counter.
   What is banned there is revealing the band, not all motion on it. The intro
@@ -1008,10 +1058,11 @@ carousel and reveal scripts and add none (spec 0013).
   works: `Header` imports `src/scripts/nav.ts` (spec 0004); `StatsBand` and the
   home page's `IntroBand` import `src/scripts/counters.ts`, `Hero` and the
   service pages' `IntroCarousel` import `src/scripts/carousel.ts` (the hero's
-  script, renamed and shared by spec 0013), and the home, About, Contact, and
-  service pages import `src/scripts/reveal.ts` (all spec 0005; About by spec
-  0010, which adds no script: its entrance and accordion are CSS and HTML;
-  the service pages by spec 0013, which adds none either). `reveal.ts` holds two separate
+  script, renamed and shared by spec 0013), and the home, About, Contact,
+  service, and Project pages import `src/scripts/reveal.ts` (all spec 0005;
+  About by spec 0010, which adds no script: its entrance and accordion are CSS
+  and HTML; the service pages by spec 0013 and the Project page by spec 0014,
+  which add none either). `reveal.ts` holds two separate
   halves, the fade-and-rise reveal and the heading rule, in one file so the
   count stays four. Remove any script and the site stays usable. Any fifth one
   needs a reason this good.

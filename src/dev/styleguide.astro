@@ -34,6 +34,7 @@ import FormBand from '../components/contact/FormBand.astro';
 import ContactCard from '../components/contact/ContactCard.astro';
 import PatternBand from '../components/ui/PatternBand.astro';
 import FeaturesCards from '../components/service/FeaturesCards.astro';
+import ProjectGallery from '../components/project/ProjectGallery.astro';
 import type { BlockAt } from '../lib/service-page';
 import { telHref } from '../lib/contact';
 import { resolveLocale } from '../i18n/locales';
@@ -1235,6 +1236,28 @@ const headCellClass =
             text={firstServiceCta.text}
             button={firstServiceCta.button}
           />
+        </div>
+      )}
+    </Section>
+
+    <Section labelledBy="sg-gallery">
+      <h2 id="sg-gallery">Project gallery</h2>
+      <p class="mt-4 max-w-narrow">
+        The Project page's photo wall, from the real project entries: fixed 5:4
+        tiles, 8px seams (the grid gap's one written exception), and a full
+        width scrim strip carrying the service and the title in white, 5.74:1 at
+        worst over any photo.
+      </p>
+      <p class="mt-3 max-w-narrow text-small text-ink">
+        Tab through it: there is no stop inside, and hovering a tile changes
+        nothing. The tiles are not links until project detail pages exist. On
+        the page the wall has no maximum width; here it sits inside this
+        section's column.
+      </p>
+
+      {projects.length > 0 && (
+        <div class="mt-8 overflow-hidden rounded-ui border border-line pt-4 md:pt-6 lg:pt-8">
+          <ProjectGallery labelledBy="sg-gallery" projects={projects} />
         </div>
       )}
     </Section>

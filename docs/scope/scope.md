@@ -19,7 +19,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 6 | Home page | Release 1 | in-progress |
 | 7 | About Us page | Release 1 | in-progress |
 | 8 | Service pages (three) | Release 1 | in-progress |
-| 9 | Project page | Release 1 | planned |
+| 9 | Project page | Release 1 | in-progress |
 | 10 | Contact page | Release 1 | in-progress |
 | 11 | SEO foundation | Release 2 | planned |
 | 12 | Performance & image handling | Release 2 | planned |
@@ -146,7 +146,13 @@ spec [0013](../specs/0013-service-pages/index.md) · code in [src/pages/[service
 ### 9. Project page
 A grid of placeholder project cards (image, title, one line) at `/project`, so the site can show work before detail pages exist.
 **Done when:** `/project` renders a card grid from content data, reflows to tablet and mobile, images are sized so the layout does not jump while they load, and an empty state renders when there are no entries.
-- [ ] Build it: `/develop project page`
+spec [0014](../specs/0014-project-page/index.md) · code in [src/pages/project.astro](../../src/pages/project.astro) and [src/components/project/](../../src/components/project/) (content: `src/content/projectPage/`, `src/content/projects/`)
+- [x] Design it (spec): `/architect project page`
+- [x] Build it: `/develop project page`
+  - [x] The whole page, still: the strict `projectPage` with an emphasis intro and a `cta`, the 60 character title cap, a sixth placeholder project, `bandPaddingBottomClass`, the intro band, the full width 5:4 gallery with scrim strip captions and no links, the empty state, and `CtaBand`, composed in `project.astro` and previewed at 360 to 1920 with the long title, empty, and build guard drills (AC-1 to AC-11, AC-13)
+  - [x] The page moves: `entrance.ts` moved to `ui`, the load entrance on the intro and the first three tiles, the scroll reveal stagger on the tiles, the `h1` rule drawing, checked with JavaScript off and reduced motion (AC-12)
+  - [x] Written down and gated: `design.md` (the gallery, the 8px gap exception, the contrast row, motion, the scripts invariant), the `/styleguide` tile, and the check, lint, build, and gold class gates (AC-14, AC-15)
+- [ ] Verify it: `/check verify project page`
 
 ### 10. Contact page
 Contact details and a form that looks and behaves real, at `/contact-us`. Nothing is delivered yet; real sending is its own later feature.
@@ -205,6 +211,7 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Real brand**: the real logo, brand colours, and typeface replace the palette borrowed from paviliusbim.com before launch; update the tokens, both contrast tables, and walk `/styleguide` again (from spec 0003)
 - **A dark section tone**: bring back a dark band for a section such as the home page's closing call to action. It means reintroducing inherited tone variables, a card tone reset, and a second focus colour, then computing the dark contrast pairs. Gold reads well on black at 8.73:1 if you want it. Less urgent since spec 0005: the closing call to action now ends on a self contained gold band, so the dark tone is no longer the only way to close a page (from specs 0003 and 0005)
 - **Testimonials and client logos**
+- **Project gallery filter and pagination**: a service filter and "load more" or pages once the portfolio passes about 12 projects; a filter would be a fifth script, which `design.md` asks a strong reason for (from spec 0014)
 - **Carousel pause control**: a visible pause for the shared carousel, closing the WCAG 2.2.2 gap on the home hero and the three service intros (from spec 0013)
 - **Redirects for removed pages**: once the site is live, a removed service's old URL (or any removed page) redirects instead of returning the 404 page; decide the mechanism with the SEO foundation or launch (from spec 0013)
 - **Error monitoring**: know when a real visitor hits a broken page · needs a decision
