@@ -1,0 +1,30 @@
+---
+/**
+ * The Project page's first band (spec 0014): the page's `h1` with the gold
+ * rule under it, and one paragraph in the narrow reading width.
+ *
+ * It renders only the inside of the band; the page wraps it in a `white`
+ * `Section` labelled by the `h1`, as the About and Contact pages do with
+ * their intro bands. The capitals are CSS only (`uppercase`), so a screen
+ * reader reads words, not letters.
+ */
+import Emphasis from '../ui/Emphasis.astro';
+
+interface Props {
+  heading: string;
+  /** The id the surrounding Section points at with `aria-labelledby`. */
+  headingId: string;
+  /** May carry `**bold**` and `==gold==` phrases. */
+  intro: string;
+}
+
+const { heading, headingId, intro } = Astro.props;
+---
+
+<h1 id={headingId} class="heading-rule inline-block uppercase">
+  {heading}
+</h1>
+
+<p class="mt-8 max-w-narrow text-lead">
+  <Emphasis text={intro} surface="light" />
+</p>

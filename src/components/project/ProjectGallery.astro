@@ -1,0 +1,76 @@
+---
+/**
+ * The Project page's photo wall (spec 0014): every project as a 5:4 photo
+ * tile, three across on a desktop, with thin 8px white seams between them.
+ *
+ * It is a band of its own, not a `Section`: it borrows the band frame's side
+ * gutters and bottom padding from `styles.ts` but takes **no maximum width**,
+ * so the wall runs the full window width inside the gutters. It has no top
+ * padding because it sits straight under the intro, on the same white. It
+ * needs no name of its own either: the list is labelled by the page's `h1`.
+ * The page never renders it with an empty list; it shows the empty state
+ * instead.
+ *
+ * Each tile's box is a fixed 5:4 (`aspect-5/4`), so its space is reserved
+ * before the photo arrives and nothing on the page shifts as photos load.
+ * The black fill shows only while a photo loads. The caption is a full width
+ * `bg-scrim` strip at the tile's foot: white on the scrim is 5.74:1 even over
+ * a pure white pixel (spec 0005), so any photo is safe without a contrast
+ * check. The 60 character title cap in the content schema is what keeps the
+ * caption inside the tile at every width.
+ *
+ * The tiles are not links: there are no project detail pages yet. A tile
+ * holds nothing focusable, and since it is not a link it must not look like
+ * one, so nothing on it changes on hover.
+ */
+import { Image } from 'astro:assets';
+import type { Project } from '../../lib/content';
+import { bandGutterClass, bandPaddingBottomClass, cx } from '../ui/styles';
+
+interface Props {
+  /** The id of the page's `h1`, which names the list. */
+  labelledBy: string;
+  /** One or more, in `order`. */
+  projects: readonly Project[];
+}
+
+const { labelledBy, projects } = Astro.props;
+
+/**
+ * The tiles a desktop shows at load, its first row. They are the page's
+ * largest paint there, so their photos load eagerly; every later one is lazy.
+ */
+const FIRST_ROW = 3;
+
+/** One column, then two at `md`, then three at `lg`, matching the grid. */
+const imageSizes = '(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw';
+---
+
+<div class={cx('bg-white', bandGutterClass, bandPaddingBottomClass)}>
+  <ul
+    aria-labelledby={labelledBy}
+    class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3"
+  >
+    {projects.map((project, index) => (
+      <li class="relative isolate flex aspect-5/4 flex-col justify-end overflow-hidden rounded-ui bg-black">
+        <Image
+          src={project.image.src}
+          alt={project.image.alt ?? ''}
+          inferSize
+          widths={[400, 640, 960, 1280, 1600]}
+          sizes={imageSizes}
+          loading={index < FIRST_ROW ? 'eager' : 'lazy'}
+          class="absolute inset-0 -z-10 size-full object-cover object-center"
+        />
+        <div class="bg-scrim px-5 py-4 text-white md:px-6 md:py-5">
+          <p class="text-small font-semibold tracking-wide uppercase">
+            {project.service.title}
+          </p>
+          <h2 class="mt-1 text-h3 font-semibold text-balance text-white">
+            {project.title}
+          </h2>
+        </div>
+      </li>
+    ))}
+  </ul>
+</div>

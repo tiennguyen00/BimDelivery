@@ -455,14 +455,18 @@ const contact = defineCollection({
   }),
 });
 
+// The Project page's copy (spec 0014): the intro, the empty state, and the
+// closing band. Strict at every level, so a leftover key fails the build by
+// name. The tiles' words and photos are the `projects` entries.
 const projectPage = defineCollection({
   loader: load('projectPage', 'yaml'),
-  schema: z.object({
+  schema: z.strictObject({
     lang,
     seo,
     heading: text,
-    intro: text,
-    emptyState: z.object({ heading: text, text }),
+    intro: emphasisText,
+    emptyState: z.strictObject({ heading: text, text }),
+    cta: callToAction,
   }),
 });
 
@@ -700,7 +704,9 @@ const projects = defineCollection({
   schema: () =>
     z.object({
       lang,
-      title: text,
+      // Capped so a title always fits the Project page's 5:4 tile caption at
+      // every width (spec 0014, AC-8). Loosening it means checking that again.
+      title: text.max(60),
       summary: text,
       image: photoSchema,
       order: z.number().int().positive(),

@@ -84,6 +84,12 @@ export const ctaLinkClass = cx(
  */
 export const bandGutterClass = cx('px-4 md:px-6 lg:px-8');
 export const bandPaddingClass = cx('py-16 md:py-20 lg:py-24');
+/**
+ * The bottom half of `bandPaddingClass`, for a band that follows another of
+ * the same tone with no gap of its own: the Project page's gallery, which
+ * sits straight under its intro (spec 0014).
+ */
+export const bandPaddingBottomClass = cx('pb-16 md:pb-20 lg:pb-24');
 export const bandWidthClass: Readonly<Record<'default' | 'narrow', string>> = {
   default: cx('mx-auto w-full max-w-content lg:max-w-[max(75vw,50rem)]'),
   narrow: cx('mx-auto w-full max-w-narrow'),

@@ -1,20 +1,59 @@
 ---
 /**
- * Projects. A stub: the frame, the metadata and the page's own heading and
- * intro, all from content. Feature 9 adds the card grid and the empty state.
+ * Projects (spec 0014): three bands, in order, then the footer. Every word
+ * and photo on them comes from a content entry.
+ *
+ * 1. Intro: the ruled `h1` and one paragraph.
+ * 2. The photo wall, one tile per project in `order`. With no projects in
+ *    this language, the empty state takes its place instead.
+ * 3. The gold closing band, linking to Contact.
+ *
+ * This file is the only place that knows the page's shape. It owns the
+ * heading ids, under the home page's rule: `<band>-heading`. The gallery
+ * list is named by the `h1`, so the wall adds no heading of its own.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/ui/Section.astro';
+import CtaBand from '../components/ui/CtaBand.astro';
+import IntroBand from '../components/project/IntroBand.astro';
+import ProjectGallery from '../components/project/ProjectGallery.astro';
 import { resolveLocale } from '../i18n/locales';
-import { getProjectPage } from '../lib/content';
+import { getProjectPage, getProjects } from '../lib/content';
 
 const lang = resolveLocale(Astro.currentLocale);
-const page = await getProjectPage(lang);
+
+const [page, projects] = await Promise.all([
+  getProjectPage(lang),
+  getProjects(lang),
+]);
 ---
 
 <PageLayout title={page.seo.title} description={page.seo.description}>
-  <Section tone="white" labelledBy="page-title">
-    <h1 id="page-title">{page.heading}</h1>
-    <p class="mt-4 max-w-narrow text-lead">{page.intro}</p>
+  <Section tone="white" labelledBy="project-heading">
+    <IntroBand
+      heading={page.heading}
+      headingId="project-heading"
+      intro={page.intro}
+    />
   </Section>
+
+  {projects.length > 0 ? (
+    <ProjectGallery labelledBy="project-heading" projects={projects} />
+  ) : (
+    <Section tone="white" width="narrow" labelledBy="project-empty-heading">
+      <div class="text-center">
+        <h2 id="project-empty-heading" class="text-balance">
+          {page.emptyState.heading}
+        </h2>
+        <p class="mt-4 text-lead">{page.emptyState.text}</p>
+      </div>
+    </Section>
+  )}
+
+  <CtaBand
+    heading={page.cta.heading}
+    headingId="project-cta-heading"
+    text={page.cta.text}
+    button={page.cta.button}
+  />
 </PageLayout>

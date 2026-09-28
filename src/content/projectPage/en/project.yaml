@@ -7,3 +7,9 @@ intro: A selection of recent work. Placeholder projects until the real portfolio
 emptyState:
   heading: Projects coming soon
   text: We are preparing our portfolio. Get in touch to hear about similar work.
+cta:
+  heading: Have a project like these?
+  text: Tell us about your building and the model you need, and we will get back to you within one working day.
+  button:
+    label: Contact us
+    href: /contact-us

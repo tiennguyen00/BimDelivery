@@ -33,6 +33,7 @@ placeholders until real project photography arrives.
 | Project: Midtown Retrofit  | <https://www.pexels.com/photo/modern-high-rise-construction-site-with-crane-33628380/>                                     | Pexels License |
 | Project: Corner Block      | <https://www.pexels.com/photo/stylish-geometric-building-with-glass-balconies-4082527/>                                    | Pexels License |
 | Project: College Hall      | <https://www.pexels.com/photo/modern-office-building-17097090/>                                                            | Pexels License |
+| Project: Seafront Hotel    | <https://www.pexels.com/photo/1838640/>                                                                                    | Pexels License |
 | Contact intro              | <https://www.pexels.com/photo/323705/>                                                                                     | Pexels License |
 | Contact form band          | <https://www.pexels.com/photo/2138126/>                                                                                    | Pexels License |
 

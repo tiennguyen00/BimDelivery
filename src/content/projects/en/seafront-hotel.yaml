@@ -1,0 +1,8 @@
+lang: en
+title: Seafront Hotel
+summary: Clash coordination of structure and services for a six storey hotel.
+image:
+  src: https://images.pexels.com/photos/1838640/pexels-photo-1838640.jpeg?auto=compress&cs=tinysrgb&w=1600
+  alt: A pale multi storey building with bay windows behind a row of palm trees
+order: 6
+service: en/bim-coordination
