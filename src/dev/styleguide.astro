@@ -43,6 +43,7 @@ import {
   getContactPage,
   getHomePage,
   getNavigation,
+  getProjectPage,
   getProjects,
   getServices,
   getSettings,
@@ -51,17 +52,27 @@ import {
 
 const lang = resolveLocale(Astro.currentLocale);
 
-const [home, services, projects, contact, navigation, settings, stats, about] =
-  await Promise.all([
-    getHomePage(lang),
-    getServices(lang),
-    getProjects(lang),
-    getContactPage(lang),
-    getNavigation(lang),
-    getSettings(lang),
-    getStats(lang),
-    getAboutPage(lang),
-  ]);
+const [
+  home,
+  services,
+  projects,
+  contact,
+  navigation,
+  settings,
+  stats,
+  about,
+  projectPage,
+] = await Promise.all([
+  getHomePage(lang),
+  getServices(lang),
+  getProjects(lang),
+  getContactPage(lang),
+  getNavigation(lang),
+  getSettings(lang),
+  getStats(lang),
+  getAboutPage(lang),
+  getProjectPage(lang),
+]);
 
 /** The whole icon map, in the order Icon.astro declares it. */
 const iconNames: readonly IconName[] = [
@@ -1258,7 +1269,11 @@ const headCellClass =
 
       {projects.length > 0 && (
         <div class="mt-8 overflow-hidden rounded-ui border border-line pt-4 md:pt-6 lg:pt-8">
-          <ProjectGallery labelledBy="sg-gallery" projects={projects} />
+          <ProjectGallery
+            labelledBy="sg-gallery"
+            projects={projects}
+            cue={projectPage.tileCue}
+          />
         </div>
       )}
     </Section>

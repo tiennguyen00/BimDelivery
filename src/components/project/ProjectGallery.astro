@@ -19,11 +19,19 @@
  * check. The 60 character title cap in the content schema is what keeps the
  * caption inside the tile at every width.
  *
- * The tiles are not links: there are no project detail pages yet. A tile
- * holds nothing focusable and never promises a click (the cursor stays the
- * default). Its one hover response is a slow zoom of the photo alone, 105%
- * over 500ms, `motion-safe` so reduced motion gets no zoom at all; the box,
- * the caption, and the layout never move. The zoom takes only the `Image`,
+ * Each tile is exactly one link to its project page (spec 0015), with one
+ * tab stop: the title's text is the link, and its `::after` is stretched over
+ * the whole tile (the `Card` pattern), so the accessible name is the project
+ * title and the pointer shows anywhere on the tile. Under the title the strip
+ * carries the cue, "Read more" and an arrow, `aria-hidden` because the name
+ * already says which project it opens: a screen reader hears six distinct
+ * titles, not six "Read more"s. Keyboard focus draws the light tone
+ * `gold-ink` ring round the whole tile (`link-focus:`, as `Card`), never
+ * round the title alone.
+ *
+ * Its one hover response is a slow zoom of the photo alone, 105% over
+ * 500ms, `motion-safe` so reduced motion gets no zoom at all; the box, the
+ * caption, and the layout never move. The zoom takes only the `Image`,
  * by `scale`, while the entrance and the reveal take only the `<li>`, so
  * neither overwrites the other. `isolate` stays with `overflow-hidden` on the
  * `<li>`: the stacking context keeps the growing photo clipped to the rounded
@@ -38,6 +46,8 @@
  */
 import { Image } from 'astro:assets';
 import type { Project } from '../../lib/content';
+import Icon from '../ui/Icon.astro';
+import { projectHref } from '../../lib/project-detail';
 import { entranceClass, entranceStyle } from '../ui/entrance';
 import { bandGutterClass, bandPaddingBottomClass, cx } from '../ui/styles';
 import {
@@ -53,11 +63,13 @@ interface Props {
   labelledBy: string;
   /** One or more, in `order`. */
   projects: readonly Project[];
+  /** The words under each title, "Read more". */
+  cue: string;
   /** The first tile's `--entrance-step`; without it no tile moves on load. */
   entranceFrom?: number;
 }
 
-const { labelledBy, projects, entranceFrom } = Astro.props;
+const { labelledBy, projects, cue, entranceFrom } = Astro.props;
 
 /**
  * The tiles a desktop shows at load, its first row. They are the page's
@@ -76,7 +88,7 @@ const entranceAt = (index: number): number | undefined =>
       <li
         class={cx(
           wallTileClass,
-          'group flex flex-col justify-end',
+          'group flex flex-col justify-end link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-gold-ink',
           entranceClass(entranceAt(index)),
         )}
         style={entranceStyle(entranceAt(index), index)}
@@ -98,8 +110,20 @@ const entranceAt = (index: number): number | undefined =>
             {project.service.title}
           </p>
           <h2 class="mt-1 text-h3 font-semibold text-balance text-white">
-            {project.title}
+            <a
+              href={projectHref(project.slug)}
+              class="after:absolute after:inset-0 focus-visible:outline-none"
+            >
+              {project.title}
+            </a>
           </h2>
+          <p
+            aria-hidden="true"
+            class="mt-2 inline-flex items-center gap-1.5 text-small font-semibold"
+          >
+            {cue}
+            <Icon name="arrow-right" size={16} />
+          </p>
         </div>
       </li>
     ))}

@@ -11,16 +11,29 @@
  * the scrim is 5.74:1 even over a pure white pixel (spec 0005, AC-19), so any
  * project photo is safe here without a contrast check.
  *
- * The tiles are not links: there are no per project pages yet, and several
- * links to the same list would only add tab stops. The one link is the button,
- * which keeps the ordinary gold ink ring of a light tone. A tile that is not a
- * link must not look like one either, so the photo stays still on hover.
+ * Each tile is exactly one link to its project page (spec 0015), the same
+ * rule as the `/project` wall: the `h3`'s text is the link, stretched over
+ * the whole tile (the `Card` pattern), so it has one tab stop, the project
+ * title as its name, and the pointer anywhere on the tile. Under the summary
+ * the panel carries the cue, "Read more" and an arrow, `aria-hidden` because
+ * the name already says which project it opens. Keyboard focus draws the
+ * light tone `gold-ink` ring round the whole tile on the band's tint
+ * (`link-focus:`, as `Card`). The band's button still leads to the full list.
+ *
+ * On hover the photo alone zooms slowly, 105% over 500ms, `motion-safe`, as
+ * on `/project` (spec 0014): only the `Image` moves, by `scale`, while the
+ * scroll reveal moves only the `<li>`, so neither overwrites the other.
+ * `isolate` with `overflow-hidden` keeps the growing photo clipped to the
+ * rounded corners.
  */
 import { Image } from 'astro:assets';
 import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { projectHref } from '../../lib/project-detail';
 
 interface ShowcaseProject {
   id: string;
+  slug: string;
   title: string;
   summary: string;
   image: { src: string; alt?: string };
@@ -33,10 +46,12 @@ interface Props {
   headingId: string;
   intro: string;
   projects: readonly ShowcaseProject[];
+  /** The words under each summary, "Read more". */
+  cue: string;
   link: { label: string; href: string };
 }
 
-const { heading, headingId, intro, projects, link } = Astro.props;
+const { heading, headingId, intro, projects, cue, link } = Astro.props;
 
 /**
  * The layout depends on how many projects arrive (spec 0005, AC-29), so a
@@ -76,7 +91,7 @@ const imageSizes = '(min-width: 48rem) 50vw, 100vw';
   {projects.map((project, index) => (
     <li
       class:list={[
-        'relative isolate flex min-h-72 flex-col justify-end overflow-hidden rounded-ui bg-black',
+        'group relative isolate flex min-h-72 flex-col justify-end overflow-hidden rounded-ui bg-black link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-gold-ink',
         featured && index === 0 && firstTileClass,
       ]}
     >
@@ -86,16 +101,28 @@ const imageSizes = '(min-width: 48rem) 50vw, 100vw';
         inferSize
         widths={[400, 640, 960, 1280]}
         sizes={imageSizes}
-        class="absolute inset-0 -z-10 size-full object-cover object-center"
+        class="absolute inset-0 -z-10 size-full object-cover object-center transition-[scale] duration-500 ease-out motion-safe:group-hover:scale-105"
       />
       <div class="m-3 rounded-ui bg-scrim p-5 text-white md:m-4 md:p-6">
         <p class="text-small font-semibold tracking-wide uppercase">
           {project.service.title}
         </p>
         <h3 class="mt-1 text-h3 font-semibold text-balance text-white">
-          {project.title}
+          <a
+            href={projectHref(project.slug)}
+            class="after:absolute after:inset-0 focus-visible:outline-none"
+          >
+            {project.title}
+          </a>
         </h3>
         <p class="mt-2">{project.summary}</p>
+        <p
+          aria-hidden="true"
+          class="mt-3 inline-flex items-center gap-1.5 text-small font-semibold"
+        >
+          {cue}
+          <Icon name="arrow-right" size={16} />
+        </p>
       </div>
     </li>
   ))}

@@ -4,8 +4,9 @@
  * and photo on them comes from a content entry.
  *
  * 1. Intro: the ruled `h1` and one paragraph.
- * 2. The photo wall, one tile per project in `order`. With no projects in
- *    this language, the empty state takes its place instead.
+ * 2. The photo wall, one tile per project in `order`, each a link to its
+ *    page (spec 0015). With no projects in this language, the empty state
+ *    takes its place instead.
  * 3. The gold closing band, linking to Contact.
  *
  * This file is the only place that knows the page's shape. It owns the
@@ -41,6 +42,7 @@ const [page, projects] = await Promise.all([
     <ProjectGallery
       labelledBy="project-heading"
       projects={projects}
+      cue={page.tileCue}
       entranceFrom={2}
     />
   ) : (

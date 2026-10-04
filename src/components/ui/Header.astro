@@ -61,6 +61,22 @@ const here = normalise(currentPath);
 const isCurrent = (href: string): boolean => normalise(href) === here;
 
 /**
+ * A page below a nav item's path, such as `/project/harbour-tower` under
+ * `/project` (spec 0015): the item takes the active underline without
+ * `aria-current`, since the current page is the project, not the list. The
+ * path must continue at a `/` boundary, so `/projects` never marks
+ * `/project`, and `/` marks nothing, or every page would mark Home.
+ */
+const isSectionActive = (href: string): boolean => {
+  const base = normalise(href);
+  return base !== '/' && here.startsWith(`${base}/`);
+};
+
+/** Active underline: the page itself, or a page below it. */
+const isActive = (href: string): boolean =>
+  isCurrent(href) || isSectionActive(href);
+
+/**
  * A service page is not itself a nav item, so SERVICES gets the active underline
  * without `aria-current`: the current page is the service, not the group.
  */
@@ -155,7 +171,7 @@ const activeClass =
                   aria-current={isCurrent(item.href) ? 'page' : undefined}
                   class:list={[
                     barLinkClass,
-                    isCurrent(item.href) && activeClass,
+                    isActive(item.href) && activeClass,
                   ]}
                 >
                   {item.label}
@@ -247,7 +263,7 @@ const activeClass =
                 aria-current={isCurrent(item.href) ? 'page' : undefined}
                 class:list={[
                   panelLinkClass,
-                  isCurrent(item.href) && activeClass,
+                  isActive(item.href) && activeClass,
                 ]}
               >
                 {item.label}
