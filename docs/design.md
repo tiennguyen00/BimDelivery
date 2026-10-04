@@ -138,7 +138,7 @@ focus indicators. Computed from the hex values above.
 | gold-ink (`StatsBand` numbers, the open accordion title, a `==` phrase) / ink-strong (`StatsBand` labels) | white | 5.05 / 12.63 | 4.5 |
 | black (a closed accordion item's title) | gold | 8.73 | 4.5 |
 | ink (text on `bg-diagonal`), worst case over a stripe line | line (`#e5e5e5`) | 4.56 | 4.5 |
-| white (the hero's heading and subheading, the Project page's tile captions) | scrim over any photo, worst case over pure white (composite `#666666`) | 5.74 at worst | 4.5 |
+| white (the hero's heading and subheading, the project tile captions on `/project` and the home page, and their "Read more" cues) | scrim over any photo, worst case over pure white (composite `#666666`) | 5.74 at worst | 4.5 |
 | two colour focus ring, black inner band / white outer band (the hero photo and the gold band) | gold / any photo | black on gold 8.73; on any colour at all, one of the two bands reaches at least 4.58 | 3.0 |
 | white (the contact form band's heading, field labels and hints, noscript note, captcha link) | `scrim-strong` plus a `bg-diagonal-dark` line over a pure white photo pixel (composite `#3f3f3f`) | 10.5 at worst | 4.5 |
 | error-on-dark (the contact form band's field errors and messages) | the same worst case, `#3f3f3f` | 5.19 at worst | 4.5 |
@@ -199,9 +199,11 @@ constrained and `min-h-11` (the 44px tap target) relies on it.
 | Card padding | 24px | 24px | 24px |
 | Grid gaps | 24px | 24px | 24px |
 
-One written exception to the grid gap: the Project page's photo wall
-(`ProjectGallery`, spec 0014) uses an 8px gap (`gap-2`) across and down, so
-the photos read as one wall split by thin white seams. No other grid does.
+One written exception to the grid gap: the photo wall, on the Project page
+(`ProjectGallery`, spec 0014) and in a project detail page's gallery
+(`ProjectPhotos`, spec 0015), uses an 8px gap (`gap-2`) across and down, so
+the photos read as one wall split by thin seams. Both take it from one place,
+`src/components/project/wall.ts`. No other grid does.
 
 There is no vertical margin between sections. Adjacent sections of the same
 tone are fine; alternating white and tint is the default rhythm a page should
@@ -421,9 +423,11 @@ and so on).
 | `strokeWidth` | `number`, on the 24 unit grid; fill glyphs ignore it | `2` |
 | `class` | `string` | none |
 
-The whole set, thirty five glyphs on one 24 unit grid: `menu`, `close`,
+The whole set, thirty six glyphs on one 24 unit grid: `menu`, `close`,
 `chevron-down`, `check` (the home presence band's why choose list, spec 0005),
-`arrow-right` (the home service card's cue, spec 0005), `plus` and `minus`
+`arrow-right` (the home service card's cue, spec 0005, and the project tiles'
+cue and the next project link, spec 0015), `arrow-left` (a project detail
+page's "All projects" link, its mirror, spec 0015), `plus` and `minus`
 (an `Accordion` item closed and open, spec 0010), the footer's contact glyphs
 `phone`, `mail`, `globe`, the five social marks `linkedin`, `facebook`,
 `youtube`, `x`, `instagram`, and the four solid stat glyphs
@@ -527,6 +531,13 @@ Sticky, one constant height, white, and it registers **no scroll listener**.
   in the accessibility tree, since the other is `display: none` at that
   breakpoint. On a service page SERVICES takes the underline and **no**
   `aria-current`, because the current page is the service, not the group.
+- **Section marking** (spec 0015): a nav link other than `/` also takes the
+  underline, again with **no** `aria-current`, when the current path continues
+  below its `href` at a `/` boundary. So on `/project/harbour-tower` the
+  Projects item is underlined, while `/projects` would never mark `/project`.
+  Put together: the underline when `isCurrent(href) || isSectionActive(href)`,
+  `aria-current="page"` only when `isCurrent(href)`. It is one generic rule,
+  so any future nested route gets it with no extra code.
 - No services in the content means no SERVICES control at all, in either copy.
 
 ### `Footer` · `src/components/ui/Footer.astro`
@@ -701,9 +712,10 @@ card with `shadow-lg`.
 | `button` | `Link` (required) | |
 
 The closing call to action: a self contained gold band, always gold, taking no
-tone. Today only `/styleguide` shows it. Spec 0005 kept it for the service
-pages, but spec 0013 closed them inside their process band instead, so no
-page uses it; its future (a service block type, or deletion) is a follow up.
+tone. Spec 0005 kept it for the service pages, but spec 0013 closed them
+inside their process band instead. The Project page closes with it (spec
+0014), and so does every project detail page, fed `projectPage.detail.cta`
+(spec 0015).
 
 - **It is not a `Section` with a third tone**, and that is the point. Two tones
   and both light is what lets every other component name its colours directly
@@ -847,6 +859,7 @@ band, its tone, and its heading id.
 |---|---|---|
 | `labelledBy` | `string` (required), the page's `h1` id | |
 | `projects` | `readonly Project[]` (required), one or more | |
+| `cue` | `string` (required), `projectPage.tileCue` | |
 | `entranceFrom` | `number` | none |
 
 The Project page's photo wall (spec 0014), after the reference gallery: every
@@ -855,8 +868,9 @@ project as a photo tile, one column, then two at `md`, then three at `lg`.
 - **Its own band, not a `Section`**: white, with the band frame's side gutters
   and bottom padding (`bandPaddingBottomClass` in `styles.ts`) and no top
   padding, since it sits straight under the intro. It takes **no maximum
-  width**, the one band that does not, so the wall runs the full window width
-  inside the gutters. The list is labelled by the page's `h1`; the wall adds
+  width**, so the wall runs the full window width inside the gutters. Three
+  bands do this, each written down: this wall, and a project detail page's
+  cover and gallery (spec 0015). The list is labelled by the page's `h1`; the wall adds
   no name of its own.
 - **Every tile is a fixed 5:4 box** (`aspect-5/4`), `rounded-ui`, on a black
   fill that shows only while the photo loads. The box is reserved before the
@@ -868,21 +882,112 @@ project as a photo tile, one column, then two at `md`, then three at `lg`.
   summary. Project titles are capped at 60 characters in the content schema,
   which is what keeps the caption inside the tile at every width.
 - **The seams are 8px** (`gap-2`), the grid gap's one written exception.
-- **Tiles are not links yet**, since there are no project detail pages. A tile
-  holds nothing focusable and **never promises a click**: the cursor stays
-  the default and there is no link label. Its one hover response is a **slow
-  zoom of the photo alone** (`motion-safe:group-hover:scale-105`, 500ms, ease
-  out, the `<li>` a `group`), clipped by the rounded corners; the box, the
-  caption, and the layout never move, and reduced motion gets no zoom at all.
-  It bends the "not a link, do not look like one" rule the way the home intro
-  cards do, gently, and it is what the tiles keep once they link (spec 0014,
-  revised 2026-09-28). The home showcase photo still stays still. When detail
-  pages arrive, each tile becomes one link (a "Read more" label from content),
-  keeping the zoom and adding the pointer cursor and the light tone focus
-  ring.
+- **The geometry is `wall.ts`**: the grid, the tile frame, and the photo's
+  `widths` and `sizes`, shared with a detail page's gallery (`ProjectPhotos`)
+  so the two walls cannot drift apart.
+- **Every tile is one link** to its project page, following the project tile
+  link rule below.
+- **Hover zooms the photo alone** (`motion-safe:group-hover:scale-105`, 500ms,
+  ease out, the `<li>` a `group`), clipped by the rounded corners; the box,
+  the caption, and the layout never move, and reduced motion gets no zoom at
+  all.
 - The first three tiles load eagerly (a desktop's largest paint) and every
   later one lazily. The page never renders the wall with no projects; it
   shows the empty state instead.
+
+### The project tile link rule · `ProjectGallery` and the home `ProjectShowcase`
+
+Every project tile on the site, on `/project` and in the home showcase,
+follows one rule (spec 0015, replacing spec 0014's "tiles are not links" and
+spec 0005's "the photo stays still"):
+
+- **Exactly one link, one tab stop**: the title's text is the link (the `h2`
+  on `/project`, the `h3` on home), and its `::after` is stretched over the
+  whole tile (`after:absolute after:inset-0`, the `Card` pattern). Its
+  accessible name is the project title, and the pointer shows anywhere on the
+  tile. Nothing else inside it is focusable.
+- **The cue**: under the title (`/project`) or the summary (home), "Read more"
+  from content (`projectPage.tileCue`, `home.projectShowcase.cue`) and an
+  `arrow-right`, white, `text-small font-semibold`, **`aria-hidden`**, so a
+  screen reader hears six distinct titles rather than six "Read more"s.
+- **Keyboard focus** draws the light tone `gold-ink` ring round the whole
+  tile (`link-focus:outline-gold-ink` on the `<li>`), never round the title
+  alone; the link itself sets `focus-visible:outline-none`.
+- **Hover zooms the photo alone**, 105% over 500ms, `motion-safe`: `group`
+  and `isolate` on the `<li>` with its `overflow-hidden`, and
+  `transition-[scale] duration-500 ease-out motion-safe:group-hover:scale-105`
+  on the `Image`. The box, the caption, and the layout never move.
+- The home band's "View all projects" button stays, the one way to the list.
+- A gallery tile on a detail page is **not** a project tile: no link, no cue,
+  no zoom, the default cursor.
+
+### `IntroBand` (project) · `src/components/project/IntroBand.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `heading` | `string` (required) | |
+| `headingId` | `string` (required) | |
+| `intro` | `string` (required), may carry marks | |
+| `context` | `{ backLink: Link; service: Link }` | none |
+| `entranceFrom` | `number`, the first entrance step | `0` |
+
+The `/project` intro (spec 0014), reused by every project detail page (spec
+0015). It renders the inside of a white `Section` labelled by its `h1`.
+
+- **Without `context`** it is exactly the `/project` intro: the ruled `h1` in
+  capitals by CSS only, then one `text-lead` paragraph in the narrow width.
+- **With `context`**, a block above the `h1` holds two left aligned links, each
+  44px tall for touch: the back link (an `arrow-left` and its label,
+  `text-small`, `gold-ink`) and, on its own line, the project's service
+  (`text-small font-semibold tracking-wide uppercase`, `gold-ink`) linking to
+  its service page. Both underline on hover. `context` carries both links
+  together, so the band has both or neither.
+- **The entrance** counts up from `entranceFrom`: the links block, then the
+  `h1`, then the paragraph.
+
+### The project detail page · `src/pages/project/[slug].astro`
+
+One page per project at `/project/<slug>` (spec 0015), six bands: the intro
+(`IntroBand` with `context`), the cover, the story, the gallery, the next
+project link (two or more projects only), and the gold `CtaBand`. Every word
+comes from the project's entry, its service, `projectPage.detail`, or the site
+name; the derived values (the next project, the facts rows, the head) come
+from `src/lib/project-detail.ts`.
+
+- **`ProjectCover`**, the cover band: white, the band gutters, **no maximum
+  width** and no vertical padding. One photo box, `rounded-ui` on a black fill
+  that shows only while it loads, fixed at 4:3 below `md`, 16:9 at `md`, and
+  21:9 at `lg`, so its space is reserved before the photo arrives. The photo
+  covers it, loads eagerly with high fetch priority (the page's largest
+  paint), and has `widths` up to 2400. No caption, no link, no hover.
+- **`ProjectStory`**, the story band: a white `Section`, no label. One column
+  below `lg`, the facts panel first; at `lg` three columns with a 32px gap,
+  the write up across the first two and the facts panel in the third, both at
+  the top. The DOM order stays facts first and the placement is explicit
+  (`lg:col-span-2 lg:row-start-1`, `lg:col-start-3 lg:row-start-1`), never auto
+  flow. Each write up section is an `h2` at `text-h3`, then its paragraphs
+  through `Emphasis` (`light`), 16px apart, with 48px between sections.
+- **The facts panel**: `bg-tint`, `rounded-ui`, 24px padding (32px from `md`),
+  an `h2` at `text-h3`, then one `<dl>`: each `<dt>` a `text-small font-semibold
+  tracking-wide uppercase` label in `ink-muted`, each `<dd>` the value in
+  `ink-strong` with `wrap-break-word`, so a long place or client wraps inside
+  the panel. A fact the entry leaves out has **no row at all**, never an empty
+  `<dt>` or a dash. The rows and their formatting (`42,000 m²`, `LOD 300`,
+  `Revit, Navisworks`) come from `projectFacts`, never a component.
+- **`ProjectPhotos`**, the gallery band: `tint`, the band gutters and padding,
+  **no maximum width**. A left aligned ruled `h2` names the band and its list.
+  The wall is `/project`'s, from `wall.ts`: one, two, then three columns, 8px
+  seams, fixed 5:4 tiles on black. A gallery tile is only a photo with its
+  `alt`: no caption, nothing focusable, the default cursor, no hover, and
+  every photo lazy.
+- **`NextProject`**, the way on: a white, narrow `Section` holding one centred
+  link to the next project by `order` (the last wraps to the first). Inside
+  it, the label (`text-small font-semibold tracking-wide uppercase`,
+  `ink-muted`) on its own line, then the title (`text-h3 font-semibold`,
+  `ink-strong`) and an `arrow-right` in `gold-ink`. Its name is the label and
+  the title together; the title underlines on hover; focus shows the light
+  tone `gold-ink` ring. With one project the band is absent, so the link never
+  points to its own page.
 
 ## Focus and motion
 
@@ -1038,7 +1143,16 @@ carousel and reveal scripts and add none (spec 0013).
   `h1`'s rule draws with the scroll direction. The empty state and the gold
   band do not move. On hover a tile's photo slowly zooms to 105%
   (`motion-safe` only); the zoom moves the `Image` by `scale`, the entrance
-  and the reveal move the `<li>`, so neither overwrites the other.
+  and the reveal move the `<li>`, so neither overwrites the other. The home
+  showcase tiles zoom the same way (spec 0015).
+- Every project detail page imports `reveal.ts` too (spec 0015): the intro
+  moves on load through the `entrance` utility, the back link and service line
+  at step 0, the `h1` at 1, the summary at 2, and the cover at 3, and none of
+  them takes `data-reveal`. On scroll the facts panel and each write up
+  section reveal, then the gallery's heading block and its tiles one after
+  another (`data-reveal-stagger`), and the `h1`'s and the gallery heading's
+  rules draw with the scroll direction. The next project band and the gold
+  band do not move.
 - **Don't** give the hero or the intro band the fade-and-rise: the hero is the
   largest contentful paint, and the intro band already moves with the counter.
   What is banned there is revealing the band, not all motion on it. The intro
@@ -1068,10 +1182,11 @@ carousel and reveal scripts and add none (spec 0013).
   home page's `IntroBand` import `src/scripts/counters.ts`, `Hero` and the
   service pages' `IntroCarousel` import `src/scripts/carousel.ts` (the hero's
   script, renamed and shared by spec 0013), and the home, About, Contact,
-  service, and Project pages import `src/scripts/reveal.ts` (all spec 0005;
-  About by spec 0010, which adds no script: its entrance and accordion are CSS
-  and HTML; the service pages by spec 0013 and the Project page by spec 0014,
-  which add none either). `reveal.ts` holds two separate
+  service, Project, and project detail pages import `src/scripts/reveal.ts`
+  (all spec 0005; About by spec 0010, which adds no script: its entrance and
+  accordion are CSS and HTML; the service pages by spec 0013, the Project page
+  by spec 0014, and the project detail pages by spec 0015, which add none
+  either). `reveal.ts` holds two separate
   halves, the fade-and-rise reveal and the heading rule, in one file so the
   count stays four. Remove any script and the site stays usable. Any fifth one
   needs a reason this good.

@@ -35,6 +35,9 @@ import ContactCard from '../components/contact/ContactCard.astro';
 import PatternBand from '../components/ui/PatternBand.astro';
 import FeaturesCards from '../components/service/FeaturesCards.astro';
 import ProjectGallery from '../components/project/ProjectGallery.astro';
+import ProjectStory from '../components/project/ProjectStory.astro';
+import NextProject from '../components/project/NextProject.astro';
+import { nextProject, projectFacts, projectHref } from '../lib/project-detail';
 import type { BlockAt } from '../lib/service-page';
 import { telHref } from '../lib/contact';
 import { resolveLocale } from '../i18n/locales';
@@ -81,6 +84,7 @@ const iconNames: readonly IconName[] = [
   'chevron-down',
   'check',
   'arrow-right',
+  'arrow-left',
   'plus',
   'minus',
   'phone',
@@ -129,6 +133,21 @@ const lineIconNames: readonly IconName[] = [
 const firstService = services[0];
 const secondService = services[1];
 const firstProject = projects[0];
+
+/**
+ * A project detail page's facts panel at its fullest and at its shortest,
+ * and its next project link, from the real project entries (spec 0015).
+ */
+const byFactCount = projects
+  .map((project) => ({
+    project,
+    facts: projectFacts(project, projectPage.detail, lang),
+  }))
+  .toSorted((a, b) => b.facts.length - a.facts.length);
+const fullestFacts = byFactCount[0];
+const shortestFacts = byFactCount.at(-1);
+const firstNext =
+  firstProject === undefined ? undefined : nextProject(projects, firstProject);
 
 /**
  * The first service's intro photo and closing call to action (spec 0013),
@@ -1260,11 +1279,12 @@ const headCellClass =
         worst over any photo.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
-        Tab through it: there is no stop inside. Hover a tile with a mouse and
-        only its photo slowly zooms; the cursor stays an arrow, and with reduced
-        motion nothing grows. The tiles are not links until project detail pages
-        exist. On the page the wall has no maximum width; here it sits inside
-        this section's column.
+        Tab through it: one stop per tile, and the gold ink ring wraps the whole
+        tile. Each tile is one link to its project page, named by the title; the
+        "Read more" cue shows but is not announced. Hover anywhere on a tile and
+        the pointer shows and only its photo slowly zooms; with reduced motion
+        nothing grows. On the page the wall has no maximum width; here it sits
+        inside this section's column.
       </p>
 
       {projects.length > 0 && (
@@ -1273,6 +1293,54 @@ const headCellClass =
             labelledBy="sg-gallery"
             projects={projects}
             cue={projectPage.tileCue}
+          />
+        </div>
+      )}
+    </Section>
+
+    <Section labelledBy="sg-project-detail">
+      <h2 id="sg-project-detail">Project detail pieces</h2>
+      <p class="mt-4 max-w-narrow">
+        A project page's story band and its way on, from the real entries: the
+        facts panel beside the write up, then the next project link. The panel
+        is tint with ink muted labels and ink strong values, and lists only the
+        facts a project has.
+      </p>
+      <p class="mt-3 max-w-narrow text-small text-ink">
+        Below 1024px the panel comes first; from 1024px it sits in the right
+        column with the DOM order unchanged. The first shows the fullest panel,
+        the second the shortest, with no empty rows. Tab to the next project
+        link: one stop, named by its label and title, with the gold ink ring.
+      </p>
+
+      {fullestFacts && (
+        <div class="mt-8 rounded-ui border border-line p-6">
+          <ProjectStory
+            sections={fullestFacts.project.writeUp.slice(0, 1)}
+            factsHeading={projectPage.detail.factsHeading}
+            factsHeadingId="sg-facts-full-heading"
+            facts={fullestFacts.facts}
+          />
+        </div>
+      )}
+
+      {shortestFacts && shortestFacts !== fullestFacts && (
+        <div class="mt-8 rounded-ui border border-line p-6">
+          <ProjectStory
+            sections={shortestFacts.project.writeUp.slice(0, 1)}
+            factsHeading={projectPage.detail.factsHeading}
+            factsHeadingId="sg-facts-short-heading"
+            facts={shortestFacts.facts}
+          />
+        </div>
+      )}
+
+      {firstNext && (
+        <div class="mt-8 rounded-ui border border-line p-6">
+          <NextProject
+            label={projectPage.detail.nextLabel}
+            title={firstNext.title}
+            href={projectHref(firstNext.slug)}
           />
         </div>
       )}
