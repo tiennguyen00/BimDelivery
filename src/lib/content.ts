@@ -74,6 +74,9 @@ export type ServiceLookup =
 export type Project = Readonly<Omit<Entry<'projects'>['data'], 'service'>> &
   Readonly<{ id: string; service: Readonly<{ slug: string; title: string }> }>;
 
+/** The Project page's copy, and the copy every detail page shares (spec 0015). */
+export type ProjectPage = Readonly<Entry<'projectPage'>['data']>;
+
 // Pure checks and transforms
 
 const fileOf = (entry: { id: string; filePath?: string }): string =>
@@ -299,7 +302,7 @@ export const getContactPage = async (lang: Locale) => {
   return { ...page.data, details: settings.contact };
 };
 
-export const getProjectPage = async (lang: Locale) =>
+export const getProjectPage = async (lang: Locale): Promise<ProjectPage> =>
   (await loadSingle('projectPage', lang, 'project')).data;
 
 export const getNotFoundPage = async (lang: Locale) =>
@@ -349,6 +352,7 @@ export const getProjects = async (
     loadChecked('services'),
   ]);
   const entries = inLang(lang, projects);
+  checkUnique('projects', lang, 'slug', entries, (entry) => entry.data.slug);
   checkUnique('projects', lang, 'order', entries, (entry) => entry.data.order);
   return entries
     .toSorted(byOrder)

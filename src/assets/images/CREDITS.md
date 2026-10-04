@@ -14,28 +14,53 @@ All photos come from Pexels and are covered by the
 permission needed, and no attribution required on the site. They are
 placeholders until real project photography arrives.
 
-| Used for                   | Pexels photo                                                                                                               | Licence        |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| Home hero                  | <https://www.pexels.com/photo/brown-and-black-house-miniature-3961750/>                                                    | Pexels License |
-| Home hero, photo 2         | <https://www.pexels.com/photo/31405835/>                                                                                   | Pexels License |
-| Home overview              | <https://www.pexels.com/photo/three-people-collaborating-on-a-project-6615107/>                                            | Pexels License |
-| About                      | <https://www.pexels.com/photo/professional-individuals-working-together-5582590/>                                          | Pexels License |
-| Service: Revit Modeling    | <https://www.pexels.com/photo/men-sitting-at-a-table-and-looking-at-a-laptop-displaying-a-3d-project-of-a-house-15764095/> | Pexels License |
-| Revit Modeling, photo 2    | <https://www.pexels.com/photo/architect-working-on-a-computer-15764116/>                                                   | Pexels License |
-| Revit Modeling, photo 3    | <https://www.pexels.com/photo/top-view-of-an-architect-sitting-at-a-desk-and-creating-a-project-9618456/>                  | Pexels License |
-| Service: Scan to BIM       | <https://www.pexels.com/photo/a-man-surveying-the-area-5802822/>                                                           | Pexels License |
-| Scan to BIM, photo 2       | <https://www.pexels.com/photo/gray-concrete-building-interior-236709/>                                                     | Pexels License |
-| Service: BIM Coordination  | <https://www.pexels.com/photo/metal-beams-in-a-construction-site-3818947/>                                                 | Pexels License |
-| BIM Coordination, photo 2  | <https://www.pexels.com/photo/two-man-holding-white-paper-1216589/>                                                        | Pexels License |
-| BIM Coordination, photo 3  | <https://www.pexels.com/photo/engineers-looking-at-blueprint-3862135/>                                                     | Pexels License |
-| Project: Harbour Tower     | <https://www.pexels.com/photo/facade-of-architectural-glass-building-8171870/>                                             | Pexels License |
-| Project: Riverside Offices | <https://www.pexels.com/photo/modern-building-with-a-glass-facade-reflecting-other-buildings-in-city-9321327/>             | Pexels License |
-| Project: Midtown Retrofit  | <https://www.pexels.com/photo/modern-high-rise-construction-site-with-crane-33628380/>                                     | Pexels License |
-| Project: Corner Block      | <https://www.pexels.com/photo/stylish-geometric-building-with-glass-balconies-4082527/>                                    | Pexels License |
-| Project: College Hall      | <https://www.pexels.com/photo/modern-office-building-17097090/>                                                            | Pexels License |
-| Project: Seafront Hotel    | <https://www.pexels.com/photo/1838640/>                                                                                    | Pexels License |
-| Contact intro              | <https://www.pexels.com/photo/323705/>                                                                                     | Pexels License |
-| Contact form band          | <https://www.pexels.com/photo/2138126/>                                                                                    | Pexels License |
+| Used for                     | Pexels photo                                                                                                               | Licence        |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| Home hero                    | <https://www.pexels.com/photo/brown-and-black-house-miniature-3961750/>                                                    | Pexels License |
+| Home hero, photo 2           | <https://www.pexels.com/photo/31405835/>                                                                                   | Pexels License |
+| Home overview                | <https://www.pexels.com/photo/three-people-collaborating-on-a-project-6615107/>                                            | Pexels License |
+| About                        | <https://www.pexels.com/photo/professional-individuals-working-together-5582590/>                                          | Pexels License |
+| Service: Revit Modeling      | <https://www.pexels.com/photo/men-sitting-at-a-table-and-looking-at-a-laptop-displaying-a-3d-project-of-a-house-15764095/> | Pexels License |
+| Revit Modeling, photo 2      | <https://www.pexels.com/photo/architect-working-on-a-computer-15764116/>                                                   | Pexels License |
+| Revit Modeling, photo 3      | <https://www.pexels.com/photo/top-view-of-an-architect-sitting-at-a-desk-and-creating-a-project-9618456/>                  | Pexels License |
+| Service: Scan to BIM         | <https://www.pexels.com/photo/a-man-surveying-the-area-5802822/>                                                           | Pexels License |
+| Scan to BIM, photo 2         | <https://www.pexels.com/photo/gray-concrete-building-interior-236709/>                                                     | Pexels License |
+| Service: BIM Coordination    | <https://www.pexels.com/photo/metal-beams-in-a-construction-site-3818947/>                                                 | Pexels License |
+| BIM Coordination, photo 2    | <https://www.pexels.com/photo/two-man-holding-white-paper-1216589/>                                                        | Pexels License |
+| BIM Coordination, photo 3    | <https://www.pexels.com/photo/engineers-looking-at-blueprint-3862135/>                                                     | Pexels License |
+| Project: Harbour Tower       | <https://www.pexels.com/photo/facade-of-architectural-glass-building-8171870/>                                             | Pexels License |
+| Project: Riverside Offices   | <https://www.pexels.com/photo/modern-building-with-a-glass-facade-reflecting-other-buildings-in-city-9321327/>             | Pexels License |
+| Project: Midtown Retrofit    | <https://www.pexels.com/photo/modern-high-rise-construction-site-with-crane-33628380/>                                     | Pexels License |
+| Project: Corner Block        | <https://www.pexels.com/photo/stylish-geometric-building-with-glass-balconies-4082527/>                                    | Pexels License |
+| Project: College Hall        | <https://www.pexels.com/photo/modern-office-building-17097090/>                                                            | Pexels License |
+| Project: Seafront Hotel      | <https://www.pexels.com/photo/1838640/>                                                                                    | Pexels License |
+| Harbour Tower, gallery 1     | <https://www.pexels.com/photo/19821492/>                                                                                   | Pexels License |
+| Harbour Tower, gallery 2     | <https://www.pexels.com/photo/18267934/>                                                                                   | Pexels License |
+| Harbour Tower, gallery 3     | <https://www.pexels.com/photo/14301470/>                                                                                   | Pexels License |
+| Harbour Tower, gallery 4     | <https://www.pexels.com/photo/7078620/>                                                                                    | Pexels License |
+| Riverside Offices, gallery 1 | <https://www.pexels.com/photo/4067525/>                                                                                    | Pexels License |
+| Riverside Offices, gallery 2 | <https://www.pexels.com/photo/16846525/>                                                                                   | Pexels License |
+| Riverside Offices, gallery 3 | <https://www.pexels.com/photo/2736843/>                                                                                    | Pexels License |
+| Riverside Offices, gallery 4 | <https://www.pexels.com/photo/12149149/>                                                                                   | Pexels License |
+| Riverside Offices, gallery 5 | <https://www.pexels.com/photo/37293743/>                                                                                   | Pexels License |
+| Riverside Offices, gallery 6 | <https://www.pexels.com/photo/22637001/>                                                                                   | Pexels License |
+| Riverside Offices, gallery 7 | <https://www.pexels.com/photo/30602080/>                                                                                   | Pexels License |
+| Riverside Offices, gallery 8 | <https://www.pexels.com/photo/5716708/>                                                                                    | Pexels License |
+| Riverside Offices, gallery 9 | <https://www.pexels.com/photo/1463917/>                                                                                    | Pexels License |
+| Midtown Retrofit, gallery 1  | <https://www.pexels.com/photo/10543153/>                                                                                   | Pexels License |
+| Midtown Retrofit, gallery 2  | <https://www.pexels.com/photo/14169558/>                                                                                   | Pexels License |
+| Midtown Retrofit, gallery 3  | <https://www.pexels.com/photo/7121536/>                                                                                    | Pexels License |
+| Midtown Retrofit, gallery 4  | <https://www.pexels.com/photo/34911458/>                                                                                   | Pexels License |
+| Corner Block, gallery 1      | <https://www.pexels.com/photo/258184/>                                                                                     | Pexels License |
+| Corner Block, gallery 2      | <https://www.pexels.com/photo/32853356/>                                                                                   | Pexels License |
+| Corner Block, gallery 3      | <https://www.pexels.com/photo/5505125/>                                                                                    | Pexels License |
+| College Hall, gallery 1      | <https://www.pexels.com/photo/5313088/>                                                                                    | Pexels License |
+| College Hall, gallery 2      | <https://www.pexels.com/photo/8472257/>                                                                                    | Pexels License |
+| Seafront Hotel, gallery 1    | <https://www.pexels.com/photo/17619969/>                                                                                   | Pexels License |
+| Seafront Hotel, gallery 2    | <https://www.pexels.com/photo/2394446/>                                                                                    | Pexels License |
+| Seafront Hotel, gallery 3    | <https://www.pexels.com/photo/10135442/>                                                                                   | Pexels License |
+| Contact intro                | <https://www.pexels.com/photo/323705/>                                                                                     | Pexels License |
+| Contact form band            | <https://www.pexels.com/photo/2138126/>                                                                                    | Pexels License |
 
 ## Icons copied from open licence sets (spec 0013)
 

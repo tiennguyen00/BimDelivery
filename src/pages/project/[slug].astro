@@ -1,0 +1,139 @@
+---
+/**
+ * Every project detail page, from one route (spec 0015): six bands, in
+ * order, then the footer. Every word, number, and photo comes from the
+ * project's entry, its service, the shared `projectPage` copy, or the site
+ * name, so a project page needs no code edit to exist.
+ *
+ * 1. Intro: the "All projects" back link, the service line (a link to the
+ *    service page), the ruled `h1`, and the summary.
+ * 2. The cover photo, wide.
+ * 3. The story: the write up beside the facts panel.
+ * 4. The gallery: an `h2` and the photo wall.
+ * 5. The next project link, only when the language has two or more.
+ * 6. The gold closing band, linking to Contact.
+ *
+ * This file sits beside `src/pages/project.astro`, which still builds
+ * `/project`. It owns the heading ids, under the `<band>-heading` rule; the
+ * write up's section headings need none, since nothing points at them.
+ */
+import type { GetStaticPaths } from 'astro';
+import PageLayout from '../../layouts/PageLayout.astro';
+import Section from '../../components/ui/Section.astro';
+import CtaBand from '../../components/ui/CtaBand.astro';
+import IntroBand from '../../components/project/IntroBand.astro';
+import ProjectCover from '../../components/project/ProjectCover.astro';
+import ProjectStory from '../../components/project/ProjectStory.astro';
+import ProjectPhotos from '../../components/project/ProjectPhotos.astro';
+import NextProject from '../../components/project/NextProject.astro';
+import { DEFAULT_LOCALE } from '../../i18n/locales';
+import {
+  getProjectPage,
+  getProjects,
+  getSettings,
+  type Project,
+} from '../../lib/content';
+import {
+  nextProject,
+  projectFacts,
+  projectHead,
+  projectHref,
+} from '../../lib/project-detail';
+
+/**
+ * As on the service route, `getStaticPaths` has no `Astro.currentLocale`, so
+ * it reads the default locale, which is the whole route table today. Each
+ * page gets its project and the next one as props, so the page body reads no
+ * collection a second time.
+ */
+export const getStaticPaths = (async () => {
+  const projects = await getProjects(DEFAULT_LOCALE);
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project, next: nextProject(projects, project) },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  project: Project;
+  /** Absent when the language has only this one project. */
+  next?: Project;
+}
+
+const { project, next } = Astro.props;
+
+const [page, settings] = await Promise.all([
+  getProjectPage(project.lang),
+  getSettings(project.lang),
+]);
+
+const { detail } = page;
+const head = projectHead(project, settings.siteName);
+const facts = projectFacts(project, detail, project.lang);
+
+/** The intro takes steps 0 (links), 1 (`h1`), and 2 (summary). */
+const COVER_STEP = 3;
+---
+
+<PageLayout title={head.title} description={head.description}>
+  <Section tone="white" labelledBy="project-detail-heading">
+    <IntroBand
+      heading={project.title}
+      headingId="project-detail-heading"
+      intro={project.summary}
+      context={{
+        backLink: detail.backLink,
+        service: {
+          label: project.service.title,
+          href: `/${project.service.slug}`,
+        },
+      }}
+    />
+  </Section>
+
+  <ProjectCover image={project.image} entranceStep={COVER_STEP} />
+
+  <Section tone="white">
+    <ProjectStory
+      sections={project.writeUp}
+      factsHeading={detail.factsHeading}
+      factsHeadingId="project-facts-heading"
+      facts={facts}
+    />
+  </Section>
+
+  <ProjectPhotos
+    heading={detail.galleryHeading}
+    headingId="project-gallery-heading"
+    photos={project.gallery}
+  />
+
+  {next && (
+    <Section tone="white" width="narrow">
+      <NextProject
+        label={detail.nextLabel}
+        title={next.title}
+        href={projectHref(next.slug)}
+      />
+    </Section>
+  )}
+
+  <CtaBand
+    heading={detail.cta.heading}
+    headingId="project-detail-cta-heading"
+    text={detail.cta.text}
+    button={detail.cta.button}
+  />
+</PageLayout>
+
+{/**
+ * The scroll reveal and the heading rule (spec 0005), the page's choice as on
+ * the other pages. The intro and the cover move on load through the CSS
+ * `entrance` (steps 0 to 3) and never take `data-reveal`. The facts panel,
+ * each write up section, the gallery heading, and the gallery tiles reveal
+ * on scroll, and both rules draw with the scroll direction. The next project
+ * band and the gold band do not move.
+ */}
+<script>
+  import '../../scripts/reveal';
+</script>

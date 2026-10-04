@@ -92,13 +92,21 @@ const imageSchema = (image: SchemaContext['image']) => withAlt(image());
  * the one `image.domains` allows in `astro.config.mjs`; a link anywhere else
  * would render unoptimised, so it fails the build here instead.
  */
-const photoSchema = withAlt(
-  z.url({
-    protocol: /^https$/,
-    hostname: /^images\.pexels\.com$/,
-    error: 'must be an https link on images.pexels.com',
-  }),
-);
+const photoUrl = z.url({
+  protocol: /^https$/,
+  hostname: /^images\.pexels\.com$/,
+  error: 'must be an https link on images.pexels.com',
+});
+
+const photoSchema = withAlt(photoUrl);
+
+/**
+ * A project gallery photo (spec 0015): the same link rule, but `alt` is
+ * required and non empty, and `decorative` is not allowed (strict, so it
+ * fails as an unknown key). A gallery exists to show the work, so no photo
+ * in it is decorative.
+ */
+const galleryPhoto = z.strictObject({ src: photoUrl, alt: text });
 
 // Strict, like every shape the service entries use (spec 0013): a typo
 // inside a step or the closing call to action fails the build by name.
@@ -342,6 +350,8 @@ const home = defineCollection({
       projectShowcase: z.strictObject({
         heading: text,
         intro: text,
+        /** The words under each tile's summary, "Read more" (spec 0015). */
+        cue: text,
         link,
       }),
     }),
@@ -458,6 +468,10 @@ const contact = defineCollection({
 // The Project page's copy (spec 0014): the intro, the empty state, and the
 // closing band. Strict at every level, so a leftover key fails the build by
 // name. The tiles' words and photos are the `projects` entries.
+//
+// It also holds the copy every project detail page shares (spec 0015): the
+// tiles' cue, and `detail`, the labels, units, and closing band around each
+// project's own words.
 const projectPage = defineCollection({
   loader: load('projectPage', 'yaml'),
   schema: z.strictObject({
@@ -465,8 +479,32 @@ const projectPage = defineCollection({
     seo,
     heading: text,
     intro: emphasisText,
+    /** The words under each tile's title, "Read more". */
+    tileCue: text,
     emptyState: z.strictObject({ heading: text, text }),
     cta: callToAction,
+    detail: z.strictObject({
+      backLink: z.strictObject(link.shape),
+      factsHeading: text,
+      /** The facts panel's `<dt>` labels, one per fact a project may carry. */
+      factLabels: z.strictObject({
+        location: text,
+        year: text,
+        client: text,
+        floorArea: text,
+        storeys: text,
+        lod: text,
+        software: text,
+        duration: text,
+      }),
+      /** Written after the floor area, for example "m²". */
+      areaUnit: text,
+      /** Written before the LOD number, for example "LOD". */
+      lodPrefix: text,
+      galleryHeading: text,
+      nextLabel: text,
+      cta: callToAction,
+    }),
   }),
 });
 
@@ -699,20 +737,61 @@ const services = defineCollection({
   }),
 });
 
+/** The levels of development a project may name (spec 0015). */
+const LOD_LEVELS = [100, 200, 300, 350, 400, 500] as const;
+
+// Strict at every level (spec 0015), so an optional fact with a typo
+// (`floorarea`) fails the build by name instead of quietly vanishing from
+// the facts panel. Each entry is one detail page at `/project/<slug>`.
 const projects = defineCollection({
   loader: load('projects', 'yaml'),
-  schema: () =>
-    z.object({
-      lang,
-      // Capped so a title always fits the Project page's 5:4 tile caption at
-      // every width (spec 0014, AC-8). Loosening it means checking that again.
-      title: text.max(60),
-      summary: text,
-      image: photoSchema,
-      order: z.number().int().positive(),
-      // Astro only logs a missing reference; src/lib/content.ts fails the build.
-      service: reference('services'),
-    }),
+  schema: z.strictObject({
+    lang,
+    /** The page's path, `/project/<slug>`. Unique per language (`getProjects`). */
+    slug: z
+      .string()
+      .regex(
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+        'must be lowercase kebab case, for example `harbour-tower`',
+      ),
+    // Capped so a title always fits the Project page's 5:4 tile caption at
+    // every width (spec 0014, AC-8). Loosening it means checking that again.
+    title: text.max(60),
+    /** The tile's line, the detail intro, and the default description. */
+    summary: text,
+    /** The tile and the detail page's cover. */
+    image: photoSchema,
+    /** The tiles' order, and which project the next link points to. */
+    order: z.number().int().positive(),
+    // Astro only logs a missing reference; src/lib/content.ts fails the build.
+    service: reference('services'),
+    /** Absent: the title and description are derived (`projectHead`). */
+    seo: z.strictObject(seo.shape).optional(),
+    // The facts panel, in the order it shows them. A fact left out has no row.
+    location: text,
+    /** The year completed. */
+    year: z.number().int().min(1900).max(2100),
+    client: text.optional(),
+    /** In square metres. */
+    floorArea: z.number().int().positive().optional(),
+    storeys: z.number().int().positive().optional(),
+    lod: z.literal(LOD_LEVELS).optional(),
+    software: z.array(text).min(1).optional(),
+    /** Short text, for example "8 weeks". */
+    duration: text.optional(),
+    /** The write up, one to four titled sections. */
+    writeUp: z
+      .array(
+        z.strictObject({
+          heading: text,
+          paragraphs: z.array(emphasisText).min(1),
+        }),
+      )
+      .min(1)
+      .max(4),
+    /** The detail page's photo wall, in this order. */
+    gallery: z.array(galleryPhoto).min(2).max(9),
+  }),
 });
 
 export const collections = {

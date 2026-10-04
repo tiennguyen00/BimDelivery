@@ -1,21 +1,30 @@
 ---
 /**
  * The Project page's first band (spec 0014): the page's `h1` with the gold
- * rule under it, and one paragraph in the narrow reading width.
+ * rule under it, and one paragraph in the narrow reading width. A project
+ * detail page reuses it (spec 0015), adding the two links above the `h1`.
  *
  * It renders only the inside of the band; the page wraps it in a `white`
  * `Section` labelled by the `h1`, as the About and Contact pages do with
  * their intro bands. The capitals are CSS only (`uppercase`), so a screen
  * reader reads words, not letters.
  *
- * On page load the heading and the paragraph fade and rise in through the
- * `entrance` utility (steps 0, 1), pure CSS. The band never takes
+ * `context` carries the detail page's two links together, the "All
+ * projects" back link and the project's service, so the band has both or
+ * neither and no half state exists. Without it the output is exactly the
+ * `/project` intro.
+ *
+ * On page load the band fades and rises in through the `entrance` utility,
+ * pure CSS, counting up from `entranceFrom` (default 0): the links block when
+ * there is one, then the heading, then the paragraph. The band never takes
  * `data-reveal`, so the scroll reveal never touches what the entrance
  * animates. The heading carries `data-heading-rule`, so its rule runs back
  * and draws again with the scroll direction like every ruled heading, once
  * the page imports `reveal.ts`.
  */
 import Emphasis from '../ui/Emphasis.astro';
+import Icon from '../ui/Icon.astro';
+import type { Link } from '../../lib/content';
 
 interface Props {
   heading: string;
@@ -23,20 +32,51 @@ interface Props {
   headingId: string;
   /** May carry `**bold**` and `==gold==` phrases. */
   intro: string;
+  /** A detail page's back link and service line, both or neither. */
+  context?: Readonly<{ backLink: Link; service: Link }>;
+  /** The first `--entrance-step`; the rest count up from it. */
+  entranceFrom?: number;
 }
 
-const { heading, headingId, intro } = Astro.props;
+const { heading, headingId, intro, context, entranceFrom = 0 } = Astro.props;
+
+const headingStep = context ? entranceFrom + 1 : entranceFrom;
+
+/** 44px tall for touch, while the words stay small. */
+const contextLinkClass =
+  'inline-flex min-h-11 items-center rounded-ui text-small text-gold-ink hover:underline';
 ---
+
+{context && (
+  <div
+    class="entrance mb-6 flex flex-col items-start"
+    style={`--entrance-step: ${entranceFrom}`}
+  >
+    <a href={context.backLink.href} class:list={[contextLinkClass, 'gap-2']}>
+      <Icon name="arrow-left" size={16} />
+      {context.backLink.label}
+    </a>
+    <a
+      href={context.service.href}
+      class:list={[contextLinkClass, 'font-semibold tracking-wide uppercase']}
+    >
+      {context.service.label}
+    </a>
+  </div>
+)}
 
 <h1
   id={headingId}
   class="entrance heading-rule inline-block uppercase"
-  style="--entrance-step: 0"
+  style={`--entrance-step: ${headingStep}`}
   data-heading-rule
 >
   {heading}
 </h1>
 
-<p class="entrance mt-8 max-w-narrow text-lead" style="--entrance-step: 1">
+<p
+  class="entrance mt-8 max-w-narrow text-lead"
+  style={`--entrance-step: ${headingStep + 1}`}
+>
   <Emphasis text={intro} surface="light" />
 </p>

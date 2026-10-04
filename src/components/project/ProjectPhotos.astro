@@ -1,0 +1,71 @@
+---
+/**
+ * A project detail page's gallery (spec 0015): a left aligned, ruled `h2` and
+ * the project's photos as a wall of 5:4 tiles.
+ *
+ * It renders the whole band, on `tint`, which keeps the white and tint rhythm
+ * between the white story band above and the white next project band below.
+ * Like the `/project` wall it takes the band gutters and padding but **no
+ * maximum width**, and its grid, tile frame, and photo sizes are that wall's,
+ * from `wall.ts`, so the two walls cannot drift apart.
+ *
+ * A gallery tile is only a photo: no caption (the `alt` carries it), nothing
+ * focusable, the default cursor, and no hover response, because it is not a
+ * link. Every photo loads lazily; the cover above is the page's largest paint.
+ *
+ * Motion: the heading block carries `data-reveal` and its rule draws with
+ * the scroll direction; the list is a `data-reveal-stagger` container, so the
+ * tiles fade and rise in one after another as they arrive.
+ */
+import { Image } from 'astro:assets';
+import type { Project } from '../../lib/content';
+import { bandGutterClass, bandPaddingClass, cx } from '../ui/styles';
+import {
+  wallGridClass,
+  wallImageClass,
+  wallImageSizes,
+  wallImageWidths,
+  wallTileClass,
+} from './wall';
+
+interface Props {
+  heading: string;
+  /** The id of the `h2`, which names the band and the list. */
+  headingId: string;
+  /** In content order. */
+  photos: Project['gallery'];
+}
+
+const { heading, headingId, photos } = Astro.props;
+---
+
+<section
+  aria-labelledby={headingId}
+  class={cx('bg-tint', bandGutterClass, bandPaddingClass)}
+>
+  <div data-reveal>
+    <h2 id={headingId} class="heading-rule inline-block" data-heading-rule>
+      {heading}
+    </h2>
+  </div>
+
+  <ul
+    aria-labelledby={headingId}
+    class={cx('mt-12', wallGridClass)}
+    data-reveal-stagger
+  >
+    {photos.map((photo) => (
+      <li class={wallTileClass}>
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          inferSize
+          widths={[...wallImageWidths]}
+          sizes={wallImageSizes}
+          loading="lazy"
+          class={wallImageClass}
+        />
+      </li>
+    ))}
+  </ul>
+</section>

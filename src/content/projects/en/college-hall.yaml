@@ -1,8 +1,27 @@
 lang: en
+slug: college-hall
 title: College Hall
 summary: Revit model of a heritage college hall for a planned extension.
 image:
-  src: https://images.pexels.com/photos/17097090/pexels-photo-17097090.jpeg?auto=compress&cs=tinysrgb&w=1600
+  src: https://images.pexels.com/photos/17097090/pexels-photo-17097090.jpeg?auto=compress&cs=tinysrgb&w=2400
   alt: A modern building of glass panels and concrete
 order: 5
 service: en/architectural-bim
+location: Dunedin, New Zealand
+year: 2021
+lod: 300
+software:
+  - Revit
+writeUp:
+  - heading: The brief
+    paragraphs:
+      - A college planned a new teaching wing beside its brick hall, and its architects needed the old building modelled first, so the new wing could meet it exactly.
+  - heading: What we did
+    paragraphs:
+      - We modelled the hall's walls, roof, and openings from survey data and the original drawings, with the **junction faces** where the extension will join drawn to survey accuracy.
+      - The architects now design the extension directly against the model of the hall.
+gallery:
+  - src: https://images.pexels.com/photos/5313088/pexels-photo-5313088.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A red brick building with tall arched windows and brick chimneys
+  - src: https://images.pexels.com/photos/8472257/pexels-photo-8472257.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: An old brick building with a steep slate roof and a dormer window

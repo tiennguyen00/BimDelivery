@@ -1,8 +1,40 @@
 lang: en
+slug: midtown-retrofit
 title: Midtown Retrofit
 summary: As built model of a historic building ahead of its retrofit.
 image:
-  src: https://images.pexels.com/photos/33628380/pexels-photo-33628380.jpeg?auto=compress&cs=tinysrgb&w=1600
+  src: https://images.pexels.com/photos/33628380/pexels-photo-33628380.jpeg?auto=compress&cs=tinysrgb&w=2400
   alt: A high rise under construction with a crane and scaffolding
 order: 3
 service: en/interior-bim
+location: Melbourne, Australia
+year: 2025
+client: Collins Street Holdings
+floorArea: 9600
+storeys: 7
+lod: 300
+software:
+  - Revit
+  - Recap
+duration: 10 weeks
+writeUp:
+  - heading: The brief
+    paragraphs:
+      - A seven storey building from the 1920s was about to be stripped back and refitted as offices. The original drawings were incomplete, and decades of changes had never been recorded.
+      - The design team needed an **accurate as built model** of every floor before they could plan the new interiors.
+  - heading: What we did
+    paragraphs:
+      - We turned the laser scan survey into a Revit model of the walls, columns, stairs, ceilings, and the heritage features the planners asked to keep.
+      - Where the scan showed walls out of plumb or floors out of level, we modelled them as they really are, and flagged every place the old drawings were wrong.
+  - heading: The outcome
+    paragraphs:
+      - The interior designers started from a model they could trust, and the strip out found no surprises the model had not already shown.
+gallery:
+  - src: https://images.pexels.com/photos/10543153/pexels-photo-10543153.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: The arched windows of an old stone building seen from below
+  - src: https://images.pexels.com/photos/14169558/pexels-photo-14169558.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A yellow tower crane over the concrete columns of a building site
+  - src: https://images.pexels.com/photos/7121536/pexels-photo-7121536.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A tower crane above the frame of a building under construction
+  - src: https://images.pexels.com/photos/34911458/pexels-photo-34911458.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A high rise frame and a crane against a dark evening sky

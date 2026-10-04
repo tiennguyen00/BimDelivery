@@ -1,0 +1,50 @@
+---
+/**
+ * A project detail page's cover (spec 0015): the project's photo, wide, right
+ * under the intro.
+ *
+ * It renders the whole band. Like the `/project` wall it borrows only the
+ * band frame's side gutters, takes **no maximum width**, so the photo runs
+ * the full window inside the gutters, and has no vertical padding of its own:
+ * the white intro above and the white story band below give it room.
+ *
+ * The box is fixed for each width, 4:3 on a phone, 16:9 from `md`, and 21:9
+ * from `lg`, so its space is reserved before the photo arrives and nothing
+ * shifts as it loads. The black fill shows only while it loads. It is the
+ * page's largest paint, so it loads eagerly with high fetch priority, and its
+ * `widths` reach 2400px for a wide screen (the project links ask Pexels for
+ * a 2400px original). No caption, no link, and no hover response.
+ *
+ * On load it fades and rises in through the CSS `entrance`, at the step the
+ * route passes, after the intro's.
+ */
+import { Image } from 'astro:assets';
+import type { Project } from '../../lib/content';
+import { bandGutterClass, cx } from '../ui/styles';
+
+interface Props {
+  image: Project['image'];
+  /** Its `--entrance-step`, after the intro's last. */
+  entranceStep: number;
+}
+
+const { image, entranceStep } = Astro.props;
+---
+
+<div class={cx('bg-white', bandGutterClass)}>
+  <div
+    class="entrance relative aspect-4/3 overflow-hidden rounded-ui bg-black md:aspect-16/9 lg:aspect-21/9"
+    style={`--entrance-step: ${entranceStep}`}
+  >
+    <Image
+      src={image.src}
+      alt={image.alt ?? ''}
+      inferSize
+      widths={[640, 960, 1280, 1600, 2000, 2400]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 size-full object-cover object-center"
+    />
+  </div>
+</div>

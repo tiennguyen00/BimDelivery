@@ -1,0 +1,75 @@
+---
+/**
+ * A project detail page's story band (spec 0015): the write up beside the
+ * facts panel.
+ *
+ * It renders only the inside of the band; the page wraps it in a `white`
+ * `Section` with no label, since no one heading names both halves.
+ *
+ * Below `lg` it is one column, the facts panel first (the fast read) and the
+ * write up after it. From `lg` it is a three column grid: the write up spans
+ * the first two columns and the facts panel sits in the third, both at the
+ * top. The DOM order stays facts first, and the placement comes from
+ * explicit classes, never auto flow. The panel holds nothing focusable, so
+ * the tab order is the same at every width.
+ *
+ * The panel lists only the facts the project has, as a `<dl>`. Its rows come
+ * ready formatted from `projectFacts`, so this component formats nothing. A
+ * long value (a place name, a client) wraps inside the panel rather than
+ * pushing it wider.
+ *
+ * Motion: the facts panel and each write up section carry `data-reveal`, so
+ * below the fold they fade and rise in as they arrive.
+ */
+import Emphasis from '../ui/Emphasis.astro';
+import type { Project } from '../../lib/content';
+import type { Fact } from '../../lib/project-detail';
+
+interface Props {
+  /** The write up, in order. Paragraphs may carry `**` and `==` marks. */
+  sections: Project['writeUp'];
+  factsHeading: string;
+  /** The id of the facts panel's `h2`. */
+  factsHeadingId: string;
+  /** One row per fact the project has, in panel order. */
+  facts: readonly Fact[];
+}
+
+const { sections, factsHeading, factsHeadingId, facts } = Astro.props;
+---
+
+<div class="grid grid-cols-1 items-start gap-12 lg:grid-cols-3 lg:gap-8">
+  <div
+    class="rounded-ui bg-tint p-6 md:p-8 lg:col-start-3 lg:row-start-1"
+    data-reveal
+  >
+    <h2 id={factsHeadingId} class="text-h3">
+      {factsHeading}
+    </h2>
+    <dl class="mt-6 flex flex-col gap-5">
+      {facts.map((fact) => (
+        <div>
+          <dt class="text-small font-semibold tracking-wide text-ink-muted uppercase">
+            {fact.label}
+          </dt>
+          <dd class="mt-1 wrap-break-word text-ink-strong">{fact.value}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+
+  <div class="flex flex-col gap-12 lg:col-span-2 lg:row-start-1">
+    {sections.map((section) => (
+      <div data-reveal>
+        <h2 class="text-h3 text-balance">{section.heading}</h2>
+        <div class="mt-4 flex flex-col gap-4">
+          {section.paragraphs.map((paragraph) => (
+            <p>
+              <Emphasis text={paragraph} surface="light" />
+            </p>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>

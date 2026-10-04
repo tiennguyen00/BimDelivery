@@ -1,8 +1,35 @@
 lang: en
+slug: corner-block
 title: Corner Block
 summary: Scan to BIM survey of a corner building with ground floor shops.
 image:
-  src: https://images.pexels.com/photos/4082527/pexels-photo-4082527.jpeg?auto=compress&cs=tinysrgb&w=1600
+  src: https://images.pexels.com/photos/4082527/pexels-photo-4082527.jpeg?auto=compress&cs=tinysrgb&w=2400
   alt: A geometric apartment building with glass balconies against a blue sky
 order: 4
 service: en/interior-bim
+location: Auckland, New Zealand
+year: 2022
+client: Ponsonby Property Trust
+floorArea: 3200
+storeys: 5
+lod: 200
+software:
+  - Revit
+  - Recap
+  - AutoCAD
+duration: 6 weeks
+writeUp:
+  - heading: The brief
+    paragraphs:
+      - The owners of a five storey corner building wanted to refit its ground floor shops and upper apartments, but had only scanned paper plans to work from.
+  - heading: What we did
+    paragraphs:
+      - We modelled the whole building from a point cloud survey, with the shopfronts, the stairs, and every apartment layout drawn as built.
+      - Alongside the model we issued **2D plans and sections** for the owners' consultants who do not work in Revit.
+gallery:
+  - src: https://images.pexels.com/photos/258184/pexels-photo-258184.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A cream facade with tall windows and small balconies full of plants
+  - src: https://images.pexels.com/photos/32853356/pexels-photo-32853356.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A red brick building with gables and white bay windows
+  - src: https://images.pexels.com/photos/5505125/pexels-photo-5505125.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A building wrapped in scaffolding beside a tower crane

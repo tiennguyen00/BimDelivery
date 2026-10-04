@@ -1,8 +1,40 @@
 lang: en
+slug: harbour-tower
 title: Harbour Tower
 summary: Clash coordination for a 30 storey mixed use tower.
 image:
-  src: https://images.pexels.com/photos/8171870/pexels-photo-8171870.jpeg?auto=compress&cs=tinysrgb&w=1600
+  src: https://images.pexels.com/photos/8171870/pexels-photo-8171870.jpeg?auto=compress&cs=tinysrgb&w=2400
   alt: The glass facade of a modern office tower
 order: 1
 service: en/landscape-bim
+location: Sydney, Australia
+year: 2024
+client: Northshore Developments
+floorArea: 42000
+storeys: 30
+lod: 300
+software:
+  - Revit
+  - Navisworks
+duration: 14 weeks
+writeUp:
+  - heading: The brief
+    paragraphs:
+      - The design team had separate architectural, structural, and services models for a 30 storey tower with shops, offices, and apartments. They needed them **coordinated into one clash free model** before the tender drawings went out.
+      - Every week of delay pushed back the start on site, so the coordination had to run alongside the design rather than after it.
+  - heading: What we did
+    paragraphs:
+      - We federated the three models in Navisworks and ran clash tests floor by floor, starting with the plant levels where the services were densest.
+      - Each week the design team received a short clash report, grouped by trade and ranked by cost to fix, with a marked up view for every issue. We rebuilt the shared Revit families so the fixes stayed fixed.
+  - heading: The outcome
+    paragraphs:
+      - The model reached tender with ==no open hard clashes==, and the contractor priced from it with far fewer allowances for unknowns.
+gallery:
+  - src: https://images.pexels.com/photos/19821492/pexels-photo-19821492.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A tall tower clad in blue glass seen from the street below
+  - src: https://images.pexels.com/photos/18267934/pexels-photo-18267934.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A slim office tower of glass and pale bands rising above the trees
+  - src: https://images.pexels.com/photos/14301470/pexels-photo-14301470.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A glass building beside a facade of folded bronze fins
+  - src: https://images.pexels.com/photos/7078620/pexels-photo-7078620.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A close view of a glass curtain wall and its frame

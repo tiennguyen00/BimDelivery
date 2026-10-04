@@ -1,8 +1,38 @@
 lang: en
+slug: seafront-hotel
 title: Seafront Hotel
 summary: Clash coordination of structure and services for a six storey hotel.
 image:
-  src: https://images.pexels.com/photos/1838640/pexels-photo-1838640.jpeg?auto=compress&cs=tinysrgb&w=1600
+  src: https://images.pexels.com/photos/1838640/pexels-photo-1838640.jpeg?auto=compress&cs=tinysrgb&w=2400
   alt: A pale multi storey building with bay windows behind a row of palm trees
 order: 6
 service: en/landscape-bim
+location: Gold Coast, Australia
+year: 2023
+client: Coastline Hospitality
+floorArea: 12400
+storeys: 6
+lod: 350
+software:
+  - Revit
+  - Navisworks
+  - BIM 360
+duration: 12 weeks
+writeUp:
+  - heading: The brief
+    paragraphs:
+      - A six storey hotel had its structure and its services designed by two different firms, and the ceiling voids above the corridors were too tight to leave the two to meet on site.
+  - heading: What we did
+    paragraphs:
+      - We coordinated the structural and services models in Navisworks, starting with the corridor ceilings and the plant room, and kept every issue in BIM 360 with an owner and a due date.
+      - Where ducts could not fit, we proposed new routes and beam penetrations and checked each one with the structural engineer before it went into the model.
+  - heading: The outcome
+    paragraphs:
+      - The corridors kept their **design ceiling height**, and the services went in without a single redesign on site.
+gallery:
+  - src: https://images.pexels.com/photos/17619969/pexels-photo-17619969.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A hotel with stepped rows of balconies against a blue sky
+  - src: https://images.pexels.com/photos/2394446/pexels-photo-2394446.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A narrow pale hotel tower with small windows and a rooftop aerial
+  - src: https://images.pexels.com/photos/10135442/pexels-photo-10135442.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: A white hotel with arched windows and small balconies seen from below

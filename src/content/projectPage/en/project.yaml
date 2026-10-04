@@ -4,6 +4,7 @@ seo:
   description: A selection of BIM and Revit modeling projects delivered for architects, engineers, and contractors.
 heading: Our projects
 intro: A selection of recent work. Placeholder projects until the real portfolio is ready.
+tileCue: Read more
 emptyState:
   heading: Projects coming soon
   text: We are preparing our portfolio. Get in touch to hear about similar work.
@@ -13,3 +14,27 @@ cta:
   button:
     label: Contact us
     href: /contact-us
+detail:
+  backLink:
+    label: All projects
+    href: /project
+  factsHeading: Project facts
+  factLabels:
+    location: Location
+    year: Completed
+    client: Client
+    floorArea: Floor area
+    storeys: Storeys
+    lod: Level of development
+    software: Software
+    duration: Duration
+  areaUnit: m²
+  lodPrefix: LOD
+  galleryHeading: Gallery
+  nextLabel: Next project
+  cta:
+    heading: Have a project like this one?
+    text: Tell us about your building and the model you need, and we will get back to you within one working day.
+    button:
+      label: Contact us
+      href: /contact-us

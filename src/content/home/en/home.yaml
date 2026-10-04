@@ -77,6 +77,7 @@ presence:
 projectShowcase:
   heading: Featured projects
   intro: A few of the models we have delivered for design and site teams.
+  cue: Read more
   link:
     label: View all projects
     href: /project

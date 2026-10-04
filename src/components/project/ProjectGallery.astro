@@ -40,6 +40,13 @@ import { Image } from 'astro:assets';
 import type { Project } from '../../lib/content';
 import { entranceClass, entranceStyle } from '../ui/entrance';
 import { bandGutterClass, bandPaddingBottomClass, cx } from '../ui/styles';
+import {
+  wallGridClass,
+  wallImageClass,
+  wallImageSizes,
+  wallImageWidths,
+  wallTileClass,
+} from './wall';
 
 interface Props {
   /** The id of the page's `h1`, which names the list. */
@@ -61,21 +68,15 @@ const FIRST_ROW = 3;
 
 const entranceAt = (index: number): number | undefined =>
   index < FIRST_ROW ? entranceFrom : undefined;
-
-/** One column, then two at `md`, then three at `lg`, matching the grid. */
-const imageSizes = '(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw';
 ---
 
 <div class={cx('bg-white', bandGutterClass, bandPaddingBottomClass)}>
-  <ul
-    aria-labelledby={labelledBy}
-    class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3"
-    data-reveal-stagger
-  >
+  <ul aria-labelledby={labelledBy} class={wallGridClass} data-reveal-stagger>
     {projects.map((project, index) => (
       <li
         class={cx(
-          'group relative isolate flex aspect-5/4 flex-col justify-end overflow-hidden rounded-ui bg-black',
+          wallTileClass,
+          'group flex flex-col justify-end',
           entranceClass(entranceAt(index)),
         )}
         style={entranceStyle(entranceAt(index), index)}
@@ -84,10 +85,13 @@ const imageSizes = '(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw';
           src={project.image.src}
           alt={project.image.alt ?? ''}
           inferSize
-          widths={[400, 640, 960, 1280, 1600]}
-          sizes={imageSizes}
+          widths={[...wallImageWidths]}
+          sizes={wallImageSizes}
           loading={index < FIRST_ROW ? 'eager' : 'lazy'}
-          class="absolute inset-0 -z-10 size-full object-cover object-center transition-[scale] duration-500 ease-out motion-safe:group-hover:scale-105"
+          class={cx(
+            wallImageClass,
+            'transition-[scale] duration-500 ease-out motion-safe:group-hover:scale-105',
+          )}
         />
         <div class="bg-scrim px-5 py-4 text-white md:px-6 md:py-5">
           <p class="text-small font-semibold tracking-wide uppercase">
