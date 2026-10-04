@@ -21,6 +21,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 8 | Service pages (three) | Release 1 | in-progress |
 | 9 | Project page | Release 1 | in-progress |
 | 10 | Contact page | Release 1 | in-progress |
+| 16 | Project detail pages | Release 1 | in-progress |
 | 11 | SEO foundation | Release 2 | planned |
 | 12 | Performance & image handling | Release 2 | planned |
 | 13 | Privacy policy page | Release 2 | planned |
@@ -167,6 +168,18 @@ spec [0011](../specs/0011-contact-page/index.md) · code in [src/pages/contact-u
   - [x] The page moves, written down and gated: the load entrance and scroll reveal, `design.md` and `/styleguide`, and the check, lint, and build gates (AC-15, AC-20)
 - [ ] Verify it: `/check verify contact page`
 
+### 16. Project detail pages
+A page for every project at `/project/<slug>`, with its write up, key facts, and a photo gallery, so the project tiles finally lead somewhere. Moved out of Deferred on 2026-10-04 (from spec 0015).
+**Done when:** `/project/<slug>` renders for every project from content data with its write up, facts, and gallery; the `/project` and home tiles each link to their project; the page reflows to tablet and mobile with nothing jumping as photos load; and a content mistake fails the build by name.
+spec [0015](../specs/0015-project-detail-pages/index.md) · code in [src/pages/project/[slug].astro](../../src/pages/project/[slug].astro) and [src/components/project/](../../src/components/project/) (content: `src/content/projects/`, `src/content/projectPage/`; shared: `src/lib/project-detail.ts`)
+- [x] Design it (spec): `/architect project detail pages`
+- [x] Build it: `/develop project detail pages`
+  - [x] Every detail page, still: the strict `projects` schema with `slug`, facts, write up, and gallery, the shared `detail` copy and cues, placeholder content and photos, the pure helpers, the extended intro, `wall.ts`, the four new bands, and the route, previewed with the facts, wrap, head, and build guard drills (AC-1 to AC-12, AC-16, AC-17, AC-19)
+  - [x] The way in: the `/project` and home tiles as single links with the "Read more" cue, the home photo zoom, and the header's section marking, checked by keyboard, mouse, touch, and screen reader names (AC-13 to AC-16)
+  - [x] The page moves: the load entrance on the intro and cover, the scroll reveal and rules on the story and gallery, checked with JavaScript off and reduced motion (AC-18)
+  - [x] Written down and gated: `design.md`, `/styleguide`, and the check, lint, build, and gold class gates (AC-20, AC-21)
+- [ ] Verify it: `/check verify project detail pages`
+
 ## Release 2: findable, fast, and live
 
 ### 11. SEO foundation · needs a decision
@@ -203,7 +216,6 @@ Know how many people arrive, where they come from, and which service page they r
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
 - **Working contact form delivery**: the message actually reaches an inbox, with spam protection · needs a decision
-- **Project detail pages**: `/project/<name>` with a gallery and a write up per project · needs a decision
 - **Services overview page and more services**: grow from three toward the reference site's ten; decide then whether the home page keeps showing every service or a featured subset. Spec 0005 makes this a deliberate moment rather than a silent one: a fourth service entry stops the build until the home page's grid is decided (from specs 0002 and 0005)
 - **Second language**: the switcher and a full second set of copy; the content model is already shaped for it · needs a decision
 - **Content editing in a browser**: a real content system so copy changes need no code · needs a decision
@@ -213,6 +225,8 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **A dark section tone**: bring back a dark band for a section such as the home page's closing call to action. It means reintroducing inherited tone variables, a card tone reset, and a second focus colour, then computing the dark contrast pairs. Gold reads well on black at 8.73:1 if you want it. Less urgent since spec 0005: the closing call to action now ends on a self contained gold band, so the dark tone is no longer the only way to close a page (from specs 0003 and 0005)
 - **Testimonials and client logos**
 - **Project gallery filter and pagination**: a service filter and "load more" or pages once the portfolio passes about 12 projects; a filter would be a fifth script, which `design.md` asks a strong reason for (from spec 0014)
+- **Project photo lightbox**: let a visitor open a gallery photo larger, if they ask for it; it would be the fifth script, so it needs the strong reason `design.md` asks for (from spec 0015)
+- **Real project portfolio**: replace the six placeholder write ups, facts, and about 30 placeholder photos with real work before launch, naming a client only where the client agrees (from spec 0015)
 - **Carousel pause control**: a visible pause for the shared carousel, closing the WCAG 2.2.2 gap on the home hero and the three service intros (from spec 0013)
 - **Redirects for removed pages**: once the site is live, a removed service's old URL (or any removed page) redirects instead of returning the 404 page; decide the mechanism with the SEO foundation or launch (from spec 0013)
 - **Error monitoring**: know when a real visitor hits a broken page · needs a decision
