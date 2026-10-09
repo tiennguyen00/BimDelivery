@@ -24,6 +24,10 @@ const lang = resolveLocale(Astro.currentLocale);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* The browser chrome matches the page. A meta tag cannot read a custom
+        property, so this is `--color-canvas`'s value written out; a change
+        to that token edits this line too. */}
+    <meta name="theme-color" content="#0c1519" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}

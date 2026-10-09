@@ -92,7 +92,9 @@ icon package is installed; only the path data is copied.
 These are simple SVGs made for this project. They are not real brand marks or
 certification body marks, and must be replaced before launch.
 
-- `brand/logo.svg`
+- `brand/logo.svg`: the light mark, for the dark header and footer alike
+  (formerly `logo-on-dark.svg`; the navy mark was deleted with the dark
+  theme, spec 0003, 2026-10-09)
 - `badges/badge-quality.svg`
 - `badges/badge-bim.svg`
 - `badges/badge-security.svg`
@@ -105,4 +107,12 @@ or licenses, then move its line to the right section above.
 
 - `services/service-illustration.png` (the home service cards, spec 0005):
   <https://paviliusbim.com/wp-content/uploads/2026/06/ChatGPT-Image-Jun-30-2026-04_57_23-PM-Photoroom.png>,
-  licence unknown, copied from the reference site.
+  licence unknown, copied from the reference site. It stays only as the
+  source of the dark version below.
+- `services/service-illustration-dark.png` (the home service cards on the dark
+  theme, spec 0003): derived from `service-illustration.png` with `sharp` by
+  unmixing white. Each pixel's alpha is its distance from white (the largest
+  of `255 − R`, `255 − G`, `255 − B`, over 255) and its stroke colour is
+  recovered against white; warm strokes (recovered `R − B` above 60) become
+  `#cf9d7b` and the rest `#f5ece4`, keeping the alpha. Same unknown licence
+  as its source, so it is replaced with it.

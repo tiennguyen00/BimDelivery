@@ -36,7 +36,7 @@ services:
   heading: Our services
   intro: Three core services, each delivered to your standards and your schedule.
   illustration:
-    src: ../../../assets/images/services/service-illustration.png
+    src: ../../../assets/images/services/service-illustration-dark.png
     decorative: true
   cardCue: Learn more
   # The services that get a card, in this order: one to three service ids.
