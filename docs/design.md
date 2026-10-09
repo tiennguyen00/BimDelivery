@@ -6,16 +6,17 @@ tokens live and what the build enforces; this file says what each one is for
 and which pairs are safe to put together. A token change edits both, in the
 same commit.
 
-**Character**: calm, technical, and light. Plenty of white space, black and
-grey carrying the words, and brand gold used sparingly as a fill so it reads as
-emphasis rather than decoration. Square-ish corners (4px), no gradients, no
-rounded blobs. The feel of a firm that delivers precise drawings.
+**Character**: dark, warm, and technical. A near black page in the client's
+own palette, cream words, and Antique Brass used for what you act on and what
+matters most. Jet panels lift cards off the page; Coffee draws quiet structure
+and never speaks. Square-ish corners (4px), no shadows, no rounded blobs. The
+feel of a firm that delivers precise drawings, at night.
 
-**Source**: the palette and typeface are taken from paviliusbim.com, a
-reference site the client pointed at. This is a starting point, not this
-company's own brand. Replacing it before launch is a tracked follow up
-(feature 14), and it is mostly a change of values in one `@theme` block plus
-the two contrast tables below.
+**Source**: the five colours are the client's own palette (Chinese Black, Dark
+Jungle Green, Jet, Coffee, Antique Brass), adopted on 2026-10-09; the cream
+text family is derived from the brass hue. The typeface is still Inter, and
+the logo and certification badges are still placeholders. Replacing those
+before launch is a tracked follow up (feature 14).
 
 ## Build mandate
 
@@ -29,134 +30,145 @@ Building a page should be layout work, not styling decisions.
   radius namespaces are cleared, so an off token class produces no CSS at all.
   It fails silently rather than loudly, which is worth knowing the first time a
   class seems to do nothing: the fix is always a token.
-- The gold rule is the one thing the build cannot catch, because it is a choice
-  between two valid tokens. Read it below before writing any gold.
-- Pages set rhythm by alternating `white` and `tint` sections. The dark bands
-  (the home hero and intro band, the contact form band, the dark
-  `PatternBand`, the footer) are their own components, never a `Section`
-  tone. Two families adapt to what they sit on, each through a `surface`
-  prop and the class maps in `styles.ts`: the form fields (spec 0011) and the
-  service bands (spec 0013).
+- The accent role rule is the one thing the build cannot catch, because it is
+  a choice between valid tokens. Read it below before putting a word on a
+  photo, on the service card's wash, or in Coffee.
+- Pages set rhythm by alternating `canvas` and `raised` sections. Both are
+  dark, so no component adapts to its background. The bands that are not a
+  `Section` tone (the home hero, the home intro band, the contact form band,
+  the Project hero, `CtaBand`, the footer) are their own components that
+  borrow the band frame.
+- No shadows. A shadow cannot be seen on a dark page; a card separates by its
+  `panel` fill and, where it has one, its `line` border.
 
 ## Colour
 
-Every colour the site has. Named by role, not by hue, so a real brand later is
-a change of values rather than a change of class names everywhere.
+Every colour the site has. Named by role, not by hue, so a class always says
+what it paints and the next palette change is values only.
 
 | Token | Value | Role |
 |---|---|---|
-| `--color-white` | `#ffffff` | Page background, card surface. A text colour only on the scrim (the home hero), and the outer half of the two colour focus ring |
-| `--color-tint` | `#fff9e6` | The `tint` section background, a warm cream drawn from the gold |
-| `--color-black` | `#000000` | `h1` and `h2`; the label on every gold or yellow fill |
-| `--color-ink-strong` | `#333333` | `h3` and sub headings, field labels, strong text |
-| `--color-ink` | `#666666` | Body text, the most used text colour on the site |
-| `--color-ink-muted` | `#707070` | Hints, captions, card text |
-| `--color-gold` | `#e09900` | Brand gold. Fills only: primary button, highlight fills, decorative rules, icon fills |
-| `--color-gold-deep` | `#c88600` | The primary button's hover fill, and nothing else |
-| `--color-gold-ink` | `#946600` | The same hue, dark enough to read. The only gold allowed as text, a link, a control border, or the focus ring |
-| `--color-gold-on-dark` | `#e09900` | Brand gold as a word, allowed only on black (8.73:1): the highlighted words in the home page's intro band. Never on a light tone |
-| `--color-yellow` | `#ffcc00` | Reserved for the real logo and feature 5's icons. Fills and decoration only |
-| `--color-line` | `#e5e5e5` | Card borders and dividers. Decorative, never a control boundary |
-| `--color-field` | `#767676` | Form field borders. A control boundary, so it has to reach 3:1 |
-| `--color-error` | `#b42318` | Error text and error borders |
-| `--color-error-on-dark` | `#ff9b8f` | Error text on the contact form band only (spec 0011). Never on a light tone (2.03:1 on white) |
-| `--color-scrim` | `rgb(0 0 0 / 0.6)` | The see through dark panel white text sits on over a photo (the home hero, spec 0005). Never lighter: 0.6 is what makes white text pass over any photo |
-| `--color-scrim-strong` | `rgb(0 0 0 / 0.8)` | The layer over the whole contact form band (spec 0011), where small text sits straight on it. With the `bg-diagonal-dark` stripe on top, the band's lightest pixel is `#3f3f3f` |
-| `--color-panel` | `#161616` | The fill of a card or tile on a dark `PatternBand` (spec 0013), a step up from the black so the piece reads as a surface. Never on a light tone |
+| `--color-canvas` | `#0c1519` Chinese Black | The page, the `canvas` section tone, every band that is not `raised`, field fills |
+| `--color-raised` | `#162127` Dark Jungle Green | The `raised` section tone |
+| `--color-panel` | `#3a3534` Jet | Every card, tile, the header card, the dropdown and mobile menu panel, the open accordion item, an empty photo frame. Separates from `canvas` (1.53:1) and `raised` (1.36:1) |
+| `--color-heading` | `#f5ece4` | `h1` and `h2`; every word on a photo or on the Coffee wash; the outer band of the two colour ring |
+| `--color-ink-strong` | `#f5ece4` | `h3` and sub headings, field labels, strong text. Same value as `heading` today, a separate role so a display face later can move one without the other |
+| `--color-ink` | `#d9cbc0` | Body text, the most used text colour; field text |
+| `--color-ink-muted` | `#b8aca3` | Hints, captions, card text; the hovered card border |
+| `--color-accent` | `#cf9d7b` Antique Brass | Fills (primary button, the closing band, closed accordion items, process step circles, map markers, heading rules and accent bars, icon fills) AND words (links, emphasis, `==` phrases, numbers, the secondary button), and the focus ring |
+| `--color-accent-hover` | `#e3bc9f` | The primary button's hover fill, and nothing else |
+| `--color-on-accent` | `#0c1519` | The label or icon on an `accent` or `accent-hover` fill, and nothing else |
+| `--color-accent-deep` | `#724b39` Coffee | The home service card's hover wash, and nothing else. Never a word |
+| `--color-line` | `#724b39` Coffee | Decorative borders and dividers, the process timeline's connector, the footer's top hairline. Never a control boundary, never a word |
+| `--color-field` | `#8c8480` | Form field borders, a control boundary: 5.04:1 against the `canvas` fill |
+| `--color-error` | `#ff8a7a` | Error text and error borders, on every surface |
+| `--color-scrim` | `rgb(12 21 25 / 0.7)` | The see through layer under words on a photo. `heading` on it is 5.91:1 over a pure white pixel, so no photo can break it. Never lighter |
+| `--color-scrim-strong` | `rgb(12 21 25 / 0.9)` | The contact form band's layer, and a project tile's hovered caption. With the `bg-diagonal` stripe on top, its worst pixel is `#31393c` |
 
-### The gold rule
+Two values are written out outside `global.css`, each named beside its token
+because neither place can read a custom property: the `theme-color` meta in
+`BaseLayout.astro` (`--color-canvas`, `#0c1519`) and the `select-chevron`
+stroke (`--color-ink`, `%23d9cbc0`).
 
-The most misusable part of this palette. The two golds look alike in a swatch
-list and only one of them is legible as a word.
+### The accent role rule
+
+The most misusable part of this palette. Brass is legible on every dark
+surface (5.04:1 at worst, on `panel`), so one token is the fill and the word
+alike. The colour that must never be read is Coffee, which looks like a
+quieter brass in a swatch list.
 
 | Role | Token | Allowed | Forbidden |
 |---|---|---|---|
-| Fill gold | `--color-gold` | Button fills, highlight fills behind black text, decorative rules, icon fills | Any text; any control border; any focus ring |
-| Fill gold, hover | `--color-gold-deep` | The primary button's hover fill | Everything else |
-| Text gold | `--color-gold-ink` | Emphasised words, links, the secondary button's border and label, the focus ring | Large flat fills, where it reads muddy rather than gold |
-| Text gold on black | `--color-gold-on-dark` | Highlighted words on a black band (the home intro band and the footer) | Anything on white, tint, or a photo |
-| Accent yellow | `--color-yellow` | The real logo and feature 5's icons | Any text; anything else today |
+| Accent | `--color-accent` | Every fill, word, link, icon, rule, and focus ring in the colour table, on `canvas`, `raised`, `panel`, and either pattern | As a word on a photo (2.88:1 over the scrim) or on the Coffee wash (3.66:1) |
+| Accent, hover | `--color-accent-hover` | The primary button's hover fill | Everything else |
+| On accent | `--color-on-accent` | The label or icon on an accent fill | Anywhere that is not an accent fill |
+| Coffee | `--color-accent-deep`, `--color-line` | The service card wash; decorative borders, dividers, and the timeline connector | Any word, any control border, any focus ring |
 
-The decorative rule itself is one utility, `heading-rule` in `global.css`, and
-every section heading with a gold line under it uses it: on the home page the
-intro, services, presence, why choose, and showcase headings. It draws the line
-with `::after`, exactly as wide as the heading's own box and invisible to a
-screen reader, and it leaves `display` to the call site (`inline-block` where
-the line should hug the words, nothing where the heading is already a flex
-item). It also holds the two custom properties the reveal script writes to draw
-the line, described under `## Focus and motion`. A sixth heading anywhere on
-the site writes one class, never a string of `after:` utilities.
+Three consequences worth writing down:
 
-A gold word, link, control border, or focus ring that is not
-`--color-gold-ink` is a bug, not a style preference. The reference site sets
-gold links and gold headings straight on white at 2.41:1, which fails WCAG AA
-at every text size. Splitting gold in two is what lets the site read like the
-reference and still pass.
+- **Text on a photo is only `heading`.** That is why `Emphasis` takes
+  `onPhoto`: a `==` phrase on the Project hero turns bold `heading`, not brass.
+- **Every heading or paragraph inside an accent fill carries `text-on-accent`
+  explicitly**, because the base layer makes headings `heading` (2.05:1 on
+  brass). And nothing `canvas` coloured sits inside an accent fill unless a
+  lighter colour is set on it, because `on-accent` and `canvas` are the same
+  value (the accordion icon circle is the case today: its icon is
+  `text-accent`).
+- **`on-accent` lives only on an accent fill.**
 
-To check: search `src/` for these exact whole classes and expect one hit only,
-the written exception: the home service card's hover and focus side bars
-(`group-hover:border-gold` and `group-has-[a:focus-visible]:border-gold` in
-`ServiceCard.astro`, spec 0010 AC-16), a decorative fill on an overlay with no
-text, never a control border.
+The decorative rule under a section heading is one utility, `heading-rule` in
+`global.css`, drawn in `accent`. Every section heading with a line under it
+uses it. It draws the line with `::after`, exactly as wide as the heading's own
+box and invisible to a screen reader, and it leaves `display` to the call site
+(`inline-block` where the line should hug the words, nothing where the heading
+is already a flex item). It also holds the two custom properties the reveal
+script writes to draw the line, described under `## Focus and motion`. A new
+heading anywhere on the site writes one class, never a string of `after:`
+utilities.
+
+To check: search `src/` for these exact whole classes and expect no hits.
 
 ```
-text-gold  text-gold-deep  text-yellow
-border-gold  border-gold-deep  border-yellow
-outline-gold  outline-gold-deep  outline-yellow
-ring-gold  ring-yellow
+text-accent-deep  text-line
+border-accent-deep
+outline-accent-deep  outline-line
+ring-accent-deep  ring-line
+```
+
+And the retired names (spec 0003, AC-16): a whole class search of `src/` for a
+utility prefix right before a retired name, plus the two retired pattern
+names, returns nothing, because a leftover class now generates no CSS and
+fails silently.
+
+```
+rg '(bg|text|border|fill|stroke|outline|ring|decoration|from|to|via|shadow)-(white|tint|black|gold|yellow|error-on-dark)\b' src
+rg -F -e 'bg-diagonal-dark' -e 'bg-dots-dark' src
 ```
 
 Note that a class name quoted in prose inside `src/` counts as a hit, and
 Tailwind will also turn it into real CSS, because it reads source files as
-plain text. Write the token name (`--color-gold`) when you need to talk about
+plain text. Write the token name (`--color-line`) when you need to talk about
 one.
 
 ### Contrast, the pairs in use
 
 WCAG 2.2 AA: 4.5:1 for normal text, 3:1 for large text, control boundaries, and
-focus indicators. Computed from the hex values above.
+focus indicators. Computed from the hex values above with the WCAG relative
+luminance formula; composites (the scrims, the stripe, the dots, the wash) by
+alpha blending over the worst case pixel. The working is in spec 0003's
+`rationale.md`.
 
 | Foreground | Background | Ratio | Needs |
 |---|---|---|---|
-| black (`h1`, `h2`) | white / tint | 21.00 / 19.94 | 4.5 |
-| ink-strong (`h3`, field labels) | white / tint | 12.63 / 12.00 | 4.5 |
-| ink (body) | white / tint | 5.74 / 5.45 | 4.5 |
-| ink-muted (hints, card text) | white / tint | 4.95 / 4.70 | 4.5 |
-| gold-ink (links, emphasis, secondary button label) | white / tint | 5.05 / 4.79 | 4.5 |
-| black (primary button label) | gold / gold-deep (hover) | 8.73 / 6.87 | 4.5 |
-| black | yellow | 13.89 | 4.5 |
-| black (secondary button label on hover) | gold (the hover fill) | 8.73 | 4.5 |
-| field border | white / tint | 4.54 / 4.31 | 3.0 |
-| error | white / tint | 6.57 / 6.24 | 4.5 |
-| focus ring gold-ink | white / tint | 5.05 / 4.79 | 3.0 |
-| white (the gold band's link label) | black / ink-strong (hover) | 21.00 / 12.63 | 4.5 |
-| black (the gold band's heading and text) | gold | 8.73 | 4.5 |
-| black (the service card's wash) | gold at 70 percent over the card's white (composite `#e9b74d`) | 11.35 | 4.5 |
-| white (intro band heading and copy) | black | 21.00 | 4.5 |
-| gold-on-dark (intro band highlighted words) | black | 8.73 | 4.5 |
-| gold-ink (intro band card numbers) / ink-strong (card labels) | white | 5.05 / 12.63 | 4.5 |
-| gold-ink (`StatsBand` numbers, the open accordion title, a `==` phrase) / ink-strong (`StatsBand` labels) | white | 5.05 / 12.63 | 4.5 |
-| black (a closed accordion item's title) | gold | 8.73 | 4.5 |
-| ink (text on `bg-diagonal`), worst case over a stripe line | line (`#e5e5e5`) | 4.56 | 4.5 |
-| white (the hero's heading and subheading, the Project page hero's `h1`, intro, service tabs, and filter labels, the project tile titles, summaries, cues, and facts on `/project` and the captions on the home page) | scrim over any photo, worst case over pure white (composite `#666666`) | 5.74 at worst | 4.5 |
-| two colour focus ring, black inner band / white outer band (the hero photo and the gold band) | gold / any photo | black on gold 8.73; on any colour at all, one of the two bands reaches at least 4.58 | 3.0 |
-| white (the contact form band's heading, field labels and hints, noscript note, captcha link) | `scrim-strong` plus a `bg-diagonal-dark` line over a pure white photo pixel (composite `#3f3f3f`) | 10.5 at worst | 4.5 |
-| error-on-dark (the contact form band's field errors and messages) | the same worst case, `#3f3f3f` | 5.19 at worst | 4.5 |
-| gold-ink (contact card headings) / ink-strong (card values, the thank you text) | white | 5.05 / 12.63 | 4.5 |
-| white (every heading and word on a dark `PatternBand`) | `bg-dots-dark`'s lightest pixel, a dot's centre (`#242424`, measured at 1x and 2x) / `panel` | 15.52 / 18.10 | 4.5 |
-| gold-on-dark (a `==` phrase and the line icons on a dark `PatternBand`) | the same `#242424` / `panel` | 6.45 / 7.52 | 4.5 |
-| black (a process step's number) | gold (its circle) | 8.73 | 4.5 |
+| heading / ink-strong (`h1` to `h3`, labels, strong text) | canvas / raised / panel | 15.83 / 14.05 / 10.35 | 4.5 |
+| ink (body, field text) | canvas / raised / panel | 11.66 / 10.35 / 7.62 | 4.5 |
+| ink-muted (hints, card text) | canvas / raised / panel | 8.33 / 7.39 / 5.45 | 4.5 |
+| accent (links, emphasis, numbers, secondary button) | canvas / raised / panel | 7.71 / 6.84 / 5.04 | 4.5 |
+| on-accent (primary button label, closing band text, closed accordion title, step number) | accent / accent-hover | 7.71 / 10.52 | 4.5 |
+| heading (the closing band link's label) | canvas / panel (hover) | 15.83 / 10.35 | 4.5 |
+| error | canvas / raised / panel | 8.06 / 7.16 / 5.27 | 4.5 |
+| field border | canvas (the field's fill) | 5.04 | 3.0 |
+| focus ring accent | canvas / raised / panel | 7.71 / 6.84 / 5.04 | 3.0 |
+| heading / ink / ink-muted / accent over a `bg-diagonal` line on canvas (`#1b2327`) | | 13.68 / 10.07 / 7.19 / 6.66 | 4.5 |
+| heading / ink / ink-muted / accent over a `bg-diagonal` line on raised (`#242e34`, a presence band after a stripe pattern band) | | 11.88 / 8.75 / 6.25 / 5.78 | 4.5 |
+| heading (presence region labels) over a world map dot (`ink-muted` at 40% on canvas, `#515150`) | | 6.81 | 4.5 |
+| heading at 50% (inactive carousel dot) / heading (active) | canvas | 4.73 / 15.83 | 3.0 |
+| heading / ink / ink-muted / accent on a `bg-dots` dot centre (`#2e3639`) | | 10.57 / 7.78 / 5.56 / 5.15 | 4.5 |
+| heading on `scrim` over a pure white pixel (`#555b5e`): the home hero, the Project hero, every project tile caption | | 5.91 | 4.5 |
+| on the contact form band's worst pixel (`#31393c`): heading / ink / ink-muted / error / accent | | 10.11 / 7.44 / 5.32 / 5.15 / 4.92 | 4.5 |
+| heading on the Coffee wash's darkest point (`#614438`) | | 7.52 | 4.5 |
+| two colour ring, canvas inner / heading outer | accent fill / any photo | canvas on accent 7.71; on any colour one band reaches at least 3.98 | 3.0 |
 
-### Contrast, the three that are deliberately never text
+### Contrast, deliberately never text
 
 Recorded so a later reader does not "fix" them.
 
 | Pair | Ratio | Why it is still fine |
 |---|---|---|
-| gold on white | 2.41 | A fill, never a word. WCAG 1.4.11 does not ask a control's fill to contrast with the page when its label identifies it, and that label is black at 8.73:1 |
-| yellow on white | 1.51 | Reserved decoration and logo only; nothing renders it as text |
-| line on white | 1.26 | A decorative card border, not a control boundary, so 1.4.11 does not apply. The card's real affordance is its title link and its focus ring |
-
+| Coffee (`line`) on canvas / panel | 2.45 / 1.60 | Decorative borders and dividers, never a control boundary, so WCAG 1.4.11 does not apply |
+| panel on canvas / raised | 1.53 / 1.36 | A card surface, not a control boundary; a linked card's affordance is its title link and focus ring |
+| raised on canvas | 1.13 | Section rhythm only. Never a box on `canvas`: it would vanish, so boxes are `panel` |
+| accent on a photo or on the wash | 2.88 / 3.66 | Forbidden as a word there by the accent role rule |
 ## Type
 
 Inter, downloaded at build by Astro's fonts API and served from this site's own
@@ -208,8 +220,8 @@ writes it in its own grid (spec 0014, revised 2026-10-09). No other grid
 does.
 
 There is no vertical margin between sections. Adjacent sections of the same
-tone are fine; alternating white and tint is the default rhythm a page should
-use.
+tone are fine; alternating `canvas` and `raised` is the default rhythm a page
+should use.
 
 ## Corners and widths
 
@@ -234,66 +246,53 @@ off, so a class using one produces nothing.
 
 ## Tones
 
-Two section tones, `white` and `tint`, and **both are light**. Every text,
+Two section tones, `canvas` and `raised`, and **both are dark**. Every text,
 border, and focus colour is identical on each, so no component adapts to its
 background, none takes a tone prop, and none reads a tone variable. Components
-name their colours directly (`text-ink`, `border-gold-ink`).
+name their colours directly (`text-ink`, `border-accent`). Tones are renamed,
+never reassigned: the 2026-10-09 revision turned every `white` into `canvas`
+and every `tint` into `raised`, page by page, with no new rhythm.
 
-A tone may carry one pattern on top: `bg-diagonal` (`global.css`, spec 0005),
-a 1px `line` stripe every 10px at 45 degrees, today on the home presence band
-and the About page's certification band. It sets only `background-image`, so
-it is not a third tone. Pass it through `Section`'s `class`; **do not** add a
-tone for it.
+A `canvas` band may carry one pattern on top. Each sets only
+`background-image` (and the dots `background-size`), so neither is a third
+tone. Pass it through `Section`'s `class`; **do not** add a tone for it.
 
-- **Do** keep text on `bg-diagonal` at `ink` or stronger. Its worst case, `ink`
-  over a stripe line, measures 4.56:1.
-- **Don't** use `ink-muted` for text on it: over a stripe line it drops to
-  3.93:1, under the 4.5 minimum.
-- Its dark twin, `bg-diagonal-dark` (spec 0011), is white at 6 percent, 1px
-  in every 10, at the same angle, laid over `scrim-strong` on the contact form
-  band. It is not a tone either, and never goes on a light one.
-- **Don't** put a `==gold==` phrase on it either: `gold-ink` over a stripe
-  line measures 4.01:1. A `**bold**` phrase is fine, it stays `ink`. Spec 0010
-  (AC-4) lists the stripe as a surface for `gold-ink`; that line owes a
-  correction, and until then the About certification copy carries no `==`.
-
-The contact page's form band (spec 0011, `src/components/contact/FormBand.astro`)
-is the other dark band that is not a tone: a greyscale photo under
-`scrim-strong` and `bg-diagonal-dark`, on a black band so a photo that fails
-to load changes nothing. It carries `focus-contrast`. Text on it is white or
-`error-on-dark` only; the fields' boxes and the cards are white surfaces and
-follow the light rules. Fields placed there pass `surface="dark"`.
+- **`bg-diagonal`** (spec 0005): `heading` at 6 percent, 1px in every 10, at
+  135 degrees. Today on the home presence band, the About page's
+  certification band, a `stripe` service band, and over `scrim-strong` on the
+  contact form band. Its line is the band's lightest pixel and every pair is
+  measured there: on `canvas` `#1b2327`, where `accent`, the worst, still
+  reads 6.66:1. A `==` phrase is fine on it.
+- **`bg-dots`** (spec 0013): `heading` at 14 percent, a 2px dot every 12px. A
+  dot's centre (`#2e3639`) gives `accent` 5.15:1 and `ink-muted` 5.56:1.
+  **Only on `canvas`**: on `raised` a dot would drop `accent` to 4.42:1.
 
 The service pages' features and process bands sit on `PatternBand` (spec
 0013, `src/components/ui/PatternBand.astro`), named by the content's
-`surface` field. It is not a tone either:
+`surface` field: `stripe` is a `canvas` `Section` under `bg-diagonal`, `dots`
+a `canvas` `Section` under `bg-dots`. Words, cards, and icons on either are
+the same (`heading` headings, `ink` text, `panel` cards with a `line` border,
+`accent` icons). Any other `surface` value fails the build naming the file.
+When a presence band follows a `stripe` pattern band, the route turns its
+stripe's tone to `raised`, so two stripes never run into each other on one
+tone. Every other service band is `canvas`, so a dots band next to a `canvas`
+section has no seam; the patterns carry the rhythm there.
 
-- **`dark`** is a black band under `bg-dots-dark`: a dot of white at 14
-  percent, 2px across, every 12px, which sets only `background-image` and
-  `background-size`. A dot's centre is the band's lightest pixel, `#242424`
-  (measured), and every pair on it is measured there. It carries
-  `focus-contrast` and borrows the band frame. Words on it are white, and a
-  `==` phrase and the line icons `gold-on-dark`; cards and tiles are a
-  `panel` fill with a white hairline at 10 percent. **Never** put
-  `bg-dots-dark` on a light tone.
-- **`light`** is a white `Section` under `bg-diagonal`, so every rule above
-  holds: headings black, body text `ink`, a `==` phrase only in a heading
-  (the build rejects one anywhere else on a `light` block), and cards and
-  tiles white with the `line` border.
-- When a presence band follows a `light` pattern band, the route turns its
-  stripe's tone to `tint`, so two stripes never run into each other on one
-  tone.
+The bands that are not a tone each borrow the band frame:
 
-The home page has one black band, the intro band, and it is not a tone: like
-the hero and `CtaBand` it is its own component that borrows the band frame,
-carries `focus-contrast`, and holds only white text, `--color-gold-on-dark`
-words, and white cards. Two things on it move: the counter, which runs once,
-and the gold rule under its heading, which draws as the heading arrives.
-Neither runs on a loop, so the band needs no pause control, and it takes no
-fade-and-rise scroll reveal. A dark `Section` tone would still be a change to
-spec 0003, not a page level override. It means
-bringing back inherited tone variables, a card tone reset, a light error
-colour, and a second focus colour, then computing the dark contrast pairs.
+- **Photo bands** (the home hero, the Project hero, the contact form band):
+  a photo under `scrim` or `scrim-strong`, on a `canvas` band so a photo that
+  fails to load leaves the same words on a dark band. Every word is `heading`
+  (on the form band, the field and card rules hold too: they are measured at
+  its worst pixel). Each carries `focus-contrast`.
+- **The accent band** (`CtaBand`): brass, `on-accent` words, a `canvas` link.
+  It carries `focus-contrast`.
+- **The home intro band**: a `canvas` band with `heading` copy, `accent`
+  highlighted words, and `panel` stat cards. The base ring passes there, so no
+  `focus-contrast`. Two things on it move: the counter, which runs once, and
+  the typed heading words.
+- **The footer**: a `canvas` band with a `line` hairline on top. No
+  `focus-contrast`.
 
 ## Components
 
@@ -313,7 +312,7 @@ no page writes its own container.
 
 | Prop | Type | Default |
 |---|---|---|
-| `tone` | `'white' \| 'tint'` | `'white'` |
+| `tone` | `'canvas' \| 'raised'` | `'canvas'` |
 | `width` | `'default' \| 'narrow'` | `'default'` |
 | `id` | `string` | none |
 | `labelledBy` | `string`, the id of the section's heading | none |
@@ -326,10 +325,10 @@ no page writes its own container.
 - **The band frame** lives in `src/components/ui/styles.ts`: `bandGutterClass`
   (`px-4 md:px-6 lg:px-8`), `bandPaddingClass` (`py-16 md:py-20 lg:py-24`), and
   `bandWidthClass` (`default` and `narrow`). `Section` builds from them, and so
-  do the two bands that are not a light tone, `CtaBand` and the home hero, so
-  the three cannot drift apart. A band that is not a light tone is its own
-  component that borrows this frame; it never adds a tone to `Section`
-  (spec 0005).
+  do the bands that are not a `Section` tone, `CtaBand` and the home hero
+  among them, so they cannot drift apart. A band that is not a `Section` tone
+  is its own component that borrows this frame; it never adds a tone to
+  `Section` (spec 0005). `Section` is the only component that names a tone.
 
 ### `Button` · `src/components/ui/Button.astro` and `src/components/react/ui/Button.tsx`
 
@@ -345,6 +344,11 @@ no page writes its own container.
 - `href` together with `disabled` is a **type error**. There is no honest way to
   disable a link.
 - At least 44px tall. Labels may wrap on a narrow screen; the button grows.
+- **`primary`** is an `accent` fill with an `on-accent` label (7.71:1),
+  brightening to `accent-hover` on hover (10.52:1). **`secondary`** is an
+  `accent` border and label (7.71:1 on canvas, 6.84:1 on raised, 5.04:1 on
+  panel), filling with `accent` and an `on-accent` label on hover. The same on
+  every dark surface.
 - **Do** pass the label through the slot or children, from a content entry.
 - **Do not** write visible words inside the component.
 
@@ -363,9 +367,12 @@ no page writes its own container.
 - **Do not** put a link, button, or field in the slot of a card that has
   `href`. The stretched link covers it.
 - **Do** choose `headingLevel` from the page's own heading outline.
-- Keyboard focus draws one ring around the whole card. Hover is a raised shadow
-  and an underlined title, deliberately a different treatment, so a mouse user
-  is never shown something that reads as a focus ring.
+- A `panel` surface with a `line` border; the title `ink-strong`, the text
+  `ink-muted` (5.45:1 on panel).
+- Keyboard focus draws one `accent` ring around the whole card. Hover
+  underlines the title and turns the border from `line` to `ink-muted`,
+  deliberately a different treatment, so a mouse user is never shown
+  something that reads as the brass focus ring. No shadow.
 - Renders correctly with no image, with no link, and with a title long enough to
   wrap to three lines. Nothing truncates.
 - Images are 3:2, cropped to fill, and sized for one column on mobile, two on
@@ -383,7 +390,6 @@ no page writes its own container.
 | `hint` | `string` | none |
 | `error` | `string` | none |
 | `required` | `boolean` | `false` |
-| `surface` | `'light' \| 'dark'` | `'light'` |
 | `options` (Select only) | `readonly { value: string; label: string }[]` (required) | |
 | `prompt` (Select only) | `string` (required), the empty first choice | |
 
@@ -404,10 +410,12 @@ and so on).
 - **The line above the box** holds the label at the start and the hint at the
   end (`fieldHeadClass`, spec 0011), so every field has one line there and
   the boxes of a row in a grid line up whether or not each has a hint.
-- **`surface`** is what the field sits on. `dark` makes the label and hint
-  white and the error `error-on-dark`, for the contact form band. The box is
-  identical on both: white, the `field` border, the `error` ring. The class
-  maps live in `styles.ts`, so no field names a colour of its own.
+- **One look everywhere** (the `surface` prop was removed on 2026-10-09): a
+  `canvas` fill, the `field` border (5.04:1 against the fill), `ink` text, an
+  `ink-strong` label, an `ink-muted` hint, and an `error` message and ring.
+  Every surface a field sits on is dark, including the contact form band,
+  whose worst pixel is measured for these words. The class strings live in
+  `styles.ts`, so no field names a colour of its own.
 - **`Select`** is a native `<select>` in the same box, with the icon set's
   `chevron-down` drawn by the `select-chevron` utility in `global.css`
   (its stroke is `--color-ink`'s value, written out because a data URI cannot
@@ -446,24 +454,22 @@ glyph, and licence, and listed in `src/assets/images/CREDITS.md`:
   card or tile may take: `blueprint`, `crane`, `building-check`, `scan`,
   `clipboard-check`, `ruler`, `clash`, `layers`, `messages`. The cards draw
   them at 80px with `strokeWidth` 1.25 and the tiles at 40px with 1.5, since a
-  2 unit line at 80px would be nearly 7px thick. Coloured by the band's
-  surface: `gold-on-dark` on `dark`, `gold-ink` on `light`.
+  2 unit line at 80px would be nearly 7px thick. Coloured `accent` on either
+  pattern.
 - **Solid glyphs** (Tabler filled, or Material Icons filled under Apache 2.0
   where Tabler has no solid match), the `solidIcons` an audience item may
   take with the existing `users` and `building`: `user`, `presenter`,
-  `compass`, `hard-hat`, `users-gear`. Drawn at 64px with `fill-gold`.
+  `compass`, `hard-hat`, `users-gear`. Drawn at 64px with `fill-accent`.
 
 A glyph name is checked twice: the schema lists which glyphs a block may
 take, and passing it to `Icon` is type checked against the map. A new glyph
 is a path in the map and its name in the list.
 
 - Every glyph inherits `currentColor`, so an icon is coloured by the text around
-  it. **Do not** give an icon a colour of its own. The one exception is a
-  gold icon on white, as in the intro band's cards: gold may not be a text
-  colour there, so the icon takes `fill-gold` instead, which is a fill and
-  within the gold rule. A stroke glyph that should read as gold, the `check`
-  in the presence band's list, takes `text-gold-ink` instead: `gold-ink` is
-  allowed as a line, so the stroke stays within the rule too.
+  it. **Do not** give an icon a colour of its own unless it should read as
+  brass: then a solid glyph takes `fill-accent` (the intro band's cards, the
+  contact cards, the audiences) and a stroke glyph `text-accent` (the `check`
+  in the presence band's list). Either is within the accent role rule.
 - A name outside the map is a **type error**, not a blank square. There is no
   icon library and no dynamic lookup.
 - Without `title` the icon is hidden from assistive tech, which is right
@@ -509,16 +515,20 @@ settings itself, so a page passes only its own title and description, plus
 | `siteName` | `string` (required) | |
 | `currentPath` | `string` (required) | |
 
-Sticky, one constant height, white, and it registers **no scroll listener**.
+Sticky, one constant height, a `panel` card, and it registers **no scroll
+listener**.
 
-- It is a full width white card flush with the top: `rounded-b-card` bottom
-  corners, `shadow-md`, and no bottom border. The card is the same on every
+- It is a full width `panel` card flush with the top: `rounded-b-card` bottom
+  corners, no shadow, and no bottom border. The card is the same on every
   page. Only the home hero slides under it; every other page starts below it.
-- `--header-h` is the card's box, not its shadow or corner curve. Anything
+- Links are `ink-strong`, turning `accent` on hover; the active link is
+  `heading` with an `accent` underline. The dropdown and the mobile panel are
+  `panel` too.
+- `--header-h` is the card's box, not its corner curve. Anything
   that makes the header taller (padding, a bigger logo, a second row) changes
   `--header-h` in the same edit, or the home hero's copy slides under the card.
-- While the mobile menu is open the corners square off and the shadow drops, so
-  header and panel read as one white sheet. That rule lives in the header's
+- While the mobile menu is open the corners square off, so header and panel
+  read as one sheet. That rule lives in the header's
   `is:global` CSS and wins over the utilities only because it sits outside
   Tailwind's layers. **Never** move it into a layer.
 
@@ -552,9 +562,13 @@ Sticky, one constant height, white, and it registers **no scroll listener**.
 | `settings` | `Settings` (required) | |
 | `showCertification` | `boolean` | `true` |
 
-A black band: brand, contact, and certification, three columns at `lg`, two
-at `md`, one below. It carries `focus-contrast`, and its marked copy goes
-through `Emphasis` on the `dark` surface.
+A `canvas` band with a `line` hairline on top: brand, contact, and
+certification, three columns at `lg`, two at `md`, one below. Copy is
+`heading`, links and contact icons turn `accent` on hover, and its marked copy
+goes through `Emphasis`. The base ring passes there, so no `focus-contrast`.
+It shows the one light logo (`settings.logo`), the same as the header. The
+badges carry their own light tiles and sit straight on the band, with no
+strip behind them.
 
 - **The hidden panel** (spec 0010): with `showCertification` off, the
   certification column is left out and the brand and contact columns share
@@ -616,9 +630,8 @@ One figure per stat under an optional heading, two columns on mobile and four
 at `md`, centred and never wider than `content`. The About page's first band
 uses it with no heading (spec 0010), so the list is named by that band's `h1`.
 
-- **The look** (spec 0010): each number bold `gold-ink` at `text-h1` (5.05:1
-  on white), each label semibold `ink-strong` (12.63:1). Gold here is always
-  `gold-ink`, never the brighter fill gold the reference shows.
+- **The look** (spec 0010): each number bold `accent` at `text-h1` (7.71:1
+  on canvas), each label semibold `ink-strong` (15.83:1).
 - `entranceFrom` gives every figure the `entrance` utility with steps counting
   up from it, so the figures follow whatever the band animated before them.
 
@@ -642,7 +655,7 @@ uses it with no heading (spec 0010), so the list is named by that band's `h1`.
 | Prop | Type | Default |
 |---|---|---|
 | `text` | `string` (required), one line of content copy | |
-| `surface` | `'light' \| 'dark'` (required) | |
+| `onPhoto` | `boolean`, the line sits on a photo | `false` |
 | `strongClass` | `string`, extra classes for the `**` runs | none |
 
 The one place marked copy becomes markup (spec 0010). Content marks a phrase
@@ -651,14 +664,16 @@ build (`src/lib/emphasis.ts`):
 
 - `**phrase**` is semibold in the surrounding colour. The home presence band
   passes `strongClass="text-ink-strong"` to keep its darker bold.
-- `==phrase==` is semibold gold, and the surface picks which: `gold-ink` on
-  white and tint, `gold-on-dark` on black. That is why `surface` has no
-  default.
+- `==phrase==` is semibold `accent`, legible on every dark surface, or
+  semibold `heading` when the caller passes `onPhoto`, because brass over the
+  scrim is 2.88:1. Only the Project hero's intro passes it. The `surface` prop
+  was removed on 2026-10-09.
 - Marks must close with the same mark and may never nest or overlap. A line
   that breaks either rule fails the build, quoting the line.
 - It renders inline runs and no wrapper, so the caller owns the `<p>` and its
   colour. **Do not** write a `splitEmphasis` loop in a component again.
-- **Don't** put a `==` phrase on `bg-diagonal` (see `## Tones`).
+- A `==` phrase is fine on either pattern (`accent` over a stripe line reads
+  6.66:1).
 
 ### `Accordion` · `src/components/ui/Accordion.astro`
 
@@ -673,14 +688,18 @@ capability band and ready for the service pages. The browser's own
 
 - Every item shares `name`, so opening one closes the other; the first ships
   `open`. A closed item's text stays in the HTML.
-- **Closed**: a `gold` filled bar, the title bold `black` at `text-h3`
-  (8.73:1), a `plus` in a white circle at the end. **Open**: a white card with
-  a `line` border and `shadow-lg`, the title `gold-ink` (5.05:1), the circle
-  `tint`, a `minus`, and the text below with its marks.
+- **Closed**: an `accent` filled bar, the title bold `on-accent` at `text-h3`
+  (7.71:1), a `plus` in a `canvas` circle at the end. **Open**: a `panel` card
+  with a `line` border, the title `accent` (5.04:1), the circle `raised`, a
+  `minus`, and the text below with its marks.
+- **The icon is `accent` open or closed** (7.71:1 on the `canvas` circle,
+  6.84:1 on `raised`). Without `text-accent` it would inherit the closed
+  title's `on-accent`, the circle's own colour, and vanish.
 - The whole summary is the target, at least 44px tall, and toggles with a
   click, a tap, Enter, or Space. It holds plain text, never a heading.
 - The group carries `focus-contrast`, so a summary gets the two colour ring:
-  the `gold-ink` ring would vanish against a closed gold bar (2.10:1).
+  the `accent` ring would vanish against a closed brass bar. It passes on an
+  open `panel` item too.
 - The `accordion-item` utility in `global.css` hides the browser's own
   triangle and holds the slide (`## Focus and motion`).
 
@@ -692,13 +711,12 @@ capability band and ready for the service pages. The browser's own
 | `heading` | `string` or a `Link` (required) | |
 | `body` | `string` or a `Link` | none |
 
-One of the contact page's three cards (spec 0011): a 56px `gold` filled icon,
-hidden from assistive tech, above an `h3`, then the value, centred on a white
-card with `shadow-lg`.
+One of the contact page's three cards (spec 0011): a 56px `accent` filled
+icon, hidden from assistive tech, above an `h3`, then the value, centred on a
+`panel` card.
 
-- It is a white surface on a dark band, so it follows the light rules: the
-  heading bold `gold-ink` at `text-h3` (5.05:1), the value `ink-strong`
-  (12.63:1). **Never** a bright gold word here.
+- The heading bold `accent` at `text-h3` (5.04:1), the value `ink-strong`
+  (10.35:1).
 - The email card's heading is the address itself, as a `mailto:` link; the
   phone is a `tel:` link built by `telHref` in `src/lib/contact.ts`
   (digits and a leading `+` only).
@@ -713,15 +731,15 @@ card with `shadow-lg`.
 | `text` | `string` (required) | |
 | `button` | `Link` (required) | |
 
-The closing call to action: a self contained gold band, always gold, taking no
-tone. Spec 0005 kept it for the service pages, but spec 0013 closed them
+The closing call to action: a self contained accent band, always brass, taking
+no tone. Spec 0005 kept it for the service pages, but spec 0013 closed them
 inside their process band instead. The Project page closes with it (spec
 0014), and so does every project detail page, fed `projectPage.detail.cta`
 (spec 0015).
 
 - **It is not a `Section` with a third tone**, and that is the point. Two tones
-  and both light is what lets every other component name its colours directly
-  and never read a tone variable. A gold `Section` would reopen all of it.
+  and both dark is what lets every other component name its colours directly
+  and never read a tone variable. An accent `Section` would reopen all of it.
 - It borrows `Section`'s frame (the band classes above) rather than wrapping
   it, because wrapping would mean giving `Section` the tone prop this avoids.
   If a third tone ever becomes right, this component collapses into it.
@@ -729,9 +747,11 @@ inside their process band instead. The Project page closes with it (spec
   with an override class. Tailwind's generated order decides which background
   utility wins, not the order classes appear in the attribute, so an override
   is a silent coin flip.
-- Black heading and text on the gold (8.73:1), black link with a white label
-  (21.00:1). The band carries `focus-contrast`, so its link shows the two
-  colour ring (below), not the gold ink one.
+- `on-accent` heading and text on the brass (7.71:1), each set explicitly
+  because the base layer makes an `h2` `heading` (2.05:1 here). The link is a
+  `canvas` fill with a `heading` label (15.83:1), lifting to `panel` on hover
+  (10.35:1). The band carries `focus-contrast`, so its link shows the two
+  colour ring (below), not the brass one.
 
 ### `ServiceCard` · `src/components/home/ServiceCard.astro`
 
@@ -748,7 +768,9 @@ inside their process band instead. The Project page closes with it (spec
 The home services band's card (spec 0005), home only. Top to bottom and
 centred: the shared illustration at 160px tall, the title as an `h3`, the
 summary, the sub services, and the cue with an `arrow-right`, pinned to the
-bottom so the cues of a row line up. White, `shadow-lg`, `rounded-ui`.
+bottom so the cues of a row line up. `panel`, `rounded-ui`, no shadow. The
+illustration is the dark version (`service-illustration-dark.png`): a
+transparent background with cream and brass strokes.
 
 - **One link, one tab stop**, the same stretched title link as `Card`. The cue
   is text. **Do not** put a link, button, or field inside it.
@@ -757,26 +779,25 @@ bottom so the cues of a row line up. White, `shadow-lg`, `rounded-ui`.
   and the pipes are `aria-hidden`. **Do not** turn it into a `<p>` with the
   pipes typed in: a screen reader would lose the list.
 - At rest: title `ink-strong`, summary `ink-muted`, list `ink`, cue and arrow
-  `gold-ink`.
-- **Hover and keyboard focus look the same**: a wash from `tint` at the top to
-  `gold` at 70 percent at the bottom rises from the card's bottom edge to its
-  top over 200ms, a 4px `gold` border appears on the left and right (an
-  overlay, so nothing shifts), the shadow deepens to `shadow-xl`, and the card
-  rises 4px. Focus also shows the `gold-ink` ring.
+  `accent`.
+- **Hover and keyboard focus look the same**: a wash from `panel` at the top
+  to `accent-deep` (Coffee) at 70 percent at the bottom rises from the card's
+  bottom edge to its top over 200ms, a 4px `accent` border appears on the left
+  and right (an overlay, so nothing shifts), and the card rises 4px. Focus
+  also shows the `accent` ring.
 - **The wash rises, it does not fade**: the layer is scaled to nothing at rest
   and grows back from `origin-bottom`, the `scale` property and the same idiom
   as `heading-rule`, so it stays clear of the card's own `translate` lift and of
   the scroll reveal's `transform`. Leaving the card runs it back down the way it
   came. With reduced motion asked for, the full wash is simply there.
-- **On the wash every word and icon is `black`**, at least 11.35:1 at the wash's
-  darkest point, which is `gold` at 70 percent over the card's white (the
-  composite `#e9b74d`, measured in the browser). Solid `gold` was darker at
-  8.73:1; the wash was lightened on 2026-09-24 and every figure here went up
-  with it. **Never** put grey on it: `ink-muted` on `gold` is 2.06:1.
+- **On the wash every word and icon is `heading`**, at least 7.52:1 at the
+  wash's darkest point, `accent-deep` at 70 percent over the `panel` (the
+  composite `#614438`). **Never** put `accent` on it: brass on the wash is
+  3.66:1, which is why the cue turns `heading` with the rest.
 - The lift is the `translate` property under `motion-safe`, never `transform`,
   so it composes with the scroll reveal. With reduced motion the colours still
   change, at once, and the card does not rise. `hover:` applies only where a
-  pointer can hover, so a tap never leaves a card stuck gold.
+  pointer can hover, so a tap never leaves a card stuck in its hover state.
 - Each card stays a direct child of the band's `data-reveal-stagger` grid.
 - **The row shows what `home.services.featured` lists** (spec 0013), one to
   three cards in that order, never every service. Three fill the row as
@@ -791,21 +812,21 @@ bottom so the cues of a row line up. White, `shadow-lg`, `rounded-ui`.
 
 | Prop | Type | Default |
 |---|---|---|
-| `surface` | `'light' \| 'dark'` (required) | |
+| `surface` | `'stripe' \| 'dots'` (required) | |
 | `labelledBy` | `string` (required), the id of the band's heading | |
 | `class` | `string` | none |
 
 A band on a pattern (spec 0013), the surface of the service pages' features
-and process bands. `dark` renders its own black `<section>` under
-`bg-dots-dark`, with `focus-contrast` and the band frame; `light` renders a
-white `Section` under `bg-diagonal`. See `## Tones` for what may sit on each.
+and process bands. Both values render a `canvas` `Section`: `stripe` under
+`bg-diagonal`, `dots` under `bg-dots` (formerly `light` and `dark`). See
+`## Tones` for the measured pairs.
 
-- It owns the surface, nothing inside it. What sits there reads the same
-  `surface` through the band class maps in `styles.ts` (`bandHeadingClass`,
-  `bandBodyClass`, `bandCardClass`, `bandTileClass`, `bandIconClass`), so no
-  band component names a colour that depends on the surface.
-- **Do not** add a tone to `Section` for it, and **do not** use it for a
-  light band with no pattern; that is a plain `Section`.
+- It owns the pattern, nothing inside it. What sits there takes the same band
+  strings in `styles.ts` on either (`bandHeadingClass`, `bandBodyClass`,
+  `bandCardClass`, `bandTileClass`, `bandIconClass`), and the `BandPattern`
+  type is read only here.
+- **Do not** add a tone to `Section` for it, and **do not** use it for a band
+  with no pattern; that is a plain `Section`.
 
 ### `CarouselDots` · `src/components/ui/CarouselDots.astro`
 
@@ -818,9 +839,9 @@ The dots under a photo carousel, shared by the home hero and each service
 intro (spec 0013), run by `src/scripts/carousel.ts`.
 
 - One real button per photo, named "Show photo N of M", a 24px hit area
-  around a small mark: black at 30 percent, or solid black for the photo
-  showing (`aria-current`). Black, not gold: a gold dot on white would be
-  2.41:1, under the 3:1 a control's state needs.
+  around a small mark: `heading` at 50 percent, or solid `heading` for the
+  photo showing (`aria-current`). At 50 percent a dot reads 4.73:1 on
+  `canvas`; at 30 percent it would be 2.48:1 and lost on a bright hero photo.
 - The row ships `invisible` and the script reveals it, so with no JavaScript
   there is nothing dead to tab to. **Do not** render it for a single photo.
 - The label is fixed English, a follow up owed before a second language.
@@ -845,15 +866,17 @@ band, its tone, and its heading id.
 - **A look only one service wants is a new layout**, never an edit to a
   shared band component. An existing component changes only when every
   service using it should change.
-- The surfaced bands (features, process) read their block's `surface` and
-  only the band class maps in `styles.ts`: white words and `panel` cards on
-  `dark`, black headings, `ink` text, and white cards on `light`.
+- The patterned bands (features, process) take only the band strings in
+  `styles.ts`: `heading` headings, `ink` text, `panel` cards with a `line`
+  border, and `accent` icons, the same on `stripe` and `dots`.
 - Grids that fit any count use literal classes (`lg:grid-flow-col
   lg:auto-cols-fr`), never a class built from a list's length.
-- The intro's paragraphs each sit beside a 4px gold bar, a `::before` filled
-  with `--color-gold`; the audience icons are `fill-gold`; the process circles
-  and the line joining them are gold fills carrying black numbers. All are
-  fills, within the gold rule.
+- The intro's paragraphs each sit beside a 4px `accent` bar, a `::before`
+  filled with `--color-accent`; the audience icons are `fill-accent`; the
+  process circles are `accent` fills carrying `on-accent` numbers, and the
+  line joining them is the decorative `line` (Coffee).
+- The intro's photo frame is `panel`, so an empty frame still reads as a box
+  on `canvas`.
 
 ### `ProjectGallery` · `src/components/project/ProjectGallery.astro`
 
@@ -869,7 +892,7 @@ The Project page's photo wall (spec 0014, revised 2026-10-09 after the
 engineer's reference): every project as a wide photo tile, one column, then
 two across from `md`.
 
-- **Its own band, not a `Section`**: white, with the band frame's side gutters
+- **Its own band, not a `Section`**: `canvas`, with the band frame's side gutters
   and bottom padding (`bandPaddingBottomClass` in `styles.ts`), and a top
   padding equal to the gutter, so the first row sits as far below the hero as
   the tiles sit from the window's sides. It takes **no maximum width**, so the
@@ -880,12 +903,12 @@ two across from `md`.
 - **Every tile is a fixed 3:2 box** (`aspect-3/2`), **4:3 from `md` to `lg`**
   (`md:aspect-4/3 lg:aspect-3/2`), where two columns make the tiles narrowest
   and the extra height is what fits the unfolded facts under a 60 character
-  title. `rounded-ui`, on a black fill that shows only while the photo loads.
+  title. `rounded-ui`, on a `panel` fill that shows only while the photo loads.
   The box is reserved before the photo arrives, so nothing shifts. The photo
   covers the box, centred, so a tall tower is cropped; choose photos with
   that in mind.
 - **A `bg-scrim` layer covers the whole photo**, so every word on the tile is
-  white at 5.74:1 at worst over any photo. Lighter would break that (the
+  `heading` at 5.91:1 at worst over any photo. Lighter would break that (the
   engineer chose the guarantee over the reference's lighter wash).
 - **At rest**: the title (`h2`, `text-h3`, bold) and, 4px under it, the
   summary (`text-small`, medium) on one line (`truncate`; the whole line stays in the HTML),
@@ -896,7 +919,7 @@ two across from `md`.
   to `scrim-strong` over 500ms, and under the summary the cue and the facts
   unfold (`tile-info` in `global.css`, a grid row from nothing to its own
   height), lifting the title by exactly what appears. The cue is "Read more"
-  in a white outlined pill (`rounded-full`), `aria-hidden`; the facts are a
+  in a `heading` outlined pill (`rounded-full`), `aria-hidden`; the facts are a
   `<dl>` of storeys, floor area, and LOD, from `tileFacts`, labels from
   `projectPage.tileFacts`, each only when the project has it. A touch screen
   has no hover (`hover:` needs a pointer that can hover), so there a tile
@@ -939,28 +962,27 @@ on it, then the filter.
   same amount, borrows the band frame's gutters and padding, and carries
   `focus-contrast`. The photo loads eagerly at high fetch priority, the
   page's largest paint, and a `bg-scrim` layer covers all of it, so every
-  word on the band is white at 5.74:1 at worst. The `h1` takes no gold rule
-  and no capitals, like the home hero's.
-- **A `==gold==` phrase in its intro is not safe**: `Emphasis` gives it
-  `gold-on-dark`, made for black, and over the scrim it can fall under 3:1 on
-  a bright photo. Keep the hero's intro to plain and `**bold**` words.
+  word on the band is `heading` at 5.91:1 at worst. The `h1` takes no accent
+  rule and no capitals, like the home hero's.
+- **Its intro passes `onPhoto` to `Emphasis`**, so a `==` phrase there renders
+  bold `heading`, never brass: `accent` over the scrim is 2.88:1.
 - **The filter is one named `<form>`** (a landmark, `projectPage.filter.label`),
   `no-js:hidden`, so with JavaScript off it is not there at all and the
   visitor gets the whole wall; with it on it is there from the first frame,
   so nothing shifts. Each field's `name` is the tile attribute it matches.
   - **The service tabs**: radio buttons in a `fieldset` with an `sr-only`
     legend, so they are one tab stop and the arrow keys move the choice.
-    The input is `sr-only`; its label draws the tab, `text-lead` white, the
-    chosen one underlined in white (2px). White, not gold: gold over the
-    scrim is not guaranteed 3:1. Every tab is the same weight, so choosing
+    The input is `sr-only`; its label draws the tab, `text-lead` `heading`,
+    the chosen one underlined in `heading` (2px). Cream, not brass: brass over
+    the scrim is 2.88:1. Every tab is the same weight, so choosing
     one never shifts the row. The two colour focus ring is drawn on the
     label (`peer-focus-visible:`), since the input cannot show one. The first
     tab is "All"; the rest are the services that have projects, in the
     services' `order`.
-  - **The bar**: a `bg-scrim` panel with a white hairline at 10 percent,
-    holding the country and floor area dropdowns, native `<select>`s in the
-    shared field box (white on every surface, `selectClass`) with the dark
-    surface's labels above them, side by side from `md`. Each starts on
+  - **The bar**: a `bg-scrim` panel with a `line` hairline, holding the
+    country and floor area dropdowns, native `<select>`s in the shared field
+    box (`selectClass`, the same on every surface) with the shared field
+    labels above them, side by side from `md`. Each starts on
     "Any". Countries are the text after the last comma of each project's
     `location`; the floor area bands are `projectPage.filter.areaRanges`
     (`min` counts in, `max` does not), and a band no project falls in is left
@@ -983,13 +1005,13 @@ spec 0005's "the photo stays still"):
   (`after:-inset-6`) and the tile clips the rest: the whole tile stays
   clickable wherever the words have drifted.
 - **The cue**: "Read more" from content (`projectPage.tileCue`,
-  `home.projectShowcase.cue`), white, `text-small font-semibold`,
+  `home.projectShowcase.cue`), `heading`, `text-small font-semibold`,
   **`aria-hidden`**, so a screen reader hears six distinct titles rather
   than six "Read more"s. On home it sits under the summary with an
-  `arrow-right`; on `/project` it is a white outlined pill that unfolds on
+  `arrow-right`; on `/project` it is a `heading` outlined pill that unfolds on
   hover (above).
-- **Keyboard focus** draws the light tone `gold-ink` ring round the whole
-  tile (`link-focus:outline-gold-ink` on the `<li>`), never round the title
+- **Keyboard focus** draws the `accent` ring round the whole tile
+  (`link-focus:outline-accent` on the `<li>`), never round the title
   alone; the link itself sets `focus-visible:outline-none`.
 - **Hover zooms the photo alone**, 105% over 500ms, `motion-safe`: `group`
   and `isolate` on the `<li>` with its clipping (`overflow-hidden` on home,
@@ -1012,14 +1034,14 @@ spec 0005's "the photo stays still"):
 | `entranceFrom` | `number`, the first entrance step | `0` |
 
 The `/project` intro (spec 0014), reused by every project detail page (spec
-0015). It renders the inside of a white `Section` labelled by its `h1`.
+0015). It renders the inside of a `canvas` `Section` labelled by its `h1`.
 
 - **Without `context`** it is exactly the `/project` intro: the ruled `h1` in
   capitals by CSS only, then one `text-lead` paragraph in the narrow width.
 - **With `context`**, a block above the `h1` holds two left aligned links, each
   44px tall for touch: the back link (an `arrow-left` and its label,
-  `text-small`, `gold-ink`) and, on its own line, the project's service
-  (`text-small font-semibold tracking-wide uppercase`, `gold-ink`) linking to
+  `text-small`, `accent`) and, on its own line, the project's service
+  (`text-small font-semibold tracking-wide uppercase`, `accent`) linking to
   its service page. Both underline on hover. `context` carries both links
   together, so the band has both or neither.
 - **The entrance** counts up from `entranceFrom`: the links block, then the
@@ -1029,66 +1051,70 @@ The `/project` intro (spec 0014), reused by every project detail page (spec
 
 One page per project at `/project/<slug>` (spec 0015), six bands: the intro
 (`IntroBand` with `context`), the cover, the story, the gallery, the next
-project link (two or more projects only), and the gold `CtaBand`. Every word
+project link (two or more projects only), and the accent `CtaBand`. Every word
 comes from the project's entry, its service, `projectPage.detail`, or the site
 name; the derived values (the next project, the facts rows, the head) come
 from `src/lib/project-detail.ts`.
 
-- **`ProjectCover`**, the cover band: white, the band gutters, **no maximum
-  width** and no vertical padding. One photo box, `rounded-ui` on a black fill
+- **`ProjectCover`**, the cover band: `canvas`, the band gutters, **no maximum
+  width** and no vertical padding. One photo box, `rounded-ui` on a `panel` fill
   that shows only while it loads, fixed at 4:3 below `md`, 16:9 at `md`, and
   21:9 at `lg`, so its space is reserved before the photo arrives. The photo
   covers it, loads eagerly with high fetch priority (the page's largest
   paint), and has `widths` up to 2400. No caption, no link, no hover.
-- **`ProjectStory`**, the story band: a white `Section`, no label. One column
+- **`ProjectStory`**, the story band: a `canvas` `Section`, no label. One column
   below `lg`, the facts panel first; at `lg` three columns with a 32px gap,
   the write up across the first two and the facts panel in the third, both at
   the top. The DOM order stays facts first and the placement is explicit
   (`lg:col-span-2 lg:row-start-1`, `lg:col-start-3 lg:row-start-1`), never auto
   flow. Each write up section is an `h2` at `text-h3`, then its paragraphs
-  through `Emphasis` (`light`), 16px apart, with 48px between sections.
-- **The facts panel**: `bg-tint`, `rounded-ui`, 24px padding (32px from `md`),
+  through `Emphasis`, 16px apart, with 48px between sections.
+- **The facts panel**: `bg-panel`, `rounded-ui`, 24px padding (32px from `md`),
   an `h2` at `text-h3`, then one `<dl>`: each `<dt>` a `text-small font-semibold
   tracking-wide uppercase` label in `ink-muted`, each `<dd>` the value in
   `ink-strong` with `wrap-break-word`, so a long place or client wraps inside
   the panel. A fact the entry leaves out has **no row at all**, never an empty
   `<dt>` or a dash. The rows and their formatting (`42,000 m²`, `LOD 300`,
   `Revit, Navisworks`) come from `projectFacts`, never a component.
-- **`ProjectPhotos`**, the gallery band: `tint`, the band gutters and padding,
+- **`ProjectPhotos`**, the gallery band: `raised`, the band gutters and padding,
   **no maximum width**. A left aligned ruled `h2` names the band and its list.
   The wall is `wall.ts`: one, two, then three columns, 8px seams, fixed 5:4
-  tiles on black (the `/project` wall's old shape; that wall left it on
+  tiles on `panel` (the `/project` wall's old shape; that wall left it on
   2026-10-09). A gallery tile is only a photo with its
   `alt`: no caption, nothing focusable, the default cursor, no hover, and
   every photo lazy.
-- **`NextProject`**, the way on: a white, narrow `Section` holding one centred
+- **`NextProject`**, the way on: a `canvas`, narrow `Section` holding one centred
   link to the next project by `order` (the last wraps to the first). Inside
   it, the label (`text-small font-semibold tracking-wide uppercase`,
   `ink-muted`) on its own line, then the title (`text-h3 font-semibold`,
-  `ink-strong`) and an `arrow-right` in `gold-ink`. Its name is the label and
-  the title together; the title underlines on hover; focus shows the light
-  tone `gold-ink` ring. With one project the band is absent, so the link never
+  `ink-strong`) and an `arrow-right` in `accent`. Its name is the label and
+  the title together; the title underlines on hover; focus shows the
+  `accent` ring. With one project the band is absent, so the link never
   points to its own page.
 
 ## Focus and motion
 
-Two rules, chosen by the surface, and no exceptions (spec 0005):
+Two rules, chosen by the surface, and no exceptions (spec 0003, revised
+2026-10-09):
 
-- **On the two light tones**: a 2px solid `--color-gold-ink` outline with a 2px
-  gap, identical on white and tint. This is the base rule in `global.css`.
-- **On every surface that is not a light tone** (today the home hero's photo,
-  the Project page hero's photo (its service tabs draw the ring on their
-  label, `peer-focus-visible:`, since the radio itself is invisible), the
-  home intro band's black, the contact form band, the dark `PatternBand`,
-  the footer's black, `CtaBand`'s gold band, and the `Accordion`'s gold
-  bars): a two colour ring, a 2px `--color-black` band
-  directly around the control and a 2px `--color-white` band outside it. It
-  comes from the `focus-contrast` utility in `global.css`, placed on the band's
-  `<section>`, so everything focusable inside inherits it and no control sets
-  its own ring colour. Two colours is what makes it work on any background:
-  against any colour at all, one of the two bands reaches at least 4.58:1.
-- The rule belongs to the surface, not the control. A new dark or photo surface
-  adds `focus-contrast`; it never invents a third ring.
+- **On every dark surface**: a 2px solid `--color-accent` outline with a 2px
+  gap, on `canvas` (7.71:1), `raised` (6.84:1), `panel` (5.04:1), and either
+  pattern. This is the base rule in `global.css`, and it covers the home
+  intro band, the pattern bands, and the footer with nothing placed on them.
+- **On a photo or an accent fill** (the home hero's photo, the Project page
+  hero's photo (its service tabs draw the ring on their label,
+  `peer-focus-visible:`, since the radio itself is invisible), the contact
+  form band, `CtaBand`'s brass band, and the `Accordion`'s brass bars): a two
+  colour ring, a 2px `--color-canvas` band directly around the control and a
+  2px `--color-heading` band outside it. It comes from the `focus-contrast`
+  utility in `global.css`, placed on the band's `<section>` (on the
+  `Accordion`, its wrapper, so an open `panel` item takes it too, which passes
+  there), so everything focusable inside inherits it and no control sets its
+  own ring colour. Two colours is what makes it work on any background:
+  against any colour at all, one of the two bands reaches at least 3.98:1.
+- The rule belongs to the surface, not the control. `focus-contrast` sits
+  only on photo bands and accent fills, never on a plain dark band; a new
+  photo or accent surface adds it, and never invents a third ring.
 - Either way, mouse clicks show nothing (`:focus-visible`), and width and
   offset are the same 2px.
 - When the visitor's system asks for reduced motion, every transition and
@@ -1101,11 +1127,11 @@ stopping below the sticky header. Touch keeps the device's own momentum.
 Reduced motion turns both off, and with no script the page scrolls natively.
 
 Motion is enhancement only. The built HTML draws every band complete and every
-gold rule full width, and no CSS rule hides anything waiting for a script.
+accent rule full width, and no CSS rule hides anything waiting for a script.
 Three plain scripts move things on the home page, and each stops entirely for
 reduced motion. Two of them move two things each: the carousel script moves the
 hero's photos and the panel over them, and the reveal script moves the bands
-and the gold rules under the section headings. The service pages use the same
+and the accent rules under the section headings. The service pages use the same
 carousel and reveal scripts and add none (spec 0013).
 
 - **The scroll reveal**, the first half of `src/scripts/reveal.ts` (spec 0005).
@@ -1125,7 +1151,7 @@ carousel and reveal scripts and add none (spec 0013).
   importers, with `parallax.ts`): `animate` from
   `motion/mini` and `inView` only, nothing else from the package.
 - **The heading rule**, the second half of the same module (spec 0005). The
-  gold rule under a section heading draws itself from nothing to the full
+  accent rule under a section heading draws itself from nothing to the full
   width of the words as the heading arrives, over the same 600ms with an ease
   out, starting at the same 20 percent. When the visitor is scrolling down the
   page it grows left to right, from nothing to full width. When they are
@@ -1226,7 +1252,7 @@ carousel and reveal scripts and add none (spec 0013).
   lower band the heading block reveals, then its cards, tiles, items, or
   steps one after another, then the process band's closing, and every ruled
   heading's rule draws with the scroll direction. A process step brings its
-  stretch of the gold line with it as it fades in. The block after the
+  stretch of the connecting line with it as it fades in. The block after the
   intro also takes the entrance, above.
 - The Project page imports `reveal.ts` too (spec 0014, revised 2026-10-09):
   the hero's `h1`, intro, and filter move on load (steps 0 to 2) and take no
@@ -1256,7 +1282,7 @@ carousel and reveal scripts and add none (spec 0013).
   open the header is held at rest (`!important` in `Header.astro`). Under
   reduced motion nothing moves and the header never leaves. Below the fold each tile reveals after the one before as
   it scrolls into view, and a tile the filter brings into view reveals the
-  same way. The hero's `h1` has no rule. The empty state and the gold band
+  same way. The hero's `h1` has no rule. The empty state and the accent band
   do not move. On hover a tile's photo slowly zooms to 105% (`motion-safe`
   only), its scrim deepens, and its cue and facts unfold over 500ms (the
   `tile-info` grid row; under reduced motion they appear at once). The home
@@ -1284,17 +1310,24 @@ carousel and reveal scripts and add none (spec 0013).
   them takes `data-reveal`. On scroll the facts panel and each write up
   section reveal, then the gallery's heading block and its tiles one after
   another (`data-reveal-stagger`), and the `h1`'s and the gallery heading's
-  rules draw with the scroll direction. The next project band and the gold
+  rules draw with the scroll direction. The next project band and the accent
   band do not move.
 - **Don't** give the hero or the intro band the fade-and-rise: the hero is the
   largest contentful paint, and the intro band already moves with the counter.
   What is banned there is revealing the band, not all motion on it. The intro
-  heading's gold rule draws like every other section heading's, because the
+  heading's accent rule draws like every other section heading's, because the
   rule belongs to the heading treatment rather than to the band.
 
 ## Invariants
 
 - Every colour, font size, radius, and container width resolves to a token.
+- Both tones are dark and no component reads or sets a tone variable. `Section`
+  is the only component that names a section tone.
+- Coffee is never read. Text on a photo is only `heading`. `on-accent` lives
+  only on an accent fill, and every heading or paragraph inside one carries
+  `text-on-accent` explicitly.
+- `focus-contrast` sits only on photo bands and accent fills.
+- No shadows, and no retired colour name survives in `src/` (spec 0003, AC-16).
 - Line height and letter spacing arrive with the size token, never written on a
   component.
 - Only `md` and `lg` exist. Mobile is the unprefixed default.
