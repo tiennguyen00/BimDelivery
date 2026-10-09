@@ -129,3 +129,89 @@ The warm tint is what makes these tight: it is lighter than white in no channel 
 Three values are excluded by role rather than by measurement: gold `#e09900` on white (2.41), yellow `#ffcc00` on white (1.51), and line `#e5e5e5` on white (1.26). None renders as text or as a control boundary, so no threshold applies; the gold role table in `index.md` is what keeps that true, and the gold guard scenario is what checks it.
 
 If any token value changes, compute the pairs again and update both `index.md` and `docs/design.md` in the same commit.
+
+## Revision 2026-10-09: the dark brand theme
+
+### Context
+
+The client supplied its own palette as a five swatch brand board: Chinese Black `#0C1519`, Dark Jungle Green `#162127`, Jet `#3A3534`, Coffee `#724B39`, and Antique Brass `#CF9D7B`, shown on a dark photo. The site so far was built on the paviliusbim.com palette: white and cream tones, black and grey words, and gold split into a fill and a text shade because gold on white is 2.41:1. The "Real brand" follow up always expected this moment, and the system was built so that a palette change is mostly values.
+
+Four forces shaped the revision. Every swatch is dark except brass, so there is no light text colour to take from the board; text tones have to be derived. About 35 component files name colours directly, several put white cards and white fields on black bands, and the token names (`bg-white`, `text-black`, `gold-ink`) describe the old palette, not a role. Some assets were drawn for a white page: a navy placeholder logo, navy badges on light tiles, and a service illustration on a solid white background. And because Tailwind's palette is cleared, any class left pointing at a removed token silently renders nothing.
+
+### Options considered (the engineer chose each)
+
+**How the palette applies.** Rebrand but stay light (brass replaces gold as the fill, Coffee becomes the text gold at 7.55:1 on white, Chinese Black the headings and dark bands) · **go fully dark** (chosen): the page itself becomes Chinese Black, as on the brand board. The light option was the smaller change and mapped every role one to one; the dark option matches what the client showed and needs every surface, text, and field rule redone.
+
+**Where the decision lives.** A new spec amending this one · supersede this one entirely · **update this spec in place** (chosen), keeping one design system record, with this section holding the reasoning. The scope tracks it as a reopening of feature 4.
+
+**Token names.** Keep the names and change the values (the smallest diff, but `bg-white` would paint Chinese Black) · name by hue (`bg-coffee`, ties classes to this palette) · **rename by role** (chosen). The surface names became `canvas`, `raised`, and `panel`; `base` was offered in the conversation and changed to `canvas` at write time, because `text-base` reads as Tailwind's font size utility and would confuse every reader.
+
+**Surfaces.** **Chinese Black page, Dark Jungle Green alternate, Jet cards** (chosen; Jet is the only one that separates clearly from both, 1.53:1 and 1.36:1) · Jungle cards (vanish on a Jungle band without the border doing all the work) · a Jungle page with Black as the deep band (slightly lower text contrast everywhere).
+
+**Text tones.** **A warm cream family from the brass hue** (chosen: `#F5ECE4`, `#D9CBC0`, `#B8ACA3`, so the worst text pair, muted on Jet, is 5.45:1) · pure white and neutral greys (muted on Jet would be 4.29:1, so muted text could never sit on a card) · white headings with cream body.
+
+**Feature bands** (the old black bands on a white page). **Patterns carry them** (chosen: they become ordinary `canvas` bands, told apart by their stripe, dots, photo, and brass accents) · Coffee feature bands (brass highlights fail on Coffee at 3.15:1) · Jet feature bands (cards inside would need yet another colour).
+
+**Primary button hover.** **Lighter brass with the same dark label** (chosen, 10.52:1; brightening reads as lift on a dark page) · Coffee with a cream label (darkening reads as pressed or disabled) · a darker brass (sinks into the background).
+
+**Coffee's jobs.** **The service card hover wash and decorative lines** (chosen) · the closing band fill · selected and active fills (not chosen).
+
+**The old gold fills that carry black.** **Brass with a Chinese Black label** (chosen, 7.71:1, so the closing band stays the one bright band) · brass, but the accordion moves to Jet.
+
+**Fields.** **Dark fields** (chosen: `canvas` fill, `#8C8480` border at 5.04:1, one style everywhere, so the `surface` prop goes) · Jet fields (border contrast tight at 3.29:1 with the same grey) · light cream fields as islands (keeps a second set of light rules alive).
+
+**Assets.** **The existing light logo everywhere** (chosen) over recolouring a placeholder · **badges kept as light tiles** (chosen; real certifier marks arrive in their own colours) · **a generated dark illustration** (chosen) over a cream frame or hiding it.
+
+**Older specs.** **This spec and `design.md` only** (chosen); specs 0004 to 0016 stay as history and this spec overrides their colour wording.
+
+**Photo scrim.** Retinting today's 60% layer to Chinese Black drops cream text to 4.13:1 over a white pixel. **Chinese Black at 70% with cream text** (chosen, 5.91:1) · keep black at 60% with pure white text (5.74:1, keeps a `white` token for photo text and a neutral black over brand photos) · Chinese Black at 65% (4.92:1, little headroom).
+
+Kept out of scope by the engineer: the display serif shown on the brand board (colour only for now, a follow up) and a light mode or toggle (dark only; no script, one set of pairs).
+
+### Rationale
+
+Going dark reverses the call this spec made on 2026-09-20 ("there is no dark band, so both tones are light"), but it reverses it cleanly: both tones are still the same kind, now both dark, so the property that mattered most survives. No component adapts to its background, no tone variable comes back, and the `--tone-*` machinery the original rationale warned about stays unneeded. The adaptive pieces the light system did grow (the field `surface`, the band class maps, `Emphasis`'s gold choice) collapse instead of multiplying, because on a dark page one style reads everywhere. `Emphasis` keeps one switch, `onPhoto`, because a photo is the one surface where brass fails.
+
+The contrast numbers made the role rule simpler, not harder. Brass reads at 5.04:1 or better on every dark surface, so the fill and text split that defined the gold rule is unnecessary: one `accent` token is the fill, the word, and the ring. The colour that now needs a rule is Coffee, which reads 2.45:1 at best and so may never be a word, and the photo scrim, under which brass fails and only cream may sit. Those two lines are the whole rule, and both are searchable.
+
+The smaller calls were mine, made with the design in view:
+
+- **`#E3BC9F` as the hover brass.** The same hue lightened until the dark label clears 10:1. Runner up: `#D8AB8B`, a subtler step that reads too close to the rest state on a dark page.
+- **`#8C8480` as the field border.** The lightest warm grey that still reads as a quiet border, at 5.04:1 against the field's own `canvas` fill. Runner up: brass borders, which would make every field look focused.
+- **`#FF8A7A` as the one error colour.** A coral that clears 4.5:1 on every surface including the form band's worst pixel (5.15:1), so `error-on-dark` merges into it. Runner up: keeping `#FF9B8F`, which also passes but sits closer to the brass and reads less like an error beside it.
+- **Scrim strong at 90%.** At the old 80% the coral error fails over the form band (3.63:1); 88% passes with little headroom (4.82:1), 90% leaves room (5.15:1). Runner up: 85%, which fails error.
+- **`heading` at 6% and 14% for the stripe and dots**, the old white mixes retinted. Measured with white, so the real cream values are slightly darker and safer. Runner up: Coffee stripe lines, under which muted text fails (3.40:1).
+- **Dots only on `canvas`.** On `raised` brass drops to 4.42:1 at a dot's centre. Both pattern bands are `canvas`, which makes the content `surface` purely a pattern choice, so its values become `stripe` and `dots`.
+- **Card hover border to `ink-muted`, no shadow.** A dark shadow on a dark page is invisible, and a brass border would read as the focus ring. Runner up: `panel` lightening on hover, which needs a fifth surface token for one effect.
+- **Photo frames on `panel`, not `canvas`**, so an empty or loading tile still reads as a tile.
+- **`focus-contrast` only on photos and brass fills.** The base ring passes on every plain dark band, so keeping the two colour ring there would be two rules for one kind of surface.
+- **`theme-color` as a written out value**, named beside its token, because a meta tag cannot read a custom property. The same exception the `select-chevron` data URI already makes.
+- **The dark illustration generated once, out of the repo.** It is a placeholder; a checked in generator would outlive its only input. The recipe goes in CREDITS.
+
+### Evidence: contrast calculation (2026-10-09)
+
+Computed from the token values with the WCAG 2 relative luminance formula; composites by alpha blending the layer over its worst case pixel (pure white under a photo layer; the band colour under a pattern).
+
+| Composite | Recipe | Result |
+|---|---|---|
+| Stripe line on canvas | heading (measured as white) 6% over `#0c1519` | `#1b2327` |
+| Stripe line on raised | white 6% over `#162127` | `#242e34` |
+| Dot centre on canvas | white 14% over `#0c1519` | `#2e3639` |
+| Dot centre on raised (not used) | white 14% over `#162127` | `#374045` |
+| Scrim over a white pixel | `#0c1519` 70% over white | `#555b5e` |
+| Form band worst pixel | `#0c1519` 90% over white, then the stripe | `#31393c` |
+| Service card wash, darkest point | `#724b39` 70% over `#3a3534` | `#614438` |
+
+The tightest pairs, the ones to recheck first if a value moves:
+
+| Pair | Ratio | Requirement | Headroom |
+|---|---|---|---|
+| accent on the form band's worst pixel | 4.92 | 4.5 | 0.42 |
+| accent on panel | 5.04 | 4.5 | 0.54 |
+| accent on a dot centre | 5.15 | 4.5 | 0.65 |
+| error on the form band's worst pixel | 5.15 | 4.5 | 0.65 |
+| ink-muted on panel | 5.45 | 4.5 | 0.95 |
+| heading on the scrim over white | 5.91 | 4.5 | 1.41 |
+| field border on canvas | 5.04 | 3.0 | 2.04 |
+
+Jet is what makes these tight: it is the lightest surface, so every light word loses most against it. Lightening Jet, or darkening brass or the muted ink, means computing the whole table again. If any token value changes, compute the pairs again and update `index.md` and `docs/design.md` in the same commit.

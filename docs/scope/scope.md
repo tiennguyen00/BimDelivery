@@ -14,7 +14,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
 | 3 | Content model | Foundation | done |
-| 4 | Design system & UI foundation | Foundation | done |
+| 4 | Design system & UI foundation | Foundation | in-progress |
 | 5 | Site shell: nav, dropdown, footer | Release 1 | in-progress |
 | 6 | Home page | Release 1 | in-progress |
 | 7 | About Us page | Release 1 | in-progress |
@@ -63,14 +63,18 @@ spec [0002](../specs/0002-content-model/index.md) · code in [src/content/](../.
 ### 4. Design system & UI foundation
 The visual language and the base pieces every page reuses: type scale, colour, spacing, the breakpoints for desktop, tablet, and mobile, plus buttons, cards, section wrappers, and form fields.
 **Done when:** `design.md` covers type, colour, spacing, and the three breakpoints; base components are reachable by keyboard with a visible focus outline and readable contrast; a page can be composed from them without writing new one off CSS.
-spec [0003](../specs/0003-design-system-ui-foundation/index.md) · code in [src/components/ui/](../../src/components/ui/) and [src/components/react/ui/](../../src/components/react/ui/) (tokens: `src/styles/global.css`, reference: `docs/design.md`, style guide: `src/dev/`)
+spec [0003](../specs/0003-design-system-ui-foundation/index.md) (revised 2026-10-09 for the dark brand theme: the client's five colour palette, tokens renamed by role) · code in [src/components/ui/](../../src/components/ui/) and [src/components/react/ui/](../../src/components/react/ui/) (tokens: `src/styles/global.css`, reference: `docs/design.md`, style guide: `src/dev/`)
 - [x] Design it (spec): `/architect design system & UI foundation`
-- [x] Build it: `/develop design system & UI foundation`
+- [ ] Build it: `/develop design system & UI foundation`
   - [x] Tokens, Inter, and base styles sitewide: Tailwind and the Prettier plugin installed, `global.css` with the four cleared namespaces, every token and its type companion keys, fonts API, `BaseLayout` wired (AC-2 to AC-5, AC-10, AC-12)
   - [x] Astro components: class maps, `Section`, `Button`, `Card` (AC-6 to AC-8, AC-10, AC-14)
   - [x] React fields: React integration, `Button`, `TextField`, `TextArea` sharing the class maps (AC-7, AC-9)
   - [x] Dev only `/styleguide`, `docs/design.md` with both contrast tables and the gold rule, and the build gate (AC-1, AC-11, AC-13 to AC-15)
-- [x] Verify it: `/check verify design system & UI foundation`
+  - [ ] The dark brand theme (2026-10-09), the whole site goes dark: the role named tokens and dark utilities in `global.css`, the `canvas` and `raised` tones, every component's plain class rename and the class maps, the retired name search clean (AC-2, AC-4, AC-6, AC-7, AC-10, AC-11, AC-16)
+  - [ ] What a rename gets wrong: `ctaLinkClass`, card hover, fields and `Emphasis` without `surface`, the band maps and the `stripe` and `dots` content values, the service card wash, boxes and frames on `panel`, the accordion icon, map and carousel dots, shadows removed, `focus-contrast` trimmed (AC-8 to AC-11, AC-14, AC-19, AC-21)
+  - [ ] Photos, assets, and browser chrome: the 70% and 90% scrims, one light logo, the badge strip, the dark illustration, `theme-color` (AC-4, AC-17, AC-18, AC-20)
+  - [ ] Written down and gated: `docs/design.md` and `/styleguide` for the dark system, the four gates, every route at 360, 768, and 1440px (AC-1, AC-3, AC-5, AC-11 to AC-13, AC-15, AC-17)
+- [ ] Verify it: `/check verify design system & UI foundation`
 
 ## Release 1: the whole site stands up
 
@@ -234,6 +238,7 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Blog or insights section** · needs a decision
 - **Real brand**: the real logo, brand colours, and typeface replace the palette borrowed from paviliusbim.com before launch; update the tokens, both contrast tables, and walk `/styleguide` again (from spec 0003)
 - **A dark section tone**: bring back a dark band for a section such as the home page's closing call to action. It means reintroducing inherited tone variables, a card tone reset, and a second focus colour, then computing the dark contrast pairs. Gold reads well on black at 8.73:1 if you want it. Less urgent since spec 0005: the closing call to action now ends on a self contained gold band, so the dark tone is no longer the only way to close a page (from specs 0003 and 0005)
+- **Display typeface**: a high contrast serif in capitals for headings, as on the client's brand board; font loading, a metric fallback, and the heading scale need deciding · needs a decision (from spec 0003, 2026-10-09)
 - **Testimonials and client logos**
 - **Project gallery filter and pagination**: a service filter and "load more" or pages once the portfolio passes about 12 projects; a filter would be a fifth script, which `design.md` asks a strong reason for (from spec 0014)
 - **Project photo lightbox**: let a visitor open a gallery photo larger, if they ask for it; it would be the fifth script, so it needs the strong reason `design.md` asks for (from spec 0015)
