@@ -22,6 +22,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 9 | Project page | Release 1 | in-progress |
 | 10 | Contact page | Release 1 | in-progress |
 | 16 | Project detail pages | Release 1 | in-progress |
+| 17 | Smooth scrolling | Release 1 | in-progress |
 | 11 | SEO foundation | Release 2 | planned |
 | 12 | Performance & image handling | Release 2 | planned |
 | 13 | Privacy policy page | Release 2 | planned |
@@ -179,6 +180,16 @@ spec [0015](../specs/0015-project-detail-pages/index.md) · code in [src/pages/p
   - [x] The page moves: the load entrance on the intro and cover, the scroll reveal and rules on the story and gallery, checked with JavaScript off and reduced motion (AC-18)
   - [x] Written down and gated: `design.md`, `/styleguide`, and the check, lint, build, and gold class gates (AC-20, AC-21)
 - [ ] Verify it: `/check verify project detail pages`
+
+### 17. Smooth scrolling
+Desktop wheel scrolling glides to a gentle stop on every page, and anchor jumps glide instead of snapping. Touch and reduced motion keep native scrolling. Enrolled 2026-10-09 (from spec 0016).
+**Done when:** a wheel step eases to its target on every page, touch and reduced motion scroll natively, the Project page's scroll animations still follow, and the page behind the open mobile menu does not scroll.
+spec [0016](../specs/0016-smooth-wheel-scrolling.md) · code in [src/scripts/smooth-scroll.ts](../../src/scripts/smooth-scroll.ts) (loaded from `src/layouts/PageLayout.astro`; CSS: `scroll-behavior` in `src/styles/global.css`)
+- [x] Design it (spec): `/architect smooth scrolling`
+- [x] Build it: `/develop smooth scrolling`
+  - [x] The glide: `lenis` added, `smooth-scroll.ts` with the reduced motion cut and the menu lock pause, loaded on every page (AC-1 to AC-3, AC-6, AC-7)
+  - [x] Anchors and checks: `scroll-behavior: smooth`, then the wheel, reduced motion, menu, Project page, skip link, and 390px checks in Chrome (AC-4, AC-5, AC-8)
+- [ ] Verify it: `/check verify smooth scrolling`
 
 ## Release 2: findable, fast, and live
 

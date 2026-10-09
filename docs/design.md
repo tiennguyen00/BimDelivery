@@ -1094,6 +1094,12 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 - When the visitor's system asks for reduced motion, every transition and
   animation is cut to 0.01ms, so state changes are instant.
 
+Scrolling glides (spec 0016). On a desktop, wheel scrolling eases to a gentle
+stop on every page (`src/scripts/smooth-scroll.ts`, on Lenis), and anchor jumps
+and the skip link glide through `scroll-behavior: smooth` on `html`, still
+stopping below the sticky header. Touch keeps the device's own momentum.
+Reduced motion turns both off, and with no script the page scrolls natively.
+
 Motion is enhancement only. The built HTML draws every band complete and every
 gold rule full width, and no CSS rule hides anything waiting for a script.
 Three plain scripts move things on the home page, and each stops entirely for
