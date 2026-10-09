@@ -1,0 +1,54 @@
+---
+/**
+ * One place on the presence band's globe or its flat fallback map (spec
+ * 0017): a dot, and the place's name above it. The parent `<li>` places it,
+ * so the marker draws around its own origin and works on either layer.
+ *
+ * An `office` (the headquarters or an office) is a larger green dot with a
+ * pulsing halo, its name always shown. A `project` is a smaller red dot whose
+ * name shows while the pointer is over it (the parent carries
+ * `group/marker`). Size and halo differ as well as colour, so the two kinds
+ * still read apart for visitors who cannot tell red from green.
+ *
+ * The two colours are the globe's own, written here as hex and kept out of
+ * the brand palette by the engineer's choice. Both sit on `canvas` with a
+ * `canvas` ring, the same treatment as every other marker on the site.
+ */
+import { cx } from './styles';
+
+interface Props {
+  name: string;
+  kind: 'office' | 'project';
+}
+
+const { name, kind } = Astro.props;
+
+/**
+ * `before:` widens the hover target beyond the small dot, so a project's
+ * name is easy to bring up.
+ */
+const dotClass = {
+  office: cx(
+    'absolute top-0 left-0 block size-3.5 -translate-1/2 rounded-full bg-[#3ddc97] ring-2 ring-canvas',
+  ),
+  project: cx(
+    "absolute top-0 left-0 block size-2.5 -translate-1/2 rounded-full bg-[#ff5d52] ring-2 ring-canvas before:absolute before:-inset-2 before:content-['']",
+  ),
+} as const;
+
+const labelClass = {
+  office: cx(
+    'absolute bottom-3 left-0 -translate-x-1/2 rounded-ui bg-canvas/80 px-2 py-0.5 text-small font-bold whitespace-nowrap text-heading',
+  ),
+  project: cx(
+    'pointer-events-none absolute bottom-3 left-0 -translate-x-1/2 translate-y-1 rounded-ui bg-canvas/80 px-2 py-0.5 text-small font-bold whitespace-nowrap text-heading opacity-0 transition-[opacity,translate] duration-200 group-hover/marker:translate-y-0 group-hover/marker:opacity-100',
+  ),
+} as const;
+---
+
+<span class={dotClass[kind]}>
+  {kind === 'office' && (
+    <span class="absolute inset-0 rounded-full bg-[#3ddc97] motion-safe:animate-ping" />
+  )}
+</span>
+<span class={labelClass[kind]}>{name}</span>

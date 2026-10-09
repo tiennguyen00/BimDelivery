@@ -1,8 +1,8 @@
 ---
 /**
  * The global presence band (spec 0005): a centred heading, then a dotted
- * world map with the company's regions marked on the start side, and the copy
- * plus the why choose list on the end side.
+ * globe with the company's offices and projects marked on the start side
+ * (spec 0017), and the copy plus the why choose list on the end side.
  *
  * It lives in `ui` because two pages show it (spec 0013): the home page, and
  * each service page's presence block, fed that block's own copy or the home
@@ -13,19 +13,25 @@
  * service page), so the tone, gutters, and stripe stay the page's choice and
  * this component never reads a tone.
  *
- * The map is decoration and hidden from assistive tech; the regions on it are
- * a real `<ul>` of names, so a screen reader hears the places the map stands
- * for rather than nothing, or 3,861 dots.
+ * The globe and its markers are decoration and hidden from assistive tech;
+ * the places are two real lists of names, one per kind, so a screen reader
+ * hears the places the globe stands for rather than nothing, or a canvas.
  *
- * Mobile stacks copy first and map second, the same reading order as
- * `MediaText`: the words say where the company works, the map illustrates it.
+ * Mobile stacks copy first and globe second, the same reading order as
+ * `MediaText`: the words say where the company works, the globe illustrates
+ * it.
  */
 import Emphasis from './Emphasis.astro';
 import Icon from './Icon.astro';
+import PresenceMarker from './PresenceMarker.astro';
+import { cx } from './styles';
 import WorldMap from '../../assets/images/home/world-map.svg';
 
-interface Region {
+type Kind = 'office' | 'project';
+
+interface Location {
   name: string;
+  kind: Kind;
   lon: number;
   lat: number;
 }
@@ -36,26 +42,50 @@ interface Props {
   headingId: string;
   /** Each may carry `**bold**` and `==accent==` phrases. */
   paragraphs: readonly string[];
-  regions: readonly Region[];
+  locations: readonly Location[];
+  /** The legend's words for the two kinds of marker. */
+  legend: { offices: string; projects: string };
   whyChoose: { heading: string; items: readonly string[] };
 }
 
-const { heading, headingId, paragraphs, regions, whyChoose } = Astro.props;
+const { heading, headingId, paragraphs, locations, legend, whyChoose } =
+  Astro.props;
+
+/** The places of each kind, for the legend and the screen reader lists. */
+const groups = (
+  [
+    { kind: 'office', label: legend.offices },
+    { kind: 'project', label: legend.projects },
+  ] as const
+)
+  .map((group) => ({
+    ...group,
+    names: locations
+      .filter((location) => location.kind === group.kind)
+      .map((location) => location.name),
+  }))
+  .filter((group) => group.names.length > 0);
+
+/** The legend's dots, matching `PresenceMarker`'s. */
+const legendDotClass: Readonly<Record<Kind, string>> = {
+  office: cx('block size-3.5 rounded-full bg-[#3ddc97]'),
+  project: cx('block size-2.5 rounded-full bg-[#ff5d52]'),
+};
 
 /**
- * The bounds `world-map.svg` was generated with: an equirectangular grid from
- * longitude -180 to 180 and latitude 84 down to -56. Regenerating the map with
- * other bounds means changing these two, and the schema's latitude range.
+ * The bounds the flat fallback map, `world-map.svg`, was generated with: an
+ * equirectangular grid from longitude -180 to 180 and latitude 84 down to
+ * -56. Regenerating the map with other bounds means changing these two, and
+ * the schema's latitude range.
  */
 const MAP_LAT_TOP = 84;
 const MAP_LAT_BOTTOM = -56;
 
 /**
- * A longitude and latitude as a position over the map, in percent, handed to
- * the markup as `--x` and `--y` so the classes decide at which widths to use
- * it.
+ * A longitude and latitude as a position over the flat map, in percent,
+ * handed to the markup as `--x` and `--y`.
  */
-const toMapPosition = ({ lon, lat }: Region): string =>
+const toMapPosition = ({ lon, lat }: Location): string =>
   `--x: ${((lon + 180) / 360) * 100}%; --y: ${((MAP_LAT_TOP - lat) / (MAP_LAT_TOP - MAP_LAT_BOTTOM)) * 100}%`;
 
 /**
@@ -104,42 +134,94 @@ const ruleClass = 'heading-rule inline-block';
 
   {/**
    * Second in the markup so the copy is read first; `lg:order-first` moves
-   * the map to the start side once there are two columns.
+   * the globe to the start side once there are two columns.
    *
-   * Each region's place over the map is two custom properties in percent, so
-   * it holds at any width. The dot always uses them. The label only does from
-   * `md` up: on a phone the map is too small for four names, and Europe and
-   * the Middle East would sit on top of each other, so below `md` the same
-   * list items flow as a centred row of names under the map instead.
+   * Two layers in one box, both hidden from assistive tech (spec 0017):
    *
-   * The trick that lets one element do both: below `md` the `<li>` is static,
-   * so the dot's `absolute` resolves against the map wrapper and lands on its
-   * place; from `md` the `<li>` itself is placed there and the dot sits at its
-   * origin.
+   * - The flat map, the picture without JavaScript or WebGL. Each marker sits
+   *   at its place by two custom properties in percent, so it holds at any
+   *   width.
+   * - The globe, `src/scripts/globe.ts`: cobe draws the dots on the canvas,
+   *   and the script places each marker by `translate` every frame and marks
+   *   the ones facing the visitor `data-front`, which pops them in. It sets
+   *   `data-globe-on` on the box once the globe has drawn, which fades the
+   *   globe in over the flat map.
    *
-   * The map's dots are `ink-muted` at 40 percent: the region labels sit over
-   * them from `md` up, and `heading` on a dot still reads 6.81:1 there, while
-   * the dots themselves still show (2.32:1). The markers are `accent` with a
-   * `canvas` ring.
+   * With the `js` class the box is square from the first paint, with the
+   * flat map centred in it, so nothing moves when the globe arrives. Without
+   * it the box is the flat map's own size.
+   *
+   * The globe layer stays `invisible` until it is on, so in the fallback it
+   * never covers the flat map's hover targets.
    */}
-  <div class="relative lg:order-first lg:col-span-7">
-    <WorldMap aria-hidden="true" class="h-auto w-full text-ink-muted/40" />
+  <div class="lg:order-first lg:col-span-7">
+    <div
+      class="group/globe relative mx-auto w-full max-w-2xl overflow-clip select-none in-[.js]:grid in-[.js]:aspect-square in-[.js]:place-items-center"
+      aria-hidden="true"
+      data-globe
+    >
+      <div class="relative w-full transition-opacity duration-700 group-data-globe-on/globe:opacity-0">
+        <WorldMap class="h-auto w-full text-ink-muted/40" />
+        <ul>
+          {locations.map((location) => (
+            <li
+              class="group/marker absolute top-(--y) left-(--x) hover:z-20 data-[kind=office]:z-10"
+              data-kind={location.kind}
+              style={toMapPosition(location)}
+            >
+              <PresenceMarker name={location.name} kind={location.kind} />
+            </li>
+          ))}
+        </ul>
+      </div>
 
-    <ul class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 md:mt-0 md:block">
-      {regions.map((region) => (
-        <li
-          class="md:absolute md:top-(--y) md:left-(--x)"
-          style={toMapPosition(region)}
-        >
-          <span
-            aria-hidden="true"
-            class="absolute top-(--y) left-(--x) block size-3 -translate-1/2 rounded-full bg-accent ring-2 ring-canvas md:top-0 md:left-0"
-          ></span>
-          <span class="text-small font-bold whitespace-nowrap text-heading md:absolute md:bottom-2.5 md:-translate-x-1/2 md:text-body">
-            {region.name}
-          </span>
+      <div
+        class="invisible absolute inset-0 cursor-grab touch-pan-y opacity-0 transition-opacity duration-700 group-data-globe-on/globe:visible group-data-globe-on/globe:opacity-100 active:cursor-grabbing"
+        data-globe-layer
+      >
+        <div class="absolute inset-0">
+          <canvas class="block size-full" data-globe-canvas></canvas>
+        </div>
+        <ul>
+          {locations.map((location) => (
+            <li
+              class="group/marker pointer-events-none absolute top-0 left-0 hover:z-20 data-[kind=office]:z-10 scale-50 opacity-0 transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] data-front:pointer-events-auto data-front:scale-100 data-front:opacity-100"
+              data-globe-marker
+              data-kind={location.kind}
+              data-lat={location.lat}
+              data-lon={location.lon}
+            >
+              <PresenceMarker name={location.name} kind={location.kind} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <ul
+      class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-small text-ink"
+      aria-hidden="true"
+    >
+      {groups.map((group) => (
+        <li class="flex items-center gap-2">
+          <span class={legendDotClass[group.kind]}></span>
+          {group.label}
         </li>
       ))}
     </ul>
+
+    <div class="sr-only">
+      {groups.map((group) => (
+        <ul aria-label={group.label}>
+          {group.names.map((name) => (
+            <li>{name}</li>
+          ))}
+        </ul>
+      ))}
+    </div>
   </div>
 </div>
+
+<script>
+  import '../../scripts/globe';
+</script>

@@ -251,21 +251,25 @@ const presenceContent = z.strictObject({
   /** A phrase wrapped in `**` renders bold. */
   paragraphs: z.array(emphasisText).min(1),
   /**
-   * Each region is a marker on the map, placed by longitude and latitude.
-   * The latitude range is the map's own: the SVG stops at 84 north and 56
-   * south, so a marker outside it would sit off the map. Six at most, so the
-   * names still have room to sit apart.
+   * Each location is a marker on the globe (spec 0017), placed by longitude
+   * and latitude: an `office` (the headquarters or an office, green, its name
+   * always shown) or a `project` (red, its name on hover). The latitude range
+   * is the flat fallback map's own: the SVG stops at 84 north and 56 south,
+   * so a marker outside it would sit off that map.
    */
-  regions: z
+  locations: z
     .array(
       z.strictObject({
         name: text,
+        kind: z.enum(['office', 'project']),
         lon: z.number().min(-180).max(180),
         lat: z.number().min(-56).max(84),
       }),
     )
     .min(1)
-    .max(6),
+    .max(40),
+  /** The legend's words for the two kinds of marker. */
+  legend: z.strictObject({ offices: text, projects: text }),
   whyChoose: z.strictObject({ heading: text, items: z.array(text).min(1) }),
 });
 
