@@ -41,7 +41,7 @@ checks every file and names the file and the field when something is wrong.
 ### Give one service its own presence
 
 1. Add `content` to its `presence` block, with every field `home.presence`
-   has in `home/<lang>/home.yaml`: `heading`, `paragraphs`, `regions`, and
+   has in `home/<lang>/home.yaml`: `heading`, `paragraphs`, `locations`, `legend`, and
    `whyChoose`. It is all or nothing.
 2. Only that page shows it. Delete `content` to go back to the shared copy.
 3. Remember that a company wide region change then needs this file edited

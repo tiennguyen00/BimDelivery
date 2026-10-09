@@ -151,7 +151,7 @@ alpha blending over the worst case pixel. The working is in spec 0003's
 | focus ring accent | canvas / raised / panel | 7.71 / 6.84 / 5.04 | 3.0 |
 | heading / ink / ink-muted / accent over a `bg-diagonal` line on canvas (`#1b2327`) | | 13.68 / 10.07 / 7.19 / 6.66 | 4.5 |
 | heading / ink / ink-muted / accent over a `bg-diagonal` line on raised (`#242e34`, a presence band after a stripe pattern band) | | 11.88 / 8.75 / 6.25 / 5.78 | 4.5 |
-| heading (presence region labels) over a world map dot (`ink-muted` at 40% on canvas, `#515150`) | | 6.81 | 4.5 |
+| heading (presence marker labels) on their `canvas` chip at 80%, over the globe or a flat map dot | | at least 6.81 | 4.5 |
 | heading at 50% (inactive carousel dot) / heading (active) | canvas | 4.73 / 15.83 | 3.0 |
 | heading / ink / ink-muted / accent on a `bg-dots` dot centre (`#2e3639`) | | 10.57 / 7.78 / 5.56 / 5.15 | 4.5 |
 | heading on `scrim` over a pure white pixel (`#555b5e`): the home hero, the Project hero, every project tile caption | | 5.91 | 4.5 |
@@ -849,10 +849,29 @@ intro (spec 0013), run by `src/scripts/carousel.ts`.
 ### `PresenceBand` · `src/components/ui/PresenceBand.astro`
 
 The global presence band's inside (spec 0005): a ruled heading, the dotted
-world map with its regions, and the copy with the why choose list. It moved
-from `src/components/home/` to `ui` when the service pages began to show it
-too (spec 0013), unchanged. The page wraps it in a striped `Section`, and its
-copy is `home.presence`, or a service's own presence `content`.
+globe with its locations (spec 0017), and the copy with the why choose list. It
+moved from `src/components/home/` to `ui` when the service pages began to show
+it too (spec 0013). The page wraps it in a striped `Section`, and its copy is
+`home.presence`, or a service's own presence `content`.
+
+The globe (spec 0017) is cobe on a canvas, drawn by `src/scripts/globe.ts`:
+land dots in the warm grey of `ink-muted`, a faint grid over the sea, and a rim
+of glow a little lighter than `raised`. Each location is a `PresenceMarker`
+(`src/components/ui/PresenceMarker.astro`):
+
+- **Office** (the headquarters or an office): a 14px `#3ddc97` green dot with
+  a pulsing halo, its name always shown.
+- **Project**: a 10px `#ff5d52` red dot, its name on hover.
+
+These two colours belong to the globe alone and are written as hex, outside
+the palette and the accent role rule, by the engineer's choice. Size and halo
+differ as well as hue, and the green is much lighter than the red, so the kinds
+still read apart without colour vision. Every label sits on a `canvas` chip at
+80%, so it reads over land, sea, or a stripe. A legend under the globe names
+both kinds, and the places reach a screen reader as two visually hidden lists.
+
+Without JavaScript or WebGL the same markers sit on the flat dotted map
+(`world-map.svg`), and the box clips anything that would run past its edge.
 
 ### The service bands · `src/components/service/`
 
@@ -1203,6 +1222,15 @@ carousel and reveal scripts and add none (spec 0013).
   so the script asks for itself).
 - **The counter** (`src/scripts/counters.ts`), once per band, described under
   `StatsBand`.
+- **The globe** (`src/scripts/globe.ts`, spec 0017), in the presence band. It
+  fades in over the flat map in 700ms, turns one revolution a minute on its
+  own, follows a drag (horizontal turns it, vertical tilts it a little), and
+  coasts to a stop after a fling. The spin waits while a mouse is over it.
+  Markers on the far side shrink to half and fade out, and pop back in 300ms
+  with a slight overshoot (`cubic-bezier(0.34, 1.56, 0.64, 1)`) as they turn to
+  the front, staggered by 40ms the first time. The office halo is Tailwind's
+  `animate-ping`. With reduced motion there is no spin, coast, or halo, and a
+  drag still turns it.
 - **The load entrance**, the `entrance` utility in `global.css` (spec 0010),
   and no script at all. An element fades from 0 and rises 24px into place over
   600ms with an ease out, the scroll reveal's language, waiting 80ms per
