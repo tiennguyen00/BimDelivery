@@ -465,9 +465,46 @@ const contact = defineCollection({
   }),
 });
 
-// The Project page's copy (spec 0014): the intro, the empty state, and the
-// closing band. Strict at every level, so a leftover key fails the build by
-// name. The tiles' words and photos are the `projects` entries.
+/**
+ * A floor area band for the Project page's filter, in square metres: `min`
+ * counts in and `max` does not, so 5,000 sits in "5,000 to 20,000", never in
+ * "under 5,000". A project falls in the first band that holds it.
+ */
+const areaRange = z
+  .strictObject({
+    label: text,
+    min: z.number().int().nonnegative().optional(),
+    max: z.number().int().positive().optional(),
+  })
+  .superRefine((range, ctx) => {
+    if (range.min === undefined && range.max === undefined) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['max'],
+        message: 'set `min`, `max`, or both',
+      });
+    } else if (
+      range.min !== undefined &&
+      range.max !== undefined &&
+      range.min >= range.max
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['max'],
+        message: 'must be greater than `min`',
+      });
+    }
+  });
+
+/** A line the filter script fills in, with `{count}` where the number goes. */
+const countText = text.refine((line) => line.includes('{count}'), {
+  error: (issue) =>
+    `must contain \`{count}\`, where the number goes: "${String(issue.input)}"`,
+});
+
+// The Project page's copy (spec 0014): the hero, the filter, the empty state,
+// and the closing band. Strict at every level, so a leftover key fails the
+// build by name. The tiles' words and photos are the `projects` entries.
 //
 // It also holds the copy every project detail page shares (spec 0015): the
 // tiles' cue, and `detail`, the labels, units, and closing band around each
@@ -479,8 +516,39 @@ const projectPage = defineCollection({
     seo,
     heading: text,
     intro: emphasisText,
+    /** The photo behind the `h1` and the filter, under the 60% scrim. */
+    hero: z.strictObject({ image: photoSchema }),
+    /**
+     * The filter in the hero. Its choices come from the projects themselves
+     * (each project's service, the country at the end of its `location`, and
+     * the band its `floorArea` falls in), so only the words live here.
+     */
+    filter: z.strictObject({
+      /** The form's name for a screen reader, "Filter projects". */
+      label: text,
+      /** The service tabs' group name, read out but not shown. */
+      serviceLabel: text,
+      /** The first tab, which shows every service. */
+      allServices: text,
+      countryLabel: text,
+      areaLabel: text,
+      /** Each dropdown's first choice, which shows every project. */
+      anyOption: text,
+      /** In order. A band no project falls in is left out of the dropdown. */
+      areaRanges: z.array(areaRange).min(1),
+      /**
+       * Read out after each change. `one` for a single project, `other` for
+       * every other count (a language with more plural forms uses `other`
+       * for them too).
+       */
+      results: z.strictObject({ one: countText, other: countText }),
+      /** Shown in place of the wall when no project matches. */
+      noResults: z.strictObject({ heading: text, text, reset: text }),
+    }),
     /** The words under each tile's title, "Read more". */
     tileCue: text,
+    /** The labels of the facts a tile shows on hover. */
+    tileFacts: z.strictObject({ storeys: text, floorArea: text, lod: text }),
     emptyState: z.strictObject({ heading: text, text }),
     cta: callToAction,
     detail: z.strictObject({

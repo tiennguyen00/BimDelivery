@@ -38,6 +38,7 @@ import ProjectGallery from '../components/project/ProjectGallery.astro';
 import ProjectStory from '../components/project/ProjectStory.astro';
 import NextProject from '../components/project/NextProject.astro';
 import { nextProject, projectFacts, projectHref } from '../lib/project-detail';
+import { galleryTiles } from '../lib/project-gallery';
 import type { BlockAt } from '../lib/service-page';
 import { telHref } from '../lib/contact';
 import { resolveLocale } from '../i18n/locales';
@@ -1273,25 +1274,26 @@ const headCellClass =
     <Section labelledBy="sg-gallery">
       <h2 id="sg-gallery">Project gallery</h2>
       <p class="mt-4 max-w-narrow">
-        The Project page's photo wall, from the real project entries: fixed 5:4
-        tiles, 8px seams (the grid gap's one written exception), and a full
-        width scrim strip carrying the service and the title in white, 5.74:1 at
-        worst over any photo.
+        The Project page's photo wall, from the real project entries: fixed 3:2
+        tiles, two across from 768px, 8px seams (the grid gap's one written
+        exception), and a scrim over the whole photo, so the centred title and
+        one line summary read in white at 5.74:1 at worst over any photo.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
-        Tab through it: one stop per tile, and the gold ink ring wraps the whole
-        tile. Each tile is one link to its project page, named by the title; the
-        "Read more" cue shows but is not announced. Hover anywhere on a tile and
-        the pointer shows and only its photo slowly zooms; with reduced motion
-        nothing grows. On the page the wall has no maximum width; here it sits
-        inside this section's column.
+        Hover a tile, or tab to it: the scrim deepens and the "Read more" pill
+        and the facts unfold under the summary, lifting the title. One tab stop
+        per tile, and the gold ink ring wraps the whole tile; the pill is not
+        announced. Scroll: the photo drifts down and the words drift up (Chrome,
+        Edge, Safari; still in Firefox and under reduced motion). The filter
+        lives in the page's hero, so it is not shown here. On the page the wall
+        has no maximum width; here it sits inside this section's column.
       </p>
 
       {projects.length > 0 && (
-        <div class="mt-8 overflow-hidden rounded-ui border border-line pt-4 md:pt-6 lg:pt-8">
+        <div class="mt-8 overflow-clip rounded-ui border border-line pt-4 md:pt-6 lg:pt-8">
           <ProjectGallery
             labelledBy="sg-gallery"
-            projects={projects}
+            tiles={galleryTiles(projects, projectPage, lang)}
             cue={projectPage.tileCue}
           />
         </div>

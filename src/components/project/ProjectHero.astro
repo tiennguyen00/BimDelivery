@@ -1,0 +1,216 @@
+---
+/**
+ * The Project page's opening band (spec 0014, revised 2026-10-09): a full
+ * width photo under the 60% scrim, the page's `h1` and intro centred on it,
+ * and, when there are projects, the filter: the service tabs, then a bar
+ * holding the country and floor area dropdowns.
+ *
+ * It is its own band, not a `Section` tone, because it is not a light surface.
+ * Like the home hero it slides up under the header card by `--header-h` and
+ * pads its content down by the same amount, borrows the band frame's gutters
+ * and padding from `styles.ts`, and carries `focus-contrast`, the ring for
+ * every surface that is not a light tone.
+ *
+ * Every word sits on the scrim, which covers the whole photo, so white text
+ * reads at 5.74:1 at worst over any photo. The bar adds a second scrim under
+ * its labels. A `==gold==` phrase in the intro renders in `gold-on-dark`,
+ * which is made for black: over the scrim it is not guaranteed, so keep the
+ * hero's intro to plain and `**bold**` words.
+ *
+ * The filter is one named `<form>`, so it is a landmark. It needs its script,
+ * `src/scripts/project-filter.ts`, so it ships `no-js:hidden` (on its layer
+ * wrapper, below): with
+ * JavaScript off the visitor gets the whole wall and no control that does
+ * nothing. With JavaScript on it is there from the first frame, so nothing
+ * shifts when the script arrives.
+ *
+ * - The tabs are radio buttons, one group named by a hidden `legend`: one tab
+ *   stop, the arrow keys move the choice, and a screen reader hears "Service,
+ *   radio, All, 1 of 4". The input is visually hidden and its label draws the
+ *   tab, white, with a white underline under the chosen one (the reference's
+ *   underline, and white rather than gold because gold over the scrim is not
+ *   guaranteed 3:1). Its focus ring is the two colour ring, drawn on the
+ *   label, since the input itself is invisible.
+ * - The dropdowns are native `<select>`s in the shared field box, white on
+ *   every surface, so they keep the browser's own keyboard and phone picker.
+ *
+ * Each field's `name` is the `data-` attribute the tiles carry (`service`,
+ * `country`, `area`), and each choice's value comes from
+ * `src/lib/project-gallery.ts`, the same place the tiles' keys do.
+ *
+ * Motion, all of it motion's (the page imports the scripts):
+ *
+ * - On load the `h1`, the intro, and the filter fade and rise in through
+ *   `src/scripts/enter.ts`, `data-enter` steps 0 to 2.
+ * - On scroll, `src/scripts/hero-scroll.ts` reads the band's
+ *   `data-hero-scroll`: the three blocks rise and spread apart, one after
+ *   another, and fade a little, while the header slides away; scrolling back
+ *   up reverses both. Each block sits in its own `data-hero-layer` wrapper,
+ *   so the scroll moves the wrapper and the entrance the block, and the two
+ *   never share an element. The wrapper also carries the block's top margin
+ *   and, for the filter, `no-js:hidden`, so a hidden filter leaves no gap.
+ *
+ * The photo is the page's largest paint, so it loads eagerly at a high fetch
+ * priority.
+ */
+import { Image } from 'astro:assets';
+import Emphasis from '../ui/Emphasis.astro';
+import type { ProjectPage } from '../../lib/content';
+import type { FilterChoices } from '../../lib/project-gallery';
+import {
+  bandGutterClass,
+  bandPaddingClass,
+  cx,
+  fieldLabelClass,
+  selectClass,
+} from '../ui/styles';
+
+type FilterCopy = ProjectPage['filter'];
+
+interface Props {
+  heading: string;
+  /** The id the band, and the wall's list, point at with `aria-labelledby`. */
+  headingId: string;
+  /** May carry `**bold**` phrases. */
+  intro: string;
+  image: ProjectPage['hero']['image'];
+  /** Absent when there are no projects to filter. */
+  filter?: Readonly<{
+    /** The form's id, which the wall's reset button points at. */
+    id: string;
+    /** The id of the list it filters. */
+    listId: string;
+    copy: Pick<
+      FilterCopy,
+      | 'label'
+      | 'serviceLabel'
+      | 'allServices'
+      | 'countryLabel'
+      | 'areaLabel'
+      | 'anyOption'
+    >;
+    choices: FilterChoices;
+  }>;
+}
+
+const { heading, headingId, intro, image, filter } = Astro.props;
+
+/**
+ * A tab's look, on the label's `<span>` after its hidden radio. Every tab is
+ * the same weight, so choosing one never shifts its neighbours.
+ */
+const tabClass =
+  'inline-flex min-h-11 items-center border-b-2 border-transparent px-1 text-lead text-white transition-colors duration-150 peer-checked:border-white peer-focus-visible:ring-2 peer-focus-visible:ring-black peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-white hover:border-white/60';
+---
+
+<section
+  aria-labelledby={headingId}
+  data-hero-scroll
+  class={cx(
+    'focus-contrast relative isolate -mt-(--header-h) bg-black',
+    bandGutterClass,
+  )}
+>
+  <Image
+    src={image.src}
+    alt={image.alt ?? ''}
+    inferSize
+    widths={[640, 960, 1280, 1600, 2000, 2400]}
+    sizes="100vw"
+    loading="eager"
+    fetchpriority="high"
+    class="absolute inset-0 -z-10 size-full object-cover object-center"
+  />
+  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-scrim"></div>
+
+  <div class="pt-(--header-h)">
+    <div
+      class={cx(
+        bandPaddingClass,
+        'mx-auto flex w-full max-w-content flex-col items-center text-center',
+      )}
+    >
+      <div data-hero-layer>
+        <h1 id={headingId} data-enter="0" class="text-balance text-white">
+          {heading}
+        </h1>
+      </div>
+
+      <div data-hero-layer class="mt-6 max-w-narrow">
+        <p data-enter="1" class="text-lead text-white">
+          <Emphasis text={intro} surface="dark" />
+        </p>
+      </div>
+
+      {filter && (
+        <div data-hero-layer class="mt-10 w-full no-js:hidden">
+          <form
+            id={filter.id}
+            aria-label={filter.copy.label}
+            data-project-filter={filter.listId}
+            data-enter="2"
+            autocomplete="off"
+          >
+            <fieldset>
+              <legend class="sr-only">{filter.copy.serviceLabel}</legend>
+              <div class="flex flex-wrap justify-center gap-x-6 gap-y-1 md:gap-x-8">
+                {[
+                  { value: '', label: filter.copy.allServices },
+                  ...filter.choices.services,
+                ].map((choice, index) => (
+                  <label class="cursor-pointer">
+                    <input
+                      type="radio"
+                      name="service"
+                      value={choice.value}
+                      checked={index === 0}
+                      class="peer sr-only"
+                    />
+                    <span class={tabClass}>{choice.label}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <div class="mx-auto mt-6 grid max-w-narrow grid-cols-1 gap-4 rounded-ui border border-white/10 bg-scrim p-4 text-start md:grid-cols-2 md:p-5">
+              <div class="flex flex-col gap-1.5">
+                <label
+                  for={`${filter.id}-country`}
+                  class={fieldLabelClass.dark}
+                >
+                  {filter.copy.countryLabel}
+                </label>
+                <select
+                  id={`${filter.id}-country`}
+                  name="country"
+                  class={selectClass()}
+                >
+                  <option value="">{filter.copy.anyOption}</option>
+                  {filter.choices.countries.map((choice) => (
+                    <option value={choice.value}>{choice.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div class="flex flex-col gap-1.5">
+                <label for={`${filter.id}-area`} class={fieldLabelClass.dark}>
+                  {filter.copy.areaLabel}
+                </label>
+                <select
+                  id={`${filter.id}-area`}
+                  name="area"
+                  class={selectClass()}
+                >
+                  <option value="">{filter.copy.anyOption}</option>
+                  {filter.choices.areas.map((choice) => (
+                    <option value={choice.value}>{choice.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  </div>
+</section>

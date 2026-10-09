@@ -33,6 +33,15 @@
  */
 @custom-variant link-focus (&:has(a:focus-visible));
 
+/**
+ * For a control that only works with a script: `no-js:hidden` removes it when
+ * JavaScript is off. It keys on the `js` class `PageLayout`'s inline script
+ * sets before the first paint, so with JavaScript on the control is there
+ * from the first frame and nothing shifts when the script arrives. Today the
+ * Project page's filter (spec 0014, revised 2026-10-09).
+ */
+@custom-variant no-js (html:not(.js) &);
+
 @theme {
   /* ---- Colour -------------------------------------------------------- */
   /* Clear Tailwind's palette, then allow only the agreed one. */
@@ -335,8 +344,8 @@
  * language, with no script at all. Callers set `--entrance-step` in a
  * `style` attribute, and each step waits 80ms, the scroll reveal's stagger.
  * Today the About band's heading, paragraph, and numbers, the Contact intro,
- * each service page's intro (spec 0013), and the Project page's intro and
- * first row of tiles (spec 0014).
+ * and each service page's intro (spec 0013). The Project page plays the same
+ * entrance through motion instead, held by the `data-enter` rule below.
  *
  * It hides nothing outside the animation itself: with JavaScript off it still
  * plays, and with reduced motion asked for it does not run at all, so
@@ -351,8 +360,8 @@
  *   both;
  * - the block right after a service intro (spec 0013, the same rule
  *   generalised), whose every reveal unit takes both;
- * - the Project page's gallery (spec 0014), whose first three tiles take
- *   both, and only those three.
+ * - the Project page's gallery (spec 0014), whose first row takes both, now
+ *   by `data-enter` (below), and only that row.
  *
  * The scroll reveal leaves on screen units alone, and under a unit it hides,
  * this animation runs from opacity 0 to the scroll reveal's inline 0, unseen.
@@ -369,6 +378,81 @@
     opacity: 0;
     translate: 0 24px;
   }
+}
+
+/**
+ * The hold for the Project page's motion load entrance (2026-10-09),
+ * `src/scripts/enter.ts`, which plays every `data-enter` element. A deferred
+ * module runs after the first paint, so without this the hero would show,
+ * blink out, and fade back in.
+ *
+ * It is the one written exception to "no CSS rule hides anything waiting for
+ * a script", and it is bounded three ways: it applies only with the `js`
+ * class (`PageLayout` sets it before paint), only when motion is welcome,
+ * and only for 2s. After that `enter-failsafe` shows the element anyway, so
+ * a failed or very late script costs one beat, never the hero. The script
+ * marks each element `data-entered` the moment it runs, which lifts the hold
+ * in the same task as motion's own animation takes over the opacity.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  html.js [data-enter]:not([data-entered]) {
+    opacity: 0;
+    animation: enter-failsafe 0s 2s forwards;
+  }
+}
+
+@keyframes enter-failsafe {
+  to {
+    opacity: 1;
+  }
+}
+
+/**
+ * The photo frame of a `/project` tile (spec 0014, revised 2026-10-09), the
+ * layer `src/scripts/parallax.ts` slides as the tile crosses the screen.
+ *
+ * It owns its whole box, `absolute` and `inset-0`, so no inset class can
+ * fight it. Only once the script has marked the tile `data-parallax-on` does
+ * it grow 20% past the tile at the top and the bottom, the room the photo
+ * travels in (14% of its own height each way, which is the 20% of the tile),
+ * so its edge never shows. With no script, a failed one, or reduced motion,
+ * the attribute never arrives and the photo is cropped no more than the
+ * still design.
+ */
+@utility parallax-photo {
+  position: absolute;
+  inset: 0;
+
+  [data-parallax-on] > & {
+    inset-block: -20%;
+  }
+}
+
+/**
+ * The part of a `/project` tile that unfolds on hover or keyboard focus, the
+ * cue and the facts (spec 0014, revised 2026-10-09). Its one child folds to
+ * no height (`tile-info`) and opens to its own (`tile-info-open`, under a
+ * `group-hover:` or `group-focus-within:` variant), so the title above it
+ * rises by exactly what appears, at any width and however the facts wrap.
+ *
+ * It animates a grid track rather than a transform, because the title block
+ * already moves by `transform` for the parallax, and an animation on a
+ * property overrides a transition on it. A layout transition is fine here:
+ * one tile at a time, on hover.
+ */
+@utility tile-info {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 500ms ease-out;
+
+  & > * {
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+@utility tile-info-open {
+  grid-template-rows: 1fr;
 }
 
 /**

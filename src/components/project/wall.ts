@@ -1,11 +1,12 @@
 /**
- * The photo wall's geometry (spec 0015), shared by the `/project` wall
- * (`ProjectGallery`) and a detail page's gallery (`ProjectPhotos`), so the
- * two walls cannot drift apart: a change here changes both.
+ * The photo wall's geometry (spec 0015), a detail page's gallery
+ * (`ProjectPhotos`). The `/project` wall (`ProjectGallery`) shared it until
+ * spec 0014's 2026-10-09 revision gave that wall two wider 3:2 tiles across
+ * and a parallax frame; it keeps only the 8px seam in common, written out in
+ * its own grid.
  *
  * Only the shape lives here: the grid, the tile frame, and the photo's
- * responsive sizes. Captions, links, and hover stay in each component,
- * because a `/project` tile is a link and a gallery tile is not.
+ * responsive sizes.
  *
  * Class strings are written out in full inside `cx('…')`, the `styles.ts`
  * rule, so Tailwind's scanner finds them.

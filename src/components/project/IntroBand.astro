@@ -1,8 +1,10 @@
 ---
 /**
- * The Project page's first band (spec 0014): the page's `h1` with the gold
- * rule under it, and one paragraph in the narrow reading width. A project
- * detail page reuses it (spec 0015), adding the two links above the `h1`.
+ * A project detail page's first band (spec 0015): the page's `h1` with the
+ * gold rule under it, and one paragraph in the narrow reading width, with
+ * the two links above the `h1`. It began as the `/project` intro (spec
+ * 0014), which now opens with `ProjectHero` instead; without `context` it
+ * still renders that plain intro.
  *
  * It renders only the inside of the band; the page wraps it in a `white`
  * `Section` labelled by the `h1`, as the About and Contact pages do with

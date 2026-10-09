@@ -19,6 +19,7 @@ placeholders until real project photography arrives.
 | Home hero                    | <https://www.pexels.com/photo/brown-and-black-house-miniature-3961750/>                                                    | Pexels License |
 | Home hero, photo 2           | <https://www.pexels.com/photo/31405835/>                                                                                   | Pexels License |
 | Home overview                | <https://www.pexels.com/photo/three-people-collaborating-on-a-project-6615107/>                                            | Pexels License |
+| Project page hero            | <https://www.pexels.com/photo/16846525/>                                                                                   | Pexels License |
 | About                        | <https://www.pexels.com/photo/professional-individuals-working-together-5582590/>                                          | Pexels License |
 | Service: Revit Modeling      | <https://www.pexels.com/photo/men-sitting-at-a-table-and-looking-at-a-laptop-displaying-a-3d-project-of-a-house-15764095/> | Pexels License |
 | Revit Modeling, photo 2      | <https://www.pexels.com/photo/architect-working-on-a-computer-15764116/>                                                   | Pexels License |

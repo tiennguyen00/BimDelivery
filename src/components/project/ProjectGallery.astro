@@ -1,131 +1,232 @@
 ---
 /**
- * The Project page's photo wall (spec 0014): every project as a 5:4 photo
- * tile, three across on a desktop, with thin 8px white seams between them.
+ * The Project page's photo wall (spec 0014, revised 2026-10-09): every
+ * project as a wide photo tile, two across from `md`, with thin 8px white
+ * seams between them.
  *
  * It is a band of its own, not a `Section`: it borrows the band frame's side
  * gutters and bottom padding from `styles.ts` but takes **no maximum width**,
- * so the wall runs the full window width inside the gutters. It has no top
- * padding because it sits straight under the intro, on the same white. It
- * needs no name of its own either: the list is labelled by the page's `h1`.
- * The page never renders it with an empty list; it shows the empty state
- * instead.
+ * so the wall runs the full window width inside the gutters. Its top padding
+ * is the gutter, so the first row sits as far below the hero as the tiles sit
+ * from the window's sides. It needs no name of its own: the list is labelled
+ * by the page's `h1`. The page never renders it with an empty list; it shows
+ * the empty state instead.
  *
- * Each tile's box is a fixed 5:4 (`aspect-5/4`), so its space is reserved
- * before the photo arrives and nothing on the page shifts as photos load.
- * The black fill shows only while a photo loads. The caption is a full width
- * `bg-scrim` strip at the tile's foot: white on the scrim is 5.74:1 even over
- * a pure white pixel (spec 0005), so any photo is safe without a contrast
- * check. The 60 character title cap in the content schema is what keeps the
- * caption inside the tile at every width.
+ * Each tile's box is a fixed 3:2 (`aspect-3/2`), except 4:3 from `md` to
+ * `lg`, where two columns make the tiles narrowest: the extra height is what
+ * lets the unfolded cue and facts fit under a 60 character title, the
+ * content schema's cap. Either way the box is reserved before the photo
+ * arrives, so nothing on the page shifts as photos load.
+ * The black fill shows only while a photo loads. A `bg-scrim` layer covers
+ * the whole photo, so the white words over it read at 5.74:1 at worst over
+ * any photo (spec 0005), with no contrast check per photo.
+ *
+ * At rest a tile shows its title and its summary, centred at its foot, the
+ * summary cut to one line (the full line stays in the HTML for a screen
+ * reader). On hover, or while the tile's link has focus, the scrim deepens to
+ * `scrim-strong` and the cue and the facts unfold under the summary
+ * (`tile-info`), so the title rises by exactly what appears. A touch screen
+ * has no hover, so there a tile stays at rest and a tap opens the project.
  *
  * Each tile is exactly one link to its project page (spec 0015), with one
  * tab stop: the title's text is the link, and its `::after` is stretched over
  * the whole tile (the `Card` pattern), so the accessible name is the project
- * title and the pointer shows anywhere on the tile. Under the title the strip
- * carries the cue, "Read more" and an arrow, `aria-hidden` because the name
- * already says which project it opens: a screen reader hears six distinct
- * titles, not six "Read more"s. Keyboard focus draws the light tone
- * `gold-ink` ring round the whole tile (`link-focus:`, as `Card`), never
- * round the title alone.
+ * title and the pointer shows anywhere on the tile. The cue, "Read more" in
+ * a white pill, is `aria-hidden`, because the name already says which
+ * project it opens. The facts are a `<dl>` a screen reader reads with the
+ * tile. Keyboard focus draws the light tone `gold-ink` ring round the whole
+ * tile (`link-focus:`, as `Card`).
  *
- * Its one hover response is a slow zoom of the photo alone, 105% over
- * 500ms, `motion-safe` so reduced motion gets no zoom at all; the box, the
- * caption, and the layout never move. The zoom takes only the `Image`,
- * by `scale`, while the entrance and the reveal take only the `<li>`, so
- * neither overwrites the other. `isolate` stays with `overflow-hidden` on the
- * `<li>`: the stacking context keeps the growing photo clipped to the rounded
- * corners (without it WebKit can draw square corners mid transition).
+ * Three things move inside a tile, each on its own element and property, so
+ * none overwrites another:
+ *
+ * - The hover zoom: the `Image` alone, by `scale`, 105% over 500ms,
+ *   `motion-safe`.
+ * - The scroll parallax, `src/scripts/parallax.ts` on motion's `scroll()`:
+ *   the photo's frame (`data-parallax-photo`) slides down inside the tile and
+ *   the words (`data-parallax-text`) drift up, by `transform`, as the tile
+ *   crosses the screen. The frame is `parallax-photo` (`global.css`), which
+ *   grows past the tile only once the script has marked the tile
+ *   `data-parallax-on`, so without the script the photo is not cropped more.
+ * - The load entrance and the scroll reveal: the `<li>`.
+ *
+ * The tile clips with `overflow-clip` and keeps `isolate`, the stacking
+ * context that keeps the moving, growing photo clipped to the rounded
+ * corners.
+ *
+ * The title is `text-h3` bold and the summary `text-small` medium, one line
+ * under it with a 4px gap, at rest and unfolded alike.
+ *
+ * The filter: each `<li>` carries the keys from `galleryTiles` as `data-`
+ * attributes, which `src/scripts/project-filter.ts` matches against the
+ * hero's form. With `filter` set, the band also holds the polite status line
+ * the script fills ("4 projects shown") and the "no projects match" block it
+ * shows in place of an emptied wall, whose button resets the form.
  *
  * Motion: the list is a `data-reveal-stagger` container, so below the fold
  * each tile fades and rises in after the one before as it scrolls into view.
  * The first row also takes the load entrance, counting up from
  * `entranceFrom`, the spec 0012/0013 rule for a band on screen at load on a
- * desktop and below the fold on a phone. Only the first row, never every
- * tile, so a long list never stacks up seconds of delay.
+ * desktop and below the fold on a phone. On the Project page every
+ * animation is motion's, so the entrance is `src/scripts/enter.ts`, by a
+ * `data-enter` step, not the CSS `entrance`: it plays a tile on screen at
+ * load and leaves one below the fold to the scroll reveal.
  */
 import { Image } from 'astro:assets';
-import type { Project } from '../../lib/content';
-import Icon from '../ui/Icon.astro';
+import type { ProjectPage } from '../../lib/content';
+import type { GalleryTile } from '../../lib/project-gallery';
 import { projectHref } from '../../lib/project-detail';
-import { entranceClass, entranceStyle } from '../ui/entrance';
-import { bandGutterClass, bandPaddingBottomClass, cx } from '../ui/styles';
+import type { Locale } from '../../i18n/locales';
 import {
-  wallGridClass,
-  wallImageClass,
-  wallImageSizes,
-  wallImageWidths,
-  wallTileClass,
-} from './wall';
+  bandGutterClass,
+  bandPaddingBottomClass,
+  buttonClass,
+  cx,
+} from '../ui/styles';
+
+type FilterCopy = ProjectPage['filter'];
 
 interface Props {
   /** The id of the page's `h1`, which names the list. */
   labelledBy: string;
-  /** One or more, in `order`. */
-  projects: readonly Project[];
-  /** The words under each title, "Read more". */
+  /** One or more, in `order`, from `galleryTiles`. */
+  tiles: readonly GalleryTile[];
+  /** The words in each tile's pill, "Read more". */
   cue: string;
-  /** The first tile's `--entrance-step`; without it no tile moves on load. */
+  /** The first tile's `data-enter` step; without it no tile moves on load. */
   entranceFrom?: number;
+  /** The filter's side of the wall; absent where nothing filters it. */
+  filter?: Readonly<{
+    /** The list's id, which the form names in `data-project-filter`. */
+    listId: string;
+    /** The form's id, for the reset button. */
+    formId: string;
+    lang: Locale;
+    copy: Pick<FilterCopy, 'results' | 'noResults'>;
+  }>;
 }
 
-const { labelledBy, projects, cue, entranceFrom } = Astro.props;
+const { labelledBy, tiles, cue, entranceFrom, filter } = Astro.props;
 
 /**
- * The tiles a desktop shows at load, its first row. They are the page's
- * largest paint there, so their photos load eagerly and they take the load
- * entrance; every later one is lazy and moves only by the scroll reveal.
+ * The tiles a desktop shows at load, its first row. Their photos load
+ * eagerly and they take the load entrance; every later one is lazy and moves
+ * only by the scroll reveal.
  */
-const FIRST_ROW = 3;
+const FIRST_ROW = 2;
 
-const entranceAt = (index: number): number | undefined =>
-  index < FIRST_ROW ? entranceFrom : undefined;
+const enterStep = (index: number): number | undefined =>
+  index < FIRST_ROW && entranceFrom !== undefined
+    ? entranceFrom + index
+    : undefined;
 ---
 
-<div class={cx('bg-white', bandGutterClass, bandPaddingBottomClass)}>
-  <ul aria-labelledby={labelledBy} class={wallGridClass} data-reveal-stagger>
-    {projects.map((project, index) => (
+<div
+  class={cx(
+    'bg-white pt-4 md:pt-6 lg:pt-8',
+    bandGutterClass,
+    bandPaddingBottomClass,
+  )}
+>
+  <ul
+    id={filter?.listId}
+    aria-labelledby={labelledBy}
+    class="grid grid-cols-1 gap-2 md:grid-cols-2"
+    data-reveal-stagger
+  >
+    {tiles.map(({ project, keys, facts }, index) => (
       <li
-        class={cx(
-          wallTileClass,
-          'group flex flex-col justify-end link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-gold-ink',
-          entranceClass(entranceAt(index)),
-        )}
-        style={entranceStyle(entranceAt(index), index)}
+        data-service={keys.service}
+        data-country={keys.country}
+        data-area={keys.area}
+        data-enter={enterStep(index)}
+        class="group relative isolate aspect-3/2 overflow-clip rounded-ui bg-black md:aspect-4/3 lg:aspect-3/2 link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-gold-ink"
       >
-        <Image
-          src={project.image.src}
-          alt={project.image.alt ?? ''}
-          inferSize
-          widths={[...wallImageWidths]}
-          sizes={wallImageSizes}
-          loading={index < FIRST_ROW ? 'eager' : 'lazy'}
-          class={cx(
-            wallImageClass,
-            'transition-[scale] duration-500 ease-out motion-safe:group-hover:scale-105',
-          )}
+        <div class="parallax-photo -z-10" data-parallax-photo>
+          <Image
+            src={project.image.src}
+            alt={project.image.alt ?? ''}
+            inferSize
+            widths={[640, 960, 1280, 1600, 2000]}
+            sizes="(min-width: 48rem) 50vw, 100vw"
+            loading={index < FIRST_ROW ? 'eager' : 'lazy'}
+            class="size-full object-cover object-center transition-[scale] duration-500 ease-out motion-safe:group-hover:scale-105"
+          />
+        </div>
+
+        <div
+          aria-hidden="true"
+          class="absolute inset-0 -z-10 bg-scrim transition-colors duration-500 ease-out group-focus-within:bg-scrim-strong group-hover:bg-scrim-strong"
         />
-        <div class="bg-scrim px-5 py-4 text-white md:px-6 md:py-5">
-          <p class="text-small font-semibold tracking-wide uppercase">
-            {project.service.title}
-          </p>
-          <h2 class="mt-1 text-h3 font-semibold text-balance text-white">
+
+        <div
+          class="absolute inset-0 flex flex-col items-center justify-end p-6 text-center text-white lg:p-8"
+          data-parallax-text
+        >
+          <h2 class="shrink-0 text-h3 font-bold text-balance text-white">
             <a
               href={projectHref(project.slug)}
-              class="after:absolute after:inset-0 focus-visible:outline-none"
+              class="after:absolute after:-inset-6 focus-visible:outline-none"
             >
               {project.title}
             </a>
           </h2>
-          <p
-            aria-hidden="true"
-            class="mt-2 inline-flex items-center gap-1.5 text-small font-semibold"
-          >
-            {cue}
-            <Icon name="arrow-right" size={16} />
+          <p class="mt-1 w-full shrink-0 truncate text-small font-medium">
+            {project.summary}
           </p>
+
+          <div class="tile-info w-full shrink-0 group-focus-within:tile-info-open group-hover:tile-info-open">
+            <div>
+              <div class="flex flex-col items-center gap-3 pt-4 opacity-0 transition-opacity duration-500 ease-out group-focus-within:opacity-100 group-hover:opacity-100">
+                <span
+                  aria-hidden="true"
+                  class="inline-flex items-center rounded-full border border-white px-5 py-1.5 text-small font-semibold"
+                >
+                  {cue}
+                </span>
+                {facts.length > 0 && (
+                  <dl class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-small lg:gap-x-6">
+                    {facts.map((fact) => (
+                      <div class="flex gap-1.5">
+                        <dt>{fact.label}</dt>
+                        <dd class="font-semibold">{fact.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </li>
     ))}
   </ul>
+
+  {filter && (
+    <>
+      <p
+        role="status"
+        class="sr-only"
+        data-project-filter-status
+        data-locale={filter.lang}
+        data-one={filter.copy.results.one}
+        data-other={filter.copy.results.other}
+      />
+      <div
+        hidden
+        data-project-filter-empty
+        class="mx-auto flex max-w-narrow flex-col items-center py-16 text-center"
+      >
+        <h2 class="text-h3">{filter.copy.noResults.heading}</h2>
+        <p class="mt-3 text-lead">{filter.copy.noResults.text}</p>
+        <button
+          type="reset"
+          form={filter.formId}
+          class={cx(buttonClass('secondary'), 'mt-8')}
+        >
+          {filter.copy.noResults.reset}
+        </button>
+      </div>
+    </>
+  )}
 </div>

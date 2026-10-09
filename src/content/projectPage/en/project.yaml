@@ -4,7 +4,37 @@ seo:
   description: A selection of BIM and Revit modeling projects delivered for architects, engineers, and contractors.
 heading: Our projects
 intro: A selection of recent work. Placeholder projects until the real portfolio is ready.
+hero:
+  image:
+    src: https://images.pexels.com/photos/16846525/pexels-photo-16846525.jpeg?auto=compress&cs=tinysrgb&w=2400
+    decorative: true
+filter:
+  label: Filter projects
+  serviceLabel: Service
+  allServices: All
+  countryLabel: Country
+  areaLabel: Floor area
+  anyOption: Any
+  areaRanges:
+    - label: Under 5,000 m²
+      max: 5000
+    - label: 5,000 to 20,000 m²
+      min: 5000
+      max: 20000
+    - label: Over 20,000 m²
+      min: 20000
+  results:
+    one: '{count} project shown'
+    other: '{count} projects shown'
+  noResults:
+    heading: No projects match
+    text: Try another service, country, or floor area.
+    reset: Show all projects
 tileCue: Read more
+tileFacts:
+  storeys: Storeys
+  floorArea: Area
+  lod: LOD
 emptyState:
   heading: Projects coming soon
   text: We are preparing our portfolio. Get in touch to hear about similar work.

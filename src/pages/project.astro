@@ -1,49 +1,71 @@
 ---
 /**
- * Projects (spec 0014): three bands, in order, then the footer. Every word
- * and photo on them comes from a content entry.
+ * Projects (spec 0014, revised 2026-10-09): three bands, in order, then the
+ * footer. Every word and photo on them comes from a content entry.
  *
- * 1. Intro: the ruled `h1` and one paragraph.
- * 2. The photo wall, one tile per project in `order`, each a link to its
- *    page (spec 0015). With no projects in this language, the empty state
- *    takes its place instead.
+ * 1. The hero: a photo under the scrim, the `h1`, one paragraph, and the
+ *    filter (service tabs, then the country and floor area dropdowns).
+ * 2. The photo wall, one tile per project in `order`, two across, each a
+ *    link to its page (spec 0015). With no projects in this language, the
+ *    empty state takes its place, and the hero has no filter.
  * 3. The gold closing band, linking to Contact.
  *
  * This file is the only place that knows the page's shape. It owns the
- * heading ids, under the home page's rule: `<band>-heading`. The gallery
- * list is named by the `h1`, so the wall adds no heading of its own.
+ * heading ids, under the home page's rule: `<band>-heading`, and the ids
+ * that tie the filter to the wall. The gallery list is named by the `h1`, so
+ * the wall adds no heading of its own.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/ui/Section.astro';
 import CtaBand from '../components/ui/CtaBand.astro';
-import IntroBand from '../components/project/IntroBand.astro';
+import ProjectHero from '../components/project/ProjectHero.astro';
 import ProjectGallery from '../components/project/ProjectGallery.astro';
 import { resolveLocale } from '../i18n/locales';
-import { getProjectPage, getProjects } from '../lib/content';
+import { getProjectPage, getProjects, getServices } from '../lib/content';
+import { filterChoices, galleryTiles } from '../lib/project-gallery';
 
 const lang = resolveLocale(Astro.currentLocale);
 
-const [page, projects] = await Promise.all([
+const [page, projects, services] = await Promise.all([
   getProjectPage(lang),
   getProjects(lang),
+  getServices(lang),
 ]);
+
+const FILTER_ID = 'project-filter';
+const LIST_ID = 'project-list';
 ---
 
 <PageLayout title={page.seo.title} description={page.seo.description}>
-  <Section tone="white" labelledBy="project-heading">
-    <IntroBand
-      heading={page.heading}
-      headingId="project-heading"
-      intro={page.intro}
-    />
-  </Section>
+  <ProjectHero
+    heading={page.heading}
+    headingId="project-heading"
+    intro={page.intro}
+    image={page.hero.image}
+    filter={
+      projects.length > 0
+        ? {
+            id: FILTER_ID,
+            listId: LIST_ID,
+            copy: page.filter,
+            choices: filterChoices(
+              projects,
+              services,
+              page.filter.areaRanges,
+              lang,
+            ),
+          }
+        : undefined
+    }
+  />
 
   {projects.length > 0 ? (
     <ProjectGallery
       labelledBy="project-heading"
-      projects={projects}
+      tiles={galleryTiles(projects, page, lang)}
       cue={page.tileCue}
-      entranceFrom={2}
+      entranceFrom={3}
+      filter={{ listId: LIST_ID, formId: FILTER_ID, lang, copy: page.filter }}
     />
   ) : (
     <Section tone="white" width="narrow" labelledBy="project-empty-heading">
@@ -65,12 +87,22 @@ const [page, projects] = await Promise.all([
 </PageLayout>
 
 {/**
- * The scroll reveal and the heading rule (spec 0005), the page's choice as on
- * the About and Contact pages. The intro moves on load through the CSS
- * `entrance` (steps 0, 1) and the first row of tiles follows it (steps 2 to
- * 4); every tile below the fold reveals through the list's stagger. The empty
- * state and the gold band do not move.
+ * Five scripts, the page's choice, and every animation on the page is
+ * motion's (2026-10-09). `reveal.ts` (spec 0005), as on the About and
+ * Contact pages: every tile below the fold reveals through the list's
+ * stagger. `enter.ts` plays the load entrance: the hero (steps 0 to 2), then
+ * the first row of tiles (steps 3 and 4). It comes after `reveal.ts`, so a
+ * tile the reveal has already taken is left to it. `hero-scroll.ts` spreads
+ * the hero's words and slides the header away as the visitor scrolls out of
+ * the hero, and back. The empty state and the gold band do not move.
+ * `project-filter.ts` runs the hero's filter, and finds nothing to do when
+ * the page has no projects. `parallax.ts` slides each tile's photo and words
+ * as it crosses the screen.
  */}
 <script>
   import '../scripts/reveal';
+  import '../scripts/enter';
+  import '../scripts/hero-scroll';
+  import '../scripts/project-filter';
+  import '../scripts/parallax';
 </script>

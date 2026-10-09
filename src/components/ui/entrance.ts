@@ -15,8 +15,10 @@
  * Without `entranceFrom` both return nothing and the unit does not move on
  * load.
  *
- * It lives in `ui` because two pages share it (spec 0014): the service bands,
- * and the Project page's gallery, whose first three tiles take it.
+ * It lives in `ui` because spec 0014 shared it with the Project page's
+ * gallery. That page's animations are all motion's now (2026-10-09), so its
+ * first row takes a `data-enter` step for `src/scripts/enter.ts` instead, and
+ * the service bands are the helpers' one caller.
  */
 
 export const entranceClass = (

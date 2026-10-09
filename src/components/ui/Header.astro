@@ -19,6 +19,11 @@
  * The header registers no scroll listener. It is `position: sticky` at one
  * constant height, held in `--header-h` by `PageLayout`.
  *
+ * One page moves it from outside: the Project page's `hero-scroll.ts` finds
+ * it by `data-site-header` and slides (by `top`) and fades it away, scrubbed by the
+ * scroll through the hero, marking it `inert` once it is gone. The style
+ * block below puts it back in place while the mobile menu is open.
+ *
  * It is drawn as a full width white card flush with the top: rounded bottom
  * corners (`--radius-card`) and a shadow instead of a bottom border. It stays
  * sticky, so every page but home still starts below it, and the home hero opts
@@ -96,7 +101,10 @@ const activeClass =
   'text-black underline decoration-gold decoration-2 underline-offset-8';
 ---
 
-<header class="sticky top-0 z-40 rounded-b-card bg-white shadow-md">
+<header
+  class="sticky top-0 z-40 rounded-b-card bg-white shadow-md"
+  data-site-header
+>
   {/**
    * One landmark for the whole header. The logo link sits inside it, which
    * costs a screen reader one extra item in the nav and buys a single, clean
@@ -358,5 +366,16 @@ const activeClass =
   html.js header:has(#nav-menu-panel[data-open]) {
     border-radius: 0;
     box-shadow: none;
+  }
+
+  /* The Project page scrubs the header away by its sticky `top` and
+     `opacity` (`src/scripts/hero-scroll.ts`, which says why never by a
+     transform). With the menu open, both go back to rest, so the header
+     sits over the panel and the panel is not faded with it. `!important`
+     because an author declaration beats a running animation only when it
+     is important. */
+  html.js header:has(#nav-menu-panel[data-open]) {
+    top: 0 !important;
+    opacity: 1 !important;
   }
 </style>

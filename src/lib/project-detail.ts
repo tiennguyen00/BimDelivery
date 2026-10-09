@@ -32,6 +32,16 @@ export type Fact = Readonly<{ label: string; value: string }>;
 type DetailCopy = ProjectPage['detail'];
 
 /**
+ * A floor area grouped for the locale, then the unit: "18,500 m²". Shared by
+ * the facts panel and the `/project` tiles, so the two always agree.
+ */
+export const formatArea = (
+  floorArea: number,
+  unit: string,
+  lang: Locale,
+): string => `${new Intl.NumberFormat(lang).format(floorArea)} ${unit}`;
+
+/**
  * The facts panel's rows, in the fixed order location, year, client, floor
  * area, storeys, LOD, software, duration. A fact the entry leaves out has no
  * row at all, never an empty one.
@@ -54,7 +64,7 @@ export const projectFacts = (
       labels.floorArea,
       project.floorArea === undefined
         ? undefined
-        : `${new Intl.NumberFormat(lang).format(project.floorArea)} ${detail.areaUnit}`,
+        : formatArea(project.floorArea, detail.areaUnit, lang),
     ],
     [
       labels.storeys,

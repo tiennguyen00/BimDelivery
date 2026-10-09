@@ -138,7 +138,7 @@ focus indicators. Computed from the hex values above.
 | gold-ink (`StatsBand` numbers, the open accordion title, a `==` phrase) / ink-strong (`StatsBand` labels) | white | 5.05 / 12.63 | 4.5 |
 | black (a closed accordion item's title) | gold | 8.73 | 4.5 |
 | ink (text on `bg-diagonal`), worst case over a stripe line | line (`#e5e5e5`) | 4.56 | 4.5 |
-| white (the hero's heading and subheading, the project tile captions on `/project` and the home page, and their "Read more" cues) | scrim over any photo, worst case over pure white (composite `#666666`) | 5.74 at worst | 4.5 |
+| white (the hero's heading and subheading, the Project page hero's `h1`, intro, service tabs, and filter labels, the project tile titles, summaries, cues, and facts on `/project` and the captions on the home page) | scrim over any photo, worst case over pure white (composite `#666666`) | 5.74 at worst | 4.5 |
 | two colour focus ring, black inner band / white outer band (the hero photo and the gold band) | gold / any photo | black on gold 8.73; on any colour at all, one of the two bands reaches at least 4.58 | 3.0 |
 | white (the contact form band's heading, field labels and hints, noscript note, captcha link) | `scrim-strong` plus a `bg-diagonal-dark` line over a pure white photo pixel (composite `#3f3f3f`) | 10.5 at worst | 4.5 |
 | error-on-dark (the contact form band's field errors and messages) | the same worst case, `#3f3f3f` | 5.19 at worst | 4.5 |
@@ -202,8 +202,10 @@ constrained and `min-h-11` (the 44px tap target) relies on it.
 One written exception to the grid gap: the photo wall, on the Project page
 (`ProjectGallery`, spec 0014) and in a project detail page's gallery
 (`ProjectPhotos`, spec 0015), uses an 8px gap (`gap-2`) across and down, so
-the photos read as one wall split by thin seams. Both take it from one place,
-`src/components/project/wall.ts`. No other grid does.
+the photos read as one wall split by thin seams. The detail gallery takes it
+from `src/components/project/wall.ts`; the Project page's two across wall
+writes it in its own grid (spec 0014, revised 2026-10-09). No other grid
+does.
 
 There is no vertical margin between sections. Adjacent sections of the same
 tone are fine; alternating white and tint is the default rhythm a page should
@@ -425,8 +427,8 @@ and so on).
 
 The whole set, thirty six glyphs on one 24 unit grid: `menu`, `close`,
 `chevron-down`, `check` (the home presence band's why choose list, spec 0005),
-`arrow-right` (the home service card's cue, spec 0005, and the project tiles'
-cue and the next project link, spec 0015), `arrow-left` (a project detail
+`arrow-right` (the home service card's cue, spec 0005, and the home project
+tiles' cue and the next project link, spec 0015), `arrow-left` (a project detail
 page's "All projects" link, its mirror, spec 0015), `plus` and `minus`
 (an `Accordion` item closed and open, spec 0010), the footer's contact glyphs
 `phone`, `mail`, `globe`, the five social marks `linkedin`, `facebook`,
@@ -858,42 +860,113 @@ band, its tone, and its heading id.
 | Prop | Type | Default |
 |---|---|---|
 | `labelledBy` | `string` (required), the page's `h1` id | |
-| `projects` | `readonly Project[]` (required), one or more | |
+| `tiles` | `readonly GalleryTile[]` (required), one or more, from `galleryTiles` | |
 | `cue` | `string` (required), `projectPage.tileCue` | |
 | `entranceFrom` | `number` | none |
+| `filter` | `{ listId, formId, lang, copy }`, the filter's side of the wall | none |
 
-The Project page's photo wall (spec 0014), after the reference gallery: every
-project as a photo tile, one column, then two at `md`, then three at `lg`.
+The Project page's photo wall (spec 0014, revised 2026-10-09 after the
+engineer's reference): every project as a wide photo tile, one column, then
+two across from `md`.
 
 - **Its own band, not a `Section`**: white, with the band frame's side gutters
-  and bottom padding (`bandPaddingBottomClass` in `styles.ts`) and no top
-  padding, since it sits straight under the intro. It takes **no maximum
-  width**, so the wall runs the full window width inside the gutters. Three
-  bands do this, each written down: this wall, and a project detail page's
-  cover and gallery (spec 0015). The list is labelled by the page's `h1`; the wall adds
-  no name of its own.
-- **Every tile is a fixed 5:4 box** (`aspect-5/4`), `rounded-ui`, on a black
-  fill that shows only while the photo loads. The box is reserved before the
-  photo arrives, so nothing shifts. The photo covers the box, centred, so a
-  tall tower or a wide campus is cropped; choose photos with that in mind.
-- **The caption is a full width `bg-scrim` strip** flush with the tile's
-  bottom edge: the service as a small uppercase line, then the project title
-  as an `h2` at `text-h3`, all white (5.74:1 at worst over any photo). No
-  summary. Project titles are capped at 60 characters in the content schema,
-  which is what keeps the caption inside the tile at every width.
+  and bottom padding (`bandPaddingBottomClass` in `styles.ts`), and a top
+  padding equal to the gutter, so the first row sits as far below the hero as
+  the tiles sit from the window's sides. It takes **no maximum width**, so the
+  wall runs the full window width inside the gutters. Three bands do this,
+  each written down: this wall, and a project detail page's cover and gallery
+  (spec 0015). The list is labelled by the page's `h1`; the wall adds no name
+  of its own.
+- **Every tile is a fixed 3:2 box** (`aspect-3/2`), **4:3 from `md` to `lg`**
+  (`md:aspect-4/3 lg:aspect-3/2`), where two columns make the tiles narrowest
+  and the extra height is what fits the unfolded facts under a 60 character
+  title. `rounded-ui`, on a black fill that shows only while the photo loads.
+  The box is reserved before the photo arrives, so nothing shifts. The photo
+  covers the box, centred, so a tall tower is cropped; choose photos with
+  that in mind.
+- **A `bg-scrim` layer covers the whole photo**, so every word on the tile is
+  white at 5.74:1 at worst over any photo. Lighter would break that (the
+  engineer chose the guarantee over the reference's lighter wash).
+- **At rest**: the title (`h2`, `text-h3`, bold) and, 4px under it, the
+  summary (`text-small`, medium) on one line (`truncate`; the whole line stays in the HTML),
+  centred at the tile's foot. Project titles are capped at 60 characters in
+  the content schema, which is what keeps them inside the tile at every width,
+  at rest and unfolded.
+- **On hover, or while the tile's link has keyboard focus**: the scrim deepens
+  to `scrim-strong` over 500ms, and under the summary the cue and the facts
+  unfold (`tile-info` in `global.css`, a grid row from nothing to its own
+  height), lifting the title by exactly what appears. The cue is "Read more"
+  in a white outlined pill (`rounded-full`), `aria-hidden`; the facts are a
+  `<dl>` of storeys, floor area, and LOD, from `tileFacts`, labels from
+  `projectPage.tileFacts`, each only when the project has it. A touch screen
+  has no hover (`hover:` needs a pointer that can hover), so there a tile
+  stays at rest and a tap opens the project.
 - **The seams are 8px** (`gap-2`), the grid gap's one written exception.
-- **The geometry is `wall.ts`**: the grid, the tile frame, and the photo's
-  `widths` and `sizes`, shared with a detail page's gallery (`ProjectPhotos`)
-  so the two walls cannot drift apart.
 - **Every tile is one link** to its project page, following the project tile
   link rule below.
-- **Hover zooms the photo alone** (`motion-safe:group-hover:scale-105`, 500ms,
-  ease out, the `<li>` a `group`), clipped by the rounded corners; the box,
-  the caption, and the layout never move, and reduced motion gets no zoom at
-  all.
-- The first three tiles load eagerly (a desktop's largest paint) and every
-  later one lazily. The page never renders the wall with no projects; it
-  shows the empty state instead.
+- **Three motions, each on its own element and property**, so none
+  overwrites another: the hover zoom on the `Image` (`scale`), the scroll
+  parallax on the photo frame and the words (`transform`, below under Focus
+  and motion), and the load entrance and scroll reveal on the `<li>`.
+- **`overflow-clip` and `isolate`** on the tile: the stacking context keeps
+  the moving, zoomed photo clipped to the rounded corners.
+- **The filter's side**: each `<li>` carries `data-service`, `data-country`,
+  and `data-area` from `galleryTiles` (`src/lib/project-gallery.ts`). With
+  `filter`, the band also holds an `sr-only` `role="status"` line the script
+  fills ("4 projects shown") and a hidden "no projects match" block, a
+  centred `h2` at `text-h3`, one `text-lead` line, and a secondary button
+  that is a native `type="reset"` for the hero's form.
+- The first row (two tiles) loads eagerly and every later tile lazily. The
+  page never renders the wall with no projects; it shows the empty state
+  instead.
+
+### `ProjectHero` · `src/components/project/ProjectHero.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `heading` | `string` (required) | |
+| `headingId` | `string` (required) | |
+| `intro` | `string` (required), plain or `**bold**` | |
+| `image` | `projectPage.hero.image` (required) | |
+| `filter` | `{ id, listId, copy, choices }`, absent with no projects | none |
+
+The Project page's opening band (spec 0014, revised 2026-10-09), after the
+engineer's reference: a full width photo, the page's `h1` and intro centred
+on it, then the filter.
+
+- **A photo band, not a `Section` tone**, built like the home hero: it slides
+  up under the header card by `--header-h` and pads its content down by the
+  same amount, borrows the band frame's gutters and padding, and carries
+  `focus-contrast`. The photo loads eagerly at high fetch priority, the
+  page's largest paint, and a `bg-scrim` layer covers all of it, so every
+  word on the band is white at 5.74:1 at worst. The `h1` takes no gold rule
+  and no capitals, like the home hero's.
+- **A `==gold==` phrase in its intro is not safe**: `Emphasis` gives it
+  `gold-on-dark`, made for black, and over the scrim it can fall under 3:1 on
+  a bright photo. Keep the hero's intro to plain and `**bold**` words.
+- **The filter is one named `<form>`** (a landmark, `projectPage.filter.label`),
+  `no-js:hidden`, so with JavaScript off it is not there at all and the
+  visitor gets the whole wall; with it on it is there from the first frame,
+  so nothing shifts. Each field's `name` is the tile attribute it matches.
+  - **The service tabs**: radio buttons in a `fieldset` with an `sr-only`
+    legend, so they are one tab stop and the arrow keys move the choice.
+    The input is `sr-only`; its label draws the tab, `text-lead` white, the
+    chosen one underlined in white (2px). White, not gold: gold over the
+    scrim is not guaranteed 3:1. Every tab is the same weight, so choosing
+    one never shifts the row. The two colour focus ring is drawn on the
+    label (`peer-focus-visible:`), since the input cannot show one. The first
+    tab is "All"; the rest are the services that have projects, in the
+    services' `order`.
+  - **The bar**: a `bg-scrim` panel with a white hairline at 10 percent,
+    holding the country and floor area dropdowns, native `<select>`s in the
+    shared field box (white on every surface, `selectClass`) with the dark
+    surface's labels above them, side by side from `md`. Each starts on
+    "Any". Countries are the text after the last comma of each project's
+    `location`; the floor area bands are `projectPage.filter.areaRanges`
+    (`min` counts in, `max` does not), and a band no project falls in is left
+    out. So no single choice empties the wall; only a combination can.
+- On load the `h1`, the intro, and the filter fade and rise in through the
+  CSS `entrance`, steps 0 to 2; the wall's first row follows at 3 and 4.
 
 ### The project tile link rule · `ProjectGallery` and the home `ProjectShowcase`
 
@@ -905,18 +978,25 @@ spec 0005's "the photo stays still"):
   on `/project`, the `h3` on home), and its `::after` is stretched over the
   whole tile (`after:absolute after:inset-0`, the `Card` pattern). Its
   accessible name is the project title, and the pointer shows anywhere on the
-  tile. Nothing else inside it is focusable.
-- **The cue**: under the title (`/project`) or the summary (home), "Read more"
-  from content (`projectPage.tileCue`, `home.projectShowcase.cue`) and an
-  `arrow-right`, white, `text-small font-semibold`, **`aria-hidden`**, so a
-  screen reader hears six distinct titles rather than six "Read more"s.
+  tile. Nothing else inside it is focusable. On `/project` the words drift
+  with the parallax, so the `::after` reaches 24px past them on every side
+  (`after:-inset-6`) and the tile clips the rest: the whole tile stays
+  clickable wherever the words have drifted.
+- **The cue**: "Read more" from content (`projectPage.tileCue`,
+  `home.projectShowcase.cue`), white, `text-small font-semibold`,
+  **`aria-hidden`**, so a screen reader hears six distinct titles rather
+  than six "Read more"s. On home it sits under the summary with an
+  `arrow-right`; on `/project` it is a white outlined pill that unfolds on
+  hover (above).
 - **Keyboard focus** draws the light tone `gold-ink` ring round the whole
   tile (`link-focus:outline-gold-ink` on the `<li>`), never round the title
   alone; the link itself sets `focus-visible:outline-none`.
 - **Hover zooms the photo alone**, 105% over 500ms, `motion-safe`: `group`
-  and `isolate` on the `<li>` with its `overflow-hidden`, and
+  and `isolate` on the `<li>` with its clipping (`overflow-hidden` on home,
+  `overflow-clip` on `/project`, for the parallax), and
   `transition-[scale] duration-500 ease-out motion-safe:group-hover:scale-105`
-  on the `Image`. The box, the caption, and the layout never move.
+  on the `Image`. The box and the layout never move. On home the caption
+  stays still; on `/project` the scrim deepens and the cue and facts unfold.
 - The home band's "View all projects" button stays, the one way to the list.
 - A gallery tile on a detail page is **not** a project tile: no link, no cue,
   no zoom, the default cursor.
@@ -976,8 +1056,9 @@ from `src/lib/project-detail.ts`.
   `Revit, Navisworks`) come from `projectFacts`, never a component.
 - **`ProjectPhotos`**, the gallery band: `tint`, the band gutters and padding,
   **no maximum width**. A left aligned ruled `h2` names the band and its list.
-  The wall is `/project`'s, from `wall.ts`: one, two, then three columns, 8px
-  seams, fixed 5:4 tiles on black. A gallery tile is only a photo with its
+  The wall is `wall.ts`: one, two, then three columns, 8px seams, fixed 5:4
+  tiles on black (the `/project` wall's old shape; that wall left it on
+  2026-10-09). A gallery tile is only a photo with its
   `alt`: no caption, nothing focusable, the default cursor, no hover, and
   every photo lazy.
 - **`NextProject`**, the way on: a white, narrow `Section` holding one centred
@@ -996,7 +1077,9 @@ Two rules, chosen by the surface, and no exceptions (spec 0005):
 - **On the two light tones**: a 2px solid `--color-gold-ink` outline with a 2px
   gap, identical on white and tint. This is the base rule in `global.css`.
 - **On every surface that is not a light tone** (today the home hero's photo,
-  the home intro band's black, the contact form band, the dark `PatternBand`,
+  the Project page hero's photo (its service tabs draw the ring on their
+  label, `peer-focus-visible:`, since the radio itself is invisible), the
+  home intro band's black, the contact form band, the dark `PatternBand`,
   the footer's black, `CtaBand`'s gold band, and the `Accordion`'s gold
   bars): a two colour ring, a 2px `--color-black` band
   directly around the control and a 2px `--color-white` band outside it. It
@@ -1032,7 +1115,8 @@ carousel and reveal scripts and add none (spec 0013).
   waits 80ms per hidden sibling before it. Only elements entirely below the
   viewport when the script starts are hidden, so nothing on screen blinks. The
   fade-and-rise never replays, and when it ends the element holds no inline
-  style, so hover styles are untouched. Built on `motion`: `animate` from
+  style, so hover styles are untouched. Built on `motion` (one of its two
+  importers, with `parallax.ts`): `animate` from
   `motion/mini` and `inView` only, nothing else from the package.
 - **The heading rule**, the second half of the same module (spec 0005). The
   gold rule under a section heading draws itself from nothing to the full
@@ -1109,10 +1193,12 @@ carousel and reveal scripts and add none (spec 0013).
     after the intro's last (`entranceFrom`, from `planServicePage`, the
     helpers in `src/components/ui/entrance.ts`, moved there from `service`
     by spec 0014). A presence block in that place takes none.
-  - The Project page's gallery (spec 0014): its first three tiles, a
-    desktop's first row, take the entrance at steps 2 to 4 (`entranceFrom`,
-    the same helpers) and stay in the list's scroll reveal stagger. Only
-    those three, never every tile, so a long list never stacks up delay.
+  - The Project page's gallery (spec 0014, revised 2026-10-09): its first
+    two tiles, a desktop's first row, take the entrance at steps 3 and 4
+    (`entranceFrom`) and stay in the list's scroll reveal stagger. Only
+    those two, never every tile, so a long list never stacks up delay. On
+    this page the entrance is motion's (below), a Web Animation, which a
+    tile the filter brings back from `display: none` does not replay.
 - **The accordion slide**, in the `accordion-item` utility (spec 0010). Where
   the browser supports `::details-content` and `interpolate-size` (Chrome and
   Edge today), a panel's height slides between nothing and its content over
@@ -1136,15 +1222,56 @@ carousel and reveal scripts and add none (spec 0013).
   heading's rule draws with the scroll direction. A process step brings its
   stretch of the gold line with it as it fades in. The block after the
   intro also takes the entrance, above.
-- The Project page imports `reveal.ts` too (spec 0014): the intro's `h1` and
-  paragraph move on load through the `entrance` utility (steps 0, 1) and take
-  no `data-reveal`; the first row of tiles follows (above). Below the fold
-  each tile reveals after the one before as it scrolls into view, and the
-  `h1`'s rule draws with the scroll direction. The empty state and the gold
-  band do not move. On hover a tile's photo slowly zooms to 105%
-  (`motion-safe` only); the zoom moves the `Image` by `scale`, the entrance
-  and the reveal move the `<li>`, so neither overwrites the other. The home
-  showcase tiles zoom the same way (spec 0015).
+- The Project page imports `reveal.ts` too (spec 0014, revised 2026-10-09):
+  the hero's `h1`, intro, and filter move on load (steps 0 to 2) and take no
+  `data-reveal`; the first row of tiles follows (above). **Every animation
+  on the Project page is built with `motion`** (2026-10-09), so its load
+  entrance is `src/scripts/enter.ts`, not the CSS `entrance`: the same
+  fade and 24px rise over 600ms with an ease out, 80ms per `data-enter`
+  step. A script cannot hide anything before the first paint, so the
+  `data-enter` rule in `global.css` holds each one at opacity 0 from the
+  first frame, the one written exception to "no CSS rule hides anything
+  waiting for a script", bounded three ways: only with the `js` class, only
+  when motion is welcome, and only for 2s, after which it shows the element
+  anyway. The script lifts the hold the moment it runs, plays what is on
+  screen, and leaves a tile below the fold to the scroll reveal. Small hover
+  and colour transitions stay CSS.
+- **The hero scroll** on the Project page (2026-10-09),
+  `src/scripts/hero-scroll.ts` on motion's `scroll()`, scrubbed from the top
+  of the page to the hero's bottom edge leaving the viewport, linear. The
+  hero's three blocks (`data-hero-layer` wrappers around the `h1`, the
+  intro, and the filter) rise beyond the scroll, the top one most (240px,
+  160px, 80px), each setting off a tenth of the way after the one above, so
+  they spread apart one after another; each fades to 0.5. Over the first half
+  of the same scroll the header slides up by its own height (its sticky
+  `top`, never a transform, which would capture the fixed mobile menu panel)
+  and fades out, then is `inert` until the visitor scrolls back up into the
+  hero. Scrolling up plays it all backwards, exactly. With the mobile menu
+  open the header is held at rest (`!important` in `Header.astro`). Under
+  reduced motion nothing moves and the header never leaves. Below the fold each tile reveals after the one before as
+  it scrolls into view, and a tile the filter brings into view reveals the
+  same way. The hero's `h1` has no rule. The empty state and the gold band
+  do not move. On hover a tile's photo slowly zooms to 105% (`motion-safe`
+  only), its scrim deepens, and its cue and facts unfold over 500ms (the
+  `tile-info` grid row; under reduced motion they appear at once). The home
+  showcase tiles zoom the same way (spec 0015) and unfold nothing.
+- **The tile parallax** on the Project page (spec 0014, revised 2026-10-09),
+  `src/scripts/parallax.ts` on motion's `scroll()`. As a tile crosses the
+  screen, from its top entering at the bottom of the viewport to its bottom
+  leaving at the top, its photo's frame (`data-parallax-photo`) slides from
+  14% of its height above its place to 14% below, about 140px on a desktop
+  tile, so the photo moves visibly slower than the page; its words
+  (`data-parallax-text`) drift up 24px each way. Both sit exactly in place
+  when the tile is mid screen, and the scroll is the easing (linear). The
+  script marks each tile `data-parallax-on`, which grows the frame
+  (`parallax-photo` in `global.css`) 20% past the tile at the top and the
+  bottom, so the photo's edge never shows; without the script the photo is
+  cropped no more than the still design. `scroll()` runs on the browser's
+  own scroll timeline where it has one (Chrome, Edge, Safari), off the main
+  thread, and tracks the scroll itself elsewhere (Firefox), so every browser
+  gets it. It moves by `transform`, so the zoom (`scale`, on the `Image`)
+  and the entrance and reveal (on the `<li>`) never collide with it. Under
+  reduced motion the script stops before marking anything.
 - Every project detail page imports `reveal.ts` too (spec 0015): the intro
   moves on load through the `entrance` utility, the back link and service line
   at step 0, the `h1` at 1, the summary at 2, and the cover at 3, and none of
@@ -1177,7 +1304,7 @@ carousel and reveal scripts and add none (spec 0013).
 - A React field placed directly in an `.astro` file gets an explicit `id`.
 - Components never contain visible copy. Every word arrives through a prop or
   slot, from a content entry.
-- Exactly four scripts ship, and all of them only enhance markup that already
+- Exactly six scripts ship, and all of them only enhance markup that already
   works: `Header` imports `src/scripts/nav.ts` (spec 0004); `StatsBand` and the
   home page's `IntroBand` import `src/scripts/counters.ts`, `Hero` and the
   service pages' `IntroCarousel` import `src/scripts/carousel.ts` (the hero's
@@ -1187,9 +1314,17 @@ carousel and reveal scripts and add none (spec 0013).
   accordion are CSS and HTML; the service pages by spec 0013, the Project page
   by spec 0014, and the project detail pages by spec 0015, which add none
   either). `reveal.ts` holds two separate
-  halves, the fade-and-rise reveal and the heading rule, in one file so the
-  count stays four. Remove any script and the site stays usable. Any fifth one
-  needs a reason this good.
+  halves, the fade-and-rise reveal and the heading rule, in one file. The
+  fifth is `src/scripts/project-filter.ts`, which the Project page imports
+  (spec 0014, revised 2026-10-09): filtering a list is behaviour CSS cannot
+  do from content driven choices, which is the reason this good the old
+  four script rule asked for. Its form ships `no-js:hidden`, so without it
+  the page is the whole wall and no dead control. The sixth is
+  `src/scripts/parallax.ts`, the Project page's tile parallax (the same
+  revision), which the engineer asked to be built on the project's animation
+  framework after a CSS only version proved too faint and absent in Firefox.
+  Remove any script and the site stays usable. Any seventh one needs a reason
+  as good.
 - The React components render to static HTML unless a page hydrates them, and
   only feature 10's contact island may. It is hydrated `client:visible` on
   `/contact-us` alone, which is also the only page that loads Cloudflare's

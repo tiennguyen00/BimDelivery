@@ -61,7 +61,8 @@ Stored in `docs/specs/`, one folder per decision: `docs/specs/NNNN-title/index.m
 - Expected failures return an explicit result (a union or `Result` type) instead of throwing; throw only for real bugs.
 - Every page route produces an HTML file at build. Never switch `output` to `'server'`; after touching the adapter or `output`, confirm `dist/client/` has one HTML file per route.
 - Zero JavaScript by default: nav, dropdown, mobile menu, and counters are plain scripts. React only for the contact form island in `src/components/react/`.
-- `motion` is the one animation dependency, imported only by `src/scripts/reveal.ts` (`animate` from `motion/mini` and `inView`, nothing else).
+- `motion` is the one animation dependency, imported only by `src/scripts/reveal.ts` (`animate` from `motion/mini` and `inView`), `src/scripts/parallax.ts` and `src/scripts/hero-scroll.ts` (`animate` from `motion/mini` and `scroll`), and `src/scripts/enter.ts` (`animate` from `motion/mini`), nothing else.
+- Every animation on the Project page is built with `motion`, including its load entrance (`data-enter`, not the CSS `entrance`). Small hover and colour transitions stay CSS.
 - Design system: build all UI to `docs/design.md` (art direction and the build mandate); token values live in CSS (`src/styles/global.css`).
 - Page content comes from content collections, never hardcoded in layouts. Every entry carries a required language field.
 - Code must run on `workerd`: use only Node APIs that `nodejs_compat` provides.
@@ -94,7 +95,7 @@ Chosen by `/audit`, installed by `/develop tooling`:
 - [workers-best-practices](.agents/skills/workers-best-practices/): `cloudflare/skills`, code that runs on `workerd`
 - [resend](.agents/skills/resend/): `resend/resend-skills`, the contact form's email delivery
 - [vercel-react-best-practices](.agents/skills/vercel-react-best-practices/): `vercel-labs/agent-skills`, the React contact form island
-- [motion](.agents/skills/motion/): `motiondivision/ai-kit`, the vanilla `motion` API behind `reveal.ts`, CSS springs, and animation performance audits
+- [motion](.agents/skills/motion/): `motiondivision/ai-kit`, the vanilla `motion` API behind `reveal.ts`, `parallax.ts`, `enter.ts`, and `hero-scroll.ts`, CSS springs, and animation performance audits
 
 ## Context files
 
