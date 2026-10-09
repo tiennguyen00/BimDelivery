@@ -129,3 +129,46 @@ actually exercised.
 - AC-13 · dev only style guide from real content · covered by the "look at it" and value sourcing steps
 - AC-14 · tokens and utilities only, no arbitrary values · covered by the gold guard, the raw hex search, and the source scoping step
 - AC-15 · all four gates pass, no client JavaScript added · covered by the gates and build output steps
+
+---
+
+# Verify: the dark brand theme · spec 0003 · updated 2026-10-09
+
+_Steps derived from the 2026-10-09 revision's acceptance criteria and its Value sourcing table. Run them against the real build (`pnpm build`, then `pnpm exec wrangler dev --port 8799`). The 2026-09-20 steps above describe the light system and are history._
+
+## UI / manual
+
+- [ ] Open `/`, `/about-us`, each of the three service pages, `/project`, `/project/harbour-tower`, `/contact-us`, and a missing route (the 404) at 360, 768, and 1440px → no light band or box except the badge tiles; every word, icon, border, divider, carousel dot, map dot, map marker, and focus ring is visible; no horizontal scroll → AC-6, AC-17
+- [ ] On `/interior-bim`, the presence band after the `stripe` pattern band → its stripe sits on `raised`, not `canvas` (two stripes never meet on one tone) → AC-6, AC-21
+- [ ] Tab through the header, a card grid, the home intro band, a `dots` band, and the footer → a 2px brass ring with a 2px gap on each; a mouse click shows none → AC-10
+- [ ] Tab to the closing band's link, an accordion summary (closed and open), the home hero's button, the Project hero's filter tabs, and a contact form field → the two colour ring (canvas inside, cream outside) on each → AC-10
+- [ ] Hover a primary button (fill brightens, label stays dark), a secondary button (fills brass, label turns dark), and a linked `Card` in `/styleguide` (title underlines, border lightens, no shadow) → AC-7, AC-8
+- [ ] On `/contact-us`, submit empty → each field shows a coral error tied by `aria-describedby`, with `aria-invalid="true"` and no layout shift; autofill an email in Chrome and the field stays dark → AC-4, AC-9
+- [ ] On the home hero, the Project hero, and the project tiles, read the computed scrim → `rgba(12, 21, 25, 0.7)`; on the contact form band → `rgba(12, 21, 25, 0.9)`; every word on a photo is `heading` cream → AC-11, AC-18
+- [ ] Put a `==phrase==` in the Project hero intro (or read the style guide's "Marked text" tile) → it renders bold cream on the photo, brass off it → AC-11
+- [ ] Hover and keyboard focus a home service card → Coffee rises from the bottom, side bars are brass, every word including the cue turns cream (`rgb(245, 236, 228)`) → AC-19
+- [ ] Header and footer → the same light logo; the service cards → the transparent illustration with cream and brass strokes and no white box; the badges → their own tiles with nothing behind them → AC-20
+- [ ] On the root, read the computed `color-scheme` → `dark`; the head carries `<meta name="theme-color" content="#0c1519">`; select text → a brass fill with dark text → AC-4
+- [ ] With reduce motion on, hover a button → the colour changes instantly → AC-12
+- [ ] Under `pnpm dev`, open `/styleguide` → every colour token as a labelled swatch (heading and ink-strong separate, accent-deep and line separate), the accent and Coffee right and wrong box, components on raised, both pattern bands → AC-1, AC-13
+
+## Commands
+
+- [ ] `rg '(bg|text|border|fill|stroke|outline|ring|decoration|from|to|via|shadow)-(white|tint|black|gold|yellow|error-on-dark)\b' src` and `rg -F -e bg-diagonal-dark -e bg-dots-dark src` → no hits → AC-16
+- [ ] `rg -e text-accent-deep -e 'text-line\b' -e border-accent-deep -e outline-accent-deep -e outline-line -e ring-accent-deep -e ring-line src` → no hits → AC-11
+- [ ] `rg '\bshadow-(sm|md|lg|xl|2xl|\[)' src` → no hits → AC-17
+- [ ] Set one service block's `surface` to `light`, run `pnpm exec astro sync` → fails naming the file and "expected one of stripe or dots"; revert by hand (not `git checkout`, which drops uncommitted work) → AC-21
+- [ ] `pnpm check`, `pnpm lint`, `pnpm format:check`, `pnpm build` → all pass → AC-15
+- [ ] `find dist/client -name '*.html' | wc -l` → 14, one per route; `grep -rl sg-title dist/client` → nothing → AC-13, AC-15
+- [ ] Every `--color-*` token in `global.css` (bar `current` and `transparent`) appears in `docs/design.md` with its role → AC-1
+
+## Value sourcing
+
+- [ ] Every colour → the `@theme` tokens; a changed `--color-canvas` value would also need the `theme-color` meta in `BaseLayout.astro`, and a changed `--color-ink` the `select-chevron` data URI → spec 0003 Value sourcing
+- [ ] `PatternBand` background → `stripe` gives `bg-canvas bg-diagonal`, `dots` gives `bg-canvas bg-dots` (inspect a band of each on `/interior-bim` and `/architectural-bim`)
+- [ ] Header and footer logo → `settings.logo`; `logoOnDark` is gone from the schema and the settings file
+- [ ] The service card illustration → `home.services.illustration` points at `service-illustration-dark.png`
+
+## Acceptance-criteria coverage
+
+- AC-1 design.md · token and swatch steps · AC-2 cleared namespaces · the build and AC-16 search · AC-3, AC-5 font and type · unchanged since 2026-09-20, the gates · AC-4 browser chrome and autofill · chrome and field steps · AC-6 tones · route and interior BIM steps · AC-7, AC-8 buttons and cards · hover step · AC-9 fields · contact step · AC-10 focus · both keyboard steps · AC-11 contrast and roles · scrim, onPhoto, Coffee search · AC-12 reduced motion · motion step · AC-13 style guide · style guide and dist steps · AC-14 tokens only · AC-16 and shadow searches · AC-15 gates · gates step · AC-16 retired names · search step · AC-17 every route · route step · AC-18 scrims · scrim step · AC-19 wash · service card step · AC-20 assets · assets step · AC-21 content values · guard drill
