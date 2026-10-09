@@ -189,7 +189,7 @@ spec [0016](../specs/0016-smooth-wheel-scrolling.md) · code in [src/scripts/smo
 - [x] Build it: `/develop smooth scrolling`
   - [x] The glide: `lenis` added, `smooth-scroll.ts` with the reduced motion cut and the menu lock pause, loaded on every page (AC-1 to AC-3, AC-6, AC-7)
   - [x] Anchors and checks: `scroll-behavior: smooth`, then the wheel, reduced motion, menu, Project page, skip link, and 390px checks in Chrome (AC-4, AC-5, AC-8)
-- [ ] Verify it: `/check verify smooth scrolling`
+- [x] Verify it: `/check verify smooth scrolling`
 
 ## Release 2: findable, fast, and live
 
