@@ -1,17 +1,16 @@
 ---
 /**
  * One line of marked copy (spec 0010): the only place a `**bold**` or
- * `==gold==` phrase from content becomes markup. It renders inline runs and
+ * `==accent==` phrase from content becomes markup. It renders inline runs and
  * no wrapper, so the caller owns the `<p>` and its colour.
  *
  * - `**phrase**` is bold in the surrounding colour. A caller whose bold
  *   phrases take a stronger ink passes it through `strongClass` (the home
  *   presence band's `ink-strong`).
- * - `==phrase==` is bold gold, and which gold depends on the surface under
- *   it, never on the caller's taste: `gold-ink` on white, tint, or the
- *   diagonal stripe (5.05:1 on white), `gold-on-dark` on black (8.73:1). The
- *   bright gold on a light tone would be 2.41:1, which is why `surface` is
- *   required rather than defaulted.
+ * - `==phrase==` is bold `accent`, legible on every dark surface (5.04:1 at
+ *   worst, on `panel`), or bold `heading` when the caller passes `onPhoto`:
+ *   brass over the scrim is 2.88:1, and text on a photo is only ever
+ *   `heading` (spec 0003's accent role rule).
  *
  * Both marks are `font-semibold`, the weight the site's bold copy has always
  * used, so moving the footer and the presence band here changed nothing.
@@ -22,25 +21,24 @@ import { splitEmphasis } from '../../lib/emphasis';
 interface Props {
   /** One line from content, its marks already checked by the schema. */
   text: string;
-  /** What the line sits on, which picks the gold. */
-  surface: 'light' | 'dark';
+  /** The line sits on a photo, so a `==` phrase turns `heading`. */
+  onPhoto?: boolean;
   /** Extra classes for the `**` runs only, such as a stronger ink. */
   strongClass?: string;
 }
 
-const { text, surface, strongClass } = Astro.props;
+const { text, onPhoto = false, strongClass } = Astro.props;
 
-const goldClass: Readonly<Record<Props['surface'], string>> = {
-  light: cx('font-semibold text-gold-ink'),
-  dark: cx('font-semibold text-gold-on-dark'),
-};
+const accentRunClass = onPhoto
+  ? cx('font-semibold text-heading')
+  : cx('font-semibold text-accent');
 
 const strongRunClass = cx('font-semibold', strongClass);
 ---
 
 {splitEmphasis(text).map((run) =>
   run.mark === 'gold' ? (
-    <strong class={goldClass[surface]}>{run.text}</strong>
+    <strong class={accentRunClass}>{run.text}</strong>
   ) : run.mark === 'strong' ? (
     <strong class={strongRunClass}>{run.text}</strong>
   ) : (

@@ -3,7 +3,7 @@
  * A project detail page's way on (spec 0015): one centred link to the next
  * project, so a visitor never reaches a dead end.
  *
- * It renders only the inside of the band; the page wraps it in a `white`,
+ * It renders only the inside of the band; the page wraps it in a `canvas`,
  * `narrow` `Section` with no label, and leaves the band out when the
  * language has only one project. Which project is next is decided by
  * `nextProject`, never here.
@@ -11,7 +11,7 @@
  * The label and the title sit inside one link, so its accessible name is
  * both ("Next project Harbour Tower"); the space between the two spans keeps
  * the words apart in that name. The title underlines on hover, and keyboard
- * focus draws the light tone `gold-ink` ring from the base styles. The arrow
+ * focus draws the `accent` ring from the base styles. The arrow
  * is decorative.
  */
 import Icon from '../ui/Icon.astro';
@@ -35,7 +35,7 @@ const { label, title, href } = Astro.props;
     </span>{' '}
     <span class="inline-flex items-center gap-3 text-h3 font-semibold text-ink-strong">
       <span class="text-balance group-hover:underline">{title}</span>
-      <Icon name="arrow-right" class="shrink-0 text-gold-ink" />
+      <Icon name="arrow-right" class="shrink-0 text-accent" />
     </span>
   </a>
 </div>

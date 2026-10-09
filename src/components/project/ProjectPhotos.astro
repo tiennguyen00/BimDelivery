@@ -3,8 +3,9 @@
  * A project detail page's gallery (spec 0015): a left aligned, ruled `h2` and
  * the project's photos as a wall of 5:4 tiles.
  *
- * It renders the whole band, on `tint`, which keeps the white and tint rhythm
- * between the white story band above and the white next project band below.
+ * It renders the whole band, on `raised`, which keeps the `canvas` and
+ * `raised` rhythm between the `canvas` story band above and the `canvas`
+ * next project band below.
  * Like the `/project` wall it takes the band gutters and padding but **no
  * maximum width**, and its grid, tile frame, and photo sizes are that wall's,
  * from `wall.ts`, so the two walls cannot drift apart.
@@ -41,7 +42,7 @@ const { heading, headingId, photos } = Astro.props;
 
 <section
   aria-labelledby={headingId}
-  class={cx('bg-tint', bandGutterClass, bandPaddingClass)}
+  class={cx('bg-raised', bandGutterClass, bandPaddingClass)}
 >
   <div data-reveal>
     <h2 id={headingId} class="heading-rule inline-block" data-heading-rule>

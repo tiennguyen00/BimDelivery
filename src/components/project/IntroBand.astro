@@ -1,12 +1,12 @@
 ---
 /**
  * A project detail page's first band (spec 0015): the page's `h1` with the
- * gold rule under it, and one paragraph in the narrow reading width, with
+ * accent rule under it, and one paragraph in the narrow reading width, with
  * the two links above the `h1`. It began as the `/project` intro (spec
  * 0014), which now opens with `ProjectHero` instead; without `context` it
  * still renders that plain intro.
  *
- * It renders only the inside of the band; the page wraps it in a `white`
+ * It renders only the inside of the band; the page wraps it in a `canvas`
  * `Section` labelled by the `h1`, as the About and Contact pages do with
  * their intro bands. The capitals are CSS only (`uppercase`), so a screen
  * reader reads words, not letters.
@@ -32,7 +32,7 @@ interface Props {
   heading: string;
   /** The id the surrounding Section points at with `aria-labelledby`. */
   headingId: string;
-  /** May carry `**bold**` and `==gold==` phrases. */
+  /** May carry `**bold**` and `==accent==` phrases. */
   intro: string;
   /** A detail page's back link and service line, both or neither. */
   context?: Readonly<{ backLink: Link; service: Link }>;
@@ -46,7 +46,7 @@ const headingStep = context ? entranceFrom + 1 : entranceFrom;
 
 /** 44px tall for touch, while the words stay small. */
 const contextLinkClass =
-  'inline-flex min-h-11 items-center rounded-ui text-small text-gold-ink hover:underline';
+  'inline-flex min-h-11 items-center rounded-ui text-small text-accent hover:underline';
 ---
 
 {context && (
@@ -80,5 +80,5 @@ const contextLinkClass =
   class="entrance mt-8 max-w-narrow text-lead"
   style={`--entrance-step: ${headingStep + 1}`}
 >
-  <Emphasis text={intro} surface="light" />
+  <Emphasis text={intro} />
 </p>

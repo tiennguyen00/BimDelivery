@@ -1,23 +1,24 @@
 ---
 /**
- * The closing call to action: a self contained gold band (spec 0005).
+ * The closing call to action: a self contained accent band (spec 0005).
  *
  * This is deliberately not a `Section` with a third tone. Spec 0003 holds
- * `white` and `tint` as the only two tones, both light, precisely so that no
- * component ever has to adapt to its background. A gold tone would reopen
- * that: inherited tone variables, a card reset, a second focus colour. So the
- * gold lives here, in one band that is always gold and never asks.
+ * `canvas` and `raised` as the only two tones, both dark, precisely so that
+ * no component ever has to adapt to its background. An accent tone would
+ * reopen that: inherited tone variables, a card reset, a second focus colour.
+ * So the accent lives here, in one band that is always brass and never asks.
  *
  * It borrows `Section`'s frame (the shared band classes in `styles.ts`) rather
  * than wrapping it, because wrapping would mean giving `Section` the very tone
  * prop this avoids. If a third tone ever becomes the right answer, this
  * component collapses into it.
  *
- * Every colour here is fixed: black heading and text on gold (8.73:1), and a
- * black link with a white label (21.00:1). Nothing on this band reads a tone.
- * Focus follows the second of the site's two rules: the band carries
- * `focus-contrast`, the black and white double ring for surfaces that are not
- * a light tone, so the link and anything focusable added here later inherit it.
+ * Every colour here is fixed: `on-accent` heading and text on brass (7.71:1),
+ * set explicitly because the base layer makes an `h2` `heading` (2.05:1
+ * here), and a `canvas` link with a `heading` label (15.83:1). Nothing on
+ * this band reads a tone. Focus follows the second of the site's two rules:
+ * the band carries `focus-contrast`, the two colour ring for accent fills and
+ * photos, so the link and anything focusable added here later inherit it.
  *
  * The service pages (feature 8) reuse it: every service entry carries a `cta`
  * block of exactly this shape.
@@ -44,15 +45,15 @@ const { heading, headingId, text, button } = Astro.props;
 
 <section
   aria-labelledby={headingId}
-  class={cx('focus-contrast bg-gold', bandGutterClass, bandPaddingClass)}
+  class={cx('focus-contrast bg-accent', bandGutterClass, bandPaddingClass)}
 >
   <div
     class={cx(bandWidthClass.narrow, 'flex flex-col items-center text-center')}
   >
-    <h2 id={headingId} class="text-balance">
+    <h2 id={headingId} class="text-balance text-on-accent">
       {heading}
     </h2>
-    <p class="mt-4 text-lead text-black">{text}</p>
+    <p class="mt-4 text-lead text-on-accent">{text}</p>
     <a href={button.href} class={cx('mt-8', ctaLinkClass)}>
       {button.label}
     </a>

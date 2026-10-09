@@ -1,21 +1,21 @@
 ---
 /**
  * The Project page's opening band (spec 0014, revised 2026-10-09): a full
- * width photo under the 60% scrim, the page's `h1` and intro centred on it,
+ * width photo under the 70% scrim, the page's `h1` and intro centred on it,
  * and, when there are projects, the filter: the service tabs, then a bar
  * holding the country and floor area dropdowns.
  *
- * It is its own band, not a `Section` tone, because it is not a light surface.
+ * It is its own band, not a `Section` tone, because it is a photo surface.
  * Like the home hero it slides up under the header card by `--header-h` and
  * pads its content down by the same amount, borrows the band frame's gutters
  * and padding from `styles.ts`, and carries `focus-contrast`, the ring for
- * every surface that is not a light tone.
+ * photos and accent fills.
  *
- * Every word sits on the scrim, which covers the whole photo, so white text
- * reads at 5.74:1 at worst over any photo. The bar adds a second scrim under
- * its labels. A `==gold==` phrase in the intro renders in `gold-on-dark`,
- * which is made for black: over the scrim it is not guaranteed, so keep the
- * hero's intro to plain and `**bold**` words.
+ * Every word sits on the scrim, which covers the whole photo, and every word
+ * is `heading`, which reads at 5.91:1 at worst over any photo. The bar adds a
+ * second scrim under its labels. The intro passes `onPhoto` to `Emphasis`,
+ * so a `==accent==` phrase there renders bold `heading`, not brass: brass
+ * over the scrim is 2.88:1.
  *
  * The filter is one named `<form>`, so it is a landmark. It needs its script,
  * `src/scripts/project-filter.ts`, so it ships `no-js:hidden` (on its layer
@@ -27,12 +27,12 @@
  * - The tabs are radio buttons, one group named by a hidden `legend`: one tab
  *   stop, the arrow keys move the choice, and a screen reader hears "Service,
  *   radio, All, 1 of 4". The input is visually hidden and its label draws the
- *   tab, white, with a white underline under the chosen one (the reference's
- *   underline, and white rather than gold because gold over the scrim is not
- *   guaranteed 3:1). Its focus ring is the two colour ring, drawn on the
+ *   tab, `heading`, with a `heading` underline under the chosen one (the
+ *   reference's underline, and cream rather than brass because brass over
+ *   the scrim is 2.88:1). Its focus ring is the two colour ring, drawn on the
  *   label, since the input itself is invisible.
- * - The dropdowns are native `<select>`s in the shared field box, white on
- *   every surface, so they keep the browser's own keyboard and phone picker.
+ * - The dropdowns are native `<select>`s in the shared field box, the same
+ *   on every surface, so they keep the browser's own keyboard and phone picker.
  *
  * Each field's `name` is the `data-` attribute the tiles carry (`service`,
  * `country`, `area`), and each choice's value comes from
@@ -100,14 +100,14 @@ const { heading, headingId, intro, image, filter } = Astro.props;
  * the same weight, so choosing one never shifts its neighbours.
  */
 const tabClass =
-  'inline-flex min-h-11 items-center border-b-2 border-transparent px-1 text-lead text-white transition-colors duration-150 peer-checked:border-white peer-focus-visible:ring-2 peer-focus-visible:ring-black peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-white hover:border-white/60';
+  'inline-flex min-h-11 items-center border-b-2 border-transparent px-1 text-lead text-heading transition-colors duration-150 peer-checked:border-heading peer-focus-visible:ring-2 peer-focus-visible:ring-canvas peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-heading hover:border-heading/60';
 ---
 
 <section
   aria-labelledby={headingId}
   data-hero-scroll
   class={cx(
-    'focus-contrast relative isolate -mt-(--header-h) bg-black',
+    'focus-contrast relative isolate -mt-(--header-h) bg-canvas',
     bandGutterClass,
   )}
 >
@@ -131,14 +131,14 @@ const tabClass =
       )}
     >
       <div data-hero-layer>
-        <h1 id={headingId} data-enter="0" class="text-balance text-white">
+        <h1 id={headingId} data-enter="0" class="text-balance text-heading">
           {heading}
         </h1>
       </div>
 
       <div data-hero-layer class="mt-6 max-w-narrow">
-        <p data-enter="1" class="text-lead text-white">
-          <Emphasis text={intro} surface="dark" />
+        <p data-enter="1" class="text-lead text-heading">
+          <Emphasis text={intro} onPhoto />
         </p>
       </div>
 
@@ -172,12 +172,9 @@ const tabClass =
               </div>
             </fieldset>
 
-            <div class="mx-auto mt-6 grid max-w-narrow grid-cols-1 gap-4 rounded-ui border border-white/10 bg-scrim p-4 text-start md:grid-cols-2 md:p-5">
+            <div class="mx-auto mt-6 grid max-w-narrow grid-cols-1 gap-4 rounded-ui border border-line bg-scrim p-4 text-start md:grid-cols-2 md:p-5">
               <div class="flex flex-col gap-1.5">
-                <label
-                  for={`${filter.id}-country`}
-                  class={fieldLabelClass.dark}
-                >
+                <label for={`${filter.id}-country`} class={fieldLabelClass}>
                   {filter.copy.countryLabel}
                 </label>
                 <select
@@ -193,7 +190,7 @@ const tabClass =
               </div>
 
               <div class="flex flex-col gap-1.5">
-                <label for={`${filter.id}-area`} class={fieldLabelClass.dark}>
+                <label for={`${filter.id}-area`} class={fieldLabelClass}>
                   {filter.copy.areaLabel}
                 </label>
                 <select

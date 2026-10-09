@@ -1,59 +1,39 @@
 ---
 /**
  * A band on a pattern (spec 0013): the surface the service pages' features
- * and process bands sit on, named by the content's `surface` field.
+ * and process bands sit on, named by the content's `surface` field. Both are
+ * a `canvas` `Section` with a pattern on top, so no new tone (spec 0003,
+ * 2026-10-09):
  *
- * - `dark`: a black band under the `bg-dots-dark` dot grid. It is not a
- *   `Section` tone, so it renders its own `<section>`, borrows the band frame
- *   from `styles.ts` like the home hero and `CtaBand`, and carries
- *   `focus-contrast`, the ring for every surface that is not a light tone.
- * - `light`: a white `Section` under the `bg-diagonal` stripe, the home
- *   presence band's surface. No new tone, only the pattern on top.
+ * - `stripe`: the `bg-diagonal` stripe, the home presence band's surface.
+ * - `dots`: the `bg-dots` grid.
  *
- * It owns the surface and nothing inside it. What sits here reads the same
- * `surface` through the class maps in `styles.ts` (white words on `dark`;
- * black headings and `ink` text on `light`), and a `==` phrase takes the
- * gold `Emphasis` picks for that surface.
+ * It owns the pattern and nothing inside it. What sits here takes the same
+ * band strings from `styles.ts` on either one, and the base focus ring passes
+ * on both (6.66:1 over a stripe line, 5.15:1 at a dot's centre).
  */
 import Section from './Section.astro';
-import {
-  bandGutterClass,
-  bandPaddingClass,
-  bandWidthClass,
-  cx,
-  type Surface,
-} from './styles';
+import { cx, type BandPattern } from './styles';
 
 interface Props {
-  surface: Surface;
+  surface: BandPattern;
   /** The id of the heading this band is named by, for screen readers. */
   labelledBy: string;
   class?: string;
 }
 
 const { surface, labelledBy, class: className } = Astro.props;
+
+const patterns: Readonly<Record<BandPattern, string>> = {
+  stripe: cx('bg-diagonal'),
+  dots: cx('bg-dots'),
+};
 ---
 
-{surface === 'dark' ? (
-  <section
-    aria-labelledby={labelledBy}
-    class={cx(
-      'focus-contrast bg-black bg-dots-dark',
-      bandGutterClass,
-      bandPaddingClass,
-      className,
-    )}
-  >
-    <div class={bandWidthClass.default}>
-      <slot />
-    </div>
-  </section>
-) : (
-  <Section
-    tone="white"
-    labelledBy={labelledBy}
-    class={cx('bg-diagonal', className)}
-  >
-    <slot />
-  </Section>
-)}
+<Section
+  tone="canvas"
+  labelledBy={labelledBy}
+  class={cx(patterns[surface], className)}
+>
+  <slot />
+</Section>

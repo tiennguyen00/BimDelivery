@@ -11,10 +11,10 @@
  * - `block`, the block itself, except a `presence` block, which becomes a
  *   copy carrying its own `content` or, when it has none, `home.presence`;
  * - `headingId`, `<type>-heading`, numbered from a type's second use;
- * - `background`, from `BAND_BACKGROUND`: a white `Section`, a `PatternBand`
- *   on the block's own `surface`, or a striped `Section` whose tone turns to
- *   `tint` after a `light` pattern band, so two stripes never meet on one
- *   tone;
+ * - `background`, from `BAND_BACKGROUND`: a `canvas` `Section`, a
+ *   `PatternBand` on the block's own `surface`, or a striped `Section` whose
+ *   tone turns to `raised` after a `stripe` pattern band, so two stripes
+ *   never meet on one tone;
  * - `entranceFrom`, the load entrance steps for the block right after the
  *   intro only (spec 0012's rule, generalised), unless it is `presence`.
  */
@@ -69,18 +69,18 @@ type BandSurface = Extract<Block, { surface: string }>['surface'];
  * new layout in the schema fails `pnpm check` until it is given one.
  */
 export const BAND_BACKGROUND = {
-  'intro/carousel': 'white',
+  'intro/carousel': 'canvas',
   'features/cards': 'surface',
   'features/split': 'surface',
-  'audiences/grid': 'white',
+  'audiences/grid': 'canvas',
   'process/timeline': 'surface',
   'presence/map': 'striped',
-} as const satisfies Record<BlockKey, 'white' | 'surface' | 'striped'>;
+} as const satisfies Record<BlockKey, 'canvas' | 'surface' | 'striped'>;
 
 export type Background =
-  | Readonly<{ kind: 'white' }>
+  | Readonly<{ kind: 'canvas' }>
   | Readonly<{ kind: 'surface'; surface: BandSurface }>
-  | Readonly<{ kind: 'striped'; tone: 'white' | 'tint' }>;
+  | Readonly<{ kind: 'striped'; tone: 'canvas' | 'raised' }>;
 
 export type PlannedBand = Readonly<{
   key: BlockKey;
@@ -112,11 +112,11 @@ const backgroundOf = (
   previous: Background | undefined,
 ): Background => {
   const kind = BAND_BACKGROUND[blockKey(block)];
-  if (kind === 'white') return { kind };
+  if (kind === 'canvas') return { kind };
   if (kind === 'striped') {
-    const afterLightPattern =
-      previous?.kind === 'surface' && previous.surface === 'light';
-    return { kind, tone: afterLightPattern ? 'tint' : 'white' };
+    const afterStripe =
+      previous?.kind === 'surface' && previous.surface === 'stripe';
+    return { kind, tone: afterStripe ? 'raised' : 'canvas' };
   }
   if (!('surface' in block)) {
     throw new Error(

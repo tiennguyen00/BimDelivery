@@ -3,13 +3,12 @@
  * A service page's audiences in the `grid` layout (spec 0013): a centred
  * ruled heading, a left aligned intro, then who the service is for.
  *
- * It renders only the inside of the band; the route wraps it in a white
- * `Section`, so every colour here is a light tone's and the gold is
- * `gold-ink`.
+ * It renders only the inside of the band; the route wraps it in a `canvas`
+ * `Section`.
  *
  * The items are one column below `md` and three from it, so six read as two
  * rows of three. Each is centred: its solid icon at 64px filled with
- * `--color-gold` (`fill-gold`, a fill and so within the gold rule), the title
+ * `--color-accent`, the title
  * as an `h3`, and its text with its marks.
  *
  * Motion: the heading and the intro reveal as one, then the items one after
@@ -35,12 +34,12 @@ const { block, headingId, entranceFrom } = Astro.props;
 >
   <div class="text-center">
     <h2 id={headingId} class="heading-rule inline-block" data-heading-rule>
-      <Emphasis text={block.heading} surface="light" />
+      <Emphasis text={block.heading} />
     </h2>
   </div>
 
   <p class="mt-8">
-    <Emphasis text={block.intro} surface="light" />
+    <Emphasis text={block.intro} />
   </p>
 </div>
 
@@ -56,10 +55,10 @@ const { block, headingId, entranceFrom } = Astro.props;
       )}
       style={entranceStyle(entranceFrom, index + 1)}
     >
-      <Icon name={item.icon} size={64} class="fill-gold" />
+      <Icon name={item.icon} size={64} class="fill-accent" />
       <h3 class="mt-4">{item.title}</h3>
       <p class="mt-2">
-        <Emphasis text={item.text} surface="light" />
+        <Emphasis text={item.text} />
       </p>
     </div>
   ))}

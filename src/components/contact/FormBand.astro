@@ -1,23 +1,21 @@
 ---
 /**
  * The Contact page's second band (spec 0011): a greyscale construction photo
- * under a dark see through layer and a faint light stripe, holding the form
- * on the start side and the three contact cards on the end side.
+ * under a dark see through layer and a faint stripe, holding the form on the
+ * start side and the three contact cards on the end side.
  *
- * It is its own band, not a `Section` tone, because it is not a light
- * surface, like the home hero and the home intro band. It borrows `Section`'s
- * frame from `styles.ts`, so its gutters and widths cannot drift from the
- * rest of the page, and it carries `focus-contrast`, the ring for surfaces
- * that are not a light tone.
+ * It is its own band, not a `Section` tone, because it is a photo surface,
+ * like the home hero. It borrows `Section`'s frame from `styles.ts`, so its
+ * gutters and widths cannot drift from the rest of the page, and it carries
+ * `focus-contrast`, the ring for photos and accent fills.
  *
  * What holds the contrast together: nothing reads straight off the photo.
- * The layer over it is `scrim-strong` (black at 80 percent) plus the
- * `bg-diagonal-dark` stripe, so the band's lightest possible pixel is
- * `#3f3f3f`, and white reaches 10.5:1 and `error-on-dark` 5.19:1 there
- * whatever the photo. The band itself is black, so a photo that fails to
- * load leaves the same words on a darker band. Text on it is white or
- * `error-on-dark` only; the fields and cards are white surfaces and follow
- * the light rules.
+ * The layer over it is `scrim-strong` (Chinese Black at 90 percent) plus the
+ * `bg-diagonal` stripe, so the band's lightest possible pixel is `#31393c`,
+ * and there `heading` reaches 10.11:1, `ink` 7.44:1, `ink-muted` 5.32:1,
+ * `error` 5.15:1, and `accent` 4.92:1, whatever the photo. The band itself
+ * is `canvas`, so a photo that fails to load leaves the same words on a
+ * darker band. The fields and cards follow the same dark rules as anywhere.
  *
  * From `lg` the form takes about seven twelfths and the cards the rest. Below
  * `lg` it is one column: heading, form, cards.
@@ -56,7 +54,7 @@ const { heading, headingId, background, noScript, email, phone } = Astro.props;
 <section
   aria-labelledby={headingId}
   class={cx(
-    'focus-contrast relative isolate bg-black',
+    'focus-contrast relative isolate bg-canvas',
     bandGutterClass,
     bandPaddingClass,
   )}
@@ -72,18 +70,18 @@ const { heading, headingId, background, noScript, email, phone } = Astro.props;
   />
   <div
     aria-hidden="true"
-    class="bg-diagonal-dark absolute inset-0 -z-10 bg-scrim-strong"
+    class="absolute inset-0 -z-10 bg-scrim-strong bg-diagonal"
   ></div>
 
   <div class={bandWidthClass.default}>
-    <h2 id={headingId} class="text-balance text-white uppercase" data-reveal>
+    <h2 id={headingId} class="text-balance text-heading uppercase" data-reveal>
       {heading}
     </h2>
 
     <div class="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-start lg:gap-16">
       <div class="lg:col-span-7">
         <noscript>
-          <div class="mb-8 text-white">
+          <div class="mb-8 text-heading">
             <p>{noScript}</p>
             <p class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
               <a

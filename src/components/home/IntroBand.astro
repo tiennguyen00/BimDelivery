@@ -1,22 +1,21 @@
 ---
 /**
- * The intro band (spec 0005): a black band under the hero with a centred
- * heading, a short company introduction, and one white card per stat.
+ * The intro band (spec 0005): a `canvas` band under the hero with a centred
+ * heading, a short company introduction, and one `panel` card per stat.
  *
- * Two things move on their own: the counter, which runs once, and the gold
+ * Two things move on their own: the counter, which runs once, and the accent
  * heading words, which type through their list forever (spec 0009). That loop
- * has no pause button, a known WCAG 2.2.2 gap recorded in the spec. The cards answer a hover (lift, white glow fades, gold line runs),
- * and the global reduced motion cut makes those instant.
+ * has no pause button, a known WCAG 2.2.2 gap recorded in the spec. The cards
+ * answer a hover (lift, accent line runs), and the global reduced motion cut
+ * makes those instant.
  *
  * It is its own band rather than a `Section` tone, like `CtaBand` and the
- * hero: `Section` stays two light tones. It borrows the shared band frame from
- * `styles.ts` and carries `focus-contrast`, the ring for every surface that is
- * not a light tone, so anything focusable added here later is covered.
+ * hero. It borrows the shared band frame from `styles.ts`; the base focus
+ * ring passes on `canvas`, so it needs no `focus-contrast`.
  *
- * Colour on black: the copy is white (21.00:1) and the highlighted words are
- * `gold-on-dark` (8.73:1), the one gold word allowed and only ever on black.
- * Inside the white cards the light tone rules apply again: the icon is a gold
- * fill, and the number, being a word, is `gold-ink` (5.05:1).
+ * The copy is `heading` (15.83:1) and the highlighted words `accent`
+ * (7.71:1). Inside the `panel` cards the icon is an `accent` fill and the
+ * number, a word, is `accent` too (5.04:1).
  *
  * The cards are the `stats` entry, the same numbers `StatsBand` shows, so they
  * count up the same way: the grid carries `data-stats-band` and
@@ -34,7 +33,7 @@ import type { StatItem } from '../../lib/content';
 
 interface Props {
   heading: string;
-  /** The heading's closing words, in gold, typed through in a loop; the first is the real one. */
+  /** The heading's closing words, in the accent, typed through in a loop; the first is the real one. */
   headingHighlight: readonly string[];
   /** The id the band points at with `aria-labelledby`. */
   headingId: string;
@@ -53,15 +52,11 @@ const format = new Intl.NumberFormat(lang);
 
 <section
   aria-labelledby={headingId}
-  class:list={[
-    bandGutterClass,
-    bandPaddingClass,
-    'focus-contrast bg-black text-white',
-  ]}
+  class:list={[bandGutterClass, bandPaddingClass, 'bg-canvas text-heading']}
 >
   <div class={bandWidthClass.default}>
     {/**
-     * The gold rule under the heading comes from the shared `heading-rule`
+     * The accent rule under the heading comes from the shared `heading-rule`
      * utility in `global.css`, so it is exactly as wide as the heading's box
      * and never reaches a screen reader. The heading is a flex item, so it
      * sets no `display` of its own. `data-heading-rule` is the hook
@@ -70,7 +65,7 @@ const format = new Intl.NumberFormat(lang);
     <div class="flex justify-center">
       <h2
         id={headingId}
-        class="heading-rule text-center text-h3 font-bold text-white"
+        class="heading-rule text-center text-h3 font-bold text-heading"
         data-heading-rule
       >
         {heading}{' '}
@@ -78,7 +73,7 @@ const format = new Intl.NumberFormat(lang);
          * The typed words (spec 0009). Assistive tech gets the first word,
          * still, from the `sr-only` copy; everything visible is hidden from
          * it. The live word takes only the room its letters need, so the
-         * heading box, and the gold rule drawn under it, shrinks and grows
+         * heading box, and the accent rule drawn under it, shrinks and grows
          * as `typewriter.ts` types. The caret is its own box so it keeps its
          * height when the word is empty; it stays `hidden` until the script
          * runs. With no script the heading simply shows the first word.
@@ -88,13 +83,13 @@ const format = new Intl.NumberFormat(lang);
           aria-hidden="true"
           data-typewriter
           data-words={JSON.stringify(headingHighlight)}
-          class="text-gold-on-dark"
+          class="text-accent"
         >
           <span data-typewriter-live>{headingHighlight[0]}</span>
           <span
             data-typewriter-caret
             hidden
-            class="ml-0.5 inline-block h-[0.9em] w-0.5 bg-gold-on-dark"
+            class="ml-0.5 inline-block h-[0.9em] w-0.5 bg-accent"
           ></span>
         </span>
       </h2>
@@ -102,7 +97,7 @@ const format = new Intl.NumberFormat(lang);
 
     <div class="mt-10 flex flex-col gap-4 md:mt-12">
       <p>
-        <span class="font-semibold text-gold-on-dark">{lead.highlight}</span>{' '}
+        <span class="font-semibold text-accent">{lead.highlight}</span>{' '}
         {lead.text}
       </p>
       {paragraphs.map((paragraph) => (
@@ -122,15 +117,15 @@ const format = new Intl.NumberFormat(lang);
       class="mt-12 grid grid-cols-2 gap-4 md:gap-6 lg:mt-14 lg:grid-cols-4 lg:gap-16"
     >
       {stats.map((item) => (
-        <div class="group relative flex flex-col items-center overflow-hidden rounded-ui bg-white px-3 py-6 text-center shadow-[0_20px_32px_-12px_rgb(255_255_255/0.5)] transition duration-300 ease-out hover:shadow-[0_20px_32px_-12px_rgb(255_255_255/0)] motion-safe:hover:-translate-y-2 md:px-6 md:py-8">
+        <div class="group relative flex flex-col items-center overflow-hidden rounded-ui bg-panel px-3 py-6 text-center transition duration-300 ease-out motion-safe:hover:-translate-y-2 md:px-6 md:py-8">
           <Icon
             name={item.icon}
             size={96}
-            class="size-20 fill-gold md:size-24"
+            class="size-20 fill-accent md:size-24"
           />
           <div class="mt-4 flex flex-col-reverse items-center gap-1">
             <dt class="font-bold text-ink-strong md:text-lead">{item.label}</dt>
-            <dd class="text-h2 font-bold text-gold-ink">
+            <dd class="text-h2 font-bold text-accent">
               <span data-count-to={item.value}>
                 {format.format(item.value)}
               </span>
@@ -138,7 +133,7 @@ const format = new Intl.NumberFormat(lang);
             </dd>
           </div>
           {/**
-           * The gold hover line. On hover it runs left to right just after
+           * The accent hover line. On hover it runs left to right just after
            * the card lifts; on leave it runs straight back the way it came,
            * right to left, at the same speed and with no wait.
            *
@@ -151,7 +146,7 @@ const format = new Intl.NumberFormat(lang);
            */}
           <span
             aria-hidden="true"
-            class="absolute inset-x-0 bottom-0 h-2 origin-left scale-x-0 bg-gold transition-[scale] duration-500 ease-out group-hover:scale-x-100 group-hover:delay-150"
+            class="absolute inset-x-0 bottom-0 h-2 origin-left scale-x-0 bg-accent transition-[scale] duration-500 ease-out group-hover:scale-x-100 group-hover:delay-150"
           ></span>
         </div>
       ))}

@@ -70,8 +70,8 @@ spec [0003](../specs/0003-design-system-ui-foundation/index.md) (revised 2026-10
   - [x] Astro components: class maps, `Section`, `Button`, `Card` (AC-6 to AC-8, AC-10, AC-14)
   - [x] React fields: React integration, `Button`, `TextField`, `TextArea` sharing the class maps (AC-7, AC-9)
   - [x] Dev only `/styleguide`, `docs/design.md` with both contrast tables and the gold rule, and the build gate (AC-1, AC-11, AC-13 to AC-15)
-  - [ ] The dark brand theme (2026-10-09), the whole site goes dark: the role named tokens and dark utilities in `global.css`, the `canvas` and `raised` tones, every component's plain class rename and the class maps, the retired name search clean (AC-2, AC-4, AC-6, AC-7, AC-10, AC-11, AC-16)
-  - [ ] What a rename gets wrong: `ctaLinkClass`, card hover, fields and `Emphasis` without `surface`, the band maps and the `stripe` and `dots` content values, the service card wash, boxes and frames on `panel`, the accordion icon, map and carousel dots, shadows removed, `focus-contrast` trimmed (AC-8 to AC-11, AC-14, AC-19, AC-21)
+  - [x] The dark brand theme (2026-10-09), the whole site goes dark: the role named tokens and dark utilities in `global.css`, the `canvas` and `raised` tones, every component's plain class rename and the class maps, the retired name search clean (AC-2, AC-4, AC-6, AC-7, AC-10, AC-11, AC-16)
+  - [x] What a rename gets wrong: `ctaLinkClass`, card hover, fields and `Emphasis` without `surface`, the band maps and the `stripe` and `dots` content values, the service card wash, boxes and frames on `panel`, the accordion icon, map and carousel dots, shadows removed, `focus-contrast` trimmed (AC-8 to AC-11, AC-14, AC-19, AC-21)
   - [ ] Photos, assets, and browser chrome: the 70% and 90% scrims, one light logo, the badge strip, the dark illustration, `theme-color` (AC-4, AC-17, AC-18, AC-20)
   - [ ] Written down and gated: `docs/design.md` and `/styleguide` for the dark system, the four gates, every route at 360, 768, and 1440px (AC-1, AC-3, AC-5, AC-11 to AC-13, AC-15, AC-17)
 - [ ] Verify it: `/check verify design system & UI foundation`

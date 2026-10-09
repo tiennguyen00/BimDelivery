@@ -5,8 +5,8 @@
  * side.
  *
  * It renders only the inside of the band; the route wraps it in a
- * `PatternBand` on the block's `surface`, and every colour that depends on it
- * comes from the class maps in `styles.ts`.
+ * `PatternBand` on the block's `surface`, and its colours come from the band
+ * strings in `styles.ts`, the same on either pattern.
  *
  * From `lg` the copy takes about five twelfths and the tiles the rest; the
  * tiles run two columns from `md` and one below. Below `lg` everything is
@@ -32,7 +32,6 @@ import type { BandProps } from '../../lib/service-page';
 type Props = BandProps<'features/split'>;
 
 const { block, headingId, entranceFrom } = Astro.props;
-const { surface } = block;
 ---
 
 <div class="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
@@ -43,16 +42,16 @@ const { surface } = block;
   >
     <h2
       id={headingId}
-      class={cx('heading-rule inline-block', bandHeadingClass[surface])}
+      class={cx('heading-rule inline-block', bandHeadingClass)}
       data-heading-rule
     >
-      <Emphasis text={block.heading} surface={surface} />
+      <Emphasis text={block.heading} />
     </h2>
 
-    <div class={cx('mt-8 flex flex-col gap-4', bandBodyClass[surface])}>
+    <div class={cx('mt-8 flex flex-col gap-4', bandBodyClass)}>
       {block.paragraphs.map((paragraph) => (
         <p>
-          <Emphasis text={paragraph} surface={surface} />
+          <Emphasis text={paragraph} />
         </p>
       ))}
     </div>
@@ -66,7 +65,7 @@ const { surface } = block;
       <div
         class={cx(
           'flex flex-col p-6',
-          bandTileClass[surface],
+          bandTileClass,
           entranceClass(entranceFrom),
         )}
         style={entranceStyle(entranceFrom, index + 1)}
@@ -75,11 +74,11 @@ const { surface } = block;
           name={item.icon}
           size={40}
           strokeWidth={1.5}
-          class={bandIconClass[surface]}
+          class={bandIconClass}
         />
-        <h3 class={cx('mt-4', bandHeadingClass[surface])}>{item.title}</h3>
-        <p class={cx('mt-2', bandBodyClass[surface])}>
-          <Emphasis text={item.text} surface={surface} />
+        <h3 class={cx('mt-4', bandHeadingClass)}>{item.title}</h3>
+        <p class={cx('mt-2', bandBodyClass)}>
+          <Emphasis text={item.text} />
         </p>
       </div>
     ))}

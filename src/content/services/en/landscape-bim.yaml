@@ -31,7 +31,7 @@ sections:
         alt: Two engineers leaning over a large printed drawing spread out on a table
   - type: features
     layout: split
-    surface: dark
+    surface: dots
     heading: Coordination that ==prevents rework==
     paragraphs:
       - One of the key advantages of BIM for landscape design is **improved coordination** between the landscape and other project disciplines. Landscape elements can be reviewed alongside architectural and structural models, helping teams ==identify potential conflicts and resolve design issues== before construction.
@@ -80,7 +80,7 @@ sections:
         text: Coordination progress you can report on, meeting by meeting.
   - type: process
     layout: timeline
-    surface: dark
+    surface: dots
     heading: How a Landscape BIM project ==runs==
     intro: A steady cycle that repeats until every clash is closed and every discipline has signed off.
     steps:

@@ -6,10 +6,10 @@
  * centred see through dark panel holding the heading and subheading, one
  * button under it, and the carousel's controls at the bottom.
  *
- * It is its own band, not a `Section` tone, because it is not a light surface.
+ * It is its own band, not a `Section` tone, because it is a photo surface.
  * It borrows `Section`'s frame from `styles.ts` so its gutters and widths
  * cannot drift from the rest of the page, and it carries `focus-contrast`, the
- * ring for surfaces that are not a light tone.
+ * ring for photos and accent fills.
  *
  * The heading here is the page's only `h1`, which is why the component takes
  * the id rather than inventing one: the band points at the same id with
@@ -18,9 +18,9 @@
  * Three things hold the design together, and each is easy to break quietly:
  *
  * - Text sits only on the scrim, never straight on the photo. `--color-scrim`
- *   is dark enough that white text reaches 5.74:1 over a pure white pixel, so
- *   swapping the photo never needs a contrast check. The band itself is black,
- *   so a photo that fails to load leaves white copy on a dark band.
+ *   is dark enough that `heading` text reaches 5.91:1 over a pure white
+ *   pixel, so swapping the photo never needs a contrast check. The band itself
+ *   is `canvas`, so a photo that fails to load leaves the copy on a dark band.
  * - The band slides up under the header card by `--header-h` and pads its
  *   content down by the same amount, so the panel centres in the visible area
  *   below the card. Both read the one value in `PageLayout`. Nothing between
@@ -48,9 +48,9 @@
  * never plays at all for reduced motion.
  *
  * Every photo is a white background with its subject in the centre (spec
- * 0006), so the dots are black: black at 30% for the
- * others, solid black for the one showing. The arrows are white circles with
- * a black chevron and a soft shadow, so they read on white and on the panel.
+ * 0006). The dots are the shared `CarouselDots` row, `heading` at 50% and
+ * solid for the one showing. The arrows are `panel` circles with a `heading`
+ * chevron, so they read on a white photo and on the scrim alike.
  *
  * The first photo is the page's largest contentful paint, so it is the one
  * image on the site that loads eagerly and at a high fetch priority; the
@@ -98,7 +98,7 @@ const hasCarousel = slides.length > 1;
  * there, and the dots already do the job.
  */
 const heroArrowClass =
-  'invisible absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-white text-black opacity-0 shadow-md transition-opacity duration-300 group-hover/hero:opacity-100 focus-visible:opacity-100 md:grid';
+  'invisible absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-panel text-heading opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100 focus-visible:opacity-100 md:grid';
 
 /** The widths the photo is generated at, before the source width cap. */
 const HERO_STEPS: readonly number[] = [640, 960, 1280, 1920];
@@ -120,7 +120,7 @@ const heroWidths = (sourceWidth: number): number[] => {
   aria-labelledby={headingId}
   data-carousel={hasCarousel ? '' : undefined}
   class={cx(
-    'group/hero focus-contrast relative isolate -mt-(--header-h) flex min-h-svh flex-col bg-black lg:min-h-[80svh]',
+    'group/hero focus-contrast relative isolate -mt-(--header-h) flex min-h-svh flex-col bg-canvas lg:min-h-[80svh]',
     bandGutterClass,
   )}
 >
@@ -191,10 +191,10 @@ const heroWidths = (sourceWidth: number): number[] => {
           'rounded-ui bg-scrim px-6 py-8 text-center md:px-10 md:py-10',
         )}
       >
-        <h1 id={headingId} class="text-balance text-white">
+        <h1 id={headingId} class="text-balance text-heading">
           {heading}
         </h1>
-        <p class="mt-6 text-lead text-white">{subheading}</p>
+        <p class="mt-6 text-lead text-heading">{subheading}</p>
       </div>
 
       <Button href={primaryCta.href} class="mt-8">

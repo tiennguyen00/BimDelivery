@@ -6,11 +6,11 @@
  * It renders the whole band. Like the `/project` wall it borrows only the
  * band frame's side gutters, takes **no maximum width**, so the photo runs
  * the full window inside the gutters, and has no vertical padding of its own:
- * the white intro above and the white story band below give it room.
+ * the `canvas` intro above and the `canvas` story band below give it room.
  *
  * The box is fixed for each width, 4:3 on a phone, 16:9 from `md`, and 21:9
  * from `lg`, so its space is reserved before the photo arrives and nothing
- * shifts as it loads. The black fill shows only while it loads. It is the
+ * shifts as it loads. The `panel` fill shows only while it loads. It is the
  * page's largest paint, so it loads eagerly with high fetch priority, and its
  * `widths` reach 2400px for a wide screen (the project links ask Pexels for
  * a 2400px original). No caption, no link, and no hover response.
@@ -31,9 +31,9 @@ interface Props {
 const { image, entranceStep } = Astro.props;
 ---
 
-<div class={cx('bg-white', bandGutterClass)}>
+<div class={cx('bg-canvas', bandGutterClass)}>
   <div
-    class="entrance relative aspect-4/3 overflow-hidden rounded-ui bg-black md:aspect-16/9 lg:aspect-21/9"
+    class="entrance relative aspect-4/3 overflow-hidden rounded-ui bg-panel md:aspect-16/9 lg:aspect-21/9"
     style={`--entrance-step: ${entranceStep}`}
   >
     <Image

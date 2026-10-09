@@ -10,18 +10,20 @@
  * independently, which loses nothing. A closed item's text stays in the
  * HTML, so find in page and a screen reader still reach it.
  *
- * - Closed, an item is a bar filled with `--color-gold`: its title bold and
- *   `black` (8.73:1), a `plus` in a white circle at the end.
- * - Open, it is a white card with a `line` border and a shadow: the title
- *   turns `gold-ink` (5.05:1), the circle `tint`, the icon a `minus`, and the
- *   text sits below.
- * - The icons take the title's colour and are decorative (`Icon` hides
- *   them), because the browser already announces the summary as expandable
- *   and its state.
+ * - Closed, an item is a bar filled with `--color-accent`: its title bold and
+ *   `on-accent` (7.71:1), a `plus` in a `canvas` circle at the end.
+ * - Open, it is a `panel` card with a `line` border: the title turns
+ *   `accent` (5.04:1), the circle `raised`, the icon a `minus`, and the text
+ *   sits below.
+ * - The icons are `accent` open or closed (7.71:1 on the `canvas` circle,
+ *   6.84:1 on `raised`). They must not inherit the closed title's
+ *   `on-accent`, which is the circle's own colour. They are decorative
+ *   (`Icon` hides them), because the browser already announces the summary
+ *   as expandable and its state.
  *
- * The group carries `focus-contrast`: the default `gold-ink` ring would
- * vanish against a closed gold bar (2.10:1), so every summary gets the two
- * colour ring instead.
+ * The group carries `focus-contrast`: the base `accent` ring would vanish
+ * against a closed brass bar, so every summary gets the two colour ring
+ * instead, which passes on an open `panel` item too.
  *
  * The summary holds plain text, not a heading: a heading inside a `summary`
  * loses its role in some screen readers, and the band's own `h2` already
@@ -35,7 +37,7 @@ import Icon from './Icon.astro';
 interface Props {
   /** The group's shared `<details name>`; unique on the page. */
   name: string;
-  /** Each text may carry `**bold**` and `==gold==` phrases. */
+  /** Each text may carry `**bold**` and `==accent==` phrases. */
   items: readonly Readonly<{ title: string; text: string }>[];
 }
 
@@ -47,18 +49,18 @@ const { name, items } = Astro.props;
     <details
       name={name}
       open={index === 1}
-      class="group accordion-item rounded-ui border border-transparent bg-gold open:border-line open:bg-white open:shadow-lg"
+      class="group accordion-item rounded-ui border border-transparent bg-accent open:border-line open:bg-panel"
     >
-      <summary class="flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-ui px-6 py-4 text-h3 font-bold text-black group-open:text-gold-ink">
+      <summary class="flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-ui px-6 py-4 text-h3 font-bold text-on-accent group-open:text-accent">
         <span>{item.title}</span>
-        <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-white group-open:bg-tint">
+        <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas text-accent group-open:bg-raised">
           <Icon name="plus" size={20} class="group-open:hidden" />
           <Icon name="minus" size={20} class="hidden group-open:block" />
         </span>
       </summary>
       <div class="px-6 pb-6">
         <p>
-          <Emphasis text={item.text} surface="light" />
+          <Emphasis text={item.text} />
         </p>
       </div>
     </details>

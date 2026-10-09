@@ -1,15 +1,14 @@
 /**
- * A single line text, email, or phone field (spec 0003; `tel` and `surface`
- * from spec 0011).
+ * A single line text, email, or phone field (spec 0003; `tel` from spec
+ * 0011).
  *
  * The label is always visible, so there is no placeholder standing in for one.
  * An error is never colour alone: the control gets `aria-invalid`, the message
  * is linked through `aria-describedby`, and the outline thickens through an
  * inset ring so nothing on the page shifts when the error appears.
  *
- * `surface` is what the field sits on. `dark` makes the label and hint white
- * and the error `error-on-dark`, for the contact page's form band; the white
- * control box is the same on both.
+ * There is one look everywhere: every surface a field sits on is dark, so the
+ * box, label, hint, and error never adapt to it (spec 0003, 2026-10-09).
  *
  * About `id`: inside one React island `useId` is enough. A field placed
  * directly in an .astro file renders as its own React root, and ids can repeat
@@ -25,7 +24,6 @@ import {
   fieldHintClass,
   fieldLabelClass,
   fieldWrapperClass,
-  type Surface,
 } from '../../ui/styles';
 import { describeField } from './field';
 
@@ -36,7 +34,6 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
   id?: string;
   hint?: string;
   error?: string;
-  surface?: Surface;
 };
 
 export const TextField = ({
@@ -46,7 +43,6 @@ export const TextField = ({
   id,
   hint,
   error,
-  surface = 'light',
   className,
   ...rest
 }: Props) => {
@@ -61,11 +57,11 @@ export const TextField = ({
   return (
     <div className={fieldWrapperClass}>
       <div className={fieldHeadClass}>
-        <label htmlFor={controlId} className={fieldLabelClass[surface]}>
+        <label htmlFor={controlId} className={fieldLabelClass}>
           {label}
         </label>
         {hint && (
-          <p id={hintId} className={fieldHintClass[surface]}>
+          <p id={hintId} className={fieldHintClass}>
             {hint}
           </p>
         )}
@@ -80,7 +76,7 @@ export const TextField = ({
         className={cx(fieldClass(Boolean(error)), className)}
       />
       {error && (
-        <p id={errorId} className={fieldErrorClass[surface]}>
+        <p id={errorId} className={fieldErrorClass}>
           {error}
         </p>
       )}

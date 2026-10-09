@@ -3,13 +3,15 @@
  * The home project showcase (spec 0005): a centred heading and intro, a grid
  * of project tiles, and one link to the full list.
  *
- * It renders only the inside of the band. The page wraps it in a `tint`
+ * It renders only the inside of the band. The page wraps it in a `raised`
  * `Section` and decides which projects reach it (the first three by `order`),
  * so this component never reads a tone or a collection.
  *
- * Each tile is a photo with a `bg-scrim` caption panel at its foot. White on
- * the scrim is 5.74:1 even over a pure white pixel (spec 0005, AC-19), so any
- * project photo is safe here without a contrast check.
+ * Each tile is a photo with a `bg-scrim` caption panel at its foot, and every
+ * word on it is `heading`: 5.91:1 even over a pure white pixel (spec 0003,
+ * AC-18), so any project photo is safe here without a contrast check. An
+ * empty frame is `panel`, so a photo that fails to load still reads as a
+ * tile.
  *
  * Each tile is exactly one link to its project page (spec 0015), the same
  * rule as the `/project` wall: the `h3`'s text is the link, stretched over
@@ -17,8 +19,8 @@
  * title as its name, and the pointer anywhere on the tile. Under the summary
  * the panel carries the cue, "Read more" and an arrow, `aria-hidden` because
  * the name already says which project it opens. Keyboard focus draws the
- * light tone `gold-ink` ring round the whole tile on the band's tint
- * (`link-focus:`, as `Card`). The band's button still leads to the full list.
+ * `accent` ring round the whole tile on the `raised` band (`link-focus:`,
+ * as `Card`). The band's button still leads to the full list.
  *
  * On hover the photo alone zooms slowly, 105% over 500ms, `motion-safe`, as
  * on `/project` (spec 0014): only the `Image` moves, by `scale`, while the
@@ -91,7 +93,7 @@ const imageSizes = '(min-width: 48rem) 50vw, 100vw';
   {projects.map((project, index) => (
     <li
       class:list={[
-        'group relative isolate flex min-h-72 flex-col justify-end overflow-hidden rounded-ui bg-black link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-gold-ink',
+        'group relative isolate flex min-h-72 flex-col justify-end overflow-hidden rounded-ui bg-panel link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-accent',
         featured && index === 0 && firstTileClass,
       ]}
     >
@@ -103,11 +105,11 @@ const imageSizes = '(min-width: 48rem) 50vw, 100vw';
         sizes={imageSizes}
         class="absolute inset-0 -z-10 size-full object-cover object-center transition-[scale] duration-500 ease-out motion-safe:group-hover:scale-105"
       />
-      <div class="m-3 rounded-ui bg-scrim p-5 text-white md:m-4 md:p-6">
+      <div class="m-3 rounded-ui bg-scrim p-5 text-heading md:m-4 md:p-6">
         <p class="text-small font-semibold tracking-wide uppercase">
           {project.service.title}
         </p>
-        <h3 class="mt-1 text-h3 font-semibold text-balance text-white">
+        <h3 class="mt-1 text-h3 font-semibold text-balance text-heading">
           <a
             href={projectHref(project.slug)}
             class="after:absolute after:inset-0 focus-visible:outline-none"

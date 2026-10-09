@@ -5,10 +5,10 @@
  * both.
  *
  * One real button per photo, named "Show photo N of M", each a 24px hit area
- * around a small mark: black at 30 percent, or solid black for the photo
- * showing (`aria-current`). Black, not gold, because the dots sit on white
- * photos or a white band, where a gold dot would be 2.41:1, under the 3:1 a
- * control's state needs.
+ * around a small mark: `heading` at 50 percent, or solid `heading` for the
+ * photo showing (`aria-current`). At 50 percent a dot still reads 4.73:1 on
+ * `canvas`, over the 3:1 a control's state needs; at 30 percent it would be
+ * 2.48:1 and lost on a bright hero photo.
  *
  * The row ships `invisible`, so with no JavaScript there is nothing dead to
  * tab to; the script reveals it once the carousel runs. A carousel with one
@@ -42,7 +42,7 @@ const dots = Array.from({ length: count }, (_, index) => index);
       aria-current={index === 0 ? 'true' : 'false'}
       class="group grid size-6 cursor-pointer place-items-center rounded-full"
     >
-      <span class="size-2.5 rounded-full bg-black/30 transition-colors group-aria-current:bg-black" />
+      <span class="size-2.5 rounded-full bg-heading/50 transition-colors group-aria-current:bg-heading" />
     </button>
   ))}
 </div>

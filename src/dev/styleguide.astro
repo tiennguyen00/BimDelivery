@@ -177,140 +177,134 @@ const cardsBlock = services
 
 /**
  * Every swatch carries what the colour is for and what it must never be,
- * because the two golds look alike in a list and only one of them is legible
- * as a word.
+ * because Coffee looks like a quieter brass in a list and is the one colour
+ * that may never be read. `heading` and `ink-strong` share a value, and so do
+ * `accent-deep` and `line`; each is listed under its own role.
  */
 const colours = [
   {
-    token: '--color-white',
-    swatch: 'bg-white',
-    hex: '#ffffff',
-    use: 'Page background, card surface; text on the scrim; the ring outer band',
-    avoid: 'Text anywhere but on the scrim',
+    token: '--color-canvas',
+    swatch: 'bg-canvas',
+    hex: '#0c1519',
+    use: 'The page, the canvas section tone, field fills',
+    avoid: 'Inside an accent fill unless a lighter colour is set on it',
   },
   {
-    token: '--color-tint',
-    swatch: 'bg-tint',
-    hex: '#fff9e6',
-    use: 'The tint section background',
+    token: '--color-raised',
+    swatch: 'bg-raised',
+    hex: '#162127',
+    use: 'The raised section tone',
+    avoid: 'A box on canvas (1.13:1, it vanishes); the dots pattern',
+  },
+  {
+    token: '--color-panel',
+    swatch: 'bg-panel',
+    hex: '#3a3534',
+    use: 'Every card, tile, menu, the open accordion item, an empty photo frame',
     avoid: 'Text',
   },
   {
-    token: '--color-black',
-    swatch: 'bg-black',
-    hex: '#000000',
-    use: 'h1 and h2; the label on any gold or yellow fill',
-    avoid: 'Nothing',
+    token: '--color-heading',
+    swatch: 'bg-heading',
+    hex: '#f5ece4',
+    use: 'h1 and h2; every word on a photo or the Coffee wash; the ring outer band',
+    avoid: 'Inside an accent fill (2.05:1)',
   },
   {
     token: '--color-ink-strong',
     swatch: 'bg-ink-strong',
-    hex: '#333333',
+    hex: '#f5ece4',
     use: 'h3, field labels, strong text',
-    avoid: 'Nothing',
+    avoid: 'Inside an accent fill',
   },
   {
     token: '--color-ink',
     swatch: 'bg-ink',
-    hex: '#666666',
-    use: 'Body text, the most used text colour on the site',
-    avoid: 'Nothing',
+    hex: '#d9cbc0',
+    use: 'Body text, field text, the most used text colour',
+    avoid: 'Text on a photo (only heading goes there)',
   },
   {
     token: '--color-ink-muted',
     swatch: 'bg-ink-muted',
-    hex: '#707070',
-    use: 'Hints, captions, card text',
-    avoid: 'Long body copy (it sits at the 4.5:1 floor)',
+    hex: '#b8aca3',
+    use: 'Hints, captions, card text; the hovered card border',
+    avoid: 'Text on a photo',
   },
   {
-    token: '--color-gold',
-    swatch: 'bg-gold',
-    hex: '#e09900',
-    use: 'FILLS ONLY: primary button, highlight fills, decorative rules',
-    avoid: 'Any text, any control border, any focus ring (2.41:1 on white)',
+    token: '--color-accent',
+    swatch: 'bg-accent',
+    hex: '#cf9d7b',
+    use: 'Fills AND words: buttons, links, emphasis, numbers, rules, the focus ring',
+    avoid: 'A word on a photo (2.88:1) or on the Coffee wash (3.66:1)',
   },
   {
-    token: '--color-gold-deep',
-    swatch: 'bg-gold-deep',
-    hex: '#c88600',
+    token: '--color-accent-hover',
+    swatch: 'bg-accent-hover',
+    hex: '#e3bc9f',
     use: 'The primary button hover fill',
     avoid: 'Everything else',
   },
   {
-    token: '--color-gold-ink',
-    swatch: 'bg-gold-ink',
-    hex: '#946600',
-    use: 'The only readable gold: words, links, control borders, focus ring',
-    avoid: 'Large flat fills, where it reads muddy rather than gold',
+    token: '--color-on-accent',
+    swatch: 'bg-on-accent',
+    hex: '#0c1519',
+    use: 'The label or icon on an accent fill',
+    avoid: 'Anywhere that is not an accent fill',
   },
   {
-    token: '--color-yellow',
-    swatch: 'bg-yellow',
-    hex: '#ffcc00',
-    use: 'Reserved for the real logo and feature 5 icons',
-    avoid: 'Any text; anything in this feature (1.51:1 on white)',
+    token: '--color-accent-deep',
+    swatch: 'bg-accent-deep',
+    hex: '#724b39',
+    use: 'The home service card hover wash',
+    avoid: 'Any word, control border, or focus ring (2.45:1 on canvas)',
   },
   {
     token: '--color-line',
     swatch: 'bg-line',
-    hex: '#e5e5e5',
-    use: 'Card borders and dividers (decorative)',
-    avoid: 'Any control boundary (1.26:1 on white)',
+    hex: '#724b39',
+    use: 'Decorative borders, dividers, the timeline connector',
+    avoid: 'Any word or control boundary (2.45:1 on canvas)',
   },
   {
     token: '--color-field',
     swatch: 'bg-field',
-    hex: '#767676',
-    use: 'Form field borders, a control boundary at 4.54:1',
+    hex: '#8c8480',
+    use: 'Form field borders, a control boundary at 5.04:1',
     avoid: 'Decorative lines, where it is heavier than they need',
   },
   {
     token: '--color-error',
     swatch: 'bg-error',
-    hex: '#b42318',
-    use: 'Error text and error borders',
+    hex: '#ff8a7a',
+    use: 'Error text and error borders, on every surface',
     avoid: 'Decoration',
-  },
-  {
-    token: '--color-error-on-dark',
-    swatch: 'bg-error-on-dark',
-    hex: '#ff9b8f',
-    use: 'Error text on the contact form band (5.19:1 at its worst point)',
-    avoid: 'Any light tone (2.03:1 on white)',
   },
   {
     token: '--color-scrim',
     swatch: 'bg-scrim',
-    hex: 'rgb(0 0 0 / 0.6)',
-    use: 'The dark panel white text sits on over a photo (the home hero)',
-    avoid: 'Anything lighter: 0.6 is what keeps white text at 5.74:1',
+    hex: 'rgb(12 21 25 / 0.7)',
+    use: 'The layer under words on a photo',
+    avoid: 'Anything lighter: 0.7 is what keeps heading at 5.91:1',
   },
   {
     token: '--color-scrim-strong',
     swatch: 'bg-scrim-strong',
-    hex: 'rgb(0 0 0 / 0.8)',
-    use: 'The layer over the whole contact form band, under bg-diagonal-dark',
-    avoid: 'Anything lighter: the stripe already lifts its lines to #3f3f3f',
-  },
-  {
-    token: '--color-panel',
-    swatch: 'bg-panel',
-    hex: '#161616',
-    use: 'A card or tile on a dark pattern band (white 18.10, gold-on-dark 7.52)',
-    avoid: 'Any light tone',
+    hex: 'rgb(12 21 25 / 0.9)',
+    use: 'The contact form band under bg-diagonal; a hovered project caption',
+    avoid: 'Anything lighter: its worst pixel, #31393c, is measured',
   },
 ] as const;
 
 const typeScale = [
   {
     token: 'text-h1',
-    class: 'text-h1 font-bold text-black',
+    class: 'text-h1 font-bold text-heading',
     note: '36px to 56px, line height 1.1, tracking -0.02em',
   },
   {
     token: 'text-h2',
-    class: 'text-h2 font-bold text-black',
+    class: 'text-h2 font-bold text-heading',
     note: '28px to 40px, line height 1.2',
   },
   {
@@ -336,58 +330,90 @@ const typeScale = [
 ] as const;
 
 const contrastPairs = [
-  { pair: 'black on white / tint', ratio: '21.00 / 19.94', needs: '4.5' },
-  { pair: 'ink-strong on white / tint', ratio: '12.63 / 12.00', needs: '4.5' },
-  { pair: 'ink on white / tint', ratio: '5.74 / 5.45', needs: '4.5' },
-  { pair: 'ink-muted on white / tint', ratio: '4.95 / 4.70', needs: '4.5' },
-  { pair: 'gold-ink on white / tint', ratio: '5.05 / 4.79', needs: '4.5' },
-  { pair: 'black on gold / gold-deep', ratio: '8.73 / 6.87', needs: '4.5' },
-  { pair: 'black on yellow', ratio: '13.89', needs: '4.5' },
-  { pair: 'field border on white / tint', ratio: '4.54 / 4.31', needs: '3.0' },
-  { pair: 'error on white / tint', ratio: '6.57 / 6.24', needs: '4.5' },
   {
-    pair: 'focus ring gold-ink on white / tint',
-    ratio: '5.05 / 4.79',
+    pair: 'heading / ink-strong on canvas / raised / panel',
+    ratio: '15.83 / 14.05 / 10.35',
+    needs: '4.5',
+  },
+  {
+    pair: 'ink on canvas / raised / panel',
+    ratio: '11.66 / 10.35 / 7.62',
+    needs: '4.5',
+  },
+  {
+    pair: 'ink-muted on canvas / raised / panel',
+    ratio: '8.33 / 7.39 / 5.45',
+    needs: '4.5',
+  },
+  {
+    pair: 'accent on canvas / raised / panel',
+    ratio: '7.71 / 6.84 / 5.04',
+    needs: '4.5',
+  },
+  {
+    pair: 'on-accent on accent / accent-hover',
+    ratio: '7.71 / 10.52',
+    needs: '4.5',
+  },
+  {
+    pair: 'heading on canvas / panel (the closing band link, rest / hover)',
+    ratio: '15.83 / 10.35',
+    needs: '4.5',
+  },
+  {
+    pair: 'error on canvas / raised / panel',
+    ratio: '8.06 / 7.16 / 5.27',
+    needs: '4.5',
+  },
+  { pair: 'field border on canvas', ratio: '5.04', needs: '3.0' },
+  {
+    pair: 'focus ring accent on canvas / raised / panel',
+    ratio: '7.71 / 6.84 / 5.04',
     needs: '3.0',
   },
   {
-    pair: 'white on black / ink-strong (the gold band link)',
-    ratio: '21.00 / 12.63',
+    pair: 'heading / ink / ink-muted / accent over a stripe line on canvas (#1b2327)',
+    ratio: '13.68 / 10.07 / 7.19 / 6.66',
     needs: '4.5',
   },
   {
-    pair: 'black on gold (the gold band heading and text)',
-    ratio: '8.73',
+    pair: 'heading / ink / ink-muted / accent over a stripe line on raised (#242e34)',
+    ratio: '11.88 / 8.75 / 6.25 / 5.78',
     needs: '4.5',
   },
   {
-    pair: 'white on the scrim over any photo (worst case: over pure white)',
-    ratio: '5.74 at worst',
+    pair: 'heading / ink / ink-muted / accent on a dot centre (#2e3639)',
+    ratio: '10.57 / 7.78 / 5.56 / 5.15',
     needs: '4.5',
   },
   {
-    pair: 'white on the contact form band (scrim-strong plus a stripe line over pure white)',
-    ratio: '10.5 at worst',
+    pair: 'heading on the scrim over any photo (worst case: over pure white)',
+    ratio: '5.91 at worst',
     needs: '4.5',
   },
   {
-    pair: 'error-on-dark on the contact form band, the same worst case',
-    ratio: '5.19 at worst',
+    pair: 'heading / ink / ink-muted / error / accent on the contact form band (#31393c)',
+    ratio: '10.11 / 7.44 / 5.32 / 5.15 / 4.92',
     needs: '4.5',
   },
   {
-    pair: 'white on the dark pattern band (a dot centre, #242424) / on a panel',
-    ratio: '15.52 / 18.10',
+    pair: 'heading on the Coffee wash at its darkest (#614438)',
+    ratio: '7.52',
     needs: '4.5',
   },
   {
-    pair: 'gold-on-dark on the dark pattern band (a dot centre) / on a panel',
-    ratio: '6.45 / 7.52',
+    pair: 'heading on a world map dot (#515150)',
+    ratio: '6.81',
     needs: '4.5',
   },
   {
-    pair: 'two colour focus ring, black inside and white outside (the hero photo, the gold band)',
-    ratio: '8.73 on gold; at least 4.58 on any colour',
+    pair: 'carousel dot, heading at 50% / solid, on canvas',
+    ratio: '4.73 / 15.83',
+    needs: '3.0',
+  },
+  {
+    pair: 'two colour focus ring, canvas inside and heading outside (photos, accent fills)',
+    ratio: '7.71 on accent; at least 3.98 on any colour',
     needs: '3.0',
   },
 ] as const;
@@ -413,8 +439,8 @@ const headCellClass =
   description="Every design token and component variant in the BIM Delivery design system, for development only."
 >
   <main>
-    <Section tone="tint" labelledBy="sg-title">
-      <p class="text-small font-semibold tracking-wide text-gold-ink uppercase">
+    <Section tone="raised" labelledBy="sg-title">
+      <p class="text-small font-semibold tracking-wide text-accent uppercase">
         Development only
       </p>
       <h1 id="sg-title" class="mt-2">
@@ -468,46 +494,49 @@ const headCellClass =
       </ul>
     </Section>
 
-    <Section tone="tint" labelledBy="sg-gold">
-      <h2 id="sg-gold">The gold rule</h2>
+    <Section tone="raised" labelledBy="sg-accent">
+      <h2 id="sg-accent">The accent role rule</h2>
       <p class="mt-4 max-w-narrow">
-        This is the one convention the build cannot catch for you. Gold splits
-        in two: a fill gold and a text gold. They look alike in a swatch list,
-        and only one of them is legible as a word.
+        This is the one convention the build cannot catch for you. Brass is
+        legible on every dark surface, so it is one token for fills and words
+        alike. The colour that may never be read is Coffee, which looks like a
+        quieter brass in a swatch list.
       </p>
 
       <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div class="rounded-ui border border-line bg-white p-6">
+        <div class="rounded-ui border border-line bg-panel p-6">
           <h3>Right</h3>
           <p class="mt-3">
-            A <span class="font-semibold text-gold-ink">gold word</span> and a{' '}
-            <a href="#sg-gold" class="font-semibold text-gold-ink underline">
-              gold link
+            An <span class="font-semibold text-accent">accent word</span> and an{' '}
+            <a href="#sg-accent" class="font-semibold text-accent underline">
+              accent link
             </a>{' '}
-            both use <code class="font-mono text-small">gold-ink</code> at
-            5.05:1.
+            both use <code class="font-mono text-small">accent</code>, 5.04:1
+            here on a panel and 7.71:1 on canvas.
           </p>
-          <p class="mt-3">The fill gold carries a black label:</p>
-          <p class="mt-3 inline-block rounded-ui bg-gold px-4 py-2 font-semibold text-black">
-            Black on gold, 8.73:1
+          <p class="mt-3">An accent fill carries an on accent label:</p>
+          <p class="mt-3 inline-block rounded-ui bg-accent px-4 py-2 font-semibold text-on-accent">
+            On accent, 7.71:1
           </p>
         </div>
 
-        <div class="rounded-ui border border-error bg-white p-6">
+        <div class="rounded-ui border border-error bg-panel p-6">
           <h3>Wrong</h3>
           <p class="mt-3">
-            The fill gold <code class="font-mono text-small">--color-gold</code>{' '}
-            on white is 2.41:1, and the accent{' '}
-            <code class="font-mono text-small">--color-yellow</code> is 1.51:1.
-            Both fail WCAG AA at every text size, so neither is ever a word, a
-            link, a control border, or a focus ring.
+            Coffee, <code class="font-mono text-small">--color-line</code> and{' '}
+            <code class="font-mono text-small">--color-accent-deep</code>, is
+            2.45:1 on canvas and 1.60:1 on a panel. It is decorative lines and
+            the service card wash only, never a word, a control border, or a
+            focus ring. And brass is never a word on a photo (2.88:1) or on the
+            Coffee wash (3.66:1): text there is only{' '}
+            <code class="font-mono text-small">--color-heading</code>.
           </p>
           <p class="mt-3 text-small text-ink">
             Two things are avoided here on purpose. The failing pairs are not
             rendered as text, which would put a failing pair on the page. And
             their utility class names are not written out either: Tailwind reads
             source files as plain text, so a class name quoted in prose becomes
-            real CSS and would also trip the gold guard search.
+            real CSS and would also trip the Coffee guard search.
           </p>
         </div>
       </div>
@@ -515,7 +544,7 @@ const headCellClass =
       <h3 class="mt-12">The heading rule</h3>
       <p class="mt-3 max-w-narrow">
         One utility, <code class="font-mono text-small">heading-rule</code>,
-        draws the gold line under every section heading. The line is a pseudo
+        draws the accent line under every section heading. The line is a pseudo
         element, so it is exactly as wide as the heading's own box and never
         reaches a screen reader, and{' '}
         <code class="font-mono text-small">display</code> is left to the call
@@ -523,9 +552,9 @@ const headCellClass =
       </p>
 
       <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div class="rounded-ui border border-line bg-white p-6">
-          <h4 class="heading-rule inline-block text-h3 font-bold text-black">
-            On a light tone
+        <div class="rounded-ui border border-line bg-canvas p-6">
+          <h4 class="heading-rule inline-block text-h3 font-bold text-heading">
+            On canvas
           </h4>
           <p class="mt-6 text-small text-ink">
             The heading sets{' '}
@@ -534,13 +563,13 @@ const headCellClass =
           </p>
         </div>
 
-        <div class="focus-contrast rounded-ui bg-black p-6">
+        <div class="rounded-ui border border-line bg-panel p-6">
           <div class="flex justify-center">
-            <h4 class="heading-rule text-center text-h3 font-bold text-white">
-              On the black band
+            <h4 class="heading-rule text-center text-h3 font-bold text-heading">
+              On a panel
             </h4>
           </div>
-          <p class="mt-6 text-small text-white">
+          <p class="mt-6 text-small text-ink">
             The heading is a flex item here, so it sets no display of its own
             and the line still fits the words.
           </p>
@@ -584,7 +613,7 @@ const headCellClass =
       </dl>
     </Section>
 
-    <Section tone="tint" labelledBy="sg-space">
+    <Section tone="raised" labelledBy="sg-space">
       <h2 id="sg-space">Spacing, widths, and breakpoints</h2>
 
       <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
@@ -696,16 +725,16 @@ const headCellClass =
       </p>
     </Section>
 
-    <Section tone="tint" labelledBy="sg-buttons">
+    <Section tone="raised" labelledBy="sg-buttons">
       <h2 id="sg-buttons">Buttons</h2>
       <p class="mt-4 max-w-narrow">
-        Two variants, at least 44px tall, identical on white and on tint. A
+        Two variants, at least 44px tall, identical on canvas and on raised. A
         button with <code class="font-mono text-small">href</code> renders an
         anchor, so middle click and open in a new tab work; without one it
         renders a real button. Labels always arrive from content.
       </p>
 
-      <h3 class="mt-8">On tint</h3>
+      <h3 class="mt-8">On raised</h3>
       <div class="mt-4 flex flex-wrap items-center gap-4">
         <Button href={home.hero.primaryCta.href}>
           {home.hero.primaryCta.label}
@@ -729,32 +758,13 @@ const headCellClass =
       </div>
     </Section>
 
-    <Section labelledBy="sg-buttons-white">
-      <h2 id="sg-buttons-white" class="text-h3">
-        The same buttons on white
-      </h2>
-      <div class="mt-4 flex flex-wrap items-center gap-4">
-        <Button href={home.hero.primaryCta.href}>
-          {home.hero.primaryCta.label}
-        </Button>
-        <Button variant="secondary" href={home.hero.primaryCta.href}>
-          {home.hero.primaryCta.label}
-        </Button>
-        <Button disabled>{contact.form.submitLabel}</Button>
-      </div>
-      <p class="mt-4 text-small text-ink">
-        Nothing changed. Both tones are light, so no component adapts to its
-        background and none takes a tone prop.
-      </p>
-    </Section>
-
-    <Section tone="tint" labelledBy="sg-cards">
+    <Section tone="raised" labelledBy="sg-cards">
       <h2 id="sg-cards">Cards</h2>
       <p class="mt-4 max-w-narrow">
         One link, one tab stop, and the whole card is clickable. Keyboard focus
-        draws a single ring around the card; hover is a raised shadow and an
-        underlined title, so a mouse user is never shown something that reads as
-        a focus ring.
+        draws a single accent ring around the card; hover underlines the title
+        and lightens the border, so a mouse user is never shown something that
+        reads as the focus ring.
       </p>
 
       <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -798,45 +808,7 @@ const headCellClass =
       </div>
     </Section>
 
-    <Section labelledBy="sg-cards-white">
-      <h2 id="sg-cards-white" class="text-h3">
-        The same cards on white
-      </h2>
-      <div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {firstService && (
-          <Card
-            title={firstService.title}
-            text={firstService.summary}
-            image={
-              firstServicePhoto && {
-                src: firstServicePhoto.src,
-                alt: firstServicePhoto.alt ?? '',
-              }
-            }
-            href={`/${firstService.slug}`}
-          />
-        )}
-        {firstProject && (
-          <Card
-            title={firstProject.title}
-            text={firstProject.summary}
-            image={{
-              src: firstProject.image.src,
-              alt: firstProject.image.alt ?? '',
-            }}
-          />
-        )}
-        {secondService && (
-          <Card title={secondService.title} text={secondService.summary} />
-        )}
-      </div>
-      <p class="mt-4 text-small text-ink">
-        The card keeps its own white surface and its own border on either tone,
-        so the only thing that changed is the band behind it.
-      </p>
-    </Section>
-
-    <Section tone="tint" labelledBy="sg-fields">
+    <Section tone="raised" labelledBy="sg-fields">
       <h2 id="sg-fields">Form fields</h2>
       <p class="mt-4 max-w-narrow">
         Labels are always visible, so no placeholder stands in for one. An error
@@ -900,51 +872,7 @@ const headCellClass =
       </div>
     </Section>
 
-    <Section labelledBy="sg-fields-white">
-      <h2 id="sg-fields-white" class="text-h3">
-        The same fields on white
-      </h2>
-      <div class="mt-4 grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div class="flex flex-col gap-6">
-          <TextField
-            id="sg-white-name"
-            name="white-name"
-            label={contact.form.labels.name}
-            required
-          />
-          <TextField
-            id="sg-white-company"
-            name="white-company"
-            label={contact.form.labels.company}
-            hint={contact.form.optionalHint}
-          />
-        </div>
-
-        <div class="flex flex-col gap-6">
-          <TextField
-            id="sg-white-email-invalid"
-            name="white-email-invalid"
-            type="email"
-            label={contact.form.labels.email}
-            error={contact.errors.email}
-            defaultValue="not-an-email"
-          />
-          <TextArea
-            id="sg-white-message"
-            name="white-message"
-            label={contact.form.labels.message}
-            rows={4}
-          />
-        </div>
-      </div>
-      <p class="mt-4 text-small text-ink">
-        The field keeps its white fill and its{' '}
-        <code class="font-mono text-small">--color-field</code> border on either
-        tone, so the control boundary clears 3:1 on both.
-      </p>
-    </Section>
-
-    <Section tone="tint" labelledBy="sg-contrast">
+    <Section tone="raised" labelledBy="sg-contrast">
       <h2 id="sg-contrast">Contrast</h2>
       <p class="mt-4 max-w-narrow">
         Every pair the site actually renders, with its measured ratio. The full
@@ -1001,7 +929,7 @@ const headCellClass =
       </ul>
 
       <p class="mt-8">Inheriting the colour of the text around them:</p>
-      <ul class="mt-4 flex list-none flex-wrap gap-4 p-0 text-gold-ink">
+      <ul class="mt-4 flex list-none flex-wrap gap-4 p-0 text-accent">
         {iconNames.map((name) => (
           <li>
             <Icon name={name} size={20} />
@@ -1017,14 +945,14 @@ const headCellClass =
         <code class="font-mono text-small">strokeWidth</code> 1.25 and a tile
         1.5. The rows below are 80px at 1.25, then 40px at 1.5.
       </p>
-      <ul class="mt-6 flex list-none flex-wrap gap-6 p-0 text-gold-ink">
+      <ul class="mt-6 flex list-none flex-wrap gap-6 p-0 text-accent">
         {lineIconNames.map((name) => (
           <li>
             <Icon name={name} size={80} strokeWidth={1.25} />
           </li>
         ))}
       </ul>
-      <ul class="mt-6 flex list-none flex-wrap gap-6 p-0 text-gold-ink">
+      <ul class="mt-6 flex list-none flex-wrap gap-6 p-0 text-accent">
         {lineIconNames.map((name) => (
           <li>
             <Icon name={name} size={40} strokeWidth={1.5} />
@@ -1033,46 +961,46 @@ const headCellClass =
       </ul>
     </Section>
 
-    <Section tone="tint" labelledBy="sg-pattern-intro">
+    <Section tone="raised" labelledBy="sg-pattern-intro">
       <h2 id="sg-pattern-intro">Pattern bands</h2>
       <p class="mt-4 max-w-narrow">
         <code class="font-mono text-small">PatternBand</code> is the surface of
         the service pages' features and process bands (spec 0013), named by the
-        content's <code class="font-mono text-small">surface</code> field.{' '}
-        <code class="font-mono text-small">dark</code> is black under{' '}
-        <code class="font-mono text-small">bg-dots-dark</code>, whose lightest
-        pixel is #242424, with{' '}
-        <code class="font-mono text-small">--color-panel</code> cards;{' '}
-        <code class="font-mono text-small">light</code> is white under the
-        diagonal stripe.
+        content's <code class="font-mono text-small">surface</code> field. Both
+        are a canvas band: <code class="font-mono text-small">stripe</code>{' '}
+        under <code class="font-mono text-small">bg-diagonal</code>, whose line
+        is #1b2327, and <code class="font-mono text-small">dots</code> under{' '}
+        <code class="font-mono text-small">bg-dots</code>, whose dot centre is
+        #2e3639. Cards are{' '}
+        <code class="font-mono text-small">--color-panel</code> on either.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
         Both bands below draw the same Revit Modeling features block through the
         real <code class="font-mono text-small">FeaturesCards</code>; only its{' '}
-        <code class="font-mono text-small">surface</code> differs. The dark band
-        carries <code class="font-mono text-small">focus-contrast</code>. This
-        page does not import the reveal script, so nothing moves.
+        <code class="font-mono text-small">surface</code> differs, and only the
+        pattern changes. The base accent ring passes on both. This page does not
+        import the reveal script, so nothing moves.
       </p>
     </Section>
 
     {cardsBlock && (
       <>
-        <PatternBand surface="dark" labelledBy="sg-pattern-dark-heading">
+        <PatternBand surface="dots" labelledBy="sg-pattern-dots-heading">
           <FeaturesCards
-            block={{ ...cardsBlock, surface: 'dark' }}
-            headingId="sg-pattern-dark-heading"
+            block={{ ...cardsBlock, surface: 'dots' }}
+            headingId="sg-pattern-dots-heading"
           />
         </PatternBand>
-        <PatternBand surface="light" labelledBy="sg-pattern-light-heading">
+        <PatternBand surface="stripe" labelledBy="sg-pattern-stripe-heading">
           <FeaturesCards
-            block={{ ...cardsBlock, surface: 'light' }}
-            headingId="sg-pattern-light-heading"
+            block={{ ...cardsBlock, surface: 'stripe' }}
+            headingId="sg-pattern-stripe-heading"
           />
         </PatternBand>
       </>
     )}
 
-    <Section tone="tint" labelledBy="sg-shell">
+    <Section tone="raised" labelledBy="sg-shell">
       <h2 id="sg-shell">The site shell</h2>
       <p class="mt-4 max-w-narrow">
         The real <code class="font-mono text-small">Header</code> and{' '}
@@ -1129,7 +1057,7 @@ const headCellClass =
       </div>
     </Section>
 
-    <Section tone="tint" labelledBy="sg-mediatext">
+    <Section tone="raised" labelledBy="sg-mediatext">
       <h2 id="sg-mediatext">Media and text</h2>
       <p class="mt-4 max-w-narrow">
         A heading, paragraphs, an optional list in the slot, and an optional
@@ -1205,23 +1133,35 @@ const headCellClass =
       </div>
     </Section>
 
-    <Section tone="tint" labelledBy="sg-emphasis">
+    <Section tone="raised" labelledBy="sg-emphasis">
       <h2 id="sg-emphasis">Marked text</h2>
       <p class="mt-4 max-w-narrow">
         <code class="font-mono text-small">Emphasis</code> renders one line of
         content copy with its two marks:{' '}
         <code class="font-mono text-small">**bold**</code> in the surrounding
-        colour and <code class="font-mono text-small">==gold==</code> in the
-        gold the surface allows. The real About intro, on a light tone and then
-        on black, where the same mark turns{' '}
-        <code class="font-mono text-small">--color-gold-on-dark</code>.
+        colour and <code class="font-mono text-small">==accent==</code> in bold
+        accent. The real About intro, on a dark tone and then on the scrim over
+        a photo, where the caller passes{' '}
+        <code class="font-mono text-small">onPhoto</code> and the same mark
+        turns <code class="font-mono text-small">--color-heading</code>, because
+        brass over the scrim is 2.88:1.
       </p>
       <p class="mt-8 max-w-narrow">
-        <Emphasis text={about.intro} surface="light" />
+        <Emphasis text={about.intro} />
       </p>
-      <p class="mt-6 max-w-narrow rounded-ui bg-black p-6 text-white">
-        <Emphasis text={about.intro} surface="dark" />
-      </p>
+      <div class="relative isolate mt-6 max-w-narrow overflow-hidden rounded-ui bg-canvas">
+        <Image
+          src={home.hero.images[0].src}
+          alt=""
+          inferSize
+          widths={[640, 1280]}
+          sizes="(min-width: 45rem) 45rem, 100vw"
+          class="absolute inset-0 -z-10 size-full object-cover object-center"
+        />
+        <p class="bg-scrim p-6 text-heading">
+          <Emphasis text={about.intro} onPhoto />
+        </p>
+      </div>
     </Section>
 
     <Section labelledBy="sg-accordion">
@@ -1230,8 +1170,8 @@ const headCellClass =
         The browser's own <code class="font-mono text-small">details</code>, one
         open at a time through a shared{' '}
         <code class="font-mono text-small">name</code>, the first open on load.
-        Closed items are gold bars, the open one a white card. Tab to a summary:
-        the ring is the two colour one, because the group carries{' '}
+        Closed items are accent bars, the open one a panel card. Tab to a
+        summary: the ring is the two colour one, because the group carries{' '}
         <code class="font-mono text-small">focus-contrast</code>. Enter or Space
         toggles. In Chrome and Edge the panel slides; elsewhere, and with reduce
         motion on, it opens at once.
@@ -1241,22 +1181,21 @@ const headCellClass =
       </div>
     </Section>
 
-    <Section tone="tint" labelledBy="sg-ctaband">
+    <Section tone="raised" labelledBy="sg-ctaband">
       <h2 id="sg-ctaband">Closing call to action</h2>
       <p class="mt-4 max-w-narrow">
-        The one gold band on the site, and deliberately not a third{' '}
+        The one accent band on the site, and deliberately not a third{' '}
         <code class="font-mono text-small">Section</code> tone: two tones and
-        both light is what lets every other component name its colours directly
+        both dark is what lets every other component name its colours directly
         and never read a tone variable.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
-        Tab to its link. The ring is the <strong>two colour ring</strong>, black
-        inside and white outside, the rule for every surface that is not a light
-        tone, because <code class="font-mono text-small">--color-gold-ink</code>{' '}
-        on full gold measures 2.10:1. The band carries{' '}
-        <code class="font-mono text-small">focus-contrast</code>, so the link
-        sets no ring of its own. Same 2px width, same 2px offset, still keyboard
-        only.
+        Tab to its link. The ring is the <strong>two colour ring</strong>,
+        canvas inside and heading outside, the rule for photos and accent fills,
+        because an accent ring would vanish into the brass behind it. The band
+        carries <code class="font-mono text-small">focus-contrast</code>, so the
+        link sets no ring of its own. Same 2px width, same 2px offset, still
+        keyboard only.
       </p>
 
       {firstServiceCta && (
@@ -1277,12 +1216,12 @@ const headCellClass =
         The Project page's photo wall, from the real project entries: fixed 3:2
         tiles, two across from 768px, 8px seams (the grid gap's one written
         exception), and a scrim over the whole photo, so the centred title and
-        one line summary read in white at 5.74:1 at worst over any photo.
+        one line summary read in heading at 5.91:1 at worst over any photo.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
         Hover a tile, or tab to it: the scrim deepens and the "Read more" pill
         and the facts unfold under the summary, lifting the title. One tab stop
-        per tile, and the gold ink ring wraps the whole tile; the pill is not
+        per tile, and the accent ring wraps the whole tile; the pill is not
         announced. Scroll: the photo drifts down and the words drift up (Chrome,
         Edge, Safari; still in Firefox and under reduced motion). The filter
         lives in the page's hero, so it is not shown here. On the page the wall
@@ -1305,14 +1244,14 @@ const headCellClass =
       <p class="mt-4 max-w-narrow">
         A project page's story band and its way on, from the real entries: the
         facts panel beside the write up, then the next project link. The panel
-        is tint with ink muted labels and ink strong values, and lists only the
+        is panel with ink muted labels and ink strong values, and lists only the
         facts a project has.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
         Below 1024px the panel comes first; from 1024px it sits in the right
         column with the DOM order unchanged. The first shows the fullest panel,
         the second the shortest, with no empty rows. Tab to the next project
-        link: one stop, named by its label and title, with the gold ink ring.
+        link: one stop, named by its label and title, with the accent ring.
       </p>
 
       {fullestFacts && (
@@ -1352,17 +1291,17 @@ const headCellClass =
       <h2 id="sg-photo-focus">Focus on a photo</h2>
       <p class="mt-4 max-w-narrow">
         The home hero's surface: the real hero photo, the{' '}
-        <code class="font-mono text-small">--color-scrim</code> panel, and white
-        text on it. White on the scrim is 5.74:1 even over a pure white pixel,
-        so no photo swap needs a contrast check.
+        <code class="font-mono text-small">--color-scrim</code> panel, and
+        heading text on it. Heading on the scrim is 5.91:1 even over a pure
+        white pixel, so no photo swap needs a contrast check.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
-        Tab to the button. It shows the same two colour ring as the gold band,
+        Tab to the button. It shows the same two colour ring as the accent band,
         from <code class="font-mono text-small">focus-contrast</code> on the
         swatch, and reads on the bright sky and the dark city alike.
       </p>
 
-      <div class="focus-contrast relative isolate mt-8 flex flex-col items-center gap-6 overflow-hidden rounded-ui bg-black px-4 py-12">
+      <div class="focus-contrast relative isolate mt-8 flex flex-col items-center gap-6 overflow-hidden rounded-ui bg-canvas px-4 py-12">
         <Image
           src={home.hero.images[0].src}
           alt=""
@@ -1371,7 +1310,7 @@ const headCellClass =
           sizes="(min-width: 75rem) 75rem, 100vw"
           class="absolute inset-0 -z-10 size-full object-cover object-center"
         />
-        <p class="rounded-ui bg-scrim px-6 py-4 text-lead text-white">
+        <p class="rounded-ui bg-scrim px-6 py-4 text-lead text-heading">
           {home.hero.subheading}
         </p>
         <Button href={home.hero.primaryCta.href}>
@@ -1380,22 +1319,21 @@ const headCellClass =
       </div>
     </Section>
 
-    <Section tone="tint" labelledBy="sg-form-band-intro">
+    <Section tone="raised" labelledBy="sg-form-band-intro">
       <h2 id="sg-form-band-intro">The contact form band</h2>
       <p class="mt-4 max-w-narrow">
-        The one dark band that holds fields (spec 0011): a greyscale photo under{' '}
+        The photo band that holds fields (spec 0011): a greyscale photo under{' '}
         <code class="font-mono text-small">--color-scrim-strong</code> and the{' '}
-        <code class="font-mono text-small">bg-diagonal-dark</code> stripe. Its
-        lightest pixel is #3f3f3f, where white reads at 10.5:1 and{' '}
-        <code class="font-mono text-small">--color-error-on-dark</code> at
-        5.19:1.
+        <code class="font-mono text-small">bg-diagonal</code> stripe. Its
+        lightest pixel is #31393c, where heading reads at 10.11:1, ink muted at
+        5.32:1, and <code class="font-mono text-small">--color-error</code> at
+        5.15:1.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
-        The fields pass <code class="font-mono text-small">surface="dark"</code>
-        : white label and hint, light error, the same white box. The hint sits
-        on the label's line, so a row lines up with or without one. The cards
-        are white surfaces and follow the light rules. Tab through: the band
-        carries <code class="font-mono text-small">focus-contrast</code>.
+        Fields have one look everywhere, so nothing here is passed to adapt
+        them. The hint sits on the label's line, so a row lines up with or
+        without one. The cards are panels. Tab through: the band carries{' '}
+        <code class="font-mono text-small">focus-contrast</code>.
       </p>
     </Section>
 
@@ -1412,7 +1350,6 @@ const headCellClass =
           id="sg-dark-name"
           name="dark-name"
           label={contact.form.labels.name}
-          surface="dark"
           aria-required="true"
         />
         <TextField
@@ -1421,7 +1358,6 @@ const headCellClass =
           type="tel"
           label={contact.form.labels.phone}
           hint={contact.form.optionalHint}
-          surface="dark"
         />
         <TextField
           id="sg-dark-email-invalid"
@@ -1430,7 +1366,6 @@ const headCellClass =
           label={contact.form.labels.email}
           error={contact.errors.email}
           defaultValue="not-an-email"
-          surface="dark"
         />
         <Select
           id="sg-dark-lod"
@@ -1439,7 +1374,6 @@ const headCellClass =
           hint={contact.form.optionalHint}
           options={contact.form.lodOptions}
           prompt={contact.form.selectPrompt}
-          surface="dark"
         />
         <Select
           id="sg-dark-project-invalid"
@@ -1449,7 +1383,6 @@ const headCellClass =
           options={contact.form.projectTypes}
           prompt={contact.form.selectPrompt}
           error={contact.errors.required}
-          surface="dark"
         />
         <div class="md:col-span-2">
           <TextArea
@@ -1458,7 +1391,6 @@ const headCellClass =
             label={contact.form.labels.message}
             error={contact.errors.tooLong}
             rows={3}
-            surface="dark"
           />
         </div>
       </div>

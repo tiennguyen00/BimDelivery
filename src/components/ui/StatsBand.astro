@@ -3,9 +3,8 @@
  * The numbers band: one figure per stat, with an optional heading above
  * (spec 0005, restyled by spec 0010 for the About page).
  *
- * Each number is bold `gold-ink` at `text-h1` size (5.05:1 on white, the
- * only gold allowed as a word on a light tone) and each label semibold
- * `ink-strong`. The list is centred and never wider than the `content`
+ * Each number is bold `accent` at `text-h1` size (7.71:1 on canvas) and
+ * each label semibold `ink-strong`. The list is centred and never wider than the `content`
  * width, two columns on a phone and four from `md`.
  *
  * With no `heading` there is no `h2`, and the list is named by the section
@@ -74,7 +73,7 @@ const entranceStyle = (index: number): string | undefined =>
         style={entranceStyle(index)}
       >
         <dt class="font-semibold text-ink-strong">{item.label}</dt>
-        <dd class="text-h1 font-bold text-balance text-gold-ink">
+        <dd class="text-h1 font-bold text-balance text-accent">
           <span data-count-to={item.value}>{format.format(item.value)}</span>
           {item.suffix && <span>{item.suffix}</span>}
         </dd>

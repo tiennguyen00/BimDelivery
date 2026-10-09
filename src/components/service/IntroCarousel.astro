@@ -3,16 +3,15 @@
  * A service page's intro in the `carousel` layout (spec 0013): the page's
  * `h1`, its paragraphs, and a photo carousel beside them.
  *
- * It renders only the inside of the band; the route wraps it in a white
+ * It renders only the inside of the band; the route wraps it in a `canvas`
  * `Section` labelled by the `h1`.
  *
  * From `lg` the copy takes about seven twelfths on the start side and the
  * carousel the rest, centred against the copy; below `lg` one column: the
  * heading, the paragraphs, then the carousel. The `h1` is in capitals by CSS
  * only (`uppercase`), so a screen reader reads words, not letters, and it
- * carries no gold rule. Each paragraph sits beside its own 4px gold bar, a
- * `::before` filled with `--color-gold`: a decorative fill, never a gold
- * border. Its `**bold**` phrases are semibold `ink-strong`.
+ * carries no accent rule. Each paragraph sits beside its own 4px accent bar,
+ * a `::before` filled with `--color-accent`. Its `**bold**` phrases are semibold `ink-strong`.
  *
  * The carousel is the home hero's, through the same script
  * (`src/scripts/carousel.ts`) and the same `CarouselDots`: every photo
@@ -65,13 +64,9 @@ const hasCarousel = slides.length > 1;
       {block.paragraphs.map((paragraph, index) => (
         <p
           style={`--entrance-step: ${index + 1}`}
-          class="entrance relative ps-6 before:absolute before:inset-y-0 before:inset-s-0 before:w-1 before:bg-gold"
+          class="entrance relative ps-6 before:absolute before:inset-y-0 before:inset-s-0 before:w-1 before:bg-accent"
         >
-          <Emphasis
-            text={paragraph}
-            surface="light"
-            strongClass="text-ink-strong"
-          />
+          <Emphasis text={paragraph} strongClass="text-ink-strong" />
         </p>
       ))}
     </div>
@@ -82,7 +77,7 @@ const hasCarousel = slides.length > 1;
     style={`--entrance-step: ${block.paragraphs.length + 1}`}
     data-carousel={hasCarousel ? '' : undefined}
   >
-    <div class="relative aspect-4/3 overflow-hidden rounded-ui bg-tint">
+    <div class="relative aspect-4/3 overflow-hidden rounded-ui bg-panel">
       {slides.map(({ src, alt, source }, index) => (
         <Image
           src={src}

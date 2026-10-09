@@ -44,71 +44,61 @@
 
 @theme {
   /* ---- Colour -------------------------------------------------------- */
-  /* Clear Tailwind's palette, then allow only the agreed one. */
+  /* Clear Tailwind's palette, then allow only the agreed one: the client's
+     five colour dark palette (revised 2026-10-09), named by role so a class
+     always says what it paints and a palette change is values only. */
   --color-*: initial;
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  /* Surfaces. Both section tones are light, so no component adapts to its
-     background and nothing in this system reads a tone variable. */
-  --color-white: #ffffff;
-  --color-tint: #fff9e6;
+  /* Surfaces. Both section tones are dark, so every text, border, and focus
+     colour is the same on each: no component adapts to its background and
+     nothing in this system reads a tone variable. `panel` is every card,
+     tile, and menu, a step up so it reads as a surface (1.53:1 on canvas). */
+  --color-canvas: #0c1519;
+  --color-raised: #162127;
+  --color-panel: #3a3534;
 
-  /* Text. Named by role, not by page, so a real brand later is a change of
-     values here rather than a change of class names everywhere. */
-  --color-black: #000000;
-  --color-ink-strong: #333333;
-  --color-ink: #666666;
-  --color-ink-muted: #707070;
+  /* Text, a warm cream family taken from the accent's hue. `heading` and
+     `ink-strong` share a value today; they are separate roles so a display
+     face later can move the headings alone. */
+  --color-heading: #f5ece4;
+  --color-ink-strong: #f5ece4;
+  --color-ink: #d9cbc0;
+  --color-ink-muted: #b8aca3;
 
-  /* Gold has two jobs and they must not be mixed up. `gold` is a FILL: it
-     carries black labels and decorative rules, and measures 2.41:1 on white,
-     so it can never be a word or a control border. `gold-ink` is the same hue
-     dark enough to read (5.05:1), and is the only gold allowed as text, a
-     link, an outline, or the focus ring. See the gold role table in
-     docs/design.md; this is the one rule the build cannot catch for you. */
-  --color-gold: #e09900;
-  --color-gold-deep: #c88600;
-  --color-gold-ink: #946600;
-  /* The same value as `gold`, under a name that only makes sense on black:
-     the one place a bright gold word is legible (8.73:1). The home page's intro
-     band uses it for its highlighted words. Never on a light tone,
-     where it drops to 2.41:1; there, a gold word is `gold-ink`. */
-  --color-gold-on-dark: #e09900;
+  /* Antique Brass is legible on every dark surface (5.04:1 at worst, on
+     `panel`), so one token is the fill, the word, the link, and the focus
+     ring. Never a word on a photo or on the service card's wash. `on-accent`
+     is the label on an accent fill and lives nowhere else. */
+  --color-accent: #cf9d7b;
+  --color-accent-hover: #e3bc9f;
+  --color-on-accent: #0c1519;
 
-  /* Reserved for the real logo and feature 5's icons. Fills only. Nothing in
-     this feature uses it; if feature 5 ships without it, drop the token. */
-  --color-yellow: #ffcc00;
+  /* Coffee, the one colour that may never be read: 2.45:1 on canvas. As
+     `accent-deep` it is the home service card's hover wash; as `line` it is
+     decorative borders and dividers. Never a word, a control border, or a
+     focus ring. See the accent role rule in docs/design.md, the one rule the
+     build cannot catch for you. */
+  --color-accent-deep: #724b39;
+  --color-line: #724b39;
 
-  /* Lines. `line` is decorative (card borders, dividers) and is deliberately
-     low contrast. `field` is a control boundary, so it has to reach 3:1. */
-  --color-line: #e5e5e5;
-  --color-field: #767676;
+  /* A control boundary has to reach 3:1: 5.04:1 against a field's fill. */
+  --color-field: #8c8480;
 
-  --color-error: #b42318;
-  /* The error colour for the one dark surface that holds fields, the contact
-     page's form band (spec 0011). `error` is 1.6:1 there; this light coral
-     reaches 5.19:1 at the band's worst point (#3f3f3f, see `scrim-strong`).
-     Error text only, never on a light tone, where it drops to 2.03:1. */
-  --color-error-on-dark: #ff9b8f;
+  /* Error text and borders, on every surface (5.27:1 at worst, on panel). */
+  --color-error: #ff8a7a;
 
-  /* The see through dark panel white text sits on over a photo (spec 0005,
-     the home hero). Black at 60 percent: the worst case is white text over a
-     pure white pixel seen through it, a composite of #666666, which still
-     measures 5.74:1. So no photo swap can ever lower the contrast, and the
-     photo never needs checking. Lighter than 0.6 breaks that guarantee. */
-  --color-scrim: rgb(0 0 0 / 0.6);
-  /* The darker layer over the contact page's whole form band (spec 0011),
-     where small text (labels, hints, errors) sits straight on it rather than
-     on a panel. Black at 80 percent turns a pure white photo pixel into
-     #333333, and the `bg-diagonal-dark` stripe lifts its lines to #3f3f3f:
-     white still reads at 10.5:1 there and `error-on-dark` at 5.19:1. It is
-     0.8, not 0.75, because the stripe lightens it. */
-  --color-scrim-strong: rgb(0 0 0 / 0.8);
-  /* The fill of a card or tile on a dark service band (spec 0013), a step up
-     from the black under it so the piece reads as a surface. White on it
-     measures 18.1:1 and `gold-on-dark` 7.5:1. Never on a light tone. */
-  --color-panel: #161616;
+  /* The see through layer under words on a photo. Chinese Black at 70
+     percent: `heading` over a pure white pixel seen through it still reads
+     5.91:1, so no photo swap can lower the contrast. Never lighter. */
+  --color-scrim: rgb(12 21 25 / 0.7);
+  /* The contact form band's layer, where small text sits straight on it,
+     and a project tile's hovered caption. At 90 percent, with the
+     `bg-diagonal` stripe on top, its worst pixel is #31393c: `heading`
+     10.11:1, `ink` 7.44:1, `ink-muted` 5.32:1, `error` 5.15:1, `accent`
+     4.92:1. */
+  --color-scrim-strong: rgb(12 21 25 / 0.9);
 
   /* ---- Breakpoints --------------------------------------------------- */
   /* Three screens only: mobile is the unprefixed default, then md and lg. */
@@ -172,75 +162,68 @@
 }
 
 /**
- * The second of the site's two focus rules (spec 0005). The first, the gold-ink
- * ring in the base layer below, is for the two light tones. This one is for
- * every surface that is not a light tone, today the home hero's photo, the
- * home intro band's black, and the gold band, where gold-ink would vanish (2.10:1 on gold, and anything at all
- * on a photo).
+ * The second of the site's two focus rules (spec 0003, revised 2026-10-09).
+ * The first, the `accent` ring in the base layer below, passes on every dark
+ * surface: `canvas`, `raised`, `panel`, and either pattern. This one is only
+ * for the surfaces where brass cannot be the ring: a photo (the home hero,
+ * the Project hero, the contact form band), where nothing single coloured is
+ * safe, and an accent fill (`CtaBand`, a closed `Accordion` item), where a
+ * brass ring would vanish into the brass behind it.
  *
  * The rule belongs to the surface, not the control: put `focus-contrast` on the
  * band's `<section>` and everything focusable inside inherits it. The ring is
- * two colours, so it reads on any background: a 2px black band directly around
- * the control (the shadow fills the base rule's 2px offset gap) and the 2px
- * white outline outside it. Width and offset still come from the base rule.
+ * two colours, so it reads on any background: a 2px `canvas` band directly
+ * around the control (the shadow fills the base rule's 2px offset gap) and the
+ * 2px `heading` outline outside it. Width and offset still come from the base
+ * rule.
  *
  * It wins over the base rule because the utilities layer comes after the base
- * layer, not because of specificity. A new dark or photo surface adds this
- * utility; it never invents a third ring.
+ * layer, not because of specificity. Never on a plain dark band, where the base
+ * ring already passes; a new photo or accent surface adds this utility, and it
+ * never invents a third ring.
  */
 @utility focus-contrast {
   & :focus-visible {
-    outline-color: var(--color-white);
-    box-shadow: 0 0 0 2px var(--color-black);
+    outline-color: var(--color-heading);
+    box-shadow: 0 0 0 2px var(--color-canvas);
   }
 }
 
 /**
- * A faint diagonal stripe laid over a light tone (spec 0005, the home presence
- * band). It sets only `background-image`, so it stacks on the tone's own
- * `background-color` and changes nothing else: every text colour, contrast
- * pair, and focus ring on the tone still holds, because the stripe is paler
- * than the tone's darkest pixel ever needs to be (`line`, 1px in every 10).
+ * A faint diagonal stripe (spec 0005, the home presence band; it absorbed the
+ * contact form band's dark twin in the 2026-10-09 revision): `heading` at 6
+ * percent, 1px in every 10, at 135 degrees. It sets only `background-image`,
+ * so it stacks on the band's own `background-color` and changes nothing else.
  *
- * The 45 degree angle and 10px period give roughly the density of the
- * reference; a wider gap reads as ruled paper, a tighter one as a grey wash.
+ * Its line is the band's lightest pixel, and every text pair is measured
+ * there: on `canvas` it is #1b2327, where `accent`, the worst, still reads
+ * 6.66:1; on `raised` it is #242e34 (5.78:1); over the contact form band's
+ * `scrim-strong` it is #31393c (4.92:1).
+ *
+ * The 10px period gives roughly the density of the reference; a wider gap
+ * reads as ruled paper, a tighter one as a grey wash.
  */
 @utility bg-diagonal {
   background-image: repeating-linear-gradient(
     135deg,
     transparent 0 9px,
-    var(--color-line) 9px 10px
+    color-mix(in srgb, var(--color-heading) 6%, transparent) 9px 10px
   );
 }
 
 /**
- * The same stripe for a dark surface (spec 0011, the contact page's form
- * band): white at 6 percent, 1px in every 10, at the same angle, laid over
- * `scrim-strong`. Its lines are the band's lightest pixels (#3f3f3f over a
- * pure white photo pixel), and every text pair there is measured against
- * them. Never on a light tone, where it would not show.
+ * A dot grid (spec 0013, the `dots` `PatternBand`): a dot of `heading` at 14
+ * percent, 2px across, every 12px. It sets only `background-image` and
+ * `background-size`, so it stacks on the band's own colour. A dot's centre is
+ * the band's lightest pixel, #2e3639 on `canvas`, and every text pair on it
+ * is measured there: `accent` 5.15:1, `ink-muted` 5.56:1. The half pixel after
+ * the dot's edge softens it without making it any lighter. Only on `canvas`:
+ * on `raised` a dot would drop `accent` to 4.42:1.
  */
-@utility bg-diagonal-dark {
-  background-image: repeating-linear-gradient(
-    135deg,
-    transparent 0 9px,
-    color-mix(in srgb, var(--color-white) 6%, transparent) 9px 10px
-  );
-}
-
-/**
- * A dot grid for a black band (spec 0013, the dark `PatternBand`): a dot of
- * white at 14 percent, 2px across, every 12px, laid on `bg-black`. It sets
- * only `background-image` and `background-size`, so it stacks on the band's
- * own colour. A dot's centre is the band's lightest pixel, `#242424`, and
- * every text pair on it is measured there: white 15.5:1, `gold-on-dark`
- * 6.4:1. The half pixel after the dot's edge softens it without making it
- * any lighter. Never on a light tone, where it would not show.
- */
-@utility bg-dots-dark {
+@utility bg-dots {
   background-image: radial-gradient(
     circle,
-    color-mix(in srgb, var(--color-white) 14%, transparent) 1px,
+    color-mix(in srgb, var(--color-heading) 14%, transparent) 1px,
     transparent 1.5px
   );
   background-size: 12px 12px;
@@ -251,18 +234,18 @@
  * `chevron-down` path, drawn as a background so the native `<select>` keeps
  * its keyboard, screen reader, and phone picker behaviour. A data URI cannot
  * read a custom property, so the stroke is written as `--color-ink`'s value,
- * `#666666`; a change to that token edits this line too. It sits at the end
+ * `#d9cbc0`; a change to that token edits this line too. It sits at the end
  * of the box, clear of the field's `pe-10` padding.
  */
 @utility select-chevron {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d9cbc0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E");
   background-position: right 0.75rem center;
   background-repeat: no-repeat;
   background-size: 1.25rem;
 }
 
 /**
- * The gold rule under a section heading (spec 0005). Five headings carry it:
+ * The accent rule under a section heading (spec 0005). Five headings carry it:
  * the home intro band, services, presence, its why choose `h3`, and the
  * showcase. It is drawn by a pseudo element, so it is exactly as wide as the
  * heading's own box and never reaches a screen reader.
@@ -287,7 +270,7 @@
   @apply relative pb-3 text-balance;
 
   &::after {
-    @apply absolute inset-x-0 bottom-0 h-1 bg-gold;
+    @apply absolute inset-x-0 bottom-0 h-1 bg-accent;
 
     content: '';
     scale: var(--rule-scale) 1;
@@ -468,29 +451,38 @@
      reduced motion turns both off. */
   html {
     scroll-behavior: smooth;
+    /* The site is dark only, so scrollbars, native pickers, and autofill
+       draw dark too. */
+    color-scheme: dark;
   }
 
   body {
-    @apply bg-white font-sans text-body text-ink antialiased;
+    @apply bg-canvas font-sans text-body text-ink antialiased;
   }
 
   h1 {
-    @apply text-h1 font-bold text-black;
+    @apply text-h1 font-bold text-heading;
   }
 
   h2 {
-    @apply text-h2 font-bold text-black;
+    @apply text-h2 font-bold text-heading;
   }
 
   h3 {
     @apply text-h3 font-semibold text-ink-strong;
   }
 
-  /* Keyboard focus only, never a mouse click. Deep gold so the ring itself
-     reaches 3:1 on both tones. */
+  /* Keyboard focus only, never a mouse click. Brass reaches 3:1 on every
+     dark surface (5.04:1 at worst, on panel). */
   :focus-visible {
-    outline: 2px solid var(--color-gold-ink);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
+  }
+
+  /* Selected text is a brass fill with dark text (7.71:1). */
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
   }
 
   /* When the visitor's system asks for less motion, state changes are

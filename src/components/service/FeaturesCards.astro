@@ -5,10 +5,9 @@
  * per stage.
  *
  * It renders only the inside of the band; the route wraps it in a
- * `PatternBand` on the block's `surface`. Every colour that depends on that
- * surface comes from the class maps in `styles.ts`, so this file names none
- * of its own: white words on `dark`, black headings and `ink` text on
- * `light`, and a `==` phrase in whichever gold `Emphasis` picks.
+ * `PatternBand` on the block's `surface`. Its colours come from the band
+ * strings in `styles.ts`, the same on either pattern: `heading` headings,
+ * `ink` text, `accent` icons, and a `==` phrase in `Emphasis`'s accent.
  *
  * The cards are one column below `lg` and one row of equal columns from it,
  * however many there are (`lg:grid-flow-col lg:auto-cols-fr`): literal
@@ -37,7 +36,6 @@ import type { BandProps } from '../../lib/service-page';
 type Props = BandProps<'features/cards'>;
 
 const { block, headingId, entranceFrom } = Astro.props;
-const { surface } = block;
 ---
 
 <div
@@ -48,27 +46,27 @@ const { surface } = block;
   <div class="text-center">
     <h2
       id={headingId}
-      class={cx('heading-rule inline-block', bandHeadingClass[surface])}
+      class={cx('heading-rule inline-block', bandHeadingClass)}
       data-heading-rule
     >
-      <Emphasis text={block.heading} surface={surface} />
+      <Emphasis text={block.heading} />
     </h2>
   </div>
 
-  <div class={cx('mt-8 flex flex-col gap-4', bandBodyClass[surface])}>
+  <div class={cx('mt-8 flex flex-col gap-4', bandBodyClass)}>
     {block.paragraphs.map((paragraph) => (
       <p>
-        <Emphasis text={paragraph} surface={surface} />
+        <Emphasis text={paragraph} />
       </p>
     ))}
   </div>
 
   <div class="mt-16 text-center">
     <h3
-      class={cx('heading-rule inline-block', bandHeadingClass[surface])}
+      class={cx('heading-rule inline-block', bandHeadingClass)}
       data-heading-rule
     >
-      <Emphasis text={block.subheading} surface={surface} />
+      <Emphasis text={block.subheading} />
     </h3>
   </div>
 </div>
@@ -81,7 +79,7 @@ const { surface } = block;
     <div
       class={cx(
         'flex flex-col items-center px-6 py-10 text-center',
-        bandCardClass[surface],
+        bandCardClass,
         entranceClass(entranceFrom),
       )}
       style={entranceStyle(entranceFrom, index + 1)}
@@ -90,15 +88,15 @@ const { surface } = block;
         name={card.icon}
         size={80}
         strokeWidth={1.25}
-        class={bandIconClass[surface]}
+        class={bandIconClass}
       />
-      <h4 class={cx('mt-6 text-h3 font-bold', bandHeadingClass[surface])}>
+      <h4 class={cx('mt-6 text-h3 font-bold', bandHeadingClass)}>
         {card.title}
       </h4>
       <ul
         class={cx(
           'mx-auto mt-4 flex w-fit max-w-full list-disc flex-col gap-2 ps-5 text-left',
-          bandBodyClass[surface],
+          bandBodyClass,
         )}
       >
         {card.points.map((point) => (

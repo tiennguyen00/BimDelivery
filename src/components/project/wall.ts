@@ -20,12 +20,12 @@ export const wallGridClass = cx(
 
 /**
  * A fixed 5:4 box, so its space is reserved before the photo arrives and
- * nothing shifts as photos load. The black fill shows only while one loads.
+ * nothing shifts as photos load. The `panel` fill shows only while one loads.
  * `isolate` keeps the photo (on `-z-10`) inside the tile's own stacking
  * context, clipped to the rounded corners.
  */
 export const wallTileClass = cx(
-  'relative isolate aspect-5/4 overflow-hidden rounded-ui bg-black',
+  'relative isolate aspect-5/4 overflow-hidden rounded-ui bg-panel',
 );
 
 /** The photo, covering its tile behind anything drawn over it. */

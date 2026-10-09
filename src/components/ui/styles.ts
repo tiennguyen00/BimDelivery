@@ -29,16 +29,17 @@ const buttonBase = cx(
 );
 
 /**
- * Both variants are identical on white and on tint, because both section tones
- * are light. Primary is the brand gold FILL carrying a black label (8.73:1);
- * secondary is the only gold that may be a border or a word, `gold-ink`
- * (5.05:1 on white), and fills with the brand gold on hover so the brand
- * colour lands on the interaction while the label stays at 8.73:1.
+ * Both variants are identical on every dark surface, because both section
+ * tones are dark. Primary is an `accent` fill carrying an `on-accent` label
+ * (7.71:1), brightening to `accent-hover` on hover with the same label
+ * (10.52:1). Secondary is an `accent` border and label (7.71:1 on canvas,
+ * 5.04:1 on panel), filling with `accent` on hover so the label turns
+ * `on-accent`.
  */
 const buttonVariants: Readonly<Record<ButtonVariant, string>> = {
-  primary: cx('bg-gold text-black hover:bg-gold-deep'),
+  primary: cx('bg-accent text-on-accent hover:bg-accent-hover'),
   secondary: cx(
-    'border-2 border-gold-ink text-gold-ink hover:bg-gold hover:text-black',
+    'border-2 border-accent text-accent hover:bg-accent hover:text-on-accent',
   ),
 };
 
@@ -46,35 +47,35 @@ export const buttonClass = (variant: ButtonVariant = 'primary'): string =>
   cx(buttonBase, buttonVariants[variant]);
 
 /**
- * The link inside `CtaBand`, the one gold band on the site (spec 0005).
+ * The link inside `CtaBand`, the one accent band on the site (spec 0005).
  *
  * It composes `buttonBase`, so the 44px tap target, the padding, and the
  * wrapping label are shared with every other button rather than copied. What
- * it does not do is go through `buttonVariants`: on full gold both variants
- * disappear, the primary's gold fill into the band behind it and the
- * secondary's gold-ink border down to 2.10:1. Adding a third variant would
- * make `Button` carry a treatment only one band can ever use.
+ * it does not do is go through `buttonVariants`: on a full accent fill both
+ * variants disappear, the primary's fill into the band behind it and the
+ * secondary's border with it. Adding a third variant would make `Button`
+ * carry a treatment only one band can ever use.
  *
- * Black fill, white label (21.00:1), deepening to ink-strong on hover
- * (12.63:1). It sets no focus ring of its own: the band carries
- * `focus-contrast` (global.css), the ring for every surface that is not a
- * light tone, and this link inherits it like anything else placed there.
+ * A `canvas` fill with a `heading` label (15.83:1), lifting to `panel` on
+ * hover (10.35:1). It sets no focus ring of its own: the band carries
+ * `focus-contrast` (global.css), the ring for photos and accent fills, and
+ * this link inherits it like anything else placed there.
  *
- * Do not reach for `<Button class="bg-black">` instead. Tailwind's generated
- * order decides which background utility wins, not the order the classes
- * appear in the attribute, so an override is a silent coin flip.
+ * Do not reach for a background class on `<Button>` instead. Tailwind's
+ * generated order decides which background utility wins, not the order the
+ * classes appear in the attribute, so an override is a silent coin flip.
  */
 export const ctaLinkClass = cx(
   buttonBase,
-  'bg-black text-white hover:bg-ink-strong',
+  'bg-canvas text-heading hover:bg-panel',
 );
 
 /**
  * The band frame: side gutters, vertical rhythm, and the two content widths
- * (spec 0005). `Section` uses them, and so do the two bands that are not a
- * `Section` tone, `CtaBand` and the home hero, so the three cannot drift
- * apart. A band that is not a light tone borrows this frame; it never adds a
- * tone to `Section`.
+ * (spec 0005). `Section` uses them, and so do the bands that are not a
+ * `Section` tone, `CtaBand` and the home hero, so they cannot drift apart. A
+ * band that is not a `Section` tone borrows this frame; it never adds a tone
+ * to `Section`.
  *
  * From `lg` up the default width is 60% of the screen, so on a desktop the
  * content sits in a centred column with generous margins. It never drops
@@ -96,14 +97,15 @@ export const bandWidthClass: Readonly<Record<'default' | 'narrow', string>> = {
 };
 
 /**
- * The invalid state adds an inset ring rather than a thicker border, so the
+ * A `canvas` fill with the `field` border (5.04:1 against the fill). The
+ * invalid state adds an inset ring rather than a thicker border, so the
  * outline reads as 2px while the box stays exactly the same size and nothing
  * on the page shifts. Colour never carries the error alone: the field also
  * gets `aria-invalid` and a visible message.
  */
 export const fieldClass = (invalid = false): string =>
   cx(
-    'min-h-11 w-full rounded-ui border bg-white px-3 py-2 text-body text-ink',
+    'min-h-11 w-full rounded-ui border bg-canvas px-3 py-2 text-body text-ink',
     invalid ? 'border-error ring-1 ring-error ring-inset' : 'border-field',
   );
 
@@ -121,31 +123,14 @@ export const selectClass = (invalid = false): string =>
   );
 
 /**
- * What a piece sits on: a light tone, or a dark band. One type for the form
- * fields (spec 0011) and the service bands (spec 0013), whose content files
- * name it in their `surface` field.
- *
- * For a field, the control box is identical on both: white, with the `field`
- * border and the `error` ring. Only the words around it change. On `dark`,
- * the contact page's form band, the label and hint are white (10.5:1 at the
- * band's worst point) and the error is `error-on-dark` (5.19:1), because
- * `error` and `ink` would vanish there.
+ * Field label, hint, and error, shared so every field component matches. One
+ * style everywhere: every surface a field sits on is dark, so the words around
+ * the box never change (`ink-muted` 5.32:1 and `error` 5.15:1 at the contact
+ * form band's worst pixel).
  */
-export type Surface = 'light' | 'dark';
-
-/** Field label, hint, and error, shared so every field component matches. */
-export const fieldLabelClass: Readonly<Record<Surface, string>> = {
-  light: cx('text-small font-semibold text-ink-strong'),
-  dark: cx('text-small font-semibold text-white'),
-};
-export const fieldHintClass: Readonly<Record<Surface, string>> = {
-  light: cx('text-small text-ink-muted'),
-  dark: cx('text-small text-white'),
-};
-export const fieldErrorClass: Readonly<Record<Surface, string>> = {
-  light: cx('text-small text-error'),
-  dark: cx('text-small text-error-on-dark'),
-};
+export const fieldLabelClass = cx('text-small font-semibold text-ink-strong');
+export const fieldHintClass = cx('text-small text-ink-muted');
+export const fieldErrorClass = cx('text-small text-error');
 export const fieldWrapperClass = cx('flex flex-col gap-1.5');
 
 /**
@@ -158,47 +143,31 @@ export const fieldHeadClass = cx(
 );
 
 /**
- * The service bands on a `PatternBand` (spec 0013), keyed by the band's
- * `surface`. A band component reads its block's `surface` and only these
- * maps, so no band names a colour that depends on what it sits on.
- *
- * On `dark`, black under the `bg-dots-dark` dots, every word is white: 15.5:1
- * at the dots' lightest pixel (`#242424`) and 18.1:1 on a `panel`. On
- * `light`, white under the `bg-diagonal` stripe, headings are black and body
- * text `ink`, which holds 4.56:1 over a stripe line; `ink-muted` would not.
+ * The pattern under a `PatternBand` (spec 0013), named by a service block's
+ * `surface` in content: `stripe` is the `bg-diagonal` stripe and `dots` the
+ * `bg-dots` grid, both on `canvas`. Only `PatternBand` reads it; whatever sits
+ * on either takes the same band strings below.
  */
-export const bandHeadingClass: Readonly<Record<Surface, string>> = {
-  light: cx('text-black'),
-  dark: cx('text-white'),
-};
-export const bandBodyClass: Readonly<Record<Surface, string>> = {
-  light: cx('text-ink'),
-  dark: cx('text-white'),
-};
+export type BandPattern = 'stripe' | 'dots';
 
 /**
- * A card (`FeaturesCards`) and a tile (`FeaturesSplit`): fill, border, and
- * corners. On `dark` both are a `panel` fill with a white hairline at 10
- * percent, since a shadow does not read on black; on `light` both are white
- * with the `line` border, and the larger card also lifts off the stripe with
- * `shadow-lg`.
+ * The service bands' words (spec 0013): `heading` headings and `ink` body
+ * text, the same on both patterns (`ink` 7.78:1 at a dot's centre, 10.07:1
+ * over a stripe line).
  */
-export const bandCardClass: Readonly<Record<Surface, string>> = {
-  light: cx('rounded-card border border-line bg-white shadow-lg'),
-  dark: cx('rounded-card border border-white/10 bg-panel'),
-};
-export const bandTileClass: Readonly<Record<Surface, string>> = {
-  light: cx('rounded-ui border border-line bg-white'),
-  dark: cx('rounded-ui border border-white/10 bg-panel'),
-};
+export const bandHeadingClass = cx('text-heading');
+export const bandBodyClass = cx('text-ink');
 
 /**
- * A line icon's colour. The glyph is a stroke, which counts as a line, so on
- * a light surface it takes `gold-ink` like the presence band's `check`; on
- * black the bright gold reads (6.4:1 at the dots' lightest pixel, 7.5:1 on a
- * `panel`).
+ * A card (`FeaturesCards`) and a tile (`FeaturesSplit`): a `panel` fill with
+ * a `line` border and the card's or the tile's corners. No shadow, because a
+ * shadow cannot be seen on a dark page.
  */
-export const bandIconClass: Readonly<Record<Surface, string>> = {
-  light: cx('text-gold-ink'),
-  dark: cx('text-gold-on-dark'),
-};
+export const bandCardClass = cx('rounded-card border border-line bg-panel');
+export const bandTileClass = cx('rounded-ui border border-line bg-panel');
+
+/**
+ * A line icon's colour: `accent`, 5.15:1 at a dot's centre and 5.04:1 on a
+ * `panel`.
+ */
+export const bandIconClass = cx('text-accent');

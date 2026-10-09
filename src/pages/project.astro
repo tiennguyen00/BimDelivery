@@ -8,7 +8,7 @@
  * 2. The photo wall, one tile per project in `order`, two across, each a
  *    link to its page (spec 0015). With no projects in this language, the
  *    empty state takes its place, and the hero has no filter.
- * 3. The gold closing band, linking to Contact.
+ * 3. The accent closing band, linking to Contact.
  *
  * This file is the only place that knows the page's shape. It owns the
  * heading ids, under the home page's rule: `<band>-heading`, and the ids
@@ -68,7 +68,7 @@ const LIST_ID = 'project-list';
       filter={{ listId: LIST_ID, formId: FILTER_ID, lang, copy: page.filter }}
     />
   ) : (
-    <Section tone="white" width="narrow" labelledBy="project-empty-heading">
+    <Section tone="canvas" width="narrow" labelledBy="project-empty-heading">
       <div class="text-center">
         <h2 id="project-empty-heading" class="text-balance">
           {page.emptyState.heading}
@@ -94,7 +94,7 @@ const LIST_ID = 'project-list';
  * the first row of tiles (steps 3 and 4). It comes after `reveal.ts`, so a
  * tile the reveal has already taken is left to it. `hero-scroll.ts` spreads
  * the hero's words and slides the header away as the visitor scrolls out of
- * the hero, and back. The empty state and the gold band do not move.
+ * the hero, and back. The empty state and the accent band do not move.
  * `project-filter.ts` runs the hero's filter, and finds nothing to do when
  * the page has no projects. `parallax.ts` slides each tile's photo and words
  * as it crosses the screen.

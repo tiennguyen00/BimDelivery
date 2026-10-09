@@ -4,7 +4,7 @@
  * capitals, one paragraph across the band, and the company's numbers under
  * it.
  *
- * It renders only the inside of the band; the page wraps it in a `white`
+ * It renders only the inside of the band; the page wraps it in a `canvas`
  * `Section` labelled by the `h1`, as the home page does with its bands.
  *
  * The capitals are CSS only (`uppercase`), so the HTML keeps the heading as
@@ -26,7 +26,7 @@ interface Props {
   heading: string;
   /** The id the surrounding Section points at with `aria-labelledby`. */
   headingId: string;
-  /** May carry `**bold**` and `==gold==` phrases. */
+  /** May carry `**bold**` and `==accent==` phrases. */
   intro: string;
   stats: readonly StatItem[];
   lang: Locale;
@@ -44,7 +44,7 @@ const { heading, headingId, intro, stats, lang } = Astro.props;
 </h1>
 
 <p class="entrance mt-8 text-lead" style="--entrance-step: 1">
-  <Emphasis text={intro} surface="light" />
+  <Emphasis text={intro} />
 </p>
 
 <div class="mt-12 lg:mt-16">

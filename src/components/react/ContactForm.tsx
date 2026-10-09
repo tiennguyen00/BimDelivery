@@ -230,11 +230,11 @@ export const ContactForm = ({
 
   if (formState === 'success') {
     return (
-      <div className="rounded-ui bg-white px-6 py-10 text-center shadow-lg md:px-10">
+      <div className="rounded-ui bg-panel px-6 py-10 text-center md:px-10">
         <h3
           ref={successHeadingRef}
           tabIndex={-1}
-          className="font-bold text-gold-ink"
+          className="font-bold text-accent"
         >
           {copy.success.heading}
         </h3>
@@ -246,7 +246,7 @@ export const ContactForm = ({
   const submitting = formState === 'submitting';
   const showCaptcha = turnstile.status === 'error' || captchaAsked;
 
-  /** What every field shares: its id, name, value, handler, error, and the dark surface. */
+  /** What every field shares: its id, name, value, handler, and error. */
   const common = (field: ContactField) => {
     const code = errors[field];
     return {
@@ -256,7 +256,6 @@ export const ContactForm = ({
       value: values[field],
       onChange: update(field),
       error: code === undefined ? undefined : copy.errors[code],
-      surface: 'dark' as const,
     };
   };
 
@@ -318,7 +317,7 @@ export const ContactForm = ({
 
         <div role="alert" className="mt-6 empty:mt-0">
           {deliveryFailed && (
-            <p className="text-error-on-dark">{copy.errors.deliveryFailed}</p>
+            <p className="text-error">{copy.errors.deliveryFailed}</p>
           )}
         </div>
 
@@ -328,16 +327,13 @@ export const ContactForm = ({
         <div className="mt-6 flex flex-col gap-4 md:flex-row md:flex-wrap md:items-start md:justify-end">
           <div className="flex flex-col gap-2">
             <div ref={turnstile.containerRef} className="min-h-16.25 w-75" />
-            <div
-              role="alert"
-              className="max-w-75 text-small text-error-on-dark"
-            >
+            <div role="alert" className="max-w-75 text-small text-error">
               {showCaptcha && (
                 <p>
                   {copy.errors.captcha}{' '}
                   <a
                     href={`mailto:${email}`}
-                    className="font-semibold wrap-anywhere text-white underline"
+                    className="font-semibold wrap-anywhere text-heading underline"
                   >
                     {email}
                   </a>

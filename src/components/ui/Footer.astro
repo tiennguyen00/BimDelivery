@@ -1,21 +1,20 @@
 ---
 /**
- * The site footer: a black band in three columns on desktop, stacked on a
+ * The site footer: a `canvas` band in three columns on desktop, stacked on a
  * phone. The brand and a short introduction, how to reach the company, and
- * the certifications it holds.
+ * the certifications it holds. A `line` hairline marks where it starts, since
+ * the band above it is usually `canvas` too.
  *
  * The site links are the header's job alone; the footer does not repeat them.
  * Legal links (the privacy page, feature 13) still sit in the bottom row.
  *
- * Colour on black follows the home intro band: copy is white, and the
- * marked phrases go through `Emphasis` on its `dark` surface, so a
- * `==gold==` phrase is `gold-on-dark`, the one gold allowed on black, and a
- * `**bold**` one stays white. The band carries `focus-contrast`, so every
- * link here gets the two colour focus ring rather than the gold-ink one that
- * would vanish.
+ * The copy is `heading`, and the marked phrases go through `Emphasis`, so a
+ * `==accent==` phrase is `accent` and a `**bold**` one stays `heading`. Links
+ * and icons turn `accent` on hover. The base focus ring passes here (7.71:1),
+ * so the band needs no `focus-contrast`.
  *
- * The badges are drawn for a light ground, so they sit on a white panel of
- * their own instead of being recoloured.
+ * The badges carry their own light tiles, so they sit straight on the band
+ * with nothing behind them.
  *
  * `showCertification` exists for the About page (spec 0010), which shows the
  * same badges in a band of its own. Off, the certification column is left
@@ -58,13 +57,13 @@ const telHref = (phone: string): string =>
   `tel:${phone.replace(/[^+\d]/g, '')}`;
 
 const headingClass =
-  'text-h3 font-bold tracking-wide text-balance text-white uppercase';
-const linkClass = 'inline-flex min-h-11 items-center hover:text-gold-on-dark';
+  'text-h3 font-bold tracking-wide text-balance text-heading uppercase';
+const linkClass = 'inline-flex min-h-11 items-center hover:text-accent';
 const contactItemClass = 'flex items-center gap-3';
-const contactIconClass = 'shrink-0 text-gold-on-dark';
+const contactIconClass = 'shrink-0 text-accent';
 ---
 
-<footer class="focus-contrast bg-black text-small text-white">
+<footer class="border-t border-line bg-canvas text-small text-heading">
   <div class={cx(bandWidthClass.default, bandGutterClass, 'py-16 md:py-20')}>
     <div
       class={
@@ -77,14 +76,14 @@ const contactIconClass = 'shrink-0 text-gold-on-dark';
     >
       <div>
         <Image
-          src={settings.logoOnDark.src}
-          alt={settings.logoOnDark.alt ?? ''}
+          src={settings.logo.src}
+          alt={settings.logo.alt ?? ''}
           class="h-12 w-auto"
         />
         <div class="mt-8 flex flex-col gap-4 font-semibold">
           {footer.intro.map((line) => (
             <p>
-              <Emphasis text={line} surface="dark" />
+              <Emphasis text={line} />
             </p>
           ))}
         </div>
@@ -97,7 +96,7 @@ const contactIconClass = 'shrink-0 text-gold-on-dark';
                   href={account.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-ui hover:text-gold-on-dark"
+                  class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-ui hover:text-accent"
                 >
                   <Icon
                     name={account.network}
@@ -145,9 +144,9 @@ const contactIconClass = 'shrink-0 text-gold-on-dark';
         <div class="md:col-span-2 lg:col-span-1">
           <h2 class={headingClass}>{footer.certification.heading}</h2>
           <p class="mt-6">
-            <Emphasis text={footer.certification.text} surface="dark" />
+            <Emphasis text={footer.certification.text} />
           </p>
-          <ul class="mt-8 flex max-w-sm list-none flex-wrap justify-center gap-4 bg-white p-4">
+          <ul class="mt-8 flex max-w-sm list-none flex-wrap justify-center gap-4 p-4">
             {footer.certification.badges.map((badge) => (
               <li>
                 <Image
@@ -163,7 +162,7 @@ const contactIconClass = 'shrink-0 text-gold-on-dark';
       )}
     </div>
 
-    <div class="mt-12 flex flex-col gap-2 border-t border-white/20 pt-6 md:flex-row md:items-center md:justify-between">
+    <div class="mt-12 flex flex-col gap-2 border-t border-line pt-6 md:flex-row md:items-center md:justify-between">
       <p>{footer.copyright}</p>
       {
         /* Feature 13's privacy page lands here as a content edit, with no code
@@ -172,7 +171,7 @@ const contactIconClass = 'shrink-0 text-gold-on-dark';
           <ul class="flex list-none flex-wrap gap-x-6 p-0">
             {legal.map((link) => (
               <li>
-                <a href={link.href} class="hover:text-gold-on-dark">
+                <a href={link.href} class="hover:text-accent">
                   {link.label}
                 </a>
               </li>

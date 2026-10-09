@@ -1,13 +1,14 @@
 ---
 /**
  * A service page's process in the `timeline` layout (spec 0013): a centred
- * ruled heading and an optional intro, the numbered steps joined by a gold
- * line, then the closing call to action back to the contact page.
+ * ruled heading and an optional intro, the numbered steps joined by a line,
+ * then the closing call to action back to the contact page.
  *
  * It renders only the inside of the band; the route wraps it in a
- * `PatternBand` on the block's `surface`, and every colour that depends on it
- * comes from the class maps in `styles.ts`. The number circles, the line,
- * and the button are gold fills carrying black, the same on either surface.
+ * `PatternBand` on the block's `surface`, and its words take the band strings
+ * in `styles.ts`. The number circles and the button are `accent` fills
+ * carrying `on-accent`; the connector is the decorative `line` (Coffee),
+ * the same on either pattern.
  *
  * The steps are an `<ol>`. From `lg` they sit in one row of equal columns,
  * however many there are (`lg:grid-flow-col lg:auto-cols-fr`); below it they
@@ -36,7 +37,7 @@ import type { BandProps } from '../../lib/service-page';
 type Props = BandProps<'process/timeline'>;
 
 const { block, headingId, entranceFrom } = Astro.props;
-const { surface, cta } = block;
+const { cta } = block;
 ---
 
 <div
@@ -46,14 +47,14 @@ const { surface, cta } = block;
 >
   <h2
     id={headingId}
-    class={cx('heading-rule inline-block', bandHeadingClass[surface])}
+    class={cx('heading-rule inline-block', bandHeadingClass)}
     data-heading-rule
   >
-    <Emphasis text={block.heading} surface={surface} />
+    <Emphasis text={block.heading} />
   </h2>
   {block.intro && (
-    <p class={cx('mt-8', bandBodyClass[surface])}>
-      <Emphasis text={block.intro} surface={surface} />
+    <p class={cx('mt-8', bandBodyClass)}>
+      <Emphasis text={block.intro} />
     </p>
   )}
 </div>
@@ -65,17 +66,17 @@ const { surface, cta } = block;
   {block.steps.map((step, index) => (
     <li
       class={cx(
-        'relative flex gap-6 pb-10 after:absolute after:inset-s-7 after:top-7 after:h-full after:w-1 after:-translate-x-1/2 after:bg-gold last:pb-0 last:after:hidden lg:flex-col lg:items-center lg:gap-6 lg:px-4 lg:pb-0 lg:text-center lg:after:inset-s-1/2 lg:after:h-1 lg:after:w-full lg:after:translate-x-0 lg:after:-translate-y-1/2',
+        'relative flex gap-6 pb-10 after:absolute after:inset-s-7 after:top-7 after:h-full after:w-1 after:-translate-x-1/2 after:bg-line last:pb-0 last:after:hidden lg:flex-col lg:items-center lg:gap-6 lg:px-4 lg:pb-0 lg:text-center lg:after:inset-s-1/2 lg:after:h-1 lg:after:w-full lg:after:translate-x-0 lg:after:-translate-y-1/2',
         entranceClass(entranceFrom),
       )}
       style={entranceStyle(entranceFrom, index + 1)}
     >
-      <span class="relative z-10 grid size-14 shrink-0 place-items-center rounded-full bg-gold text-h3 font-bold text-black">
+      <span class="relative z-10 grid size-14 shrink-0 place-items-center rounded-full bg-accent text-h3 font-bold text-on-accent">
         {index + 1}
       </span>
       <div>
-        <h3 class={bandHeadingClass[surface]}>{step.title}</h3>
-        <p class={cx('mt-2', bandBodyClass[surface])}>{step.text}</p>
+        <h3 class={bandHeadingClass}>{step.title}</h3>
+        <p class={cx('mt-2', bandBodyClass)}>{step.text}</p>
       </div>
     </li>
   ))}
@@ -89,8 +90,8 @@ const { surface, cta } = block;
   style={entranceStyle(entranceFrom, block.steps.length + 1)}
   data-reveal
 >
-  <h3 class={bandHeadingClass[surface]}>{cta.heading}</h3>
-  <p class={cx('mt-4', bandBodyClass[surface])}>{cta.text}</p>
+  <h3 class={bandHeadingClass}>{cta.heading}</h3>
+  <p class={cx('mt-4', bandBodyClass)}>{cta.text}</p>
   <Button href={cta.button.href} class="mt-8">
     {cta.button.label}
   </Button>

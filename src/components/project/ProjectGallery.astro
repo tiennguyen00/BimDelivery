@@ -1,8 +1,8 @@
 ---
 /**
  * The Project page's photo wall (spec 0014, revised 2026-10-09): every
- * project as a wide photo tile, two across from `md`, with thin 8px white
- * seams between them.
+ * project as a wide photo tile, two across from `md`, with thin 8px
+ * `canvas` seams between them.
  *
  * It is a band of its own, not a `Section`: it borrows the band frame's side
  * gutters and bottom padding from `styles.ts` but takes **no maximum width**,
@@ -17,9 +17,9 @@
  * lets the unfolded cue and facts fit under a 60 character title, the
  * content schema's cap. Either way the box is reserved before the photo
  * arrives, so nothing on the page shifts as photos load.
- * The black fill shows only while a photo loads. A `bg-scrim` layer covers
- * the whole photo, so the white words over it read at 5.74:1 at worst over
- * any photo (spec 0005), with no contrast check per photo.
+ * The `panel` fill shows only while a photo loads. A `bg-scrim` layer covers
+ * the whole photo, so the `heading` words over it read at 5.91:1 at worst
+ * over any photo (spec 0003), with no contrast check per photo.
  *
  * At rest a tile shows its title and its summary, centred at its foot, the
  * summary cut to one line (the full line stays in the HTML for a screen
@@ -32,9 +32,9 @@
  * tab stop: the title's text is the link, and its `::after` is stretched over
  * the whole tile (the `Card` pattern), so the accessible name is the project
  * title and the pointer shows anywhere on the tile. The cue, "Read more" in
- * a white pill, is `aria-hidden`, because the name already says which
+ * a `heading` outlined pill, is `aria-hidden`, because the name already says which
  * project it opens. The facts are a `<dl>` a screen reader reads with the
- * tile. Keyboard focus draws the light tone `gold-ink` ring round the whole
+ * tile. Keyboard focus draws the `accent` ring round the whole
  * tile (`link-focus:`, as `Card`).
  *
  * Three things move inside a tile, each on its own element and property, so
@@ -123,7 +123,7 @@ const enterStep = (index: number): number | undefined =>
 
 <div
   class={cx(
-    'bg-white pt-4 md:pt-6 lg:pt-8',
+    'bg-canvas pt-4 md:pt-6 lg:pt-8',
     bandGutterClass,
     bandPaddingBottomClass,
   )}
@@ -140,7 +140,7 @@ const enterStep = (index: number): number | undefined =>
         data-country={keys.country}
         data-area={keys.area}
         data-enter={enterStep(index)}
-        class="group relative isolate aspect-3/2 overflow-clip rounded-ui bg-black md:aspect-4/3 lg:aspect-3/2 link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-gold-ink"
+        class="group relative isolate aspect-3/2 overflow-clip rounded-ui bg-panel md:aspect-4/3 lg:aspect-3/2 link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-accent"
       >
         <div class="parallax-photo -z-10" data-parallax-photo>
           <Image
@@ -160,10 +160,10 @@ const enterStep = (index: number): number | undefined =>
         />
 
         <div
-          class="absolute inset-0 flex flex-col items-center justify-end p-6 text-center text-white lg:p-8"
+          class="absolute inset-0 flex flex-col items-center justify-end p-6 text-center text-heading lg:p-8"
           data-parallax-text
         >
-          <h2 class="shrink-0 text-h3 font-bold text-balance text-white">
+          <h2 class="shrink-0 text-h3 font-bold text-balance text-heading">
             <a
               href={projectHref(project.slug)}
               class="after:absolute after:-inset-6 focus-visible:outline-none"
@@ -180,7 +180,7 @@ const enterStep = (index: number): number | undefined =>
               <div class="flex flex-col items-center gap-3 pt-4 opacity-0 transition-opacity duration-500 ease-out group-focus-within:opacity-100 group-hover:opacity-100">
                 <span
                   aria-hidden="true"
-                  class="inline-flex items-center rounded-full border border-white px-5 py-1.5 text-small font-semibold"
+                  class="inline-flex items-center rounded-full border border-heading px-5 py-1.5 text-small font-semibold"
                 >
                   {cue}
                 </span>

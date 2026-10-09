@@ -4,7 +4,7 @@
  * capitals, the paragraphs, and the certification badges in one centred row
  * that wraps.
  *
- * It renders only the inside of the band; the page wraps it in a `white`
+ * It renders only the inside of the band; the page wraps it in a `canvas`
  * `Section` with `bg-diagonal`, as the home presence band is. Text on the
  * stripe stays `ink` or stronger (4.56:1 at worst, over a stripe line).
  *
@@ -26,7 +26,7 @@ interface Props {
   heading: string;
   /** The id the surrounding Section points at with `aria-labelledby`. */
   headingId: string;
-  /** Each may carry `**bold**` and `==gold==` phrases. */
+  /** Each may carry `**bold**` and `==accent==` phrases. */
   paragraphs: readonly string[];
   badges: readonly Readonly<{ src: ImageMetadata; alt: string }>[];
 }
@@ -48,7 +48,7 @@ const { heading, headingId, paragraphs, badges } = Astro.props;
   <div class="mt-8 flex flex-col gap-4">
     {paragraphs.map((paragraph) => (
       <p>
-        <Emphasis text={paragraph} surface="light" />
+        <Emphasis text={paragraph} />
       </p>
     ))}
   </div>

@@ -2,9 +2,8 @@
 # features band, and the audiences. The process keeps the placeholder shape
 # until the client sends more (spec 0013).
 #
-# Sections 2 and 4 sit on `surface: light`, the white band under the
-# diagonal stripe, so a `==` mark may only appear in their `heading` (the
-# build checks it).
+# Sections 2 and 4 sit on `surface: stripe`, a `canvas` band under the
+# diagonal stripe.
 lang: en
 slug: interior-bim
 title: Interior BIM
@@ -33,7 +32,7 @@ sections:
         alt: The long, empty hall of an old industrial building, with steel columns and cranes under a glass roof
   - type: features
     layout: split
-    surface: light
+    surface: stripe
     heading: From design concept to ==coordinated model==
     paragraphs:
       - BIM also helps identify design conflicts and coordination issues at an early stage, reducing rework and improving communication between different project disciplines. The BIM model can be used as a **reliable reference** for design development, visualization, quantity information, and construction documentation.
@@ -76,7 +75,7 @@ sections:
         text: Models carrying room, asset, and equipment data for day to day operations.
   - type: process
     layout: timeline
-    surface: light
+    surface: stripe
     heading: How an Interior BIM project ==runs==
     intro: Four clear steps from the design you send us to the model you build on.
     steps:

@@ -1,9 +1,9 @@
 ---
 /**
- * The Contact page's first band (spec 0011): the page's `h1` with the gold
+ * The Contact page's first band (spec 0011): the page's `h1` with the accent
  * rule under it, one paragraph, and a building photo beside them on desktop.
  *
- * It renders only the inside of the band; the page wraps it in a `white`
+ * It renders only the inside of the band; the page wraps it in a `canvas`
  * `Section` labelled by the `h1`, as the About page does with its bands.
  *
  * From `lg` the text takes about seven twelfths and the photo the rest,
@@ -25,7 +25,7 @@ interface Props {
   heading: string;
   /** The id the surrounding Section points at with `aria-labelledby`. */
   headingId: string;
-  /** May carry `**bold**` and `==gold==` phrases. */
+  /** May carry `**bold**` and `==accent==` phrases. */
   intro: string;
   photo: Readonly<{ src: string; alt: string }>;
 }
@@ -45,7 +45,7 @@ const { heading, headingId, intro, photo } = Astro.props;
     </h1>
 
     <p class="entrance mt-8 text-lead" style="--entrance-step: 1">
-      <Emphasis text={intro} surface="light" />
+      <Emphasis text={intro} />
     </p>
   </div>
 

@@ -33,7 +33,7 @@ const link = z.object({
 const text = z.string().min(1);
 
 /**
- * Copy that may carry `**bold**` and `==gold==` phrases (specs 0005 and
+ * Copy that may carry `**bold**` and `==accent==` phrases (specs 0005 and
  * 0010). Every mark needs a partner of its own kind, and marks never nest or
  * overlap. The message quotes the line, so the build names the text to fix.
  */
@@ -143,9 +143,8 @@ const settings = defineCollection({
       lang,
       siteName: text,
       tagline: text,
+      /** The light mark, for the dark header and footer alike. */
       logo: imageSchema(image),
-      /** The same mark drawn light, for the black footer. */
-      logoOnDark: imageSchema(image),
       contact: z.object({
         email: z.email(),
         phone: text,
@@ -164,8 +163,8 @@ const settings = defineCollection({
           url: z.url({ protocol: /^https$/ }),
         }),
       ),
-      // The black footer band. In `intro` and the certification text a
-      // `==phrase==` renders in gold and a `**phrase**` in bold white.
+      // The footer band. In `intro` and the certification text a
+      // `==phrase==` renders in the accent and a `**phrase**` in bold.
       footer: z.strictObject({
         intro: z.array(emphasisText).min(1),
         contactHeading: text,
@@ -305,17 +304,17 @@ const home = defineCollection({
         images: z.array(photoSchema).min(1).max(3),
         primaryCta: link,
       }),
-      // The black intro band under the hero (spec 0005). Its numbers are the
+      // The intro band under the hero (spec 0005). Its numbers are the
       // `stats` entry, so they are written once for the whole site.
       intro: z.strictObject({
         heading: text,
         /**
-         * The heading's last words, shown in gold after `heading` and typed
+         * The heading's last words, shown in the accent after `heading` and typed
          * through once in order (spec 0009). The first is the real one: it
          * ships in the HTML and is what a screen reader hears.
          */
         headingHighlight: z.array(text).min(1),
-        /** The first paragraph opens with `highlight` in gold, then `text`. */
+        /** The first paragraph opens with `highlight` in the accent, then `text`. */
         lead: z.object({ highlight: text, text }),
         paragraphs: z.array(text),
       }),
@@ -594,7 +593,11 @@ const notFound = defineCollection({
  * objects, as `features` is. When a type gains its second layout its member
  * changes from the first form to the second, and no YAML changes.
  */
-const surface = z.enum(['light', 'dark']);
+/**
+ * The pattern a band sits on (spec 0003, 2026-10-09): `stripe` is a `canvas`
+ * band under the diagonal stripe, `dots` a `canvas` band under the dot grid.
+ */
+const surface = z.enum(['stripe', 'dots']);
 
 const introCarousel = z.strictObject({
   type: z.literal('intro'),
@@ -686,39 +689,12 @@ const block = z.discriminatedUnion('type', [
   presenceMap,
 ]);
 
-/** The only fields a `==` mark may sit in on a `light` surface block. */
-const LIGHT_MARK_FIELDS: readonly string[] = ['heading', 'subheading'];
-
-type Path = readonly (string | number)[];
-
-/** Every string inside a value, each with its path from that value. */
-const stringsIn = (
-  value: unknown,
-  path: Path,
-): readonly Readonly<{ path: Path; text: string }>[] => {
-  if (typeof value === 'string') return [{ path, text: value }];
-  if (Array.isArray(value)) {
-    return value.flatMap((item: unknown, index) =>
-      stringsIn(item, [...path, index]),
-    );
-  }
-  if (value !== null && typeof value === 'object') {
-    return Object.entries(value).flatMap(([key, item]) =>
-      stringsIn(item, [...path, key]),
-    );
-  }
-  return [];
-};
-
 /**
  * The rules that need the whole list (spec 0013, AC-4), still one entry at a
  * time, so they live here rather than in `content.ts`:
  *
  * - exactly one `intro`, and it comes first, so a page has one `h1`;
- * - at most one `presence`;
- * - on a `surface: light` block, a `==` mark only in `heading` or
- *   `subheading`: the stripe drops `gold-ink` to 4.01:1, which passes for
- *   large text only.
+ * - at most one `presence`.
  */
 const sections = z
   .array(block)
@@ -762,21 +738,6 @@ const sections = z
             'is a second `presence` block; a service page has at most one',
         });
       });
-
-    blocks.forEach((item, index) => {
-      if (!('surface' in item) || item.surface !== 'light') return;
-      Object.entries(item)
-        .filter(([key]) => !LIGHT_MARK_FIELDS.includes(key))
-        .flatMap(([key, value]) => stringsIn(value, [index, key]))
-        .filter(({ text: line }) => line.includes('=='))
-        .forEach(({ path, text: line }) => {
-          ctx.addIssue({
-            code: 'custom',
-            path: [...path],
-            message: `has a \`==\` mark on a \`surface: light\` block, where gold words may only sit in \`heading\` or \`subheading\`: "${line}"`,
-          });
-        });
-    });
   });
 
 const services = defineCollection({

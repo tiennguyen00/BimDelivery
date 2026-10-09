@@ -11,7 +11,7 @@
  * 3. The story: the write up beside the facts panel.
  * 4. The gallery: an `h2` and the photo wall.
  * 5. The next project link, only when the language has two or more.
- * 6. The gold closing band, linking to Contact.
+ * 6. The accent closing band, linking to Contact.
  *
  * This file sits beside `src/pages/project.astro`, which still builds
  * `/project`. It owns the heading ids, under the `<band>-heading` rule; the
@@ -76,7 +76,7 @@ const COVER_STEP = 3;
 ---
 
 <PageLayout title={head.title} description={head.description}>
-  <Section tone="white" labelledBy="project-detail-heading">
+  <Section tone="canvas" labelledBy="project-detail-heading">
     <IntroBand
       heading={project.title}
       headingId="project-detail-heading"
@@ -93,7 +93,7 @@ const COVER_STEP = 3;
 
   <ProjectCover image={project.image} entranceStep={COVER_STEP} />
 
-  <Section tone="white">
+  <Section tone="canvas">
     <ProjectStory
       sections={project.writeUp}
       factsHeading={detail.factsHeading}
@@ -109,7 +109,7 @@ const COVER_STEP = 3;
   />
 
   {next && (
-    <Section tone="white" width="narrow">
+    <Section tone="canvas" width="narrow">
       <NextProject
         label={detail.nextLabel}
         title={next.title}
@@ -132,7 +132,7 @@ const COVER_STEP = 3;
  * `entrance` (steps 0 to 3) and never take `data-reveal`. The facts panel,
  * each write up section, the gallery heading, and the gallery tiles reveal
  * on scroll, and both rules draw with the scroll direction. The next project
- * band and the gold band do not move.
+ * band and the accent band do not move.
  */}
 <script>
   import '../../scripts/reveal';

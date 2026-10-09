@@ -4,14 +4,13 @@
  * the start side, the Experience and Expertise accordion on the end side.
  * Two equal columns from `lg`; below it one column, the text first.
  *
- * It renders only the inside of the band; the page wraps it in a `white`
+ * It renders only the inside of the band; the page wraps it in a `canvas`
  * `Section` labelled by the `h2`.
  *
- * The heading's gold rule is the shared `heading-rule` utility, and the
+ * The heading's accent rule is the shared `heading-rule` utility, and the
  * heading is a plain block, so the rule spans the whole column. The
- * paragraphs sit beside a 4px gold bar, drawn by a `::before` filled with
- * `--color-gold`: a decorative fill, never a gold border, so it stays within
- * the gold rule.
+ * paragraphs sit beside a 4px accent bar, drawn by a `::before` filled with
+ * `--color-accent`.
  *
  * The grid carries `data-reveal-stagger`, so the two columns reveal one
  * after the other, and the heading carries `data-heading-rule`, so its rule
@@ -33,7 +32,7 @@ interface Props {
   heading: string;
   /** The id the surrounding Section points at with `aria-labelledby`. */
   headingId: string;
-  /** Each may carry `**bold**` and `==gold==` phrases. */
+  /** Each may carry `**bold**` and `==accent==` phrases. */
   paragraphs: readonly string[];
   accordion: readonly Readonly<{ title: string; text: string }>[];
   /** The start column's `--entrance-step`; the end column adds one. */
@@ -62,10 +61,10 @@ const entranceStyle = (column: number): string | undefined =>
       {heading}
     </h2>
 
-    <div class="relative mt-8 flex flex-col gap-4 ps-6 before:absolute before:inset-y-0 before:inset-s-0 before:w-1 before:bg-gold">
+    <div class="relative mt-8 flex flex-col gap-4 ps-6 before:absolute before:inset-y-0 before:inset-s-0 before:w-1 before:bg-accent">
       {paragraphs.map((paragraph) => (
         <p>
-          <Emphasis text={paragraph} surface="light" />
+          <Emphasis text={paragraph} />
         </p>
       ))}
     </div>

@@ -1,9 +1,9 @@
 /**
- * A multi line text field (spec 0003; `surface` from spec 0011).
+ * A multi line text field (spec 0003).
  *
  * The same shape as TextField, minus `type` and plus `rows`, so the two
- * behave identically for a label, a hint, an error, and the surface under
- * them. See TextField for why `id` is sometimes passed explicitly.
+ * behave identically for a label, a hint, and an error. See TextField for
+ * why `id` is sometimes passed explicitly.
  */
 import { useId } from 'react';
 import type { TextareaHTMLAttributes } from 'react';
@@ -15,7 +15,6 @@ import {
   fieldHintClass,
   fieldLabelClass,
   fieldWrapperClass,
-  type Surface,
 } from '../../ui/styles';
 import { describeField } from './field';
 
@@ -25,7 +24,6 @@ type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   id?: string;
   hint?: string;
   error?: string;
-  surface?: Surface;
 };
 
 export const TextArea = ({
@@ -34,7 +32,6 @@ export const TextArea = ({
   id,
   hint,
   error,
-  surface = 'light',
   rows = 5,
   className,
   ...rest
@@ -50,11 +47,11 @@ export const TextArea = ({
   return (
     <div className={fieldWrapperClass}>
       <div className={fieldHeadClass}>
-        <label htmlFor={controlId} className={fieldLabelClass[surface]}>
+        <label htmlFor={controlId} className={fieldLabelClass}>
           {label}
         </label>
         {hint && (
-          <p id={hintId} className={fieldHintClass[surface]}>
+          <p id={hintId} className={fieldHintClass}>
             {hint}
           </p>
         )}
@@ -69,7 +66,7 @@ export const TextArea = ({
         className={cx(fieldClass(Boolean(error)), className)}
       />
       {error && (
-        <p id={errorId} className={fieldErrorClass[surface]}>
+        <p id={errorId} className={fieldErrorClass}>
           {error}
         </p>
       )}

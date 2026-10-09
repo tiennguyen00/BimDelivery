@@ -9,7 +9,7 @@
  * page's.
  *
  * It renders only the inside of the band. The page wraps it in a `Section`
- * carrying `bg-diagonal` (`white`, or `tint` after a striped band on a
+ * carrying `bg-diagonal` (`canvas`, or `raised` after a striped band on a
  * service page), so the tone, gutters, and stripe stay the page's choice and
  * this component never reads a tone.
  *
@@ -34,7 +34,7 @@ interface Props {
   heading: string;
   /** The id the surrounding Section points at with `aria-labelledby`. */
   headingId: string;
-  /** Each may carry `**bold**` and `==gold==` phrases. */
+  /** Each may carry `**bold**` and `==accent==` phrases. */
   paragraphs: readonly string[];
   regions: readonly Region[];
   whyChoose: { heading: string; items: readonly string[] };
@@ -59,7 +59,7 @@ const toMapPosition = ({ lon, lat }: Region): string =>
   `--x: ${((lon + 180) / 360) * 100}%; --y: ${((MAP_LAT_TOP - lat) / (MAP_LAT_TOP - MAP_LAT_BOTTOM)) * 100}%`;
 
 /**
- * The gold rule under both headings, from the shared `heading-rule` utility
+ * The accent rule under both headings, from the shared `heading-rule` utility
  * in `global.css`; `inline-block` keeps it exactly as wide as the words and
  * the rule never reaches a screen reader. The same treatment as the services
  * heading, and each heading carries `data-heading-rule` so `reveal.ts` draws
@@ -81,16 +81,12 @@ const ruleClass = 'heading-rule inline-block';
   <div class="lg:col-span-5">
     {paragraphs.map((paragraph) => (
       <p class="mt-4 first:mt-0">
-        <Emphasis
-          text={paragraph}
-          surface="light"
-          strongClass="text-ink-strong"
-        />
+        <Emphasis text={paragraph} strongClass="text-ink-strong" />
       </p>
     ))}
 
     <h3
-      class:list={[ruleClass, 'mt-12 font-bold text-black']}
+      class:list={[ruleClass, 'mt-12 font-bold text-heading']}
       data-heading-rule
     >
       {whyChoose.heading}
@@ -99,7 +95,7 @@ const ruleClass = 'heading-rule inline-block';
     <ul class="mt-8 flex flex-col gap-4">
       {whyChoose.items.map((item) => (
         <li class="flex items-start gap-3 text-ink-strong">
-          <Icon name="check" size={20} class="mt-0.5 shrink-0 text-gold-ink" />
+          <Icon name="check" size={20} class="mt-0.5 shrink-0 text-accent" />
           <span>{item}</span>
         </li>
       ))}
@@ -120,9 +116,14 @@ const ruleClass = 'heading-rule inline-block';
    * so the dot's `absolute` resolves against the map wrapper and lands on its
    * place; from `md` the `<li>` itself is placed there and the dot sits at its
    * origin.
+   *
+   * The map's dots are `ink-muted` at 40 percent: the region labels sit over
+   * them from `md` up, and `heading` on a dot still reads 6.81:1 there, while
+   * the dots themselves still show (2.32:1). The markers are `accent` with a
+   * `canvas` ring.
    */}
   <div class="relative lg:order-first lg:col-span-7">
-    <WorldMap aria-hidden="true" class="h-auto w-full text-ink-muted/60" />
+    <WorldMap aria-hidden="true" class="h-auto w-full text-ink-muted/40" />
 
     <ul class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 md:mt-0 md:block">
       {regions.map((region) => (
@@ -132,9 +133,9 @@ const ruleClass = 'heading-rule inline-block';
         >
           <span
             aria-hidden="true"
-            class="absolute top-(--y) left-(--x) block size-3 -translate-1/2 rounded-full bg-gold ring-2 ring-white md:top-0 md:left-0"
+            class="absolute top-(--y) left-(--x) block size-3 -translate-1/2 rounded-full bg-accent ring-2 ring-canvas md:top-0 md:left-0"
           ></span>
-          <span class="text-small font-bold whitespace-nowrap text-black md:absolute md:bottom-2.5 md:-translate-x-1/2 md:text-body">
+          <span class="text-small font-bold whitespace-nowrap text-heading md:absolute md:bottom-2.5 md:-translate-x-1/2 md:text-body">
             {region.name}
           </span>
         </li>

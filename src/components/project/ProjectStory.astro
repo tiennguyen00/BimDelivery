@@ -3,7 +3,7 @@
  * A project detail page's story band (spec 0015): the write up beside the
  * facts panel.
  *
- * It renders only the inside of the band; the page wraps it in a `white`
+ * It renders only the inside of the band; the page wraps it in a `canvas`
  * `Section` with no label, since no one heading names both halves.
  *
  * Below `lg` it is one column, the facts panel first (the fast read) and the
@@ -40,7 +40,7 @@ const { sections, factsHeading, factsHeadingId, facts } = Astro.props;
 
 <div class="grid grid-cols-1 items-start gap-12 lg:grid-cols-3 lg:gap-8">
   <div
-    class="rounded-ui bg-tint p-6 md:p-8 lg:col-start-3 lg:row-start-1"
+    class="rounded-ui bg-panel p-6 md:p-8 lg:col-start-3 lg:row-start-1"
     data-reveal
   >
     <h2 id={factsHeadingId} class="text-h3">
@@ -65,7 +65,7 @@ const { sections, factsHeading, factsHeadingId, facts } = Astro.props;
         <div class="mt-4 flex flex-col gap-4">
           {section.paragraphs.map((paragraph) => (
             <p>
-              <Emphasis text={paragraph} surface="light" />
+              <Emphasis text={paragraph} />
             </p>
           ))}
         </div>

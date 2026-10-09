@@ -12,8 +12,7 @@
  * `value` is a stable key and every `label` comes from content: the key is
  * what gets sent, never the label.
  *
- * See TextField for `surface`, and for why `id` is sometimes passed
- * explicitly.
+ * See TextField for why `id` is sometimes passed explicitly.
  */
 import { useId } from 'react';
 import type { SelectHTMLAttributes } from 'react';
@@ -25,7 +24,6 @@ import {
   fieldLabelClass,
   fieldWrapperClass,
   selectClass,
-  type Surface,
 } from '../../ui/styles';
 import { describeField } from './field';
 
@@ -40,7 +38,6 @@ type Props = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'multiple'> & {
   id?: string;
   hint?: string;
   error?: string;
-  surface?: Surface;
 };
 
 export const Select = ({
@@ -51,7 +48,6 @@ export const Select = ({
   id,
   hint,
   error,
-  surface = 'light',
   className,
   ...rest
 }: Props) => {
@@ -66,11 +62,11 @@ export const Select = ({
   return (
     <div className={fieldWrapperClass}>
       <div className={fieldHeadClass}>
-        <label htmlFor={controlId} className={fieldLabelClass[surface]}>
+        <label htmlFor={controlId} className={fieldLabelClass}>
           {label}
         </label>
         {hint && (
-          <p id={hintId} className={fieldHintClass[surface]}>
+          <p id={hintId} className={fieldHintClass}>
             {hint}
           </p>
         )}
@@ -91,7 +87,7 @@ export const Select = ({
         ))}
       </select>
       {error && (
-        <p id={errorId} className={fieldErrorClass[surface]}>
+        <p id={errorId} className={fieldErrorClass}>
           {error}
         </p>
       )}

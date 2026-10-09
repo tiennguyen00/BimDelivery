@@ -65,7 +65,7 @@ const [navigation, settings] = await Promise.all([
    */}
   <a
     href="#main"
-    class="fixed top-0 left-0 z-50 inline-flex min-h-11 -translate-y-full items-center rounded-ui bg-white px-4 py-3 font-semibold text-gold-ink shadow-md transition-transform focus:translate-y-0"
+    class="fixed top-0 left-0 z-50 inline-flex min-h-11 -translate-y-full items-center rounded-ui bg-panel px-4 py-3 font-semibold text-accent transition-transform focus:translate-y-0"
   >
     {navigation.ui.skipToContent}
   </a>
@@ -105,7 +105,7 @@ const [navigation, settings] = await Promise.all([
 
 {/**
  * The one place the header's height is written down. It measures the header
- * card's box (not its shadow or corner curve) and has four readers: the header
+ * card's box and has four readers: the header
  * bar's height, the mobile panel's top inset, and the home hero's pull up under
  * the card and its matching top padding (spec 0005). They all read it here, so
  * they cannot drift apart. Anything that makes the header taller changes this

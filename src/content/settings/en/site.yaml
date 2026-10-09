@@ -4,9 +4,6 @@ tagline: Precise BIM and Revit models, delivered on time.
 logo:
   src: ../../../assets/images/brand/logo.svg
   alt: BIM Delivery
-logoOnDark:
-  src: ../../../assets/images/brand/logo-on-dark.svg
-  alt: BIM Delivery
 contact:
   email: hello@example.com
   phone: '+1 555 010 0000'

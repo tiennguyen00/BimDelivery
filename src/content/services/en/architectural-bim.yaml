@@ -31,7 +31,7 @@ sections:
         alt: Seen from above, an architect marking up a printed site plan with drafting tools laid out beside it
   - type: features
     layout: cards
-    surface: dark
+    surface: dots
     heading: Architectural BIM for ==every stage== of a project
     paragraphs:
       - BIM also helps identify design and coordination issues at an early stage, ==reducing rework== and improving communication between different project disciplines. The BIM model can be used as a **reliable reference** for design development, visualization, coordination, quantity information, and construction documentation.
@@ -84,7 +84,7 @@ sections:
         text: Extra modeling capacity on call when a deadline lands on an already busy team.
   - type: process
     layout: timeline
-    surface: dark
+    surface: dots
     heading: How an Architectural BIM project ==runs==
     intro: The same four steps on every project, so you always know what happens next and when.
     steps:

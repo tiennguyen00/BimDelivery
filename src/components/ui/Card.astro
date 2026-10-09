@@ -9,9 +9,10 @@
  * hold no button, link, or field: the stretched layer would cover it.
  *
  * Hover and keyboard focus are deliberately different treatments. Hover
- * raises the shadow and underlines the title; focus draws one deep gold ring
- * around the whole card, via the `link-focus` variant in global.css. A mouse
- * user is never shown something that reads as a focus ring.
+ * underlines the title and lifts the border from `line` to `ink-muted`;
+ * focus draws one `accent` ring around the whole card, via the `link-focus`
+ * variant in global.css. A mouse user is never shown something that reads as
+ * the brass focus ring.
  */
 import { Image } from 'astro:assets';
 import { cx } from './styles';
@@ -25,8 +26,6 @@ interface Props {
   headingLevel?: 2 | 3 | 4;
   /** Centre the title and text under the image, as the home services row does. */
   align?: 'start' | 'center';
-  /** A soft shadow in place of the border, for a card that sits on the tint. */
-  elevated?: boolean;
   class?: string;
 }
 
@@ -37,7 +36,6 @@ const {
   href,
   headingLevel = 3,
   align = 'start',
-  elevated = false,
   class: className,
 } = Astro.props;
 
@@ -49,11 +47,9 @@ const imageSizes = '(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw';
 
 <article
   class:list={[
-    'group relative flex h-full flex-col overflow-hidden rounded-ui bg-white',
-    elevated ? 'shadow-lg' : 'border border-line',
+    'group relative flex h-full flex-col overflow-hidden rounded-ui border border-line bg-panel',
     href &&
-      'transition-shadow duration-150 link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-gold-ink',
-    href && (elevated ? 'hover:shadow-xl' : 'hover:shadow-md'),
+      'transition-colors duration-150 hover:border-ink-muted link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-accent',
     className,
   ]}
 >

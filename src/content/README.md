@@ -25,8 +25,8 @@ checks every file and names the file and the field when something is wrong.
 ### Edit a service's words or photos
 
 1. Open its file and change the text. `**phrase**` makes a phrase bold and
-   `==phrase==` makes it gold. On a block with `surface: light`, gold may only
-   sit in `heading` or `subheading`.
+   `==phrase==` makes it the brass accent. A block's `surface` is `stripe` or
+   `dots`, the pattern it sits on.
 2. The photos are the intro's `images`: one to three Pexels links, the first
    shown first. Add each new photo to `src/assets/images/CREDITS.md`.
 

@@ -4,13 +4,13 @@
  * of them from a content entry.
  *
  * This file is the only place that knows the page's shape. It owns the tone of
- * each band (the `white` and `tint` alternation spec 0003 asks a page to set),
+ * each band (the `canvas` and `raised` alternation spec 0003 asks a page to set),
  * and it owns the heading ids, under one rule for all five: `<section>-heading`.
  * No component here reads a tone or invents an id.
  *
  * The reference site's "Delivering Precision BIM & Revit Modeling" section is
  * deliberately absent; it was cut in the scope. So are the certification row
- * and the gold closing band: the footer already carries the badges, and the
+ * and the accent closing band: the footer already carries the badges, and the
  * page now ends on the project showcase. The company overview band was
  * removed as well (2026-09-22), so the intro band leads straight into the
  * services.
@@ -93,7 +93,7 @@ const serviceRow =
   />
 
   {/**
-   * 2. Intro. Its own black band, not a Section tone, holding the
+   * 2. Intro. Its own `canvas` band, not a Section tone, holding the
    * site's numbers as cards. That is why there is no separate stats band on
    * this page: the same figures twice would read as a mistake.
    */}
@@ -113,9 +113,9 @@ const serviceRow =
    * listed, and the row never reflows into something nobody chose. The path
    * is `/${slug}`, the same one `[service].astro` builds its route from.
    */}
-  <Section tone="tint" labelledBy="services-heading">
+  <Section tone="raised" labelledBy="services-heading">
     {/**
-     * A centred heading with a gold rule under it, the same treatment as the
+     * A centred heading with an accent rule under it, the same treatment as the
      * intro band, then a centred intro. The rule comes from the shared
      * `heading-rule` utility in `global.css`, and `inline-block` keeps it
      * exactly as wide as the words. `data-heading-rule` is the hook
@@ -155,11 +155,11 @@ const serviceRow =
   </Section>
 
   {/**
-   * 4. Global presence. A white band under a faint diagonal
+   * 4. Global presence. A `canvas` band under a faint diagonal
    * stripe, holding the map, the copy, and the why choose list that used to
    * be its own differentiators section.
    */}
-  <Section tone="white" labelledBy="presence-heading" class="bg-diagonal">
+  <Section tone="canvas" labelledBy="presence-heading" class="bg-diagonal">
     <PresenceBand
       heading={home.presence.heading}
       headingId="presence-heading"
@@ -170,12 +170,12 @@ const serviceRow =
   </Section>
 
   {/**
-   * 5. Project showcase. Tint, so the light tones still alternate
-   * after the patterned presence band. It is the last band before the black
-   * footer, and it is left out entirely when the language has no projects.
+   * 5. Project showcase. `raised`, so the tones still alternate after
+   * the patterned presence band. It is the last band before the footer,
+   * and it is left out entirely when the language has no projects.
    */}
   {featuredProjects.length > 0 && (
-    <Section tone="tint" labelledBy="project-showcase-heading">
+    <Section tone="raised" labelledBy="project-showcase-heading">
       <ProjectShowcase
         heading={home.projectShowcase.heading}
         headingId="project-showcase-heading"
