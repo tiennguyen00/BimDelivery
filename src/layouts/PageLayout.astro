@@ -96,6 +96,14 @@ const [navigation, settings] = await Promise.all([
 </BaseLayout>
 
 {/**
+ * Smooth wheel scrolling on every page (prototype, 2026-10-09). It lives here,
+ * not in the header, because it belongs to the page rather than to the nav.
+ */}
+<script>
+  import '../scripts/smooth-scroll';
+</script>
+
+{/**
  * The one place the header's height is written down. It measures the header
  * card's box (not its shadow or corner curve) and has four readers: the header
  * bar's height, the mobile panel's top inset, and the home hero's pull up under

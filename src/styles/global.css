@@ -463,6 +463,13 @@
  * (44px) relies on the default 0.25rem step.
  */
 @layer base {
+  /* Anchor jumps, the skip link, and scripted scrolls glide rather than
+     snap. Wheel scrolling is smoothed separately by `smooth-scroll.ts`;
+     reduced motion turns both off. */
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-white font-sans text-body text-ink antialiased;
   }
