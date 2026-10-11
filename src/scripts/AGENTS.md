@@ -6,7 +6,7 @@ The site's plain browser scripts. Each one is a TypeScript module that a compone
 
 - `nav.ts`: the services dropdown and the mobile menu (spec 0004). `DESKTOP_QUERY` mirrors Tailwind's `lg` and the `--header-h` media query in `src/layouts/PageLayout.astro`; nothing enforces that the three agree.
 - `counters.ts`: the stat counter (spec 0005), reads `data-count-to` and `data-locale`.
-- `hero-carousel.ts`: the home hero's crossfade and its scrim panel entrance, on the browser's own Web Animations.
+- `carousel.ts`: the service intros' photo crossfade (spec 0013), on `CarouselDots`. Reads `data-carousel`, `data-carousel-slide`, `data-carousel-controls`, and `data-carousel-dot`. The home hero no longer uses it (2026-10-11).
 - `reveal.ts`: two separate halves (spec 0005). The scroll reveal (`data-reveal`, `data-reveal-stagger`) fades and rises a band once. The heading rule (`data-heading-rule`, look from the `heading-rule` utility in `src/styles/global.css`) draws the gold line on the way down and takes it back on the way up, every crossing.
 - `parallax.ts`: the Project page's tile parallax (spec 0014, revised 2026-10-09), on motion's `scroll()`. Reads `data-parallax-photo` (the photo's frame) and `data-parallax-text` (the words) inside each tile, and marks the tile `data-parallax-on`, which grows the frame (`parallax-photo` in `global.css`) so the sliding photo never shows its edge.
 - `enter.ts`: the Project page's load entrance on motion (2026-10-09). Reads `data-enter` (the step, 80ms each), held at opacity 0 from the first paint by the `data-enter` rule in `global.css` (2s failsafe), and marks each element `data-entered`. Leaves an element below the fold to `reveal.ts`, so it is imported after it.

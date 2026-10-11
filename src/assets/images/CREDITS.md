@@ -5,7 +5,7 @@ whenever you add one.
 
 ## Photos (internet links, spec 0006)
 
-No photo lives in this folder. Each one is an `https` link on
+One photo lives in this folder, the home hero's building (below). Every other one is an `https` link on
 `images.pexels.com`, written in its content entry. Astro downloads it at build,
 optimises it, and serves the copies from this site's own domain.
 
@@ -16,8 +16,6 @@ placeholders until real project photography arrives.
 
 | Used for                     | Pexels photo                                                                                                               | Licence        |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| Home hero                    | <https://www.pexels.com/photo/brown-and-black-house-miniature-3961750/>                                                    | Pexels License |
-| Home hero, photo 2           | <https://www.pexels.com/photo/31405835/>                                                                                   | Pexels License |
 | Home overview                | <https://www.pexels.com/photo/three-people-collaborating-on-a-project-6615107/>                                            | Pexels License |
 | Project page hero            | <https://www.pexels.com/photo/16846525/>                                                                                   | Pexels License |
 | About                        | <https://www.pexels.com/photo/professional-individuals-working-together-5582590/>                                          | Pexels License |
@@ -62,6 +60,12 @@ placeholders until real project photography arrives.
 | Seafront Hotel, gallery 3    | <https://www.pexels.com/photo/10135442/>                                                                                   | Pexels License |
 | Contact intro                | <https://www.pexels.com/photo/323705/>                                                                                     | Pexels License |
 | Contact form band            | <https://www.pexels.com/photo/2138126/>                                                                                    | Pexels License |
+
+## Local images
+
+| Used for  | File                                                                 | Source and licence                                                                                                          |
+| --------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Home hero | `home/test.png`, a building illustration on a transparent background | Drawn for this project as a placeholder on 2026-10-11; no third party licence. Replace with the real building before launch |
 
 ## Icons copied from open licence sets (spec 0013)
 

@@ -107,7 +107,7 @@
   --breakpoint-2xl: initial;
 
   /* ---- Type ---------------------------------------------------------- */
-  /* Clearing `--text-*` removes text-xs through text-9xl, so these six are
+  /* Clearing `--text-*` removes text-xs through text-9xl, so these seven are
      the only font sizes that exist. Without it, `text-sm` and `text-small`
      would both work and the scale would drift.
 
@@ -121,6 +121,13 @@
   --text-lead: 1.125rem;
   --text-body: 1rem;
   --text-small: 0.875rem;
+  /* The home hero's display line, over its photo. It is sized by its
+     container (`cqi`, the building's own width), not the viewport, so the words
+     keep their place against the building at every screen width. Only inside
+     an `@container`. */
+  --text-display: 13cqi;
+  /* The short label in capitals above a large title (the home hero's). */
+  --text-eyebrow: 0.875rem;
 
   /* Companion keys: line height and letter spacing ride on the size token, so
      `text-h1` is the whole type treatment and no component ever repeats them.
@@ -132,6 +139,10 @@
   --text-lead--line-height: 1.6;
   --text-body--line-height: 1.6;
   --text-small--line-height: 1.5;
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.02em;
+  --text-eyebrow--line-height: 1.5;
+  --text-eyebrow--letter-spacing: 0.16em;
 
   /* ---- Corners ------------------------------------------------------- */
   /* One radius for every button, card, field, and image. `full` is kept for
@@ -227,6 +238,18 @@
     transparent 1.5px
   );
   background-size: 12px 12px;
+}
+
+/**
+ * The home hero's building rising over the bottom of its display line
+ * (2026-10-11). The building image follows the `h1` and is pulled up by
+ * about a third of the line's cap height, so its roof covers the lower part of
+ * the letters and the words still read. In `cqi`, like `--text-display`, so
+ * the overlap keeps its share of the words at every width. Only inside an
+ * `@container`.
+ */
+@utility hero-overlap {
+  margin-top: -3.5cqi;
 }
 
 /**

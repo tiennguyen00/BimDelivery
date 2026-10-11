@@ -1,219 +1,195 @@
 ---
 /**
- * The front door's opening screen (spec 0005, revised 2026-09-21): up to three
- * photos in a crossfading carousel, filling the first screen on phones and
- * tablets and 80% of it from `lg` up, so the next band peeks in on desktop, a
- * centred see through dark panel holding the heading and subheading, one
- * button under it, and the carousel's controls at the bottom.
+ * The front door's opening screen (spec 0005; redesigned 2026-10-11 after the
+ * engineer's reference, not yet folded into the spec). From `lg` it fills the
+ * first screen in two columns inside the page's content width: the copy on
+ * the start side (a brass eyebrow, a large title, a paragraph, and one
+ * button) beside a thin dotted rule, and on the end side the building, cut out
+ * on a transparent background, with the page's `h1` set large behind its
+ * roof. The site's numbers sit in an outlined bar along the bottom. Below
+ * `lg` it is one column: the `h1` and the building, the copy, then the
+ * numbers.
  *
- * It is its own band, not a `Section` tone, because it is a photo surface.
- * It borrows `Section`'s frame from `styles.ts` so its gutters and widths
- * cannot drift from the rest of the page, and it carries `focus-contrast`, the
- * ring for photos and accent fills.
+ * It is its own band, not a `Section` tone, but it takes `Section`'s frame
+ * from `styles.ts` (gutters and the default width), so it lines up with every
+ * band below it. It slides up under the header card by `--header-h` and pads
+ * its content down by the same amount, so it fills the first screen exactly.
  *
- * The heading here is the page's only `h1`, which is why the component takes
- * the id rather than inventing one: the band points at the same id with
- * `aria-labelledby`.
+ * The depth is two things in source order, inside one `@container` (the
+ * building's column): the `h1`, sized by that column's width
+ * (`text-display`, in `cqi`), then the building, pulled up over the bottom of
+ * the letters by `hero-overlap` (also in `cqi`). Both scale with the column,
+ * so the roof covers the same share of the words at every width. Everything
+ * sits on `canvas`, so every word takes the plain dark pairs and the band
+ * needs no `focus-contrast`.
  *
- * Three things hold the design together, and each is easy to break quietly:
- *
- * - Text sits only on the scrim, never straight on the photo. `--color-scrim`
- *   is dark enough that `heading` text reaches 5.91:1 over a pure white
- *   pixel, so swapping the photo never needs a contrast check. The band itself
- *   is `canvas`, so a photo that fails to load leaves the copy on a dark band.
- * - The band slides up under the header card by `--header-h` and pads its
- *   content down by the same amount, so the panel centres in the visible area
- *   below the card. Both read the one value in `PageLayout`. Nothing between
- *   the header and this band may clip (`overflow`, `contain`), or the part
- *   pulled up under the card disappears.
- * - The carousel is an enhancement. The markup shows the first photo and hides
- *   the rest (transparent, `aria-hidden`), and the controls start `invisible`,
- *   so with no JavaScript the hero is one still photo with nothing dead to
- *   tab to. `src/scripts/carousel.ts`, the script the service intros share
- *   (spec 0013), reveals the controls and runs it. The controls are real
- *   buttons: the shared `CarouselDots` row, one dot per photo with a 24px hit
- *   area around its small visible mark, plus a previous and a next arrow on
- *   the sides that fade in while the pointer is over the band. There is no
- *   pause button: the slideshow holds still while the pointer is over the
- *   band or focus is inside it, and never plays for reduced motion.
- *
- * The scrim panel replays its entrance on every photo change: the heading and
- * its subheading move together as one block, fading in and rising into place
- * from 24px below, the same distance, duration, and curve as the scroll
- * reveal, so the two movements on the page read as one. The script finds the
- * panel by `data-carousel-panel`; the button under it stays still, because it is
- * outside the panel and a control that slides away from the pointer is worse
- * than a still one. The entrance never plays on the first paint, because the
- * hero is the largest contentful paint and nothing there may blink, and it
- * never plays at all for reduced motion.
- *
- * Every photo is a white background with its subject in the centre (spec
- * 0006). The dots are the shared `CarouselDots` row, `heading` at 50% and
- * solid for the one showing. The arrows are `panel` circles with a `heading`
- * chevron, so they read on a white photo and on the scrim alike.
- *
- * The first photo is the page's largest contentful paint, so it is the one
- * image on the site that loads eagerly and at a high fetch priority; the
- * others load lazily. Every photo is positioned to fill the band, so none
- * takes layout space or can shift anything as it arrives.
+ * The building is the page's largest contentful paint, so it loads eagerly
+ * and at a high fetch priority. The only thing that moves is the counter, the
+ * same `counters.ts` the stat bands use: it counts figures that are already
+ * correct in the HTML.
  */
-import { Image, inferRemoteSize } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
 import Button from '../ui/Button.astro';
-import CarouselDots from '../ui/CarouselDots.astro';
-import {
-  bandGutterClass,
-  bandPaddingClass,
-  bandWidthClass,
-  cx,
-} from '../ui/styles';
-import type { Link } from '../../lib/content';
+import Emphasis from '../ui/Emphasis.astro';
+import Icon from '../ui/Icon.astro';
+import { bandGutterClass, bandWidthClass, cx } from '../ui/styles';
+import type { Locale } from '../../i18n/locales';
+import type { Link, StatItem } from '../../lib/content';
 
 interface Props {
+  /** The short line in brass capitals above `subheading`. */
+  eyebrow: string;
+  /** The display line behind the building. */
   heading: string;
-  /** The id this band points at with `aria-labelledby`. */
+  /** The id this band points at with `aria-labelledby`, on the `h1`. */
   headingId: string;
+  /** The large title; a `==phrase==` in it turns brass. */
   subheading: string;
-  /** One to three photo links (spec 0006), shown in this order. */
-  images: readonly { src: string; alt: string }[];
+  lead: string;
+  /** The building on a transparent background. */
+  image: { src: ImageMetadata; alt: string };
   primaryCta: Link;
+  stats: readonly StatItem[];
+  /** The page's language, used to group the numbers and handed to the script. */
+  lang: Locale;
 }
 
-const { heading, headingId, subheading, images, primaryCta } = Astro.props;
+const {
+  eyebrow,
+  heading,
+  headingId,
+  subheading,
+  lead,
+  image,
+  primaryCta,
+  stats,
+  lang,
+} = Astro.props;
 
-// Read once at build from each link, like a local file's metadata.
-const slides = await Promise.all(
-  images.map(async (image) => ({
-    ...image,
-    source: await inferRemoteSize(image.src),
-  })),
-);
-const hasCarousel = slides.length > 1;
-
-/**
- * The previous and next arrows, one on each side, vertically centred in the
- * band. They start `invisible` like the dots, for the same no JavaScript
- * reason. Once revealed they stay transparent until the pointer is over the
- * band, or the arrow itself has keyboard focus, so a keyboard user always sees
- * where they are. Below `md` they are left out: the panel fills the width
- * there, and the dots already do the job.
- */
-const heroArrowClass =
-  'invisible absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-panel text-heading opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100 focus-visible:opacity-100 md:grid';
-
-/** The widths the photo is generated at, before the source width cap. */
-const HERO_STEPS: readonly number[] = [640, 960, 1280, 1920];
-/** Wider than this is never worth the bytes, even on a large monitor. */
-const HERO_MAX_WIDTH = 2560;
+/** The widths the building is generated at, before the source width cap. */
+const HERO_STEPS: readonly number[] = [480, 720, 960, 1280];
 
 /**
- * The steps below the source width, then the source width itself capped at
- * 2560, so a wider photo later gains the larger steps with no code change and
- * nothing is ever upscaled. A source under 640px yields just its own width.
+ * The steps below the source width, then the source width itself, so nothing
+ * is ever upscaled. A source under 480px yields just its own width.
  */
-const heroWidths = (sourceWidth: number): number[] => {
-  const cap = Math.min(sourceWidth, HERO_MAX_WIDTH);
-  return [...HERO_STEPS.filter((width) => width < cap), cap];
-};
+const heroWidths = (sourceWidth: number): number[] => [
+  ...HERO_STEPS.filter((width) => width < sourceWidth),
+  sourceWidth,
+];
+
+/** The building's column: the full width below `lg`, about half from it. */
+const HERO_SIZES = '(min-width: 64rem) 40vw, 100vw';
+
+const format = new Intl.NumberFormat(lang);
+
+/** The dotted rule's ends: three small dots each. */
+const RULE_DOTS: readonly number[] = [0, 1, 2];
 ---
 
 <section
   aria-labelledby={headingId}
-  data-carousel={hasCarousel ? '' : undefined}
   class={cx(
-    'group/hero focus-contrast relative isolate -mt-(--header-h) flex min-h-svh flex-col bg-canvas lg:min-h-[80svh]',
     bandGutterClass,
+    'relative isolate -mt-(--header-h) bg-canvas pt-(--header-h) lg:flex lg:min-h-svh lg:flex-col',
   )}
 >
-  {slides.map(({ src, alt, source }, index) => (
-    <Image
-      src={src}
-      alt={alt}
-      width={source.width}
-      height={source.height}
-      widths={heroWidths(source.width)}
-      sizes="100vw"
-      loading={index === 0 ? 'eager' : 'lazy'}
-      fetchpriority={index === 0 ? 'high' : undefined}
-      aria-hidden={index === 0 ? undefined : 'true'}
-      data-carousel-slide
-      class={cx(
-        'absolute inset-0 -z-10 size-full object-cover object-center transition-opacity duration-1000',
-        index === 0 ? 'opacity-100' : 'opacity-0',
-      )}
-    />
-  ))}
-
-  {hasCarousel && (
-    <>
-      <button
-        type="button"
-        data-carousel-arrow="prev"
-        aria-label="Show the previous photo"
-        class={cx(heroArrowClass, 'inset-s-4 lg:inset-s-8')}
-      >
-        <svg aria-hidden="true" viewBox="0 0 16 16" class="size-4">
-          <path
-            d="M10 3 5 8l5 5"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-      </button>
-      <button
-        type="button"
-        data-carousel-arrow="next"
-        aria-label="Show the next photo"
-        class={cx(heroArrowClass, 'inset-e-4 lg:inset-e-8')}
-      >
-        <svg aria-hidden="true" viewBox="0 0 16 16" class="size-4">
-          <path
-            d="m6 3 5 5-5 5"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-      </button>
-    </>
-  )}
-
-  <div class="flex flex-1 flex-col items-center justify-center pt-(--header-h)">
-    <div class={cx(bandPaddingClass, 'flex w-full flex-col items-center')}>
-      <div
-        data-carousel-panel
-        class={cx(
-          bandWidthClass.default,
-          'rounded-ui bg-scrim px-6 py-8 text-center md:px-10 md:py-10',
-        )}
-      >
-        <h1 id={headingId} class="text-balance text-heading">
+  <div class={cx(bandWidthClass.default, 'flex flex-col lg:flex-1')}>
+    <div class="grid items-center gap-10 py-10 md:py-12 lg:flex-1 lg:grid-cols-2 lg:gap-12">
+      {/**
+       * The building's column, first in the source so the `h1` leads the
+       * band; from `lg` it moves to the end side. A faint `raised` glow sits
+       * behind it, decoration only.
+       */}
+      <div class="@container relative lg:col-start-2 lg:row-start-1">
+        <div
+          aria-hidden="true"
+          class="absolute inset-0 -z-10 bg-radial from-raised to-transparent to-70%"
+        ></div>
+        <h1
+          id={headingId}
+          class="text-center text-display whitespace-nowrap uppercase"
+        >
           {heading}
         </h1>
-        <p class="mt-6 text-lead text-heading">{subheading}</p>
+        <Image
+          src={image.src}
+          alt={image.alt}
+          widths={heroWidths(image.src.width)}
+          sizes={HERO_SIZES}
+          loading="eager"
+          fetchpriority="high"
+          class="relative hero-overlap h-auto w-full"
+        />
       </div>
 
-      <Button href={primaryCta.href} class="mt-8">
-        {primaryCta.label}
-      </Button>
-    </div>
-  </div>
+      <div class="relative lg:col-start-1 lg:row-start-1 lg:ps-12">
+        <div
+          aria-hidden="true"
+          class="absolute inset-y-0 inset-s-0 hidden flex-col items-center gap-1.5 lg:flex"
+        >
+          {RULE_DOTS.map(() => (
+            <span class="size-1 rounded-full bg-heading" />
+          ))}
+          <span class="w-px flex-1 bg-heading/30"></span>
+          {RULE_DOTS.map(() => (
+            <span class="size-1 rounded-full bg-heading" />
+          ))}
+        </div>
 
-  {hasCarousel ? (
-    <CarouselDots count={slides.length} class="pb-8" />
-  ) : (
-    <div class="pb-8" />
-  )}
+        <p class="text-eyebrow font-semibold text-accent uppercase">
+          {eyebrow}
+        </p>
+        <p class="mt-4 text-h1 font-medium text-balance text-heading">
+          <Emphasis text={subheading} />
+        </p>
+        <p class="mt-6 max-w-narrow text-lead text-ink">{lead}</p>
+        <Button href={primaryCta.href} class="mt-8">
+          {primaryCta.label}
+          <Icon name="arrow-right" size={20} />
+        </Button>
+      </div>
+    </div>
+
+    {/**
+     * One description list, as in `StatsBand`: each label is the term and its
+     * number the definition, shown number first by `flex-col-reverse`. The
+     * icon is hidden, because the label already says what it pictures. An
+     * outline on `canvas`, not a filled box, so every pair is a `canvas` one.
+     */}
+    <dl
+      data-stats-band
+      data-locale={lang}
+      class="mb-10 grid grid-cols-2 gap-y-2 rounded-card border border-line py-4 lg:mb-8 lg:grid-cols-4 lg:divide-x lg:divide-line lg:py-6"
+    >
+      {stats.map((item) => (
+        <div class="flex flex-col items-start gap-3 px-5 py-2 lg:flex-row lg:items-center lg:justify-center lg:gap-4">
+          <span
+            aria-hidden="true"
+            class="grid size-12 shrink-0 place-items-center rounded-full border border-accent"
+          >
+            <Icon name={item.icon} size={24} class="fill-accent" />
+          </span>
+          <div class="flex flex-col-reverse">
+            <dt class="text-small text-ink-muted">{item.label}</dt>
+            <dd class="text-h2 font-semibold text-heading">
+              <span data-count-to={item.value}>
+                {format.format(item.value)}
+              </span>
+              {item.suffix && <span class="text-accent">{item.suffix}</span>}
+            </dd>
+          </div>
+        </div>
+      ))}
+    </dl>
+  </div>
 </section>
 
 {/**
- * The same shape as the counters in `StatsBand.astro`: one `<script>`
- * importing a module, which Astro bundles and serves.
+ * The same module `StatsBand` imports. Astro bundles it once however many
+ * components ask for it.
  */}
 <script>
-  import '../../scripts/carousel';
+  import '../../scripts/counters';
 </script>

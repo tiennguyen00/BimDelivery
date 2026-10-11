@@ -1,35 +1,25 @@
 ---
 /**
  * The intro band (spec 0005): a `canvas` band under the hero with a centred
- * heading, a short company introduction, and one `panel` card per stat.
+ * heading and a short company introduction. The site's numbers, once cards
+ * here, moved into the hero's bar on 2026-10-11.
  *
- * Two things move on their own: the counter, which runs once, and the accent
- * heading words, which type through their list forever (spec 0009). That loop
- * has no pause button, a known WCAG 2.2.2 gap recorded in the spec. The cards
- * answer a hover (lift, accent line runs), and the global reduced motion cut
- * makes those instant.
+ * One thing moves on its own: the accent heading words, which type through
+ * their list forever (spec 0009). That loop has no pause button, a known WCAG
+ * 2.2.2 gap recorded in the spec.
  *
  * It is its own band rather than a `Section` tone, like `CtaBand` and the
  * hero. It borrows the shared band frame from `styles.ts`; the base focus
  * ring passes on `canvas`, so it needs no `focus-contrast`.
  *
  * The copy is `heading` (15.83:1) and the highlighted words `accent`
- * (7.71:1). Inside the `panel` cards the icon is an `accent` fill and the
- * number, a word, is `accent` too (5.04:1).
- *
- * The cards are the `stats` entry, the same numbers `StatsBand` shows, so they
- * count up the same way: the grid carries `data-stats-band` and
- * `data-locale`, each number `data-count-to`, and the one counter script
- * enhances figures that are already correct in the HTML.
+ * (7.71:1).
  */
-import Icon from '../ui/Icon.astro';
 import {
   bandGutterClass,
   bandPaddingClass,
   bandWidthClass,
 } from '../ui/styles';
-import type { Locale } from '../../i18n/locales';
-import type { StatItem } from '../../lib/content';
 
 interface Props {
   heading: string;
@@ -39,15 +29,9 @@ interface Props {
   headingId: string;
   lead: { highlight: string; text: string };
   paragraphs: readonly string[];
-  stats: readonly StatItem[];
-  /** The page's language, used to group the numbers and handed to the script. */
-  lang: Locale;
 }
 
-const { heading, headingHighlight, headingId, lead, paragraphs, stats, lang } =
-  Astro.props;
-
-const format = new Intl.NumberFormat(lang);
+const { heading, headingHighlight, headingId, lead, paragraphs } = Astro.props;
 ---
 
 <section
@@ -104,61 +88,9 @@ const format = new Intl.NumberFormat(lang);
         <p>{paragraph}</p>
       ))}
     </div>
-
-    {/**
-     * One description list, as in `StatsBand`: each label is the term and its
-     * number the definition, shown number first by `flex-col-reverse`. The
-     * icon sits outside the pair and is hidden, because the label already
-     * says what it pictures.
-     */}
-    <dl
-      data-stats-band
-      data-locale={lang}
-      class="mt-12 grid grid-cols-2 gap-4 md:gap-6 lg:mt-14 lg:grid-cols-4 lg:gap-16"
-    >
-      {stats.map((item) => (
-        <div class="group relative flex flex-col items-center overflow-hidden rounded-ui bg-panel px-3 py-6 text-center transition duration-300 ease-out motion-safe:hover:-translate-y-2 md:px-6 md:py-8">
-          <Icon
-            name={item.icon}
-            size={96}
-            class="size-20 fill-accent md:size-24"
-          />
-          <div class="mt-4 flex flex-col-reverse items-center gap-1">
-            <dt class="font-bold text-ink-strong md:text-lead">{item.label}</dt>
-            <dd class="text-h2 font-bold text-accent">
-              <span data-count-to={item.value}>
-                {format.format(item.value)}
-              </span>
-              {item.suffix && <span>{item.suffix}</span>}
-            </dd>
-          </div>
-          {/**
-           * The accent hover line. On hover it runs left to right just after
-           * the card lifts; on leave it runs straight back the way it came,
-           * right to left, at the same speed and with no wait.
-           *
-           * One property does all of it: `scale` from `origin-left`, so the
-           * browser plays the same transition in reverse. The wait belongs to
-           * the hover state alone, which is why it is `group-hover:delay-150`
-           * rather than part of a shared shorthand: on leave the element falls
-           * back to no delay and retracts at once. A line at zero width shows
-           * nothing, so it needs no opacity of its own.
-           */}
-          <span
-            aria-hidden="true"
-            class="absolute inset-x-0 bottom-0 h-2 origin-left scale-x-0 bg-accent transition-[scale] duration-500 ease-out group-hover:scale-x-100 group-hover:delay-150"
-          ></span>
-        </div>
-      ))}
-    </dl>
   </div>
 </section>
 
-{/**
- * The same module `StatsBand` imports. Astro bundles it once however many
- * components ask for it, and it counts every `data-stats-band` on the page.
- */}
 <script>
-  import '../../scripts/counters';
   import '../../scripts/typewriter';
 </script>

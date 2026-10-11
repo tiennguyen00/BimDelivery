@@ -1151,7 +1151,7 @@ const headCellClass =
       </p>
       <div class="relative isolate mt-6 max-w-narrow overflow-hidden rounded-ui bg-canvas">
         <Image
-          src={home.hero.images[0].src}
+          src={home.overview.image.src}
           alt=""
           inferSize
           widths={[640, 1280]}
@@ -1290,7 +1290,7 @@ const headCellClass =
     <Section labelledBy="sg-photo-focus">
       <h2 id="sg-photo-focus">Focus on a photo</h2>
       <p class="mt-4 max-w-narrow">
-        The home hero's surface: the real hero photo, the{' '}
+        A photo surface, as on the Project hero: the home overview's photo, the{' '}
         <code class="font-mono text-small">--color-scrim</code> panel, and
         heading text on it. Heading on the scrim is 5.91:1 even over a pure
         white pixel, so no photo swap needs a contrast check.
@@ -1303,7 +1303,7 @@ const headCellClass =
 
       <div class="focus-contrast relative isolate mt-8 flex flex-col items-center gap-6 overflow-hidden rounded-ui bg-canvas px-4 py-12">
         <Image
-          src={home.hero.images[0].src}
+          src={home.overview.image.src}
           alt=""
           inferSize
           widths={[640, 1280]}
@@ -1311,7 +1311,7 @@ const headCellClass =
           class="absolute inset-0 -z-10 size-full object-cover object-center"
         />
         <p class="rounded-ui bg-scrim px-6 py-4 text-lead text-heading">
-          {home.hero.subheading}
+          <Emphasis text={home.hero.subheading} onPhoto />
         </p>
         <Button href={home.hero.primaryCta.href}>
           {home.hero.primaryCta.label}

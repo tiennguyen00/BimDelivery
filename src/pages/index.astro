@@ -79,23 +79,25 @@ const serviceRow =
 <PageLayout title={home.seo.title} description={home.seo.description}>
   {/**
    * 1. Hero. Its own full bleed photo band, not a Section tone, and the only
-   * band on the site that slides up under the header card.
+   * band on the site that slides up under the header card. It also carries
+   * the site's numbers, in a bar along its bottom.
    */}
   <Hero
+    eyebrow={home.hero.eyebrow}
     heading={home.hero.heading}
     headingId="hero-heading"
     subheading={home.hero.subheading}
-    images={home.hero.images.map((image) => ({
-      src: image.src,
-      alt: image.alt ?? '',
-    }))}
+    lead={home.hero.lead}
+    image={{ src: home.hero.image.src, alt: home.hero.image.alt ?? '' }}
     primaryCta={home.hero.primaryCta}
+    stats={stats}
+    lang={lang}
   />
 
   {/**
-   * 2. Intro. Its own `canvas` band, not a Section tone, holding the
-   * site's numbers as cards. That is why there is no separate stats band on
-   * this page: the same figures twice would read as a mistake.
+   * 2. Intro. Its own `canvas` band, not a Section tone. The site's numbers
+   * are in the hero's bar, so this page has no separate stats band: the same
+   * figures twice would read as a mistake.
    */}
   <IntroBand
     heading={home.intro.heading}
@@ -103,8 +105,6 @@ const serviceRow =
     headingId="intro-heading"
     lead={home.intro.lead}
     paragraphs={home.intro.paragraphs}
-    stats={stats}
-    lang={lang}
   />
 
   {/**

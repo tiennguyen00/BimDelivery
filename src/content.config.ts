@@ -302,10 +302,21 @@ const home = defineCollection({
       // `secondaryCta`, or any other unknown key, fails the build by name
       // instead of being dropped without a word.
       hero: z.strictObject({
+        /** The short line above `subheading`, in brass capitals. */
+        eyebrow: text,
+        /** The display line over the photo, the page's `h1`. */
         heading: text,
-        subheading: text,
-        /** The carousel's photos, in order; the first is the one that loads first. */
-        images: z.array(photoSchema).min(1).max(3),
+        /** The large title on the dark side; `==phrase==` turns it brass. */
+        subheading: emphasisText,
+        /** The paragraph under `subheading`. */
+        lead: text,
+        /**
+         * The building, cut out on a transparent background: a local PNG or
+         * WebP, the one photo that is not a Pexels link (a cut-out cannot be).
+         * It is drawn over `heading`, so its roof covers the bottom of the
+         * words.
+         */
+        image: imageSchema(image),
         primaryCta: link,
       }),
       // The intro band under the hero (spec 0005). Its numbers are the

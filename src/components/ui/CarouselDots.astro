@@ -1,20 +1,19 @@
 ---
 /**
- * The dots under a photo carousel (spec 0013): the home hero and each
- * service page's intro share this row, and `src/scripts/carousel.ts` runs
- * both.
+ * The dots under a photo carousel (spec 0013): each service page's intro
+ * uses this row, and `src/scripts/carousel.ts` runs it.
  *
  * One real button per photo, named "Show photo N of M", each a 24px hit area
  * around a small mark: `heading` at 50 percent, or solid `heading` for the
  * photo showing (`aria-current`). At 50 percent a dot still reads 4.73:1 on
  * `canvas`, over the 3:1 a control's state needs; at 30 percent it would be
- * 2.48:1 and lost on a bright hero photo.
+ * 2.48:1 and lost on a bright photo.
  *
  * The row ships `invisible`, so with no JavaScript there is nothing dead to
  * tab to; the script reveals it once the carousel runs. A carousel with one
  * photo renders no dots at all, so leave this out there.
  *
- * The label is fixed English, the same string the hero always used. Moving
+ * The label is fixed English. Moving
  * it into content is a follow up owed before a second language (spec 0013).
  */
 import { cx } from './styles';
