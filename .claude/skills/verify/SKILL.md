@@ -25,7 +25,8 @@ npm i playwright-core@1.55.0          # in a scratch dir, not the repo
 
 ## Flows worth driving on the home page
 
-- Carousels (the home hero and each service intro share `src/scripts/carousel.ts`, spec 0013): inside a `[data-carousel]` root, `[data-carousel-slide]` classes `opacity-100`/`opacity-0`, `[data-carousel-dot]` `aria-current`, and on the hero only `[data-carousel-arrow="prev|next"]`. Autoplay is 6 s and pauses on hover and focus.
+- Home hero (2026-10-11): the building cut-out (`src/assets/images/home/test.png`, a placeholder) with the `h1` (`#hero-heading`) behind its roof, the copy beside it, and the site's numbers in a bar along the bottom (the counter's `[data-stats-band]` lives here, not in the intro band). Its content edges must match the intro band's at every width, and 390 px has no horizontal scroll.
+- Carousels (each service intro, `src/scripts/carousel.ts`, spec 0013): inside a `[data-carousel]` root, `[data-carousel-slide]` classes `opacity-100`/`opacity-0`, `[data-carousel-dot]` `aria-current`. Autoplay is 6 s and pauses on hover and focus.
 - Scroll reveal: `[data-reveal]` and `[data-reveal-stagger] > *` start at opacity 0 below the fold; scroll slowly to the bottom and check none stay hidden.
 - Counters: `[data-stats-band]` / `[data-count-to]`. Sampling text at intervals misses the animation; attach a `MutationObserver` to one number and record every value.
 - Typewriter: `[data-typewriter-live]`, words from `data-words`.

@@ -154,7 +154,7 @@ alpha blending over the worst case pixel. The working is in spec 0003's
 | heading (presence marker labels) on their `canvas` chip at 80%, over the globe or a flat map dot | | at least 6.81 | 4.5 |
 | heading at 50% (inactive carousel dot) / heading (active) | canvas | 4.73 / 15.83 | 3.0 |
 | heading / ink / ink-muted / accent on a `bg-dots` dot centre (`#2e3639`) | | 10.57 / 7.78 / 5.56 / 5.15 | 4.5 |
-| heading on `scrim` over a pure white pixel (`#555b5e`): the home hero, the Project hero, every project tile caption | | 5.91 | 4.5 |
+| heading on `scrim` over a pure white pixel (`#555b5e`): the Project hero, every project tile caption | | 5.91 | 4.5 |
 | on the contact form band's worst pixel (`#31393c`): heading / ink / ink-muted / error / accent | | 10.11 / 7.44 / 5.32 / 5.15 / 4.92 | 4.5 |
 | heading on the Coffee wash's darkest point (`#614438`) | | 7.52 | 4.5 |
 | two colour ring, canvas inner / heading outer | accent fill / any photo | canvas on accent 7.71; on any colour one band reaches at least 3.98 | 3.0 |
@@ -187,6 +187,8 @@ page browser zoom scales them.
 | `--text-lead` | 18px | 1.6 | normal | 400 | Intro paragraphs |
 | `--text-body` | 16px | 1.6 | normal | 400 | Body text |
 | `--text-small` | 14px | 1.5 | normal | 400 | Labels, hints, errors, captions |
+| `--text-display` | 13cqi, 13 percent of its container's width | 1 | -0.02em | 700 | The home hero's `h1` behind its building, in capitals. Only inside an `@container` (the building's column), so it scales with the building and the roof covers the same share of the letters |
+| `--text-eyebrow` | 14px | 1.5 | 0.16em | 600 | The short brass label in capitals above a large title (the home hero's) |
 
 Line height and letter spacing are companion keys on the size token, so
 `text-h1` sets all three at once. **Never write line height or letter spacing
@@ -280,16 +282,25 @@ section has no seam; the patterns carry the rhythm there.
 
 The bands that are not a tone each borrow the band frame:
 
-- **Photo bands** (the home hero, the Project hero, the contact form band):
+- **Photo bands** (the Project hero, the contact form band):
   a photo under `scrim` or `scrim-strong`, on a `canvas` band so a photo that
   fails to load leaves the same words on a dark band. Every word is `heading`
   (on the form band, the field and card rules hold too: they are measured at
   its worst pixel). Each carries `focus-contrast`.
+- **The home hero** (2026-10-11, after the engineer's reference): a `canvas`
+  band in the page's default width (the band frame), two columns from `lg`.
+  The copy (a brass eyebrow, the title with a brass `==` phrase, the
+  paragraph, the button) sits beside a dotted rule; the building, a cut-out
+  on a transparent background, sits on the end side with the `h1` set large
+  behind its roof (`text-display`, and `hero-overlap` pulls the building up
+  over the letters). The numbers sit in an outlined bar along the bottom.
+  Everything is on `canvas`, so every pair is a `canvas` one and the band
+  takes no `focus-contrast`.
 - **The accent band** (`CtaBand`): brass, `on-accent` words, a `canvas` link.
   It carries `focus-contrast`.
-- **The home intro band**: a `canvas` band with `heading` copy, `accent`
-  highlighted words, and `panel` stat cards. The base ring passes there, so no
-  `focus-contrast`. Two things on it move: the counter, which runs once, and
+- **The home intro band**: a `canvas` band with `heading` copy and `accent`
+  highlighted words. Its stat cards moved into the hero's bar (2026-10-11).
+  The base ring passes there, so no `focus-contrast`. One thing on it moves:
   the typed heading words.
 - **The footer**: a `canvas` band with a `line` hairline on top. No
   `focus-contrast`.
@@ -835,13 +846,13 @@ and process bands. Both values render a `canvas` `Section`: `stripe` under
 | `count` | `number` (required), one dot per photo, two or more | |
 | `class` | `string` | none |
 
-The dots under a photo carousel, shared by the home hero and each service
-intro (spec 0013), run by `src/scripts/carousel.ts`.
+The dots under a photo carousel, on each service intro (spec 0013), run by
+`src/scripts/carousel.ts`.
 
 - One real button per photo, named "Show photo N of M", a 24px hit area
   around a small mark: `heading` at 50 percent, or solid `heading` for the
   photo showing (`aria-current`). At 50 percent a dot reads 4.73:1 on
-  `canvas`; at 30 percent it would be 2.48:1 and lost on a bright hero photo.
+  `canvas`; at 30 percent it would be 2.48:1 and lost on a bright photo.
 - The row ships `invisible` and the script reveals it, so with no JavaScript
   there is nothing dead to tab to. **Do not** render it for a single photo.
 - The label is fixed English, a follow up owed before a second language.
@@ -982,7 +993,7 @@ on it, then the filter.
   `focus-contrast`. The photo loads eagerly at high fetch priority, the
   page's largest paint, and a `bg-scrim` layer covers all of it, so every
   word on the band is `heading` at 5.91:1 at worst. The `h1` takes no accent
-  rule and no capitals, like the home hero's.
+  rule and no capitals.
 - **Its intro passes `onPhoto` to `Emphasis`**, so a `==` phrase there renders
   bold `heading`, never brass: `accent` over the scrim is 2.88:1.
 - **The filter is one named `<form>`** (a landmark, `projectPage.filter.label`),
@@ -1120,7 +1131,7 @@ Two rules, chosen by the surface, and no exceptions (spec 0003, revised
   gap, on `canvas` (7.71:1), `raised` (6.84:1), `panel` (5.04:1), and either
   pattern. This is the base rule in `global.css`, and it covers the home
   intro band, the pattern bands, and the footer with nothing placed on them.
-- **On a photo or an accent fill** (the home hero's photo, the Project page
+- **On a photo or an accent fill** (the Project page
   hero's photo (its service tabs draw the ring on their label,
   `peer-focus-visible:`, since the radio itself is invisible), the contact
   form band, `CtaBand`'s brass band, and the `Accordion`'s brass bars): a two
@@ -1147,11 +1158,10 @@ Reduced motion turns both off, and with no script the page scrolls natively.
 
 Motion is enhancement only. The built HTML draws every band complete and every
 accent rule full width, and no CSS rule hides anything waiting for a script.
-Three plain scripts move things on the home page, and each stops entirely for
-reduced motion. Two of them move two things each: the carousel script moves the
-hero's photos and the panel over them, and the reveal script moves the bands
-and the accent rules under the section headings. The service pages use the same
-carousel and reveal scripts and add none (spec 0013).
+Plain scripts move things on the home page, and each stops entirely for
+reduced motion. The reveal script moves two things: the bands and the accent
+rules under the section headings. In the home hero only the counter moves. The service
+pages use the same reveal script and add the carousel (spec 0013).
 
 - **The scroll reveal**, the first half of `src/scripts/reveal.ts` (spec 0005).
   Below the hero and the intro band, these fade and rise once as they scroll
@@ -1194,32 +1204,15 @@ carousel and reveal scripts and add none (spec 0013).
   the `heading-rule` utility and the motion hook is `data-heading-rule`,
   written in markup and never in content: a page that takes the class without
   importing the script gets a still, full width rule.
-- **The carousel** (`src/scripts/carousel.ts`, the hero's script generalised
-  by spec 0013), on the home hero and each service intro. It finds its root
-  by `data-carousel` and inside it `data-carousel-slide`, the `CarouselDots`
-  hooks, and two only the hero has, `data-carousel-arrow` and
-  `data-carousel-panel`. With two or more photos it crossfades every 6s with
-  a 1s fade, wrapping to the first. It holds while the pointer is over the
-  root or focus is inside it; a dot or arrow shows a photo at once and gives
-  it a full 6s. With reduced motion it never autoplays, and the controls
-  still work. There is no pause button, a known WCAG 2.2.2 gap spec 0005
-  records and spec 0013 carries to the service intros; a pause control is a
-  follow up.
-- **The hero scrim panel's entrance** (the same script). On every photo change,
-  whether the clock, a dot, or an arrow asked for it, the panel holding the
-  heading and its subheading fades from 0 and rises into place from 24px below
-  over 600ms with an ease out, the scroll reveal's language, so the two moving
-  things match. The two lines move together as one block, so their spacing
-  never shifts; the button below the panel is outside it and stays still, since
-  a control that slides away from the pointer is worse than a still one. It
-  plays only on a change, never on the first paint: the hero is the largest
-  contentful paint and nothing there may blink. The script finds the panel by
-  `data-carousel-panel`, and animates it with the browser's own Web Animations
-  rather than a class or `motion`, so the hero's script stays dependency free
-  and each new entrance supersedes the one running. The animation does not
-  fill, so the panel holds no inline style once it settles. With reduced motion
-  it does not play at all (the `global.css` cut does not reach a Web Animation,
-  so the script asks for itself).
+- **The carousel** (`src/scripts/carousel.ts`, the old home hero's script
+  generalised by spec 0013), on each service intro. It finds its root by
+  `data-carousel` and inside it `data-carousel-slide` and the `CarouselDots`
+  hooks. With two or more photos it crossfades every 6s with a 1s fade,
+  wrapping to the first. It holds while the pointer is over the root or focus
+  is inside it; a dot shows a photo at once and gives it a full 6s. With
+  reduced motion it never autoplays, and the dots still work. There is no
+  pause button, a known WCAG 2.2.2 gap spec 0005 records and spec 0013
+  carries to the service intros; a pause control is a follow up.
 - **The counter** (`src/scripts/counters.ts`), once per band, described under
   `StatsBand`.
 - **The globe** (`src/scripts/globe.ts`, spec 0017), in the presence band. It
@@ -1341,7 +1334,7 @@ carousel and reveal scripts and add none (spec 0013).
   rules draw with the scroll direction. The next project band and the accent
   band do not move.
 - **Don't** give the hero or the intro band the fade-and-rise: the hero is the
-  largest contentful paint, and the intro band already moves with the counter.
+  largest contentful paint, and the intro band already moves with its typed words.
   What is banned there is revealing the band, not all motion on it. The intro
   heading's accent rule draws like every other section heading's, because the
   rule belongs to the heading treatment rather than to the band.
@@ -1373,9 +1366,9 @@ carousel and reveal scripts and add none (spec 0013).
   slot, from a content entry.
 - Exactly six scripts ship, and all of them only enhance markup that already
   works: `Header` imports `src/scripts/nav.ts` (spec 0004); `StatsBand` and the
-  home page's `IntroBand` import `src/scripts/counters.ts`, `Hero` and the
-  service pages' `IntroCarousel` import `src/scripts/carousel.ts` (the hero's
-  script, renamed and shared by spec 0013), and the home, About, Contact,
+  home page's `Hero` import `src/scripts/counters.ts`, the service
+  pages' `IntroCarousel` imports `src/scripts/carousel.ts` (the old home
+  hero's script, renamed by spec 0013), and the home, About, Contact,
   service, Project, and project detail pages import `src/scripts/reveal.ts`
   (all spec 0005; About by spec 0010, which adds no script: its entrance and
   accordion are CSS and HTML; the service pages by spec 0013, the Project page
