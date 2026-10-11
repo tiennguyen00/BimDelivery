@@ -73,7 +73,7 @@ const entranceStyle = (index: number): string | undefined =>
         style={entranceStyle(index)}
       >
         <dt class="font-semibold text-ink-strong">{item.label}</dt>
-        <dd class="text-h1 font-bold text-balance text-accent">
+        <dd class="font-display text-h1 font-bold text-balance text-accent lining-nums">
           <span data-count-to={item.value}>{format.format(item.value)}</span>
           {item.suffix && <span>{item.suffix}</span>}
         </dd>

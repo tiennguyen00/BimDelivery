@@ -164,12 +164,19 @@
 }
 
 /**
- * `inline` because the value points at a variable Astro's fonts API defines
- * elsewhere in the page CSS. Inlining it means `font-sans` emits the whole
- * stack rather than a var() chain that could resolve to nothing.
+ * `inline` because the values point at variables Astro's fonts API defines
+ * elsewhere in the page CSS. Inlining them means `font-sans` and
+ * `font-display` emit the whole stack rather than a var() chain that could
+ * resolve to nothing.
+ *
+ * `font-sans` (Inter) is body copy and every UI word: nav, buttons, fields,
+ * eyebrows, and small capitals labels. `font-display` (Playfair Display) is
+ * headings and the large display numerals only, never text at the small or
+ * body size, where its hairlines thin out on the dark surfaces.
  */
 @theme inline {
   --font-sans: var(--font-inter), sans-serif;
+  --font-display: var(--font-playfair), serif;
 }
 
 /**
@@ -494,15 +501,21 @@
   }
 
   h1 {
-    @apply text-h1 font-bold text-heading;
+    @apply font-display text-h1 font-bold text-heading;
   }
 
   h2 {
-    @apply text-h2 font-bold text-heading;
+    @apply font-display text-h2 font-bold text-heading;
   }
 
   h3 {
-    @apply text-h3 font-semibold text-ink-strong;
+    @apply font-display text-h3 font-semibold text-ink-strong;
+  }
+
+  /* No size or colour of its own: an `h4` is always styled where it is
+     used, and only takes the heading face from here. */
+  h4 {
+    @apply font-display;
   }
 
   /* Keyboard focus only, never a mouse click. Brass reaches 3:1 on every

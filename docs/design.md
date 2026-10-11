@@ -14,9 +14,10 @@ feel of a firm that delivers precise drawings, at night.
 
 **Source**: the five colours are the client's own palette (Chinese Black, Dark
 Jungle Green, Jet, Coffee, Antique Brass), adopted on 2026-10-09; the cream
-text family is derived from the brass hue. The typeface is still Inter, and
-the logo and certification badges are still placeholders. Replacing those
-before launch is a tracked follow up (feature 14).
+text family is derived from the brass hue. Headings moved to Playfair Display
+on 2026-10-11, with Inter kept for body copy and UI. The logo and
+certification badges are still placeholders. Replacing those before launch is
+a tracked follow up (feature 14).
 
 ## Build mandate
 
@@ -171,9 +172,21 @@ Recorded so a later reader does not "fix" them.
 | accent on a photo or on the wash | 2.88 / 3.66 | Forbidden as a word there by the accent role rule |
 ## Type
 
-Inter, downloaded at build by Astro's fonts API and served from this site's own
-origin, with a metric matched fallback so nothing shifts as it loads. It is the
-only typeface.
+Two typefaces, both downloaded at build by Astro's fonts API and served from
+this site's own origin, each with a metric matched fallback so nothing shifts
+as it loads (2026-10-11):
+
+- **Playfair Display** (`font-display`), a high contrast serif, for headings
+  and display numerals: every `h1` to `h4` (from the base layer), the home
+  hero's line beside the building, the numbers of the stats bars, and the
+  `01` numerals on the home service cards and the service features cards.
+  Numerals in it also take `lining-nums`, so they sit on the baseline.
+- **Inter** (`font-sans`, the body default) for everything else: body and lead
+  copy, nav, buttons, fields, eyebrows, and small capitals labels.
+
+**Never set Playfair at the body or small size.** Its hairlines thin out
+against the dark surfaces below about 20px, which is why labels, eyebrows, and
+UI words stay Inter even beside a serif heading.
 
 Headings interpolate linearly between a 360px and a 1200px viewport, so they
 grow smoothly and never jump at a breakpoint. Every size is in `rem`, so full
@@ -194,8 +207,9 @@ Line height and letter spacing are companion keys on the size token, so
 `text-h1` sets all three at once. **Never write line height or letter spacing
 on a component**; if a size needs different ones, it is a new token.
 
-`h1`, `h2`, and `h3` already carry their size, weight, and colour from the base
-layer, so a plain `<h2>` is correct with no classes on it.
+`h1`, `h2`, and `h3` already carry their typeface, size, weight, and colour
+from the base layer, so a plain `<h2>` is correct with no classes on it. An
+`h4` takes only the typeface; its size and colour are set where it is used.
 
 Only the heading clamps use a `vw` term, which does not respond to a browser's
 text-only scaling setting the way a pure `rem` value does. The `rem` half still

@@ -76,7 +76,10 @@ const { block, headingId, entranceFrom } = Astro.props;
       style={entranceStyle(entranceFrom, index + 1)}
     >
       <span
-        class={cx('text-h1 font-normal tabular-nums', bandHeadingClass)}
+        class={cx(
+          'font-display text-h1 font-normal tabular-nums lining-nums',
+          bandHeadingClass,
+        )}
         aria-hidden="true"
       >
         {String(index + 1).padStart(2, '0')}

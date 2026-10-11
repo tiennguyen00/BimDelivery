@@ -3,8 +3,8 @@
  * The one layout every page sits inside.
  *
  * It now carries the design system (spec 0003): the tokens and base styles in
- * global.css, and Inter through Astro's fonts API. Feature 5 (Site shell) adds
- * the header, nav, and footer around the slot.
+ * global.css, and Inter and Playfair Display through Astro's fonts API.
+ * Feature 5 (Site shell) adds the header, nav, and footer around the slot.
  */
 import { Font } from 'astro:assets';
 import { resolveLocale } from '../i18n/locales';
@@ -31,9 +31,10 @@ const lang = resolveLocale(Astro.currentLocale);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
-    {/* Emits the @font-face rules and preloads the Inter files, which Astro
-        serves from this site's own origin. */}
+    {/* Emits the @font-face rules and preloads the Inter and Playfair files,
+        which Astro serves from this site's own origin. */}
     <Font cssVariable="--font-inter" preload />
+    <Font cssVariable="--font-playfair" preload />
     <slot name="head" />
   </head>
   <body>

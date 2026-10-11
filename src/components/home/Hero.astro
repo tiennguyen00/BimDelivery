@@ -141,7 +141,7 @@ const RULE_DOTS: readonly number[] = [0, 1, 2];
         <p class="text-eyebrow font-semibold text-accent uppercase">
           {eyebrow}
         </p>
-        <p class="mt-4 text-h1 font-medium text-balance text-heading">
+        <p class="mt-4 font-display text-h1 font-medium text-balance text-heading">
           <Emphasis text={subheading} />
         </p>
         <p class="mt-6 max-w-narrow text-lead text-ink">{lead}</p>
@@ -173,7 +173,7 @@ const RULE_DOTS: readonly number[] = [0, 1, 2];
           </span>
           <div class="flex flex-col-reverse">
             <dt class="text-small text-ink-muted">{item.label}</dt>
-            <dd class="text-h2 font-semibold text-heading">
+            <dd class="font-display text-h2 font-semibold text-heading lining-nums">
               <span data-count-to={item.value}>
                 {format.format(item.value)}
               </span>

@@ -52,14 +52,18 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false },
   },
 
-  // Inter, the one typeface (spec 0003). Astro downloads the files at build
-  // and serves them from this site's own origin, so there is no third party
-  // request and no layout shift from a late swap: `optimizedFallbacks` (on by
-  // default) generates a metric matched local fallback.
+  // The site's two typefaces: Inter for body copy and UI (spec 0003), and
+  // Playfair Display for headings and display numerals (2026-10-11). Astro
+  // downloads the files at build and serves them from this site's own origin,
+  // so there is no third party request and no layout shift from a late swap:
+  // `optimizedFallbacks` (on by default) generates a metric matched local
+  // fallback.
   //
-  // `cssVariable` is what Tailwind's `--font-sans` token points at, in
-  // src/styles/global.css. The weight range '400 700' pulls Inter's variable
-  // font once and covers body (400), semibold (600), and headings (700).
+  // Each `cssVariable` is what a Tailwind font token points at, in
+  // src/styles/global.css: `--font-sans` for Inter, `--font-display` for
+  // Playfair. Each weight range pulls the variable font once: Inter covers
+  // body (400), semibold (600), and bold (700); Playfair the regular
+  // numerals (400) up to bold headings (700).
   //
   // Note for an offline build: the first build on a new machine or in CI needs
   // network access to download the files. Astro caches them after that.
@@ -71,6 +75,14 @@ export default defineConfig({
       weights: ['400 700'],
       subsets: ['latin'],
       fallbacks: ['sans-serif'],
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: 'Playfair Display',
+      cssVariable: '--font-playfair',
+      weights: ['400 700'],
+      subsets: ['latin'],
+      fallbacks: ['serif'],
     },
   ],
 
