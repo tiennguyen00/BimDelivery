@@ -273,7 +273,7 @@ The service pages' features and process bands sit on `PatternBand` (spec
 0013, `src/components/ui/PatternBand.astro`), named by the content's
 `surface` field: `stripe` is a `canvas` `Section` under `bg-diagonal`, `dots`
 a `canvas` `Section` under `bg-dots`. Words, cards, and icons on either are
-the same (`heading` headings, `ink` text, `panel` cards with a `line` border,
+the same (`heading` headings, `ink` text, `panel` tiles with a `line` border,
 `accent` icons). Any other `surface` value fails the build naming the file.
 When a presence band follows a `stripe` pattern band, the route turns its
 stripe's tone to `raised`, so two stripes never run into each other on one
@@ -463,9 +463,9 @@ glyph, and licence, and listed in `src/assets/images/CREDITS.md`:
 
 - **Line glyphs** (Tabler Icons outline, MIT), the `lineIcons` a features
   card or tile may take: `blueprint`, `crane`, `building-check`, `scan`,
-  `clipboard-check`, `ruler`, `clash`, `layers`, `messages`. The cards draw
-  them at 80px with `strokeWidth` 1.25 and the tiles at 40px with 1.5, since a
-  2 unit line at 80px would be nearly 7px thick. Coloured `accent` on either
+  `clipboard-check`, `ruler`, `clash`, `layers`, `messages`. The tiles draw
+  them at 40px with `strokeWidth` 1.5; the cards no longer draw their icon
+  (they lead with a number instead, 2026-10-11). Coloured `accent` on either
   pattern.
 - **Solid glyphs** (Tabler filled, or Material Icons filled under Apache 2.0
   where Tabler has no solid match), the `solidIcons` an audience item may
@@ -673,8 +673,8 @@ The one place marked copy becomes markup (spec 0010). Content marks a phrase
 with one of two pairs, and the schema's `emphasisText` checks every line at
 build (`src/lib/emphasis.ts`):
 
-- `**phrase**` is semibold in the surrounding colour. The home presence band
-  passes `strongClass="text-ink-strong"` to keep its darker bold.
+- `**phrase**` is semibold in the surrounding colour. A service intro passes
+  `strongClass="text-ink-strong"` to keep its darker bold.
 - `==phrase==` is semibold `accent`, legible on every dark surface, or
   semibold `heading` when the caller passes `onPhoto`, because brass over the
   scrim is 2.88:1. Only the Project hero's intro passes it. The `surface` prop
@@ -768,47 +768,28 @@ inside their process band instead. The Project page closes with it (spec
 
 | Prop | Type | Default |
 |---|---|---|
+| `number` | `number` (required), its place in the row from 1 | |
 | `title` | `string` (required) | |
 | `summary` | `string` (required) | |
-| `subServices` | `readonly string[]` (required), 3 to 6 | |
 | `href` | `string` (required) | |
-| `illustration` | `{ src: ImageMetadata; alt: string }` (required) | |
-| `cue` | `string` (required) | |
+| `image` | `{ src: string; alt: string }` (required), a remote photo | |
 | `class` | `string`, merged onto the card's root | none |
 
-The home services band's card (spec 0005), home only. Top to bottom and
-centred: the shared illustration at 160px tall, the title as an `h3`, the
-summary, the sub services, and the cue with an `arrow-right`, pinned to the
-bottom so the cues of a row line up. `panel`, `rounded-ui`, no shadow. The
-illustration is the dark version (`service-illustration-dark.png`): a
-transparent background with cream and brass strokes.
+The home services band's card (spec 0005), home only, simplified on
+2026-10-11. No panel box. Top to bottom and left aligned: the service's own
+photo in a `rounded-ui` frame (4:3, 4:5 from `lg`), its number (`01`) at `text-h1`
+in a regular weight and `heading`, the title as an `h3` in `ink-strong`, and
+the summary in the small size and `ink-muted`. The photo is the first one in
+the service page's intro carousel (the route's `servicePhoto`), so the card
+and the page it opens share a picture.
 
-- **One link, one tab stop**, the same stretched title link as `Card`. The cue
-  is text. **Do not** put a link, button, or field inside it.
-- The sub services are a real `<ul>` drawn as one centred line split by pipes,
-  as the reference card is. The items are inline so the line wraps like prose,
-  and the pipes are `aria-hidden`. **Do not** turn it into a `<p>` with the
-  pipes typed in: a screen reader would lose the list.
-- At rest: title `ink-strong`, summary `ink-muted`, list `ink`, cue and arrow
-  `accent`.
-- **Hover and keyboard focus look the same**: a wash from `panel` at the top
-  to `accent-deep` (Coffee) at 70 percent at the bottom rises from the card's
-  bottom edge to its top over 200ms, a 4px `accent` border appears on the left
-  and right (an overlay, so nothing shifts), and the card rises 4px. Focus
-  also shows the `accent` ring.
-- **The wash rises, it does not fade**: the layer is scaled to nothing at rest
-  and grows back from `origin-bottom`, the `scale` property and the same idiom
-  as `heading-rule`, so it stays clear of the card's own `translate` lift and of
-  the scroll reveal's `transform`. Leaving the card runs it back down the way it
-  came. With reduced motion asked for, the full wash is simply there.
-- **On the wash every word and icon is `heading`**, at least 7.52:1 at the
-  wash's darkest point, `accent-deep` at 70 percent over the `panel` (the
-  composite `#614438`). **Never** put `accent` on it: brass on the wash is
-  3.66:1, which is why the cue turns `heading` with the rest.
-- The lift is the `translate` property under `motion-safe`, never `transform`,
-  so it composes with the scroll reveal. With reduced motion the colours still
-  change, at once, and the card does not rise. `hover:` applies only where a
-  pointer can hover, so a tap never leaves a card stuck in its hover state.
+- **One link, one tab stop**, the same stretched title link as `Card`. The
+  number is `aria-hidden`. **Do not** put a link, button, or field inside it.
+- **Hover and keyboard focus look the same**: the photo eases up to 105
+  percent inside its frame over 500ms (`motion-safe` only) and the title turns
+  `accent`. Focus also shows the `accent` ring around the card. `hover:`
+  applies only where a pointer can hover, so a tap never leaves a card stuck
+  in its hover state.
 - Each card stays a direct child of the band's `data-reveal-stagger` grid.
 - **The row shows what `home.services.featured` lists** (spec 0013), one to
   three cards in that order, never every service. Three fill the row as
@@ -818,6 +799,10 @@ transparent background with cream and brass strokes.
   start column centres the set (four columns and a span of two for a single
   card at `md`). The classes are a map keyed by the count in `index.astro`,
   handed to each card through `class`.
+- **Then the `home.services.extra` cards** (2026-10-11), for services with no
+  page yet (Point Cloud): the same card with no `href`, so no link, no tab
+  stop, and no hover. Four cards in all at most; four sit two by two at
+  `md` and in one row from `lg`, with a 32px gap.
 
 ### `PatternBand` · `src/components/ui/PatternBand.astro`
 
@@ -860,7 +845,7 @@ The dots under a photo carousel, on each service intro (spec 0013), run by
 ### `PresenceBand` · `src/components/ui/PresenceBand.astro`
 
 The global presence band's inside (spec 0005): a ruled heading, the dotted
-globe with its locations (spec 0017), and the copy with the why choose list. It
+globe with its locations (spec 0017), and the why choose list. It
 moved from `src/components/home/` to `ui` when the service pages began to show
 it too (spec 0013). The page wraps it in a striped `Section`, and its copy is
 `home.presence`, or a service's own presence `content`.
@@ -897,8 +882,11 @@ band, its tone, and its heading id.
   shared band component. An existing component changes only when every
   service using it should change.
 - The patterned bands (features, process) take only the band strings in
-  `styles.ts`: `heading` headings, `ink` text, `panel` cards with a `line`
+  `styles.ts`: `heading` headings, `ink` text, `panel` tiles with a `line`
   border, and `accent` icons, the same on `stripe` and `dots`.
+- The features cards are plain, with no box: a two digit number (`01`) at
+  `text-h1` in a regular weight, a `line` rule, the `h4` title, then the
+  points in the small size, left aligned (2026-10-11).
 - Grids that fit any count use literal classes (`lg:grid-flow-col
   lg:auto-cols-fr`), never a class built from a list's length.
 - The intro's paragraphs each sit beside a 4px `accent` bar, a `::before`
@@ -1166,7 +1154,7 @@ pages use the same reveal script and add the carousel (spec 0013).
 - **The scroll reveal**, the first half of `src/scripts/reveal.ts` (spec 0005).
   Below the hero and the intro band, these fade and rise once as they scroll
   into view: the services heading block and then its cards, the overview's
-  copy and photo, the presence heading and then its copy and map, the showcase
+  copy and photo, the presence heading and then its list and map, the showcase
   heading block, its tiles, and its button. An element opts in with
   `data-reveal`; a container whose direct children reveal one after another
   carries `data-reveal-stagger`. Both are

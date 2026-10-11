@@ -248,8 +248,6 @@ const solidIcons = [
  */
 const presenceContent = z.strictObject({
   heading: text,
-  /** A phrase wrapped in `**` renders bold. */
-  paragraphs: z.array(emphasisText).min(1),
   /**
    * Each location is a marker on the globe (spec 0017), placed by longitude
    * and latitude: an `office` (the headquarters or an office, green, its name
@@ -340,19 +338,43 @@ const home = defineCollection({
       }),
       // Strict (spec 0005): the band's own copy, plus the one illustration
       // and cue word every service card shares.
-      services: z.strictObject({
-        heading: text,
-        intro: text,
-        illustration: imageSchema(image),
-        cardCue: text,
-        /**
-         * The services that get a card, in this order (spec 0013), by id,
-         * such as `en/architectural-bim`. One to three, so a new service reaches
-         * the home page only when it is listed here. `getHomePage` checks
-         * every id itself; Astro would only log a missing one.
-         */
-        featured: z.array(reference('services')).min(1).max(3),
-      }),
+      services: z
+        .strictObject({
+          heading: text,
+          intro: text,
+          illustration: imageSchema(image),
+          cardCue: text,
+          /**
+           * The services that get a card, in this order (spec 0013), by id,
+           * such as `en/architectural-bim`. One to three, so a new service
+           * reaches the home page only when it is listed here. `getHomePage`
+           * checks every id itself; Astro would only log a missing one.
+           */
+          featured: z.array(reference('services')).min(1).max(3),
+          /**
+           * Cards for services with no page of their own (2026-10-11), drawn
+           * after the featured ones, home only: no route, no nav item, and
+           * the card is not a link. Its photo is written here, since there
+           * is no intro carousel to take it from.
+           */
+          extra: z
+            .array(
+              z.strictObject({
+                title: text,
+                summary: text,
+                image: photoSchema,
+              }),
+            )
+            .default([]),
+        })
+        .refine(
+          (services) => services.featured.length + services.extra.length <= 4,
+          {
+            path: ['extra'],
+            message:
+              'the row holds at most four cards, `featured` and `extra` together',
+          },
+        ),
       // The presence band (spec 0005), which absorbed the old differentiators
       // section. Strict, so a leftover `text` or `image` key fails by name.
       // Shared with the service pages, which show it unless a presence block
@@ -371,28 +393,58 @@ const home = defineCollection({
     }),
 });
 
-// The About page's three bands (spec 0010). Strict at every level, so a
-// leftover `image`, `highlights`, or `statsHeading` from the old page, or a
-// typo, fails the build by name. Its numbers are the shared `stats` entry and
-// its badges the footer's, so neither is written here.
+/**
+ * One split band's copy on the About & Services page (2026-10-11): the words
+ * beside the photo. `cta` is only the button's words; the page decides where
+ * it leads, the next band down.
+ */
+const splitBand = z.strictObject({
+  heading: text,
+  /** The short brass line under the heading. */
+  tagline: text,
+  paragraphs: z.array(emphasisText).min(1),
+  cta: text,
+  image: photoSchema,
+});
+
+// The About & Services page (2026-10-11, replacing spec 0010's three bands):
+// the company, its experience, one band per service, then the media band,
+// which has no copy yet. Strict at every level, so a leftover `capability`
+// or `certification` from the old page, or a typo, fails the build by name.
 const about = defineCollection({
   loader: load('about', 'yaml'),
   schema: z.strictObject({
     lang,
     seo,
-    heading: text,
-    intro: emphasisText,
-    capability: z.strictObject({
-      heading: text,
-      paragraphs: z.array(emphasisText).min(1),
-      /** The first item is the one open on load. */
-      accordion: z
-        .array(z.strictObject({ title: text, text: emphasisText }))
+    /** The company: its name is the page's `h1`. */
+    intro: splitBand,
+    experience: splitBand,
+    services: z.strictObject({
+      /** The button on a band whose service has a page, "Discover more". */
+      cue: text,
+      /**
+       * One band each, in this order. A service with a page is named by id,
+       * such as `en/architectural-bim`, and its title, summary, and first
+       * intro photo come from that entry; `getAboutPage` checks every id.
+       * A service with no page yet writes its own, and its band has no
+       * button.
+       */
+      items: z
+        .array(
+          z.union([
+            z.strictObject({
+              service: reference('services'),
+              text: emphasisText,
+            }),
+            z.strictObject({
+              title: text,
+              tagline: text,
+              text: emphasisText,
+              image: photoSchema,
+            }),
+          ]),
+        )
         .min(1),
-    }),
-    certification: z.strictObject({
-      heading: text,
-      paragraphs: z.array(emphasisText).min(1),
     }),
   }),
 });

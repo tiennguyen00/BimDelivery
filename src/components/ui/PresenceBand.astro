@@ -2,7 +2,7 @@
 /**
  * The global presence band (spec 0005): a centred heading, then a dotted
  * globe with the company's offices and projects marked on the start side
- * (spec 0017), and the copy plus the why choose list on the end side.
+ * (spec 0017), and the why choose list on the end side.
  *
  * It lives in `ui` because two pages show it (spec 0013): the home page, and
  * each service page's presence block, fed that block's own copy or the home
@@ -17,11 +17,9 @@
  * the places are two real lists of names, one per kind, so a screen reader
  * hears the places the globe stands for rather than nothing, or a canvas.
  *
- * Mobile stacks copy first and globe second, the same reading order as
- * `MediaText`: the words say where the company works, the globe illustrates
- * it.
+ * Mobile stacks the why choose list first and the globe second, the same
+ * reading order as `MediaText`.
  */
-import Emphasis from './Emphasis.astro';
 import Icon from './Icon.astro';
 import PresenceMarker from './PresenceMarker.astro';
 import { cx } from './styles';
@@ -40,16 +38,13 @@ interface Props {
   heading: string;
   /** The id the surrounding Section points at with `aria-labelledby`. */
   headingId: string;
-  /** Each may carry `**bold**` and `==accent==` phrases. */
-  paragraphs: readonly string[];
   locations: readonly Location[];
   /** The legend's words for the two kinds of marker. */
   legend: { offices: string; projects: string };
   whyChoose: { heading: string; items: readonly string[] };
 }
 
-const { heading, headingId, paragraphs, locations, legend, whyChoose } =
-  Astro.props;
+const { heading, headingId, locations, legend, whyChoose } = Astro.props;
 
 /** The places of each kind, for the legend and the screen reader lists. */
 const groups = (
@@ -109,16 +104,7 @@ const ruleClass = 'heading-rule inline-block';
   data-reveal-stagger
 >
   <div class="lg:col-span-5">
-    {paragraphs.map((paragraph) => (
-      <p class="mt-4 first:mt-0">
-        <Emphasis text={paragraph} strongClass="text-ink-strong" />
-      </p>
-    ))}
-
-    <h3
-      class:list={[ruleClass, 'mt-12 font-bold text-heading']}
-      data-heading-rule
-    >
+    <h3 class:list={[ruleClass, 'font-bold text-heading']} data-heading-rule>
       {whyChoose.heading}
     </h3>
 
@@ -133,7 +119,7 @@ const ruleClass = 'heading-rule inline-block';
   </div>
 
   {/**
-   * Second in the markup so the copy is read first; `lg:order-first` moves
+   * Second in the markup so the list is read first; `lg:order-first` moves
    * the globe to the start side once there are two columns.
    *
    * Two layers in one box, both hidden from assistive tech (spec 0017):

@@ -159,11 +159,9 @@ export const bandHeadingClass = cx('text-heading');
 export const bandBodyClass = cx('text-ink');
 
 /**
- * A card (`FeaturesCards`) and a tile (`FeaturesSplit`): a `panel` fill with
- * a `line` border and the card's or the tile's corners. No shadow, because a
- * shadow cannot be seen on a dark page.
+ * A tile (`FeaturesSplit`): a `panel` fill with a `line` border and the
+ * tile's corners. No shadow, because a shadow cannot be seen on a dark page.
  */
-export const bandCardClass = cx('rounded-card border border-line bg-panel');
 export const bandTileClass = cx('rounded-ui border border-line bg-panel');
 
 /**

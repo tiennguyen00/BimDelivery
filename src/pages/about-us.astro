@@ -1,89 +1,112 @@
 ---
 /**
- * About Us (spec 0010): three bands, in order, every word, number, and badge
- * of them from a content entry.
+ * About & Services (2026-10-11, replacing spec 0010's three bands): the old
+ * About page and the services overview in one page, every word and photo of
+ * it from the `about` entry and the services it names.
  *
- * 1. About: the `h1`, one paragraph, and the shared numbers.
- * 2. Capability: a ruled heading and paragraphs beside the accordion.
- * 3. Certification: a ruled heading, paragraphs, and the badges, on the
- *    diagonal stripe.
+ * 1. The company: its name as the `h1`, copy at the start, photo at the end.
+ * 2. Experience and services: the same band, flipped.
+ * 3. One band per service, the sides still alternating. A service with a
+ *    page links to it; one with no page yet has no button.
+ * 4. The media band, kept for the company's diagrams, photos, or videos. It
+ *    is an empty frame and carries no copy until they arrive.
  *
  * This file is the only place that knows the page's shape. It owns each
- * band's tone and the heading ids, under the home page's rule:
- * `<band>-heading`. The numbers are the `stats` entry the home page also
- * shows, and the badges the footer's list, so the footer's own badge panel is
- * turned off here (`footerCertification`) and they appear once.
+ * band's id and heading id, and where each button leads: down to the next
+ * band, or out to a service's page.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/ui/Section.astro';
-import AboutBand from '../components/about/AboutBand.astro';
-import CapabilityBand from '../components/about/CapabilityBand.astro';
-import CertificationBand from '../components/about/CertificationBand.astro';
+import SplitBand from '../components/about/SplitBand.astro';
 import { resolveLocale } from '../i18n/locales';
-import { getAboutPage, getSettings, getStats } from '../lib/content';
+import { getAboutPage } from '../lib/content';
 
 const lang = resolveLocale(Astro.currentLocale);
+const about = await getAboutPage(lang);
 
-const [about, stats, settings] = await Promise.all([
-  getAboutPage(lang),
-  getStats(lang),
-  getSettings(lang),
-]);
+const EXPERIENCE_ID = 'experience';
+const SERVICES_ID = 'services';
+
+const photo = (image: { src: string; alt?: string }) => ({
+  src: image.src,
+  alt: image.alt ?? '',
+});
 
 /**
- * The about band's entrance steps before its numbers (the heading, then the
- * paragraph; `AboutBand` owns them). The capability band carries on after
- * the last number.
+ * The service bands follow the experience band, which puts its photo at the
+ * start, so the first service band puts it at the end and they alternate.
  */
-const ABOUT_ENTRANCE_STEPS = 2;
-
-const badges = settings.footer.certification.badges.map((badge) => ({
-  src: badge.src,
-  alt: badge.alt ?? '',
-}));
+const serviceSide = (index: number): 'start' | 'end' =>
+  index % 2 === 0 ? 'end' : 'start';
 ---
 
-<PageLayout
-  title={about.seo.title}
-  description={about.seo.description}
-  footerCertification={false}
->
-  <Section tone="canvas" labelledBy="about-heading">
-    <AboutBand
-      heading={about.heading}
-      headingId="about-heading"
-      intro={about.intro}
-      stats={stats}
-      lang={lang}
-    />
-  </Section>
+<PageLayout title={about.seo.title} description={about.seo.description}>
+  <SplitBand
+    headingLevel={1}
+    heading={about.intro.heading}
+    headingId="about-heading"
+    tagline={about.intro.tagline}
+    paragraphs={about.intro.paragraphs}
+    image={photo(about.intro.image)}
+    imageSide="end"
+    action={{
+      label: about.intro.cta,
+      href: `#${EXPERIENCE_ID}`,
+      icon: 'arrow-down',
+    }}
+    motion="entrance"
+  />
 
-  <Section tone="canvas" labelledBy="capability-heading">
-    <CapabilityBand
-      heading={about.capability.heading}
-      headingId="capability-heading"
-      paragraphs={about.capability.paragraphs}
-      accordion={about.capability.accordion}
-      entranceFrom={ABOUT_ENTRANCE_STEPS + stats.length}
-    />
-  </Section>
+  <SplitBand
+    id={EXPERIENCE_ID}
+    headingLevel={2}
+    heading={about.experience.heading}
+    headingId="experience-heading"
+    tagline={about.experience.tagline}
+    paragraphs={about.experience.paragraphs}
+    image={photo(about.experience.image)}
+    imageSide="start"
+    action={{
+      label: about.experience.cta,
+      href: `#${SERVICES_ID}`,
+      icon: 'arrow-down',
+    }}
+    motion="reveal"
+  />
 
-  <Section tone="canvas" labelledBy="certification-heading" class="bg-diagonal">
-    <CertificationBand
-      heading={about.certification.heading}
-      headingId="certification-heading"
-      paragraphs={about.certification.paragraphs}
-      badges={badges}
-    />
+  <div id={SERVICES_ID}>
+    {about.services.items.map((service, index) => (
+      <SplitBand
+        headingLevel={2}
+        heading={service.title}
+        headingId={`service-${index + 1}-heading`}
+        tagline={service.tagline}
+        paragraphs={[service.text]}
+        image={service.image}
+        imageSide={serviceSide(index)}
+        action={
+          service.href
+            ? {
+                label: about.services.cue,
+                href: service.href,
+                icon: 'arrow-right',
+              }
+            : undefined
+        }
+        motion="reveal"
+      />
+    ))}
+  </div>
+
+  <Section tone="raised" id="media">
+    <div class="aspect-video w-full rounded-ui bg-panel" data-reveal></div>
   </Section>
 </PageLayout>
 
 {/**
- * The scroll reveal and the heading rule (spec 0005), the page's choice as on
- * the home page. The about band carries no `data-reveal`: it moves on load
- * through the CSS `entrance` instead, so the two never touch the same thing.
- * The capability band is the one band with both (spec 0012): on
- * screen at load the entrance moves it, below the fold the scroll reveal.
+ * The scroll reveal (spec 0005), the page's choice as on the other pages.
+ * The first band takes no `data-reveal`: it moves on load through the CSS
+ * `entrance` instead, so the two never touch the same thing.
  */}
 <script>
   import '../scripts/reveal';

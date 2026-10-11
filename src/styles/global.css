@@ -253,6 +253,16 @@
 }
 
 /**
+ * A `SplitBand`'s height from `lg` (the About & Services page, 2026-10-11):
+ * the screen under the sticky header, so each band, copy and photo, fills
+ * the view as the visitor reaches it. `svh`, so a phone's moving toolbar
+ * never resizes it. A minimum, so copy taller than the screen still fits.
+ */
+@utility split-band-height {
+  min-height: calc(100svh - var(--header-h));
+}
+
+/**
  * The arrow on the `Select` field (spec 0011): the icon set's own
  * `chevron-down` path, drawn as a background so the native `<select>` keeps
  * its keyboard, screen reader, and phone picker behaviour. A data URI cannot

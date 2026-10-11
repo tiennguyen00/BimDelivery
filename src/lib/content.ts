@@ -155,16 +155,21 @@ const inLang = <T extends { data: { lang: string } }>(
   entries: readonly T[],
 ) => entries.filter((entry) => entry.data.lang === lang);
 
-/** Expands the one `services` slot into a dropdown of every service, in order. */
+/**
+ * Expands the `services` slot, when there is one, into a dropdown of every
+ * service, in order. With none (2026-10-11) the nav has no SERVICES control
+ * and the service pages are reached from the About & Services page and the
+ * home cards.
+ */
 const expandNavigation = (
   file: string,
   items: Entry<'navigation'>['data']['items'],
   services: readonly Service[],
 ): readonly NavItem[] => {
   const slots = items.filter((item) => 'type' in item);
-  if (slots.length !== 1) {
+  if (slots.length > 1) {
     throw new Error(
-      `[content] navigation: ${file} has ${slots.length} services slots. It needs exactly one ` +
+      `[content] navigation: ${file} has ${slots.length} services slots. It may have at most one ` +
         '(an item with `type: services`).',
     );
   }
@@ -209,38 +214,110 @@ const resolveProjectService = (
 };
 
 /**
- * The home page's services, in `featured` order (spec 0013). Checked here
- * rather than trusted to `reference()`, which only logs a missing id: each id
- * must name a service, in the home page's own language, once.
+ * A page's list of services by id, resolved in order: the home page's
+ * `services.featured` (spec 0013) and the About & Services page's bands.
+ * Checked here rather than trusted to `reference()`, which only logs a
+ * missing id: each id must name a service, in the page's own language, once.
  */
-const resolveFeaturedServices = (
-  file: string,
+const resolveServiceRefs = (
+  where: Readonly<{ page: string; file: string; field: string }>,
   lang: Locale,
-  featured: readonly Readonly<{ id: string }>[],
+  refs: readonly Readonly<{ id: string }>[],
   services: readonly Entry<'services'>[],
-): readonly Service[] =>
-  featured.map(({ id }, index) => {
-    if (featured.slice(0, index).some((earlier) => earlier.id === id)) {
+): readonly Service[] => {
+  const { page, file, field } = where;
+  return refs.map(({ id }, index) => {
+    if (refs.slice(0, index).some((earlier) => earlier.id === id)) {
       throw new Error(
-        `[content] home: ${file} lists the service "${id}" twice in services.featured. ` +
+        `[content] ${page}: ${file} lists the service "${id}" twice in ${field}. ` +
           'List each service once.',
       );
     }
     const target = services.find((service) => service.id === id);
     if (!target) {
       throw new Error(
-        `[content] home: ${file} lists the service "${id}" in services.featured, which does not exist. ` +
+        `[content] ${page}: ${file} lists the service "${id}" in ${field}, which does not exist. ` +
           `Use an id such as "${lang}/architectural-bim", or remove the line.`,
       );
     }
     if (target.data.lang !== lang) {
       throw new Error(
-        `[content] home: ${file} (lang "${lang}") lists ${fileOf(target)} (lang "${target.data.lang}") ` +
-          'in services.featured. The home page and its services must share a language.',
+        `[content] ${page}: ${file} (lang "${lang}") lists ${fileOf(target)} (lang "${target.data.lang}") ` +
+          `in ${field}. The page and its services must share a language.`,
       );
     }
     return { ...target.data, id: target.id };
   });
+};
+
+/**
+ * A service's photo: the first one in its page's intro carousel, so a card
+ * or band and the page it opens share a picture. The schema gives every
+ * service exactly one intro with at least one photo, so a miss is a bug.
+ */
+export const servicePhoto = (
+  service: Service,
+): Readonly<{ src: string; alt: string }> => {
+  const intro = service.sections.find((block) => block.type === 'intro');
+  if (!intro) {
+    throw new Error(`[content] service "${service.id}" has no intro block`);
+  }
+  const [photo] = intro.images;
+  return { src: photo.src, alt: photo.alt ?? '' };
+};
+
+/** One service band on the About & Services page, ready to draw. */
+export type AboutServiceBand = Readonly<{
+  title: string;
+  tagline: string;
+  /** May carry `**bold**` and `==accent==` phrases. */
+  text: string;
+  image: Readonly<{ src: string; alt: string }>;
+  /** The service's page; absent for a service with no page yet. */
+  href?: string;
+}>;
+
+type AboutServiceItem = Entry<'about'>['data']['services']['items'][number];
+
+/**
+ * The About & Services page's service bands, in order: a service with a page
+ * takes its title, summary, and photo from that entry, a service without
+ * one brings its own and gets no link.
+ */
+const resolveAboutServices = (
+  file: string,
+  lang: Locale,
+  items: readonly AboutServiceItem[],
+  services: readonly Entry<'services'>[],
+): readonly AboutServiceBand[] => {
+  const resolved = resolveServiceRefs(
+    { page: 'about', file, field: 'services.items' },
+    lang,
+    items.flatMap((item) => ('service' in item ? [item.service] : [])),
+    services,
+  );
+  return items.map((item): AboutServiceBand => {
+    if (!('service' in item)) {
+      return {
+        title: item.title,
+        tagline: item.tagline,
+        text: item.text,
+        image: { src: item.image.src, alt: item.image.alt ?? '' },
+      };
+    }
+    const service = resolved.find((entry) => entry.id === item.service.id);
+    if (!service) {
+      throw new Error(`[content] about: "${item.service.id}" did not resolve`);
+    }
+    return {
+      title: service.title,
+      tagline: service.summary,
+      text: item.text,
+      image: servicePhoto(service),
+      href: `/${service.slug}`,
+    };
+  });
+};
 
 // Astro wrappers
 
@@ -281,8 +358,8 @@ export const getHomePage = async (lang: Locale) => {
     loadSingle('home', lang, 'home'),
     loadChecked('services'),
   ]);
-  const featured = resolveFeaturedServices(
-    fileOf(entry),
+  const featured = resolveServiceRefs(
+    { page: 'home', file: fileOf(entry), field: 'services.featured' },
     lang,
     entry.data.services.featured,
     services,
@@ -290,8 +367,20 @@ export const getHomePage = async (lang: Locale) => {
   return { ...entry.data, services: { ...entry.data.services, featured } };
 };
 
-export const getAboutPage = async (lang: Locale) =>
-  (await loadSingle('about', lang, 'about')).data;
+/** The About & Services page, with its service bands resolved, in order. */
+export const getAboutPage = async (lang: Locale) => {
+  const [entry, services] = await Promise.all([
+    loadSingle('about', lang, 'about'),
+    loadChecked('services'),
+  ]);
+  const items = resolveAboutServices(
+    fileOf(entry),
+    lang,
+    entry.data.services.items,
+    services,
+  );
+  return { ...entry.data, services: { ...entry.data.services, items } };
+};
 
 /** The contact page copy, plus the email, phone, and address from site settings. */
 export const getContactPage = async (lang: Locale) => {

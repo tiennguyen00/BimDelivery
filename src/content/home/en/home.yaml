@@ -37,7 +37,7 @@ overview:
     alt: Three architects studying a white scale model of a building on a studio table
 services:
   heading: Our services
-  intro: Three core services, each delivered to your standards and your schedule.
+  intro: Four core services, each delivered to your standards and your schedule.
   illustration:
     src: ../../../assets/images/services/service-illustration-dark.png
     decorative: true
@@ -48,11 +48,16 @@ services:
     - en/architectural-bim
     - en/interior-bim
     - en/landscape-bim
+  # Cards for services with no page of their own, after the featured ones.
+  # Home only: no route, no nav item, and the card is not a link.
+  extra:
+    - title: Point Cloud
+      summary: Accurate BIM models built from laser scans and point clouds of existing buildings and sites.
+      image:
+        src: https://images.pexels.com/photos/4620522/pexels-photo-4620522.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A 3D scanner on a tripod in a bright hallway hung with framed prints
 presence:
   heading: Delivering BIM excellence across the globe
-  paragraphs:
-    - With teams working across several time zones, **BIM Delivery** provides **BIM modeling, Revit documentation, scan to BIM, and clash coordination** to clients in **North America, Europe, the Middle East, and Asia Pacific**, so work moves forward around the clock.
-    - We partner with **architects, engineers, contractors, developers, and facility managers** to deliver accurate, standards compliant models for projects of every size. From concept design through construction and handover, we help you improve collaboration, reduce risk, and keep delivery on schedule.
   # PLACEHOLDER locations (spec 0017): replace with the real offices and
   # projects. `office` is green with its name always shown, `project` is red
   # with its name on hover.

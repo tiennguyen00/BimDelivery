@@ -1,11 +1,12 @@
 lang: en
+# No `type: services` item (2026-10-11): the service pages are reached from
+# the About & Services page and the home cards, not from a nav dropdown. Put
+# one back here to bring the SERVICES dropdown back.
 items:
   - label: Home
     href: /
-  - label: About Us
+  - label: About & Services
     href: /about-us
-  - label: Services
-    type: services
   - label: Project
     href: /project
   - label: Contact Us

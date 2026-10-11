@@ -1,31 +1,55 @@
-# The About Us page (spec 0010): three bands, top to bottom. The numbers in
-# the first band are the shared `stats` entry, and the badges in the last are
-# the footer's (`settings.footer.certification.badges`), so neither is here.
+# The About & Services page (2026-10-11), top to bottom: the company, its
+# experience and services, one band per service, then the media band, which
+# has no copy yet. Each band is copy on one side and a full height photo on
+# the other, the sides alternating down the page.
 #
-# The intro and the capability paragraphs are the client's About Us copy
-# (BIM Delivery services.pdf). The accordion and the certification band are
-# still placeholder copy, to be replaced before launch. A `**phrase**`
-# renders bold, a `==phrase==` bold gold.
+# The intro paragraph and the service texts are the client's copy (BIM
+# Delivery services.pdf). The taglines and the Point Cloud text are
+# placeholder copy, to be replaced before launch. A `**phrase**` renders
+# bold, a `==phrase==` bold brass.
 lang: en
 seo:
-  title: About Us | BIM Delivery
-  description: Who we are, how we work, and why architects, engineers, and contractors trust BIM Delivery with their models.
-heading: About BIM Delivery
-intro: With extensive experience in **BIM and CAD production**, our team works with design drawings, CAD files, sketches, and other project information to develop ==accurate and coordinated 3D BIM models== and project documentation. Our services specialize in **Architecture, Interior Design, and Landscape** for 3D modeling and 2D documentation.
-capability:
-  heading: Your BIM partner from concept to handover
+  title: About & Services | BIM Delivery
+  description: Who BIM Delivery is, the experience behind the team, and the Architectural, Interior, Landscape, and Point Cloud BIM services we deliver.
+intro:
+  # The company's name, the page's `h1`.
+  heading: BIM Delivery
+  tagline: BIM and CAD production for design teams
   paragraphs:
-    - We understand that every project has different requirements, standards, and workflows. Our team can work within our clients' **existing processes and project environments**.
-    - By working with **BIM Delivery**, clients can extend their production capacity with a ==flexible BIM team== while keeping their core teams focused on design, coordination, and project management. Our goal is to provide ==consistent, accurate, and practical BIM support== that helps our clients deliver projects efficiently.
-  accordion:
-    - title: Experience
-      text: Our team has delivered ==more than a thousand projects== across residential, commercial, healthcare, education, and infrastructure work. We have modeled from sketches, drawings, and laser scans, and supported projects from early design through construction and facility management.
-    - title: Expertise
-      text: We work in ==Revit, Navisworks, AutoCAD, and ReCap==, and follow recognized BIM information management practice. Our specialists cover **architectural, interior, and landscape modeling**, clash detection, quantity takeoff, and construction documentation.
-certification:
-  heading: Certified quality you can rely on
+    - With extensive experience in **BIM and CAD production**, our team works with design drawings, CAD files, sketches, and other project information to develop ==accurate and coordinated 3D BIM models== and project documentation. Our services specialize in **Architecture, Interior Design, and Landscape** for 3D modeling and 2D documentation.
+  cta: Discover more
+  # PLACEHOLDER photo: the client is still choosing it.
+  image:
+    src: https://images.pexels.com/photos/6615107/pexels-photo-6615107.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: Three architects studying a white scale model of a building on a studio table
+experience:
+  heading: Experience and services
+  tagline: Your BIM partner from concept to handover
   paragraphs:
-    # PLACEHOLDER: the ISO names below are not confirmed certifications. Swap
-    # them for the real ones (and the footer's badges) before launch.
-    - '**BIM Delivery** works to management systems built on ISO 9001 for quality, ISO 19650 for BIM information management, and ISO/IEC 27001 for information security.'
-    - These standards shape how we plan, model, check, and hand over every project, so you get consistent results and your data stays protected. Placeholder badges until the real certifications are confirmed.
+    - Our team has delivered ==more than a thousand projects== across residential, commercial, healthcare, education, and infrastructure work. We understand that every project has different requirements, standards, and workflows, and we work within our clients' **existing processes and project environments**.
+    - By working with **BIM Delivery**, clients extend their production capacity with a ==flexible BIM team== while keeping their core teams focused on design, coordination, and project management.
+  cta: Explore our services
+  # PLACEHOLDER photo: the client is still choosing it.
+  image:
+    src: https://images.pexels.com/photos/3862135/pexels-photo-3862135.jpeg?auto=compress&cs=tinysrgb&w=1600
+    alt: Two engineers leaning over a large printed drawing spread out on a table
+services:
+  cue: Discover more
+  # One band per service, in this order. A service with a page is named by
+  # id; its title, summary, and photo come from that entry. A service with
+  # no page yet writes its own title, tagline, and photo, and has no button.
+  items:
+    - service: en/architectural-bim
+      text: For architectural projects, BIM supports the development of **3D building models, floor plans, elevations, sections, architectural details, schedules, and construction documentation**. We take your CAD drawings and design information to detailed BIM models, helping you ==improve coordination and deliver projects more efficiently==.
+    - service: en/interior-bim
+      text: For interior design projects, BIM supports **3D interior models, furniture and equipment layouts, material specifications, reflected ceiling plans, joinery, and finishes**. We take your design concepts to detailed BIM models and construction documentation, helping you ==improve coordination, efficiency, and project delivery==.
+    - service: en/landscape-bim
+      text: BIM brings landscape design, site information, and building elements together in a **coordinated 3D environment**. We develop **terrain, hardscape, planting areas, outdoor structures, levels, and paths** from your CAD drawings and design information, as ==detailed and coordinated landscape BIM models==.
+    # PLACEHOLDER copy: no page yet, so no button. Give it a services entry
+    # (slug `pointcloud-bim`) and list it by id above to link it.
+    - title: Point Cloud
+      tagline: Accurate BIM models built from laser scans and point clouds of existing buildings and sites.
+      text: We turn **laser scans and point clouds** of existing buildings and sites into ==accurate, coordinated BIM models==, ready for renovation, fit out, and facility management.
+      image:
+        src: https://images.pexels.com/photos/4620522/pexels-photo-4620522.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A 3D scanner on a tripod in a bright hallway hung with framed prints

@@ -23,7 +23,12 @@ import IntroBand from '../components/home/IntroBand.astro';
 import PresenceBand from '../components/ui/PresenceBand.astro';
 import ProjectShowcase from '../components/home/ProjectShowcase.astro';
 import { resolveLocale } from '../i18n/locales';
-import { getHomePage, getProjects, getStats } from '../lib/content';
+import {
+  getHomePage,
+  getProjects,
+  getStats,
+  servicePhoto,
+} from '../lib/content';
 
 const lang = resolveLocale(Astro.currentLocale);
 
@@ -41,12 +46,14 @@ const FEATURED_PROJECTS_COUNT = 3;
 const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
 
 /**
- * The services row's grid for one, two, or three cards (spec 0013). Three
- * fill today's row. With fewer, each card keeps the width it has in a row of
- * three and the set sits centred, never leaving an empty cell on one side: a
- * card spanning two of six columns is exactly as wide as one of three with
- * the same gap, and the first card's start column centres the set. At `md`
- * one card spans two of four columns, its width in the two column row.
+ * The services row's grid for one to four cards (spec 0013). Four fill
+ * today's row from `lg` with a tighter 32px gap, and sit two by two at `md`.
+ * With fewer than three, each card
+ * keeps the width it has in a row of three and the set sits centred, never
+ * leaving an empty cell on one side: a card spanning two of six columns is
+ * exactly as wide as one of three with the same gap, and the first card's
+ * start column centres the set. At `md` one card spans two of four columns,
+ * its width in the two column row.
  */
 const SERVICE_ROWS = {
   1: {
@@ -64,16 +71,40 @@ const SERVICE_ROWS = {
     first: undefined,
     rest: undefined,
   },
+  4: {
+    grid: 'grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 lg:gap-8',
+    first: undefined,
+    rest: undefined,
+  },
 } as const;
 
-const featuredServices = home.services.featured;
-/** The schema allows one to three, so anything else is three. */
+/**
+ * The row's cards: the featured services, each linking to its page, then the
+ * `extra` ones, which have no page and so no link.
+ */
+const serviceCards = [
+  ...home.services.featured.map((service) => ({
+    title: service.title,
+    summary: service.summary,
+    href: `/${service.slug}` as string | undefined,
+    image: servicePhoto(service),
+  })),
+  ...home.services.extra.map((card) => ({
+    title: card.title,
+    summary: card.summary,
+    href: undefined,
+    image: { src: card.image.src, alt: card.image.alt ?? '' },
+  })),
+];
+/** The schema allows one to four, so anything else is four. */
 const serviceRow =
-  featuredServices.length === 1
+  serviceCards.length === 1
     ? SERVICE_ROWS[1]
-    : featuredServices.length === 2
+    : serviceCards.length === 2
       ? SERVICE_ROWS[2]
-      : SERVICE_ROWS[3];
+      : serviceCards.length === 3
+        ? SERVICE_ROWS[3]
+        : SERVICE_ROWS[4];
 ---
 
 <PageLayout title={home.seo.title} description={home.seo.description}>
@@ -111,7 +142,8 @@ const serviceRow =
    * 3. Services. The ones `home.services.featured` lists, one to three, in
    * that order (spec 0013), so a new service reaches this row only when it is
    * listed, and the row never reflows into something nobody chose. The path
-   * is `/${slug}`, the same one `[service].astro` builds its route from.
+   * is `/${slug}`, the same one `[service].astro` builds its route from. Then
+   * the `extra` cards, home only, for services with no page yet.
    */}
   <Section tone="raised" labelledBy="services-heading">
     {/**
@@ -137,18 +169,11 @@ const serviceRow =
        * Each card stays a direct child of the stagger grid, so the reveal
        * moves the cards one by one rather than a wrapper as one block.
        */}
-      {featuredServices.map((service, index) => (
+      {serviceCards.map((card, index) => (
         <ServiceCard
           class={index === 0 ? serviceRow.first : serviceRow.rest}
-          title={service.title}
-          summary={service.summary}
-          subServices={service.subServices}
-          href={`/${service.slug}`}
-          illustration={{
-            src: home.services.illustration.src,
-            alt: home.services.illustration.alt ?? '',
-          }}
-          cue={home.services.cardCue}
+          number={index + 1}
+          {...card}
         />
       ))}
     </div>
@@ -163,7 +188,6 @@ const serviceRow =
     <PresenceBand
       heading={home.presence.heading}
       headingId="presence-heading"
-      paragraphs={home.presence.paragraphs}
       locations={home.presence.locations}
       legend={home.presence.legend}
       whyChoose={home.presence.whyChoose}

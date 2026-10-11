@@ -7,14 +7,16 @@
  * It renders only the inside of the band; the route wraps it in a
  * `PatternBand` on the block's `surface`. Its colours come from the band
  * strings in `styles.ts`, the same on either pattern: `heading` headings,
- * `ink` text, `accent` icons, and a `==` phrase in `Emphasis`'s accent.
+ * `ink` text, and a `==` phrase in `Emphasis`'s accent.
  *
  * The cards are one column below `lg` and one row of equal columns from it,
  * however many there are (`lg:grid-flow-col lg:auto-cols-fr`): literal
- * classes that fit any count, never a class built from the count. Each card,
- * top to bottom and centred: the line icon at 80px with a thin 1.25 stroke,
- * the title as an `h4` in the `text-h3` style, then the points as a bulleted
- * list, left aligned.
+ * classes that fit any count, never a class built from the count. Each card
+ * is plain, with no panel box, left aligned, top to bottom: its two digit
+ * number (`01`) at the `text-h1` size and a regular weight, a `line` rule,
+ * the title as an `h4` in the `text-h3` style, then the points as short lines
+ * in the small size. The cards are an `ol`, so the order is in the markup and
+ * the visible number is hidden from screen readers.
  *
  * Motion: the heading block (the heading, the paragraphs, and the
  * subheading) reveals as one, then the cards one after another, and both
@@ -22,14 +24,7 @@
  * also gives each of those units the load entrance (`entrance.ts`).
  */
 import Emphasis from '../ui/Emphasis.astro';
-import Icon from '../ui/Icon.astro';
-import {
-  bandBodyClass,
-  bandCardClass,
-  bandHeadingClass,
-  bandIconClass,
-  cx,
-} from '../ui/styles';
+import { bandBodyClass, bandHeadingClass, cx } from '../ui/styles';
 import { entranceClass, entranceStyle } from '../ui/entrance';
 import type { BandProps } from '../../lib/service-page';
 
@@ -71,38 +66,34 @@ const { block, headingId, entranceFrom } = Astro.props;
   </div>
 </div>
 
-<div
-  class="mt-12 grid grid-cols-1 gap-6 lg:auto-cols-fr lg:grid-flow-col lg:gap-8"
+<ol
+  class="mt-12 grid grid-cols-1 gap-10 lg:auto-cols-fr lg:grid-flow-col lg:gap-8"
   data-reveal-stagger
 >
   {block.cards.map((card, index) => (
-    <div
-      class={cx(
-        'flex flex-col items-center px-6 py-10 text-center',
-        bandCardClass,
-        entranceClass(entranceFrom),
-      )}
+    <li
+      class={cx('flex flex-col', entranceClass(entranceFrom))}
       style={entranceStyle(entranceFrom, index + 1)}
     >
-      <Icon
-        name={card.icon}
-        size={80}
-        strokeWidth={1.25}
-        class={bandIconClass}
-      />
-      <h4 class={cx('mt-6 text-h3 font-bold', bandHeadingClass)}>
-        {card.title}
-      </h4>
-      <ul
+      <span
+        class={cx('text-h1 font-normal tabular-nums', bandHeadingClass)}
+        aria-hidden="true"
+      >
+        {String(index + 1).padStart(2, '0')}
+      </span>
+      <h4
         class={cx(
-          'mx-auto mt-4 flex w-fit max-w-full list-disc flex-col gap-2 ps-5 text-left',
-          bandBodyClass,
+          'mt-4 border-t border-line pt-4 text-h3 font-bold',
+          bandHeadingClass,
         )}
       >
+        {card.title}
+      </h4>
+      <ul class={cx('mt-3 flex flex-col gap-1.5 text-small', bandBodyClass)}>
         {card.points.map((point) => (
           <li>{point}</li>
         ))}
       </ul>
-    </div>
+    </li>
   ))}
-</div>
+</ol>

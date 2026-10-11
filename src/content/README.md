@@ -41,7 +41,7 @@ checks every file and names the file and the field when something is wrong.
 ### Give one service its own presence
 
 1. Add `content` to its `presence` block, with every field `home.presence`
-   has in `home/<lang>/home.yaml`: `heading`, `paragraphs`, `locations`, `legend`, and
+   has in `home/<lang>/home.yaml`: `heading`, `locations`, `legend`, and
    `whyChoose`. It is all or nothing.
 2. Only that page shows it. Delete `content` to go back to the shared copy.
 3. Remember that a company wide region change then needs this file edited
@@ -78,6 +78,14 @@ two map entries. Its heading id (`<type>-heading`) comes from its type.
 4. It is not on the home page until you add its id (`<lang>/<slug>`) to
    `services.featured` in `home/<lang>/home.yaml`, which lists one to three
    services.
+
+### A home only service card
+
+A service with no page of its own yet (Point Cloud today) gets a card on the
+home page through `services.extra` in `home/<lang>/home.yaml`: a `title`, a
+`summary`, and an `image` (a Pexels link with its `alt`). It is drawn after
+the featured cards and is not a link. `featured` and `extra` together hold at
+most four cards; a fifth fails the build.
 
 ### Remove a service
 

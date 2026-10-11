@@ -86,6 +86,7 @@ const iconNames: readonly IconName[] = [
   'check',
   'arrow-right',
   'arrow-left',
+  'arrow-down',
   'plus',
   'minus',
   'phone',
@@ -971,7 +972,7 @@ const headCellClass =
         under <code class="font-mono text-small">bg-diagonal</code>, whose line
         is #1b2327, and <code class="font-mono text-small">dots</code> under{' '}
         <code class="font-mono text-small">bg-dots</code>, whose dot centre is
-        #2e3639. Cards are{' '}
+        #2e3639. Tiles are{' '}
         <code class="font-mono text-small">--color-panel</code> on either.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
@@ -1041,8 +1042,8 @@ const headCellClass =
 
       <h3 class="mt-12">The footer with its certification panel hidden</h3>
       <p class="mt-4 max-w-narrow">
-        What <code class="font-mono text-small">/about-us</code> shows (spec
-        0010): that page has the badges in a band of its own, so it passes{' '}
+        For a page that shows the badges in a band of its own (spec 0010; no
+        page does since the About &amp; Services page, 2026-10-11): it passes{' '}
         <code class="font-mono text-small">
           footerCertification=&#123;false&#125;
         </code>
@@ -1147,7 +1148,7 @@ const headCellClass =
         brass over the scrim is 2.88:1.
       </p>
       <p class="mt-8 max-w-narrow">
-        <Emphasis text={about.intro} />
+        <Emphasis text={about.intro.paragraphs[0]} />
       </p>
       <div class="relative isolate mt-6 max-w-narrow overflow-hidden rounded-ui bg-canvas">
         <Image
@@ -1159,7 +1160,7 @@ const headCellClass =
           class="absolute inset-0 -z-10 size-full object-cover object-center"
         />
         <p class="bg-scrim p-6 text-heading">
-          <Emphasis text={about.intro} onPhoto />
+          <Emphasis text={about.intro.paragraphs[0]} onPhoto />
         </p>
       </div>
     </Section>
@@ -1177,7 +1178,7 @@ const headCellClass =
         motion on, it opens at once.
       </p>
       <div class="mt-8 max-w-narrow">
-        <Accordion name="sg-accordion" items={about.capability.accordion} />
+        <Accordion name="sg-accordion" items={about.services.items} />
       </div>
     </Section>
 
