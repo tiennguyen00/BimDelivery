@@ -101,10 +101,10 @@ const photoUrl = z.url({
 const photoSchema = withAlt(photoUrl);
 
 /**
- * A project gallery photo (spec 0015): the same link rule, but `alt` is
- * required and non empty, and `decorative` is not allowed (strict, so it
- * fails as an unknown key). A gallery exists to show the work, so no photo
- * in it is decorative.
+ * A project photo (spec 0015, now a room or portrait photo, spec 0018): the
+ * same link rule, but `alt` is required and non empty, and `decorative` is
+ * not allowed (strict, so it fails as an unknown key). These photos exist to
+ * show the work, so none is decorative.
  */
 const galleryPhoto = z.strictObject({ src: photoUrl, alt: text });
 
@@ -617,15 +617,18 @@ const projectPage = defineCollection({
     tileFacts: z.strictObject({ storeys: text, floorArea: text, lod: text }),
     emptyState: z.strictObject({ heading: text, text }),
     cta: callToAction,
+    // The detail page's shared words (spec 0018, which replaced spec 0015's
+    // back link, facts heading, and gallery heading).
     detail: z.strictObject({
-      backLink: z.strictObject(link.shape),
-      factsHeading: text,
-      /** The facts panel's `<dt>` labels, one per fact a project may carry. */
+      /** The hero's button down to the overview, "Discover more". */
+      discoverLabel: text,
+      /** The overview's `<dt>` labels, one per fact a project may carry. */
       factLabels: z.strictObject({
+        floorArea: text,
         location: text,
+        service: text,
         year: text,
         client: text,
-        floorArea: text,
         storeys: text,
         lod: text,
         software: text,
@@ -635,7 +638,12 @@ const projectPage = defineCollection({
       areaUnit: text,
       /** Written before the LOD number, for example "LOD". */
       lodPrefix: text,
-      galleryHeading: text,
+      /** The rooms band's `h2`, read out but not shown. */
+      roomsHeading: text,
+      /** The label over a room's list of work, "What we did". */
+      workloadLabel: text,
+      /** The room carousels' arrow buttons, read out, not shown. */
+      photoControls: z.strictObject({ previous: text, next: text }),
       nextLabel: text,
       cta: callToAction,
     }),
@@ -875,18 +883,27 @@ const projects = defineCollection({
     software: z.array(text).min(1).optional(),
     /** Short text, for example "8 weeks". */
     duration: text.optional(),
-    /** The write up, one to four titled sections. */
-    writeUp: z
+    // The detail page's own words and photos (spec 0018).
+    /** The short line in capitals over the overview's title. */
+    tagline: text,
+    /** The hero's paragraphs, beside the cover photo. */
+    intro: z.array(emphasisText).min(1).max(4),
+    /** The overview's upright photo, beside the facts. */
+    portrait: galleryPhoto,
+    /**
+     * The rooms band, in this order: each room's photos join one carousel,
+     * and its name and the work done in it show while they are on screen.
+     */
+    rooms: z
       .array(
         z.strictObject({
-          heading: text,
-          paragraphs: z.array(emphasisText).min(1),
+          name: text,
+          workload: z.array(text).min(1).max(8),
+          photos: z.array(galleryPhoto).min(1).max(9),
         }),
       )
       .min(1)
-      .max(4),
-    /** The detail page's photo wall, in this order. */
-    gallery: z.array(galleryPhoto).min(2).max(9),
+      .max(6),
   }),
 });
 

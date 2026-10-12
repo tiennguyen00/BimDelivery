@@ -35,7 +35,7 @@ import ContactCard from '../components/contact/ContactCard.astro';
 import PatternBand from '../components/ui/PatternBand.astro';
 import FeaturesCards from '../components/service/FeaturesCards.astro';
 import ProjectGallery from '../components/project/ProjectGallery.astro';
-import ProjectStory from '../components/project/ProjectStory.astro';
+import ProjectOverview from '../components/project/ProjectOverview.astro';
 import NextProject from '../components/project/NextProject.astro';
 import { nextProject, projectFacts, projectHref } from '../lib/project-detail';
 import { galleryTiles } from '../lib/project-gallery';
@@ -137,8 +137,8 @@ const secondService = services[1];
 const firstProject = projects[0];
 
 /**
- * A project detail page's facts panel at its fullest and at its shortest,
- * and its next project link, from the real project entries (spec 0015).
+ * A project detail page's overview at its fullest and at its shortest facts
+ * (spec 0018), and its next project link (spec 0015), from the real entries.
  */
 const byFactCount = projects
   .map((project) => ({
@@ -1243,24 +1243,25 @@ const headCellClass =
     <Section labelledBy="sg-project-detail">
       <h2 id="sg-project-detail">Project detail pieces</h2>
       <p class="mt-4 max-w-narrow">
-        A project page's story band and its way on, from the real entries: the
-        facts panel beside the write up, then the next project link. The panel
-        is panel with ink muted labels and ink strong values, and lists only the
-        facts a project has.
+        A project page's overview and its way on, from the real entries: the
+        portrait beside the tagline, the title, and the facts, then the next
+        project link. Labels are ink muted, values ink strong, and the service
+        is an accent link. Only the facts a project has are listed.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
-        Below 1024px the panel comes first; from 1024px it sits in the right
-        column with the DOM order unchanged. The first shows the fullest panel,
+        Below 768px the photo comes first; from 768px it takes five of twelve
+        columns, with the facts at its foot. The first shows the fullest facts,
         the second the shortest, with no empty rows. Tab to the next project
         link: one stop, named by its label and title, with the accent ring.
       </p>
 
       {fullestFacts && (
         <div class="mt-8 rounded-ui border border-line p-6">
-          <ProjectStory
-            sections={fullestFacts.project.writeUp.slice(0, 1)}
-            factsHeading={projectPage.detail.factsHeading}
-            factsHeadingId="sg-facts-full-heading"
+          <ProjectOverview
+            tagline={fullestFacts.project.tagline}
+            title={fullestFacts.project.title}
+            headingId="sg-overview-full-heading"
+            portrait={fullestFacts.project.portrait}
             facts={fullestFacts.facts}
           />
         </div>
@@ -1268,10 +1269,11 @@ const headCellClass =
 
       {shortestFacts && shortestFacts !== fullestFacts && (
         <div class="mt-8 rounded-ui border border-line p-6">
-          <ProjectStory
-            sections={shortestFacts.project.writeUp.slice(0, 1)}
-            factsHeading={projectPage.detail.factsHeading}
-            factsHeadingId="sg-facts-short-heading"
+          <ProjectOverview
+            tagline={shortestFacts.project.tagline}
+            title={shortestFacts.project.title}
+            headingId="sg-overview-short-heading"
+            portrait={shortestFacts.project.portrait}
             facts={shortestFacts.facts}
           />
         </div>

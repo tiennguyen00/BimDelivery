@@ -270,6 +270,100 @@
 }
 
 /**
+ * A project room's photo track (spec 0018): one photo per view, side by side,
+ * swiped or scrolled sideways, each stopping square in the frame. It works
+ * with no script; `room-carousel.ts` only adds the arrows. The scrollbar is
+ * hidden once the script runs, because the arrows replace it; with no
+ * script it stays, so a mouse can still reach every photo.
+ */
+@utility carousel-track {
+  display: flex;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+
+  html.js & {
+    scrollbar-width: none;
+  }
+}
+
+/**
+ * A room name in the project rooms band's list (spec 0018): `ink`, and
+ * `heading`, a short rule sliding in before it, while that room's photo shows
+ * (`data-active`, set by `room-carousel.ts`; the first room carries it in
+ * the HTML). Both colours pass on Coffee, so a dimmed name stays readable.
+ */
+@utility room-name {
+  display: flex;
+  align-items: center;
+  color: var(--color-ink);
+
+  &::before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 1px;
+    background-color: var(--color-heading);
+    margin-inline-end: 0;
+  }
+
+  &[data-active] {
+    color: var(--color-heading);
+  }
+
+  &[data-active]::before {
+    width: 1.5rem;
+    margin-inline-end: 0.75rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color 300ms ease-out;
+
+    &::before {
+      transition:
+        width 300ms ease-out,
+        margin-inline-end 300ms ease-out;
+    }
+  }
+}
+
+/**
+ * One room's work list in the project rooms band (spec 0018). With no
+ * script every list shows, one under another, each under its room's name.
+ * Once the script runs they share one grid cell and only the active room's
+ * (`data-active`) is visible; a hidden one is `visibility: hidden`, so a
+ * screen reader skips it too. Its items fade and rise in one after another
+ * (`--i`, 60ms apart, the reveal's 24px over 500ms); the leaving list goes
+ * at once, so the two never overlap. Reduced motion: an instant swap.
+ */
+@utility room-work {
+  html.js & {
+    grid-area: 1 / 1;
+    visibility: hidden;
+  }
+
+  html.js &[data-active] {
+    visibility: visible;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html.js & li {
+      opacity: 0;
+      translate: 0 1.5rem;
+    }
+
+    html.js &[data-active] li {
+      opacity: 1;
+      translate: 0 0;
+      transition:
+        opacity 500ms ease-out,
+        translate 500ms ease-out;
+      transition-delay: calc(var(--i, 0) * 60ms);
+    }
+  }
+}
+
+/**
  * The arrow on the `Select` field (spec 0011): the icon set's own
  * `chevron-down` path, drawn as a background so the native `<select>` keeps
  * its keyboard, screen reader, and phone picker behaviour. A data URI cannot

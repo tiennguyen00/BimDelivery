@@ -18,34 +18,46 @@ software:
   - Dynamo
   - Enscape
 duration: 20 weeks
-writeUp:
-  - heading: The brief
-    paragraphs:
-      - An architecture practice needed its concept design for a nine storey office block turned into a **full Revit model** that could carry the project from planning through to construction drawings.
-  - heading: What we did
-    paragraphs:
-      - We built the model from the practice's sketches and 2D plans, level by level, with a curtain wall system set up to match the facade rhythm the architects had drawn.
-      - Dynamo scripts placed and numbered the repeating facade panels, so a change to the grid updated hundreds of elements in minutes rather than days.
-      - We set up sheets, views, and schedules to the practice's own standards, so their team could pick the model up and keep working without retraining.
-  - heading: The outcome
-    paragraphs:
-      - The planning submission went in on time with renders straight from the model, and the same model now drives the construction drawing set.
-gallery:
-  - src: https://images.pexels.com/photos/4067525/pexels-photo-4067525.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A curved office building clad in blue glass against a clear sky
-  - src: https://images.pexels.com/photos/16846525/pexels-photo-16846525.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: The rounded glass corner of an office block seen from below
-  - src: https://images.pexels.com/photos/2736843/pexels-photo-2736843.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A facade of identical framed windows in a tight grid
-  - src: https://images.pexels.com/photos/12149149/pexels-photo-12149149.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: Bands of dark windows between white cladding on an office facade
-  - src: https://images.pexels.com/photos/37293743/pexels-photo-37293743.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: An office building of stone panels with a glass storey on top
-  - src: https://images.pexels.com/photos/22637001/pexels-photo-22637001.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A tall office atrium seen from above, with an escalator below
-  - src: https://images.pexels.com/photos/30602080/pexels-photo-30602080.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A stone atrium with escalators and staircases rising through it
-  - src: https://images.pexels.com/photos/5716708/pexels-photo-5716708.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A white stairwell with metal handrails and a potted plant on the landing
-  - src: https://images.pexels.com/photos/1463917/pexels-photo-1463917.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A curved concrete building under construction beside a tower crane
+tagline: A facade drawn once, built by script
+intro:
+  - '**A concept sketch, carried all the way to construction.** An architecture practice needed its nine storey office block turned into a full Revit model that could take the project from planning to construction drawings.'
+  - "We built the model level by level from the practice's sketches and plans. Dynamo scripts placed and numbered the repeating facade panels, so a change to the grid updated hundreds of elements in minutes."
+  - 'The planning submission went in on time with renders straight from the model, and the same model now drives the ==construction drawing set==.'
+portrait:
+  src: https://images.pexels.com/photos/16846525/pexels-photo-16846525.jpeg?auto=compress&cs=tinysrgb&w=1600
+  alt: The rounded glass corner of an office block seen from below
+rooms:
+  - name: Facade
+    workload:
+      - Curtain wall system
+      - Elevations
+      - Dynamo panel scripts
+    photos:
+      - src: https://images.pexels.com/photos/4067525/pexels-photo-4067525.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A curved office building clad in blue glass against a clear sky
+      - src: https://images.pexels.com/photos/2736843/pexels-photo-2736843.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A facade of identical framed windows in a tight grid
+      - src: https://images.pexels.com/photos/12149149/pexels-photo-12149149.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: Bands of dark windows between white cladding on an office facade
+      - src: https://images.pexels.com/photos/37293743/pexels-photo-37293743.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: An office building of stone panels with a glass storey on top
+  - name: Atrium
+    workload:
+      - Plans
+      - Sections
+      - Escalator and stair layout
+    photos:
+      - src: https://images.pexels.com/photos/22637001/pexels-photo-22637001.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A tall office atrium seen from above, with an escalator below
+      - src: https://images.pexels.com/photos/30602080/pexels-photo-30602080.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A stone atrium with escalators and staircases rising through it
+  - name: Stair cores
+    workload:
+      - Stair details
+      - Handrail schedules
+      - Construction sheets
+    photos:
+      - src: https://images.pexels.com/photos/5716708/pexels-photo-5716708.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A white stairwell with metal handrails and a potted plant on the landing
+      - src: https://images.pexels.com/photos/1463917/pexels-photo-1463917.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A curved concrete building under construction beside a tower crane

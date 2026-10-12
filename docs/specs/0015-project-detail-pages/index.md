@@ -1,7 +1,7 @@
 # 0015. Give every project its own page at /project/<slug>, and turn the project tiles into links
 
 **Date**: 2026-10-04
-**Status**: In Progress
+**Status**: In Progress. Bands 1 to 4 (intro, cover, story, gallery) replaced by spec 0018 (2026-10-12)
 **Scope feature**: 16, Project detail pages (`docs/scope/scope.md`)
 
 ## Summary

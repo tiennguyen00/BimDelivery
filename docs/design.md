@@ -59,7 +59,7 @@ what it paints and the next palette change is values only.
 | `--color-accent` | `#cf9d7b` Antique Brass | Fills (primary button, the closing band, closed accordion items, process step circles, map markers, heading rules and accent bars, icon fills) AND words (links, emphasis, `==` phrases, numbers, the secondary button), and the focus ring |
 | `--color-accent-hover` | `#e3bc9f` | The primary button's hover fill, and nothing else |
 | `--color-on-accent` | `#0c1519` | The label or icon on an `accent` or `accent-hover` fill, and nothing else |
-| `--color-accent-deep` | `#724b39` Coffee | The home service card's hover wash, and nothing else. Never a word |
+| `--color-accent-deep` | `#724b39` Coffee | The home service card's hover wash and a project detail page's rooms band (spec 0018), and nothing else. Never a word |
 | `--color-line` | `#724b39` Coffee | Decorative borders and dividers, the process timeline's connector, the footer's top hairline. Never a control boundary, never a word |
 | `--color-field` | `#8c8480` | Form field borders, a control boundary: 5.04:1 against the `canvas` fill |
 | `--color-error` | `#ff8a7a` | Error text and error borders, on every surface |
@@ -83,7 +83,7 @@ quieter brass in a swatch list.
 | Accent | `--color-accent` | Every fill, word, link, icon, rule, and focus ring in the colour table, on `canvas`, `raised`, `panel`, and either pattern | As a word on a photo (2.88:1 over the scrim) or on the Coffee wash (3.66:1) |
 | Accent, hover | `--color-accent-hover` | The primary button's hover fill | Everything else |
 | On accent | `--color-on-accent` | The label or icon on an accent fill | Anywhere that is not an accent fill |
-| Coffee | `--color-accent-deep`, `--color-line` | The service card wash; decorative borders, dividers, and the timeline connector | Any word, any control border, any focus ring |
+| Coffee | `--color-accent-deep`, `--color-line` | The service card wash and the project rooms band's fill; decorative borders, dividers, and the timeline connector | Any word, any control border, any focus ring |
 
 Three consequences worth writing down:
 
@@ -158,6 +158,7 @@ alpha blending over the worst case pixel. The working is in spec 0003's
 | heading on `scrim` over a pure white pixel (`#555b5e`): the Project hero, every project tile caption | | 5.91 | 4.5 |
 | on the contact form band's worst pixel (`#31393c`): heading / ink / ink-muted / error / accent | | 10.11 / 7.44 / 5.32 / 5.15 / 4.92 | 4.5 |
 | heading on the Coffee wash's darkest point (`#614438`) | | 7.52 | 4.5 |
+| heading / ink on the project rooms band (`accent-deep`, `#724b39`, spec 0018). `ink-muted` (3.40) and `accent` (3.15) fail, so neither is a word there | | 6.47 / 4.77 | 4.5 |
 | two colour ring, canvas inner / heading outer | accent fill / any photo | canvas on accent 7.71; on any colour one band reaches at least 3.98 | 3.0 |
 
 ### Contrast, deliberately never text
@@ -227,13 +228,10 @@ constrained and `min-h-11` (the 44px tap target) relies on it.
 | Card padding | 24px | 24px | 24px |
 | Grid gaps | 24px | 24px | 24px |
 
-One written exception to the grid gap: the photo wall, on the Project page
-(`ProjectGallery`, spec 0014) and in a project detail page's gallery
-(`ProjectPhotos`, spec 0015), uses an 8px gap (`gap-2`) across and down, so
-the photos read as one wall split by thin seams. The detail gallery takes it
-from `src/components/project/wall.ts`; the Project page's two across wall
-writes it in its own grid (spec 0014, revised 2026-10-09). No other grid
-does.
+One written exception to the grid gap: the photo wall on the Project page
+(`ProjectGallery`, spec 0014, revised 2026-10-09) uses an 8px gap (`gap-2`)
+across and down, so the photos read as one wall split by thin seams. No other
+grid does.
 
 There is no vertical margin between sections. Adjacent sections of the same
 tone are fine; alternating `canvas` and `raised` is the default rhythm a page
@@ -461,8 +459,8 @@ and so on).
 The whole set, thirty six glyphs on one 24 unit grid: `menu`, `close`,
 `chevron-down`, `check` (the home presence band's why choose list, spec 0005),
 `arrow-right` (the home service card's cue, spec 0005, and the home project
-tiles' cue and the next project link, spec 0015), `arrow-left` (a project detail
-page's "All projects" link, its mirror, spec 0015), `plus` and `minus`
+tiles' cue and the next project link, spec 0015), `arrow-left` (a project room's
+previous photo arrow, its mirror, spec 0018), `plus` and `minus`
 (an `Accordion` item closed and open, spec 0010), the footer's contact glyphs
 `phone`, `mail`, `globe`, the five social marks `linkedin`, `facebook`,
 `youtube`, `x`, `instagram`, and the four solid stat glyphs
@@ -928,9 +926,9 @@ two across from `md`.
   and bottom padding (`bandPaddingBottomClass` in `styles.ts`), and a top
   padding equal to the gutter, so the first row sits as far below the hero as
   the tiles sit from the window's sides. It takes **no maximum width**, so the
-  wall runs the full window width inside the gutters. Three bands do this,
-  each written down: this wall, and a project detail page's cover and gallery
-  (spec 0015). The list is labelled by the page's `h1`; the wall adds no name
+  wall runs the full window width inside the gutters. It is the only
+  band that does (a project detail page's cover and gallery did until spec
+  0018). The list is labelled by the page's `h1`; the wall adds no name
   of its own.
 - **Every tile is a fixed 3:2 box** (`aspect-3/2`), **4:3 from `md` to `lg`**
   (`md:aspect-4/3 lg:aspect-3/2`), where two columns make the tiles narrowest
@@ -1052,69 +1050,59 @@ spec 0005's "the photo stays still"):
   on the `Image`. The box and the layout never move. On home the caption
   stays still; on `/project` the scrim deepens and the cue and facts unfold.
 - The home band's "View all projects" button stays, the one way to the list.
-- A gallery tile on a detail page is **not** a project tile: no link, no cue,
-  no zoom, the default cursor.
-
-### `IntroBand` (project) · `src/components/project/IntroBand.astro`
-
-| Prop | Type | Default |
-|---|---|---|
-| `heading` | `string` (required) | |
-| `headingId` | `string` (required) | |
-| `intro` | `string` (required), may carry marks | |
-| `context` | `{ backLink: Link; service: Link }` | none |
-| `entranceFrom` | `number`, the first entrance step | `0` |
-
-The `/project` intro (spec 0014), reused by every project detail page (spec
-0015). It renders the inside of a `canvas` `Section` labelled by its `h1`.
-
-- **Without `context`** it is exactly the `/project` intro: the ruled `h1` in
-  capitals by CSS only, then one `text-lead` paragraph in the narrow width.
-- **With `context`**, a block above the `h1` holds two left aligned links, each
-  44px tall for touch: the back link (an `arrow-left` and its label,
-  `text-small`, `accent`) and, on its own line, the project's service
-  (`text-small font-semibold tracking-wide uppercase`, `accent`) linking to
-  its service page. Both underline on hover. `context` carries both links
-  together, so the band has both or neither.
-- **The entrance** counts up from `entranceFrom`: the links block, then the
-  `h1`, then the paragraph.
 
 ### The project detail page · `src/pages/project/[slug].astro`
 
-One page per project at `/project/<slug>` (spec 0015), six bands: the intro
-(`IntroBand` with `context`), the cover, the story, the gallery, the next
-project link (two or more projects only), and the accent `CtaBand`. Every word
-comes from the project's entry, its service, `projectPage.detail`, or the site
-name; the derived values (the next project, the facts rows, the head) come
-from `src/lib/project-detail.ts`.
+One page per project at `/project/<slug>` (spec 0015), its bands redrawn by
+spec 0018 after the engineer's reference: the hero, the overview, the rooms
+band, the next project link (two or more projects only), and the accent
+`CtaBand`. Every word comes from the project's entry, its service,
+`projectPage.detail`, or the site name; the derived values (the next project,
+the fact rows, the head) come from `src/lib/project-detail.ts`.
 
-- **`ProjectCover`**, the cover band: `canvas`, the band gutters, **no maximum
-  width** and no vertical padding. One photo box, `rounded-ui` on a `panel` fill
-  that shows only while it loads, fixed at 4:3 below `md`, 16:9 at `md`, and
-  21:9 at `lg`, so its space is reserved before the photo arrives. The photo
-  covers it, loads eagerly with high fetch priority (the page's largest
-  paint), and has `widths` up to 2400. No caption, no link, no hover.
-- **`ProjectStory`**, the story band: a `canvas` `Section`, no label. One column
-  below `lg`, the facts panel first; at `lg` three columns with a 32px gap,
-  the write up across the first two and the facts panel in the third, both at
-  the top. The DOM order stays facts first and the placement is explicit
-  (`lg:col-span-2 lg:row-start-1`, `lg:col-start-3 lg:row-start-1`), never auto
-  flow. Each write up section is an `h2` at `text-h3`, then its paragraphs
-  through `Emphasis`, 16px apart, with 48px between sections.
-- **The facts panel**: `bg-panel`, `rounded-ui`, 24px padding (32px from `md`),
-  an `h2` at `text-h3`, then one `<dl>`: each `<dt>` a `text-small font-semibold
+- **The hero** is the About page's `SplitBand`, unchanged: the title as the
+  `h1`, the service's title as the brass tagline, the entry's `intro`
+  paragraphs, and a "Discover more" button (`arrow-down`) to
+  `#project-overview`, beside the cover photo, with the CSS `entrance`.
+- **`ProjectOverview`**, the overview: a `raised` `Section` with the id
+  `project-overview`, labelled by its `h2`. One column below `md`, the
+  portrait (4:5, `rounded-ui`, on `panel` while it loads) first; from `md`
+  the portrait takes five of twelve columns and the words the rest. The
+  words are the tagline (`text-eyebrow`, `accent`), the title again as an
+  `h2` at `text-h1` in capitals, then the facts pushed to the column's foot:
+  one `<dl>` in two columns, each `<dt>` a `text-small font-semibold
   tracking-wide uppercase` label in `ink-muted`, each `<dd>` the value in
-  `ink-strong` with `wrap-break-word`, so a long place or client wraps inside
-  the panel. A fact the entry leaves out has **no row at all**, never an empty
-  `<dt>` or a dash. The rows and their formatting (`42,000 m²`, `LOD 300`,
-  `Revit, Navisworks`) come from `projectFacts`, never a component.
-- **`ProjectPhotos`**, the gallery band: `raised`, the band gutters and padding,
-  **no maximum width**. A left aligned ruled `h2` names the band and its list.
-  The wall is `wall.ts`: one, two, then three columns, 8px seams, fixed 5:4
-  tiles on `panel` (the `/project` wall's old shape; that wall left it on
-  2026-10-09). A gallery tile is only a photo with its
-  `alt`: no caption, nothing focusable, the default cursor, no hover, and
-  every photo lazy.
+  `ink-strong` with `wrap-break-word`. The order is area, location, service,
+  year, client, storeys, LOD, software, duration; the service is an `accent`
+  link to its page. A fact the entry leaves out has **no row at all**. The
+  rows and their formatting (`42,000 m²`, `LOD 300`, `Revit, Navisworks`)
+  come from `projectFacts`, never a component.
+- **`ProjectRooms`**, the rooms: one band on `accent-deep` (Coffee), not a
+  `Section`, because its photos bleed to the screen's edge. Its `h2`
+  (`project-room-heading`, `projectPage.detail.roomsHeading`) is `sr-only`;
+  the eye reads the names list. From `lg` the photos take two of three
+  columns and the words one, at least a screen tall (`split-band-height`),
+  the photos on the left. Below `lg` the photos come first, full width at
+  4:3, so a swipe changes the words just under it. The words are every
+  room's name at the top (`room-name`: Playfair at `text-h3`, capitals) and,
+  at the foot, a `text-eyebrow` label in `heading` between decorative
+  slashes over the room's work list in `ink` (`room-work`). Only `heading`
+  and `ink` are words on Coffee.
+- **The photos** are every room's, in content order, side by side in one
+  `carousel-track` (a native sideways scroller, one photo per view,
+  snapping), so they work with no script. With two or more, two round 44px
+  arrow buttons (`arrow-left`, `arrow-right`, on `scrim`, `scrim-strong` on
+  hover) sit at the photo's bottom corners, named by
+  `projectPage.detail.photoControls`. They ship `no-js:hidden`. The band
+  takes `focus-contrast`.
+- **The words follow the photo**: `src/scripts/room-carousel.ts` makes each
+  arrow step one photo and wrap, and whenever the photo on show belongs to
+  another room (by arrow or by swipe), that room's name and work list take
+  `data-active`. The active name turns `ink` to `heading` as a 24px rule
+  slides in before it; the work lists share one grid cell, and the new one's
+  items fade and rise 24px, 60ms apart, over 500ms, while the old one goes at
+  once. Reduced motion: an instant swap. With no script every work list
+  shows, one under another, each under its room's name.
 - **`NextProject`**, the way on: a `canvas`, narrow `Section` holding one centred
   link to the next project by `order` (the last wraps to the first). Inside
   it, the label (`text-small font-semibold tracking-wide uppercase`,
@@ -1327,14 +1315,14 @@ pages use the same reveal script and add the carousel (spec 0013).
   gets it. It moves by `transform`, so the zoom (`scale`, on the `Image`)
   and the entrance and reveal (on the `<li>`) never collide with it. Under
   reduced motion the script stops before marking anything.
-- Every project detail page imports `reveal.ts` too (spec 0015): the intro
-  moves on load through the `entrance` utility, the back link and service line
-  at step 0, the `h1` at 1, the summary at 2, and the cover at 3, and none of
-  them takes `data-reveal`. On scroll the facts panel and each write up
-  section reveal, then the gallery's heading block and its tiles one after
-  another (`data-reveal-stagger`), and the `h1`'s and the gallery heading's
-  rules draw with the scroll direction. The next project band and the accent
-  band do not move.
+- Every project detail page imports `reveal.ts` too (spec 0015, revised by
+  spec 0018): the hero moves on load through `SplitBand`'s `entrance`. On
+  scroll the overview's portrait reveals (`data-reveal`) and its words one
+  after another (`data-reveal-stagger`), and the rooms band's photos and words
+  do the same. It also imports `room-carousel.ts`: the arrows glide one photo
+  (or jump under reduced motion), and the room names and work lists follow
+  the photo on show (above). The next project band
+  and the accent band do not move.
 - **Don't** give the hero or the intro band the fade-and-rise: the hero is the
   largest contentful paint, and the intro band already moves with its typed words.
   What is banned there is revealing the band, not all motion on it. The intro
@@ -1375,7 +1363,7 @@ pages use the same reveal script and add the carousel (spec 0013).
   (all spec 0005; About by spec 0010, which adds no script: its entrance and
   accordion are CSS and HTML; the service pages by spec 0013, the Project page
   by spec 0014, and the project detail pages by spec 0015, which add none
-  either). `reveal.ts` holds two separate
+  either; spec 0018 adds `src/scripts/room-carousel.ts` to them). `reveal.ts` holds two separate
   halves, the fade-and-rise reveal and the heading rule, in one file. The
   fifth is `src/scripts/project-filter.ts`, which the Project page imports
   (spec 0014, revised 2026-10-09): filtering a list is behaviour CSS cannot

@@ -1,0 +1,82 @@
+---
+/**
+ * A project detail page's overview (spec 0018): an upright photo beside the
+ * project's tagline, its title again at display size, and its facts. The
+ * hero's "Discover more" button lands here.
+ *
+ * It renders only the inside of the band; the page wraps it in a `raised`
+ * `Section` that carries the button's target id and is labelled by this
+ * band's `h2`.
+ *
+ * Below `md` it is one column, the photo first at 4:5. From `md` the photo
+ * takes five of twelve columns and the words the rest, the facts pushed to
+ * the bottom so they line up with the photo's foot, as in the reference.
+ *
+ * The facts are a `<dl>` of only the facts the project has, in two columns.
+ * Their rows come ready formatted from `projectFacts`, so this component
+ * formats nothing; a row with an `href` (the service) is a link. A long value
+ * wraps inside its column rather than pushing it wider.
+ *
+ * Motion: the photo carries `data-reveal` and the words
+ * `data-reveal-stagger`, so they fade and rise in as they arrive.
+ */
+import { Image } from 'astro:assets';
+import type { Fact } from '../../lib/project-detail';
+
+interface Props {
+  tagline: string;
+  title: string;
+  /** The id of the band's `h2`. */
+  headingId: string;
+  portrait: Readonly<{ src: string; alt: string }>;
+  /** One row per fact the project has, in order. */
+  facts: readonly Fact[];
+}
+
+const { tagline, title, headingId, portrait, facts } = Astro.props;
+---
+
+<div class="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8">
+  <div
+    class="relative aspect-4/5 overflow-hidden rounded-ui bg-panel md:col-span-5"
+    data-reveal
+  >
+    <Image
+      src={portrait.src}
+      alt={portrait.alt}
+      inferSize
+      widths={[480, 640, 960, 1280]}
+      sizes="(min-width: 1200px) 480px, (min-width: 768px) 40vw, 100vw"
+      loading="lazy"
+      class="absolute inset-0 size-full object-cover"
+    />
+  </div>
+
+  <div
+    class="flex flex-col md:col-span-7 lg:col-span-6 lg:col-start-7"
+    data-reveal-stagger
+  >
+    <p class="text-eyebrow font-semibold text-accent uppercase">{tagline}</p>
+    <h2 id={headingId} class="mt-4 text-h1 text-balance uppercase">
+      {title}
+    </h2>
+    <dl class="mt-10 grid grid-cols-2 gap-x-8 gap-y-6 md:mt-auto md:pt-12">
+      {facts.map((fact) => (
+        <div>
+          <dt class="text-small font-semibold tracking-wide text-ink-muted uppercase">
+            {fact.label}
+          </dt>
+          <dd class="mt-1 wrap-break-word text-ink-strong">
+            {fact.href === undefined ? (
+              fact.value
+            ) : (
+              <a href={fact.href} class="text-accent hover:underline">
+                {fact.value}
+              </a>
+            )}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</div>

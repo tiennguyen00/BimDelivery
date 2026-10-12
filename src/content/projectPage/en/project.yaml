@@ -45,22 +45,24 @@ cta:
     label: Contact us
     href: /contact-us
 detail:
-  backLink:
-    label: All projects
-    href: /project
-  factsHeading: Project facts
+  discoverLabel: Discover more
   factLabels:
+    floorArea: Area
     location: Location
-    year: Completed
+    service: Service
+    year: Year
     client: Client
-    floorArea: Floor area
     storeys: Storeys
     lod: Level of development
     software: Software
     duration: Duration
   areaUnit: m²
   lodPrefix: LOD
-  galleryHeading: Gallery
+  roomsHeading: Inside the project
+  workloadLabel: What we did
+  photoControls:
+    previous: Previous photo
+    next: Next photo
   nextLabel: Next project
   cta:
     heading: Have a project like this one?

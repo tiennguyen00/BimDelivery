@@ -18,21 +18,22 @@ software:
   - Navisworks
   - BIM 360
 duration: 12 weeks
-writeUp:
-  - heading: The brief
-    paragraphs:
-      - A six storey hotel had its structure and its services designed by two different firms, and the ceiling voids above the corridors were too tight to leave the two to meet on site.
-  - heading: What we did
-    paragraphs:
-      - We coordinated the structural and services models in Navisworks, starting with the corridor ceilings and the plant room, and kept every issue in BIM 360 with an owner and a due date.
-      - Where ducts could not fit, we proposed new routes and beam penetrations and checked each one with the structural engineer before it went into the model.
-  - heading: The outcome
-    paragraphs:
-      - The corridors kept their **design ceiling height**, and the services went in without a single redesign on site.
-gallery:
-  - src: https://images.pexels.com/photos/17619969/pexels-photo-17619969.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A hotel with stepped rows of balconies against a blue sky
-  - src: https://images.pexels.com/photos/2394446/pexels-photo-2394446.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A narrow pale hotel tower with small windows and a rooftop aerial
-  - src: https://images.pexels.com/photos/10135442/pexels-photo-10135442.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A white hotel with arched windows and small balconies seen from below
+tagline: Tight ceilings, no surprises on site
+intro:
+  - '**Two firms, one tight ceiling void.** A six storey hotel had its structure and its services designed separately, and the voids above the corridors were too tight to leave the two to meet on site.'
+  - 'We coordinated both models in Navisworks, tracked every issue in BIM 360 with an owner and a due date, and checked each new duct route and beam penetration with the structural engineer.'
+  - 'The corridors kept their ==design ceiling height==, and the services went in without a single redesign on site.'
+portrait:
+  src: https://images.pexels.com/photos/2394446/pexels-photo-2394446.jpeg?auto=compress&cs=tinysrgb&w=1600
+  alt: A narrow pale hotel tower with small windows and a rooftop aerial
+rooms:
+  - name: Corridors
+    workload:
+      - Clash detection
+      - Duct rerouting
+      - Beam penetrations
+    photos:
+      - src: https://images.pexels.com/photos/17619969/pexels-photo-17619969.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A hotel with stepped rows of balconies against a blue sky
+      - src: https://images.pexels.com/photos/10135442/pexels-photo-10135442.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A white hotel with arched windows and small balconies seen from below

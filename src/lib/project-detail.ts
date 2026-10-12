@@ -1,9 +1,10 @@
 /**
- * A project detail page's derived values (spec 0015): its path, the project
- * after it, the facts panel's rows, and the page head. Pure: data in, new
- * values out, no component imported, and no entry mutated.
+ * A project detail page's derived values (spec 0015, revised by spec 0018):
+ * its path, the project after it, the overview's fact rows, and the page
+ * head. Pure: data in, new values out, no component imported, and no entry
+ * mutated.
  *
- * Formatting lives here rather than in a component, so every facts panel
+ * Formatting lives here rather than in a component, so every fact list
  * reads the same and the numbers follow the page's locale in one place.
  */
 import type { Locale } from '../i18n/locales';
@@ -27,7 +28,8 @@ export const nextProject = (
   return index === -1 ? undefined : sorted[(index + 1) % sorted.length];
 };
 
-export type Fact = Readonly<{ label: string; value: string }>;
+/** One fact row. `href` makes the value a link, as the service's is. */
+export type Fact = Readonly<{ label: string; value: string; href?: string }>;
 
 type DetailCopy = ProjectPage['detail'];
 
@@ -42,9 +44,10 @@ export const formatArea = (
 ): string => `${new Intl.NumberFormat(lang).format(floorArea)} ${unit}`;
 
 /**
- * The facts panel's rows, in the fixed order location, year, client, floor
- * area, storeys, LOD, software, duration. A fact the entry leaves out has no
- * row at all, never an empty one.
+ * The overview's fact rows (spec 0018), in the fixed order floor area,
+ * location, service, year, client, storeys, LOD, software, duration. A fact
+ * the entry leaves out has no row at all, never an empty one. The service
+ * links to its page.
  *
  * The year is written as it is (no thousands separator); the floor area is
  * grouped for the locale, then the unit; the software list is joined the
@@ -56,16 +59,17 @@ export const projectFacts = (
   lang: Locale,
 ): readonly Fact[] => {
   const { factLabels: labels } = detail;
-  const rows: readonly (readonly [string, string | undefined])[] = [
-    [labels.location, project.location],
-    [labels.year, String(project.year)],
-    [labels.client, project.client],
+  const rows: readonly (readonly [string, string | undefined, string?])[] = [
     [
       labels.floorArea,
       project.floorArea === undefined
         ? undefined
         : formatArea(project.floorArea, detail.areaUnit, lang),
     ],
+    [labels.location, project.location],
+    [labels.service, project.service.title, `/${project.service.slug}`],
+    [labels.year, String(project.year)],
+    [labels.client, project.client],
     [
       labels.storeys,
       project.storeys === undefined ? undefined : String(project.storeys),
@@ -84,9 +88,10 @@ export const projectFacts = (
     ],
     [labels.duration, project.duration],
   ];
-  return rows.flatMap(([label, value]) =>
-    value === undefined ? [] : [{ label, value }],
-  );
+  return rows.flatMap(([label, value, href]) => {
+    if (value === undefined) return [];
+    return href === undefined ? [{ label, value }] : [{ label, value, href }];
+  });
 };
 
 /**

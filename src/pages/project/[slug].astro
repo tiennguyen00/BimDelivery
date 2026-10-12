@@ -1,30 +1,31 @@
 ---
 /**
- * Every project detail page, from one route (spec 0015): six bands, in
- * order, then the footer. Every word, number, and photo comes from the
- * project's entry, its service, the shared `projectPage` copy, or the site
- * name, so a project page needs no code edit to exist.
+ * Every project detail page, from one route (spec 0015, bands redrawn by spec
+ * 0018 after the engineer's reference): in order, then the footer. Every
+ * word, number, and photo comes from the project's entry, its service, the
+ * shared `projectPage` copy, or the site name, so a project page needs no
+ * code edit to exist.
  *
- * 1. Intro: the "All projects" back link, the service line (a link to the
- *    service page), the ruled `h1`, and the summary.
- * 2. The cover photo, wide.
- * 3. The story: the write up beside the facts panel.
- * 4. The gallery: an `h2` and the photo wall.
- * 5. The next project link, only when the language has two or more.
- * 6. The accent closing band, linking to Contact.
+ * 1. Hero (`SplitBand`): the title as the `h1`, the service as the
+ *    tagline, the intro, a "Discover more" button down to the overview, and
+ *    the cover photo.
+ * 2. Overview: the portrait photo beside the tagline, the title, and the
+ *    facts.
+ * 3. The rooms, one Coffee band: every room's photos in one carousel beside
+ *    the room names and the work done in the room on show.
+ * 4. The next project link, only when the language has two or more.
+ * 5. The accent closing band, linking to Contact.
  *
  * This file sits beside `src/pages/project.astro`, which still builds
- * `/project`. It owns the heading ids, under the `<band>-heading` rule; the
- * write up's section headings need none, since nothing points at them.
+ * `/project`. It owns the heading ids, under the `<band>-heading` rule.
  */
 import type { GetStaticPaths } from 'astro';
 import PageLayout from '../../layouts/PageLayout.astro';
 import Section from '../../components/ui/Section.astro';
 import CtaBand from '../../components/ui/CtaBand.astro';
-import IntroBand from '../../components/project/IntroBand.astro';
-import ProjectCover from '../../components/project/ProjectCover.astro';
-import ProjectStory from '../../components/project/ProjectStory.astro';
-import ProjectPhotos from '../../components/project/ProjectPhotos.astro';
+import SplitBand from '../../components/about/SplitBand.astro';
+import ProjectOverview from '../../components/project/ProjectOverview.astro';
+import ProjectRooms from '../../components/project/ProjectRooms.astro';
 import NextProject from '../../components/project/NextProject.astro';
 import { DEFAULT_LOCALE } from '../../i18n/locales';
 import {
@@ -71,41 +72,42 @@ const { detail } = page;
 const head = projectHead(project, settings.siteName);
 const facts = projectFacts(project, detail, project.lang);
 
-/** The intro takes steps 0 (links), 1 (`h1`), and 2 (summary). */
-const COVER_STEP = 3;
+const OVERVIEW_ID = 'project-overview';
 ---
 
 <PageLayout title={head.title} description={head.description}>
-  <Section tone="canvas" labelledBy="project-detail-heading">
-    <IntroBand
-      heading={project.title}
-      headingId="project-detail-heading"
-      intro={project.summary}
-      context={{
-        backLink: detail.backLink,
-        service: {
-          label: project.service.title,
-          href: `/${project.service.slug}`,
-        },
-      }}
-    />
-  </Section>
+  <SplitBand
+    headingLevel={1}
+    heading={project.title}
+    headingId="project-detail-heading"
+    tagline={project.service.title}
+    paragraphs={project.intro}
+    image={{ src: project.image.src, alt: project.image.alt ?? '' }}
+    imageSide="end"
+    action={{
+      label: detail.discoverLabel,
+      href: `#${OVERVIEW_ID}`,
+      icon: 'arrow-down',
+    }}
+    motion="entrance"
+  />
 
-  <ProjectCover image={project.image} entranceStep={COVER_STEP} />
-
-  <Section tone="canvas">
-    <ProjectStory
-      sections={project.writeUp}
-      factsHeading={detail.factsHeading}
-      factsHeadingId="project-facts-heading"
+  <Section tone="raised" id={OVERVIEW_ID} labelledBy="project-overview-heading">
+    <ProjectOverview
+      tagline={project.tagline}
+      title={project.title}
+      headingId="project-overview-heading"
+      portrait={project.portrait}
       facts={facts}
     />
   </Section>
 
-  <ProjectPhotos
-    heading={detail.galleryHeading}
-    headingId="project-gallery-heading"
-    photos={project.gallery}
+  <ProjectRooms
+    heading={detail.roomsHeading}
+    headingId="project-room-heading"
+    workloadLabel={detail.workloadLabel}
+    rooms={project.rooms}
+    controls={detail.photoControls}
   />
 
   {next && (
@@ -127,13 +129,12 @@ const COVER_STEP = 3;
 </PageLayout>
 
 {/**
- * The scroll reveal and the heading rule (spec 0005), the page's choice as on
- * the other pages. The intro and the cover move on load through the CSS
- * `entrance` (steps 0 to 3) and never take `data-reveal`. The facts panel,
- * each write up section, the gallery heading, and the gallery tiles reveal
- * on scroll, and both rules draw with the scroll direction. The next project
- * band and the accent band do not move.
+ * The hero moves in on load through `SplitBand`'s CSS `entrance`. The
+ * overview and the rooms band reveal on scroll (`reveal.ts`), and the
+ * rooms band's arrows and words come alive through `room-carousel.ts`. The
+ * next project band and the accent band do not move.
  */}
 <script>
   import '../../scripts/reveal';
+  import '../../scripts/room-carousel';
 </script>

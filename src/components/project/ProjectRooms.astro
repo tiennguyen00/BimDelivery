@@ -1,0 +1,168 @@
+---
+/**
+ * A project detail page's rooms (spec 0018): one band holding every room's
+ * photos in one carousel, beside the rooms' names and the work done in the
+ * room on show, on Coffee, after the engineer's reference.
+ *
+ * It is its own band, not a `Section` tone, because its photos bleed to the
+ * screen's edge and the band's top and bottom, as a `SplitBand`'s do. The
+ * words column borrows the frame's gutters and padding from `styles.ts`.
+ *
+ * Every word sits on `accent-deep`, where only `heading` (6.47:1) and `ink`
+ * (4.77:1) pass; `ink-muted` and `accent` do not, so neither appears here.
+ * The arrows sit on the photo, so the band takes `focus-contrast`.
+ *
+ * From `lg` the photos take two of three columns and the words one, the band
+ * at least a screen tall (`split-band-height`), the names at the top and the
+ * work list at the foot. Below `lg` the photos come first, full width at 4:3,
+ * so a swipe changes the words just under it.
+ *
+ * The photos sit side by side in a `carousel-track`, every room's in content
+ * order, each tagged with its room (`data-room`). The track is a native
+ * sideways scroller that snaps one photo per view, so it works with no
+ * script. With two or more photos, two round arrow buttons sit at the
+ * photo's bottom corners; they ship `no-js:hidden`.
+ *
+ * `room-carousel.ts` makes the arrows step one photo and wrap, and keeps the
+ * words in step with the photo on show: the matching name (`room-name`) and
+ * work list (`room-work`) take `data-active`, and the list's items fade and
+ * rise in. The first room carries `data-active` in the HTML. With no script
+ * every work list shows, each under its room's name.
+ *
+ * The band's `h2` names it for a screen reader only; the names list is what
+ * the eye reads, as in the reference.
+ *
+ * Motion: the photos carry `data-reveal` and the words
+ * `data-reveal-stagger`, inert until the page imports `reveal.ts`.
+ */
+import { Image } from 'astro:assets';
+import Icon from '../ui/Icon.astro';
+import { bandGutterClass, bandPaddingClass, cx } from '../ui/styles';
+import type { Project } from '../../lib/content';
+
+interface Props {
+  /** The band's name, read out but not shown. */
+  heading: string;
+  /** The id of the band's `h2`, which names the band and its photo list. */
+  headingId: string;
+  /** The label over the work list, "What we did". */
+  workloadLabel: string;
+  rooms: Project['rooms'];
+  /** The arrows' accessible names. */
+  controls: Readonly<{ previous: string; next: string }>;
+}
+
+const { heading, headingId, workloadLabel, rooms, controls } = Astro.props;
+
+/** Every photo, in room order, with the index of the room it belongs to. */
+const slides = rooms.flatMap((room, roomIndex) =>
+  room.photos.map((photo) => ({ photo, roomIndex })),
+);
+
+const isFirst = (index: number): true | undefined =>
+  index === 0 ? true : undefined;
+
+const arrowClass = cx(
+  'pointer-events-auto grid size-11 place-items-center rounded-full bg-scrim text-heading transition-colors hover:bg-scrim-strong',
+);
+---
+
+<section
+  aria-labelledby={headingId}
+  class="focus-contrast bg-accent-deep lg:grid lg:split-band-height lg:grid-cols-3"
+  data-room-carousel
+>
+  <h2 id={headingId} class="sr-only">
+    {heading}
+  </h2>
+
+  <div class="relative lg:col-span-2" data-reveal>
+    <ul
+      class="carousel-track aspect-4/3 bg-panel lg:absolute lg:inset-0 lg:aspect-auto"
+      aria-labelledby={headingId}
+      data-room-track
+    >
+      {slides.map(({ photo, roomIndex }) => (
+        <li class="relative w-full shrink-0 snap-start" data-room={roomIndex}>
+          <Image
+            src={photo.src}
+            alt={photo.alt}
+            inferSize
+            widths={[640, 960, 1280, 1600, 2000]}
+            sizes="(min-width: 1024px) 67vw, 100vw"
+            loading="lazy"
+            class="absolute inset-0 size-full object-cover"
+          />
+        </li>
+      ))}
+    </ul>
+
+    {slides.length > 1 && (
+      <div class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-between p-4 no-js:hidden md:p-6">
+        <button
+          type="button"
+          class={arrowClass}
+          aria-label={controls.previous}
+          data-room-prev
+        >
+          <Icon name="arrow-left" size={20} />
+        </button>
+        <button
+          type="button"
+          class={arrowClass}
+          aria-label={controls.next}
+          data-room-next
+        >
+          <Icon name="arrow-right" size={20} />
+        </button>
+      </div>
+    )}
+  </div>
+
+  <div
+    class={cx(
+      'flex flex-col gap-12 lg:justify-between',
+      bandGutterClass,
+      bandPaddingClass,
+    )}
+    data-reveal-stagger
+  >
+    <ul class="flex flex-col gap-3">
+      {rooms.map((room, index) => (
+        <li
+          class="room-name font-display text-h3 text-balance uppercase"
+          data-room-name={index}
+          data-active={isFirst(index)}
+        >
+          {room.name}
+        </li>
+      ))}
+    </ul>
+
+    <div>
+      <p class="flex gap-2 text-eyebrow font-semibold text-heading uppercase">
+        <span aria-hidden="true">/</span>
+        {workloadLabel}
+        <span aria-hidden="true">/</span>
+      </p>
+      <div class="mt-4 grid gap-6">
+        {rooms.map((room, index) => (
+          <div
+            class="room-work"
+            data-room-work={index}
+            data-active={isFirst(index)}
+          >
+            <p class="mb-2 hidden font-semibold text-heading no-js:block">
+              {room.name}
+            </p>
+            <ul class="flex flex-col gap-2 text-ink">
+              {room.workload.map((item, itemIndex) => (
+                <li style={`--i: ${itemIndex}`}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

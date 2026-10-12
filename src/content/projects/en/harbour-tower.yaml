@@ -17,24 +17,30 @@ software:
   - Revit
   - Navisworks
 duration: 14 weeks
-writeUp:
-  - heading: The brief
-    paragraphs:
-      - The design team had separate architectural, structural, and services models for a 30 storey tower with shops, offices, and apartments. They needed them **coordinated into one clash free model** before the tender drawings went out.
-      - Every week of delay pushed back the start on site, so the coordination had to run alongside the design rather than after it.
-  - heading: What we did
-    paragraphs:
-      - We federated the three models in Navisworks and ran clash tests floor by floor, starting with the plant levels where the services were densest.
-      - Each week the design team received a short clash report, grouped by trade and ranked by cost to fix, with a marked up view for every issue. We rebuilt the shared Revit families so the fixes stayed fixed.
-  - heading: The outcome
-    paragraphs:
-      - The model reached tender with ==no open hard clashes==, and the contractor priced from it with far fewer allowances for unknowns.
-gallery:
-  - src: https://images.pexels.com/photos/19821492/pexels-photo-19821492.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A tall tower clad in blue glass seen from the street below
-  - src: https://images.pexels.com/photos/18267934/pexels-photo-18267934.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A slim office tower of glass and pale bands rising above the trees
-  - src: https://images.pexels.com/photos/14301470/pexels-photo-14301470.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A glass building beside a facade of folded bronze fins
-  - src: https://images.pexels.com/photos/7078620/pexels-photo-7078620.jpeg?auto=compress&cs=tinysrgb&w=1600
-    alt: A close view of a glass curtain wall and its frame
+tagline: One model, thirty storeys, no open clashes
+intro:
+  - '**Where three design models had to become one.** A 30 storey tower of shops, offices, and apartments, with separate architectural, structural, and services models that needed to be coordinated before the tender drawings went out.'
+  - 'We federated the models in Navisworks and ran clash tests floor by floor, alongside the design rather than after it, so the coordination never held back the start on site.'
+  - 'The model reached tender with ==no open hard clashes==, and the contractor priced from it with far fewer allowances for unknowns.'
+portrait:
+  src: https://images.pexels.com/photos/18267934/pexels-photo-18267934.jpeg?auto=compress&cs=tinysrgb&w=1600
+  alt: A slim office tower of glass and pale bands rising above the trees
+rooms:
+  - name: Plant levels
+    workload:
+      - Clash detection
+      - Services coordination
+      - Weekly clash reports
+    photos:
+      - src: https://images.pexels.com/photos/19821492/pexels-photo-19821492.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A tall tower clad in blue glass seen from the street below
+      - src: https://images.pexels.com/photos/7078620/pexels-photo-7078620.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A close view of a glass curtain wall and its frame
+  - name: Office floors
+    workload:
+      - Floor plans
+      - Ceiling coordination
+      - Shared Revit families
+    photos:
+      - src: https://images.pexels.com/photos/14301470/pexels-photo-14301470.jpeg?auto=compress&cs=tinysrgb&w=1600
+        alt: A glass building beside a facade of folded bronze fins
