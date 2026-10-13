@@ -16,7 +16,6 @@
  * band, or out to a service's page.
  */
 import PageLayout from '../layouts/PageLayout.astro';
-import Section from '../components/ui/Section.astro';
 import SplitBand from '../components/about/SplitBand.astro';
 import { resolveLocale } from '../i18n/locales';
 import { getAboutPage } from '../lib/content';
@@ -98,9 +97,9 @@ const serviceSide = (index: number): 'start' | 'end' =>
     ))}
   </div>
 
-  <Section tone="raised" id="media">
+  <!-- <Section tone="raised" id="media">
     <div class="aspect-video w-full rounded-ui bg-panel" data-reveal></div>
-  </Section>
+  </Section> -->
 </PageLayout>
 
 {/**
