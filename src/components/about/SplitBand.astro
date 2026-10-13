@@ -6,6 +6,11 @@
  * tagline, the paragraphs, and an optional button; the photo runs to the
  * screen's edge and the band's top and bottom.
  *
+ * The photo never meets `canvas` in a hard line (2026-10-13): its top and
+ * bottom fade into `canvas` over the band padding (`bandFadeClass`), and from
+ * `lg` the side that faces the copy fades too, a quarter of its width, so the
+ * copy and the photo read as one surface and two stacked bands melt together.
+ *
  * It is its own band, not a `Section` tone, because its photo bleeds past the
  * band frame. The copy column borrows the frame's gutters and padding from
  * `styles.ts`, on `canvas`, so every pair in it is a `canvas` one and the band
@@ -31,7 +36,12 @@ import { Image } from 'astro:assets';
 import Button from '../ui/Button.astro';
 import Emphasis from '../ui/Emphasis.astro';
 import Icon from '../ui/Icon.astro';
-import { bandGutterClass, bandPaddingClass, cx } from '../ui/styles';
+import {
+  bandFadeClass,
+  bandGutterClass,
+  bandPaddingClass,
+  cx,
+} from '../ui/styles';
 
 interface Props {
   /** The band's id, the target of the button in the band above. */
@@ -149,5 +159,16 @@ const actionStep = 2 + paragraphs.length;
       fetchpriority={onLoad ? 'high' : 'auto'}
       class="absolute inset-0 size-full object-cover"
     />
+    <div aria-hidden="true" class={cx('absolute', bandFadeClass.top)}></div>
+    <div aria-hidden="true" class={cx('absolute', bandFadeClass.bottom)}></div>
+    <div
+      aria-hidden="true"
+      class={cx(
+        'pointer-events-none absolute inset-y-0 hidden w-1/4 from-canvas to-transparent lg:block',
+        imageSide === 'start'
+          ? 'inset-e-0 bg-linear-to-l'
+          : 'inset-s-0 bg-linear-to-r',
+      )}
+    ></div>
   </div>
 </section>

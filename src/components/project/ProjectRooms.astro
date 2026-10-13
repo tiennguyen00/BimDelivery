@@ -17,6 +17,10 @@
  * work list at the foot. Below `lg` the photos come first, full width at 4:3,
  * so a swipe changes the words just under it.
  *
+ * The photo's edge against the words fades into `accent-deep` (2026-10-13):
+ * its foot below `lg`, its end side, a fifth of its width, from `lg`. It is
+ * decoration over the track, under the arrows, and never catches a swipe.
+ *
  * The photos sit side by side in a `carousel-track`, every room's in content
  * order, each tagged with its room (`data-room`). The track is a native
  * sideways scroller that snaps one photo per view, so it works with no
@@ -96,6 +100,11 @@ const arrowClass = cx(
         </li>
       ))}
     </ul>
+
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-accent-deep to-transparent md:h-20 lg:inset-x-auto lg:inset-y-0 lg:inset-e-0 lg:h-auto lg:w-1/5 lg:bg-linear-to-l"
+    ></div>
 
     {slides.length > 1 && (
       <div class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-between p-4 no-js:hidden md:p-6">

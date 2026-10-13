@@ -81,7 +81,7 @@ two map entries. Its heading id (`<type>-heading`) comes from its type.
 
 ### A home only service card
 
-A service with no page of its own yet (Point Cloud today) gets a card on the
+A service with no page of its own yet gets a card on the
 home page through `services.extra` in `home/<lang>/home.yaml`: a `title`, a
 `summary`, and an `image` (a Pexels link with its `alt`). It is drawn after
 the featured cards and is not a link. `featured` and `extra` together hold at

@@ -25,7 +25,6 @@ placeholders until real project photography arrives.
 | Service: Scan to BIM              | <https://www.pexels.com/photo/a-man-surveying-the-area-5802822/>                                                           | Pexels License |
 | Scan to BIM, photo 2              | <https://www.pexels.com/photo/gray-concrete-building-interior-236709/>                                                     | Pexels License |
 | Service: BIM Coordination         | <https://www.pexels.com/photo/metal-beams-in-a-construction-site-3818947/>                                                 | Pexels License |
-| Home card: Point Cloud            | <https://www.pexels.com/photo/scanner-on-tripod-in-corridor-4620522/>                                                      | Pexels License |
 | BIM Coordination, photo 2         | <https://www.pexels.com/photo/two-man-holding-white-paper-1216589/>                                                        | Pexels License |
 | BIM Coordination, photo 3         | <https://www.pexels.com/photo/engineers-looking-at-blueprint-3862135/>                                                     | Pexels License |
 | Project: Harbour Tower            | <https://www.pexels.com/photo/facade-of-architectural-glass-building-8171870/>                                             | Pexels License |

@@ -3,7 +3,8 @@
  * The site footer: a `canvas` band in three columns on desktop, stacked on a
  * phone. The brand and a short introduction, how to reach the company, and
  * the certifications it holds. A `line` hairline marks where it starts, since
- * the band above it is usually `canvas` too.
+ * the band above it is usually `canvas` too; it fades out towards both ends
+ * (2026-10-13), so the footer opens with a soft rule, not a hard edge.
  *
  * The site links are the header's job alone; the footer does not repeat them.
  * Legal links (the privacy page, feature 13) still sit in the bottom row.
@@ -32,9 +33,19 @@ interface Props {
   settings: Settings;
   /** Leave out the certification column. Only `/about-us` turns it off. */
   showCertification?: boolean;
+  /**
+   * The nav item the footer stands for, by its href, read by `nav-spy.ts` on
+   * a page that imports it (the same hook as `Section`'s `navSection`).
+   */
+  navSection?: string;
 }
 
-const { legal = [], settings, showCertification = true } = Astro.props;
+const {
+  legal = [],
+  settings,
+  showCertification = true,
+  navSection,
+} = Astro.props;
 const { contact, footer } = settings;
 
 /**
@@ -63,7 +74,14 @@ const contactItemClass = 'flex items-center gap-3';
 const contactIconClass = 'shrink-0 text-accent';
 ---
 
-<footer class="border-t border-line bg-canvas text-small text-heading">
+<footer
+  class="relative bg-canvas text-small text-heading"
+  data-nav-section={navSection}
+>
+  <div
+    aria-hidden="true"
+    class="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-line to-transparent"
+  ></div>
   <div class={cx(bandWidthClass.default, bandGutterClass, 'py-16 md:py-20')}>
     <div
       class={

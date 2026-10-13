@@ -37,7 +37,7 @@ overview:
     alt: Three architects studying a white scale model of a building on a studio table
 services:
   heading: Our services
-  intro: Four core services, each delivered to your standards and your schedule.
+  intro: Three core services, each delivered to your standards and your schedule.
   illustration:
     src: ../../../assets/images/services/service-illustration-dark.png
     decorative: true
@@ -48,14 +48,6 @@ services:
     - en/architectural-bim
     - en/interior-bim
     - en/landscape-bim
-  # Cards for services with no page of their own, after the featured ones.
-  # Home only: no route, no nav item, and the card is not a link.
-  extra:
-    - title: Point Cloud
-      summary: Accurate BIM models built from laser scans and point clouds of existing buildings and sites.
-      image:
-        src: https://images.pexels.com/photos/4620522/pexels-photo-4620522.jpeg?auto=compress&cs=tinysrgb&w=1600
-        alt: A 3D scanner on a tripod in a bright hallway hung with framed prints
 presence:
   heading: Delivering BIM excellence across the globe
   # PLACEHOLDER locations (spec 0017): replace with the real offices and

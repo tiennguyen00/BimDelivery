@@ -99,6 +99,13 @@
      10.11:1, `ink` 7.44:1, `ink-muted` 5.32:1, `error` 5.15:1, `accent`
      4.92:1. */
   --color-scrim-strong: rgb(12 21 25 / 0.9);
+  /* The header's frosted fill: Jet at 80 percent, so the bar still reads as
+     a `panel` coloured card (1.33:1 on canvas) while the band beneath shows
+     through. It only works over the backdrop filter in `Header.astro`, which
+     blurs and dims what is behind to 30 percent brightness first: then a pure
+     white pixel lands at #3e3a39, and `accent` (hover) on it is 4.69:1.
+     Never lighter, never without the dimming. */
+  --color-glass: rgb(58 53 52 / 0.8);
 
   /* ---- Breakpoints --------------------------------------------------- */
   /* Three screens only: mobile is the unprefixed default, then md and lg. */

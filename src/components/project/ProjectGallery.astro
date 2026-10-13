@@ -1,16 +1,17 @@
 ---
 /**
  * The Project page's photo wall (spec 0014, revised 2026-10-09): every
- * project as a wide photo tile, two across from `md`, with thin 8px
- * `canvas` seams between them.
+ * project as a wide photo tile, two across from `md`, with the standard 24px
+ * grid gap between them.
  *
- * It is a band of its own, not a `Section`: it borrows the band frame's side
- * gutters and bottom padding from `styles.ts` but takes **no maximum width**,
- * so the wall runs the full window width inside the gutters. Its top padding
- * is the gutter, so the first row sits as far below the hero as the tiles sit
- * from the window's sides. It needs no name of its own: the list is labelled
- * by the page's `h1`. The page never renders it with an empty list; it shows
- * the empty state instead.
+ * It is a band of its own, not a `Section`: it borrows the band frame's
+ * bottom padding from `styles.ts` but takes **no maximum width**, so the wall
+ * runs the full window width inside its gutters. Its gutters are its own,
+ * wider than the band frame's (24px, 48px from `md`, 64px from `lg`), and its
+ * top padding is the gutter, so the first row sits as far below the hero as
+ * the tiles sit from the window's sides. It needs no name of its own: the
+ * list is labelled by the page's `h1`. The page never renders it with an
+ * empty list; it shows the empty state instead.
  *
  * Each tile's box is a fixed 3:2 (`aspect-3/2`), except 4:3 from `md` to
  * `lg`, where two columns make the tiles narrowest: the extra height is what
@@ -24,9 +25,12 @@
  * At rest a tile shows its title and its summary, centred at its foot, the
  * summary cut to one line (the full line stays in the HTML for a screen
  * reader). On hover, or while the tile's link has focus, the scrim deepens to
- * `scrim-strong` and the cue and the facts unfold under the summary
- * (`tile-info`), so the title rises by exactly what appears. A touch screen
- * has no hover, so there a tile stays at rest and a tap opens the project.
+ * `scrim-strong`, the summary wraps to show in full, the cue and the facts
+ * unfold under it (`tile-info`), and the whole block glides from the foot to
+ * the middle of the tile: two empty spacers sit above and below it, the top
+ * one always growing and the bottom one growing from nothing on hover
+ * (`flex-grow` is animatable, `justify-content` is not). A touch screen has
+ * no hover, so there a tile stays at rest and a tap opens the project.
  *
  * Each tile is exactly one link to its project page (spec 0015), with one
  * tab stop: the title's text is the link, and its `::after` is stretched over
@@ -77,12 +81,7 @@ import type { ProjectPage } from '../../lib/content';
 import type { GalleryTile } from '../../lib/project-gallery';
 import { projectHref } from '../../lib/project-detail';
 import type { Locale } from '../../i18n/locales';
-import {
-  bandGutterClass,
-  bandPaddingBottomClass,
-  buttonClass,
-  cx,
-} from '../ui/styles';
+import { bandPaddingBottomClass, buttonClass, cx } from '../ui/styles';
 
 type FilterCopy = ProjectPage['filter'];
 
@@ -123,15 +122,14 @@ const enterStep = (index: number): number | undefined =>
 
 <div
   class={cx(
-    'bg-canvas pt-4 md:pt-6 lg:pt-8',
-    bandGutterClass,
+    'bg-canvas px-6 pt-6 md:px-12 md:pt-12 lg:px-16 lg:pt-16',
     bandPaddingBottomClass,
   )}
 >
   <ul
     id={filter?.listId}
     aria-labelledby={labelledBy}
-    class="grid grid-cols-1 gap-2 md:grid-cols-2"
+    class="grid grid-cols-1 gap-6 md:grid-cols-2"
     data-reveal-stagger
   >
     {tiles.map(({ project, keys, facts }, index) => (
@@ -160,9 +158,10 @@ const enterStep = (index: number): number | undefined =>
         />
 
         <div
-          class="absolute inset-0 flex flex-col items-center justify-end p-6 text-center text-heading lg:p-8"
+          class="absolute inset-0 flex flex-col items-center p-6 text-center text-heading lg:p-8"
           data-parallax-text
         >
+          <div aria-hidden="true" class="grow" />
           <h2 class="shrink-0 text-h3 font-bold text-balance text-heading">
             <a
               href={projectHref(project.slug)}
@@ -171,7 +170,7 @@ const enterStep = (index: number): number | undefined =>
               {project.title}
             </a>
           </h2>
-          <p class="mt-1 w-full shrink-0 truncate text-small font-medium">
+          <p class="mt-1 w-full shrink-0 truncate text-small font-medium group-focus-within:whitespace-normal group-hover:whitespace-normal">
             {project.summary}
           </p>
 
@@ -197,6 +196,10 @@ const enterStep = (index: number): number | undefined =>
               </div>
             </div>
           </div>
+          <div
+            aria-hidden="true"
+            class="grow-0 transition-[flex-grow] duration-500 ease-out group-focus-within:grow group-hover:grow"
+          />
         </div>
       </li>
     ))}

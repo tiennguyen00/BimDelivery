@@ -51,7 +51,7 @@ what it paints and the next palette change is values only.
 |---|---|---|
 | `--color-canvas` | `#0c1519` Chinese Black | The page, the `canvas` section tone, every band that is not `raised`, field fills |
 | `--color-raised` | `#162127` Dark Jungle Green | The `raised` section tone |
-| `--color-panel` | `#3a3534` Jet | Every card, tile, the header card, the dropdown and mobile menu panel, the open accordion item, an empty photo frame. Separates from `canvas` (1.53:1) and `raised` (1.36:1) |
+| `--color-panel` | `#3a3534` Jet | Every card, tile, the dropdown and mobile menu panel (and the header while that menu is open, or without `:has()`), the open accordion item, an empty photo frame. Separates from `canvas` (1.53:1) and `raised` (1.36:1) |
 | `--color-heading` | `#f5ece4` | `h1` and `h2`; every word on a photo or on the Coffee wash; the outer band of the two colour ring |
 | `--color-ink-strong` | `#f5ece4` | `h3` and sub headings, field labels, strong text. Same value as `heading` today, a separate role so a display face later can move one without the other |
 | `--color-ink` | `#d9cbc0` | Body text, the most used text colour; field text |
@@ -65,6 +65,7 @@ what it paints and the next palette change is values only.
 | `--color-error` | `#ff8a7a` | Error text and error borders, on every surface |
 | `--color-scrim` | `rgb(12 21 25 / 0.7)` | The see through layer under words on a photo. `heading` on it is 5.91:1 over a pure white pixel, so no photo can break it. Never lighter |
 | `--color-scrim-strong` | `rgb(12 21 25 / 0.9)` | The contact form band's layer, and a project tile's hovered caption. With the `bg-diagonal` stripe on top, its worst pixel is `#31393c` |
+| `--color-glass` | `rgb(58 53 52 / 0.8)` Jet | The header's frosted fill, and nothing else. Reads as a `panel` card (1.33:1 on canvas). Only valid over its backdrop filter (`blur(12px) brightness(0.3)`): a pure white pixel then lands at `#3e3a39`, `accent` 4.69:1. Never lighter, never without the dimming |
 
 Two values are written out outside `global.css`, each named beside its token
 because neither place can read a custom property: the `theme-color` meta in
@@ -228,10 +229,9 @@ constrained and `min-h-11` (the 44px tap target) relies on it.
 | Card padding | 24px | 24px | 24px |
 | Grid gaps | 24px | 24px | 24px |
 
-One written exception to the grid gap: the photo wall on the Project page
-(`ProjectGallery`, spec 0014, revised 2026-10-09) uses an 8px gap (`gap-2`)
-across and down, so the photos read as one wall split by thin seams. No other
-grid does.
+The photo wall on the Project page (`ProjectGallery`, spec 0014, revised
+2026-10-13) uses the standard 24px gap (`gap-6`) across and down, like every
+other grid.
 
 There is no vertical margin between sections. Adjacent sections of the same
 tone are fine; alternating `canvas` and `raised` is the default rhythm a page
@@ -314,8 +314,27 @@ The bands that are not a tone each borrow the band frame:
   highlighted words. Its stat cards moved into the hero's bar (2026-10-11).
   The base ring passes there, so no `focus-contrast`. One thing on it moves:
   the typed heading words.
-- **The footer**: a `canvas` band with a `line` hairline on top. No
-  `focus-contrast`.
+- **The footer**: a `canvas` band with a `line` hairline on top, fading out
+  towards both ends. No `focus-contrast`.
+
+### Soft edges
+
+No band meets the next in a hard line (2026-10-13). Wherever a photo, a
+`raised` fill, or a pattern ends against `canvas`, a `canvas` to transparent
+gradient covers the last stretch (`bandFadeClass` in `styles.ts`, as tall as
+the band padding):
+
+- `Section` fades both its edges, so a `raised` band and a stripe or dots band
+  ease in and out. On a plain `canvas` band the fade paints nothing.
+- The Project hero's photo fades into the wall below, over a taller stretch.
+- A `SplitBand` photo fades at its top and bottom and, from `lg`, along the
+  side that faces the copy.
+- The contact form band fades at its top and bottom.
+- `ProjectRooms` fades its photo into its own `accent-deep` where they meet.
+
+A fade sits under every word and only ever darkens, so no contrast pair
+drops. The brass `CtaBand` keeps its hard edges: it is the one block meant to
+stand out.
 
 ## Components
 
@@ -538,20 +557,37 @@ settings itself, so a page passes only its own title and description, plus
 | `siteName` | `string` (required) | |
 | `currentPath` | `string` (required) | |
 
-Sticky, one constant height, a `panel` card, and it registers **no scroll
+Sticky, one constant height, a frosted card, and it registers **no scroll
 listener**.
 
-- It is a full width `panel` card flush with the top: `rounded-b-card` bottom
-  corners, no shadow, and no bottom border. The card is the same on every
-  page. Only the home hero slides under it; every other page starts below it.
+- It is a full width frosted card flush with the top: a `glass` fill
+  (translucent Jet) over a blurred backdrop dimmed to 30 percent, so it reads
+  as a warm grey card against the page while whatever scrolls beneath shows
+  through, softened. `rounded-b-card` bottom corners, no shadow, and no bottom
+  border. The card is the same on every page. Only the home hero slides under
+  it; every other page starts below it.
+- The frost (tint and filter together) is gated on `:has()` support, falling
+  back to the solid `bg-panel` card, and is switched off while the mobile menu
+  is open, when the header turns solid `panel` to match the panel. Both
+  matter: a `backdrop-filter` makes the header the containing block of the
+  fixed mobile panel, which would collapse it to nothing.
+- The logo is drawn at 40px tall (`h-10`), inside the bar's 72px, so it does
+  not change `--header-h`.
 - Links are `ink-strong`, turning `accent` on hover; the active link is
-  `heading` with an `accent` underline. The dropdown and the mobile panel are
-  `panel` too.
+  `heading` with a 2px `accent` bar 6px under the words (`nav-underline`). The
+  bar draws in from the left when an item turns active and shrinks away to
+  the right when it stops, 350ms ease out. The dropdown and the mobile panel
+  are `panel` too.
+- On the home page alone, the underline follows the scroll
+  (`src/scripts/nav-spy.ts`): hero and intro are Home, the services and
+  presence bands About & Services, the showcase Project, the footer Contact
+  Us. Each band names its item with `navSection`. Every other page keeps the
+  underline on its own item. `aria-current` never moves with it.
 - `--header-h` is the card's box, not its corner curve. Anything
   that makes the header taller (padding, a bigger logo, a second row) changes
   `--header-h` in the same edit, or the home hero's copy slides under the card.
-- While the mobile menu is open the corners square off, so header and panel
-  read as one sheet. That rule lives in the header's
+- While the mobile menu is open the corners square off and the fill turns
+  `panel`, so header and panel read as one sheet. That rule lives in the header's
   `is:global` CSS and wins over the utilities only because it sits outside
   Tailwind's layers. **Never** move it into a layer.
 
@@ -812,7 +848,7 @@ and the page it opens share a picture.
   card at `md`). The classes are a map keyed by the count in `index.astro`,
   handed to each card through `class`.
 - **Then the `home.services.extra` cards** (2026-10-11), for services with no
-  page yet (Point Cloud): the same card with no `href`, so no link, no tab
+  page yet (none today): the same card with no `href`, so no link, no tab
   stop, and no hover. Four cards in all at most; four sit two by two at
   `md` and in one row from `lg`, with a 32px gap.
 
@@ -922,11 +958,12 @@ The Project page's photo wall (spec 0014, revised 2026-10-09 after the
 engineer's reference): every project as a wide photo tile, one column, then
 two across from `md`.
 
-- **Its own band, not a `Section`**: `canvas`, with the band frame's side gutters
-  and bottom padding (`bandPaddingBottomClass` in `styles.ts`), and a top
-  padding equal to the gutter, so the first row sits as far below the hero as
-  the tiles sit from the window's sides. It takes **no maximum width**, so the
-  wall runs the full window width inside the gutters. It is the only
+- **Its own band, not a `Section`**: `canvas`, with the band frame's bottom
+  padding (`bandPaddingBottomClass` in `styles.ts`), its own side gutters,
+  wider than the band frame's (24px, 48px from `md`, 64px from `lg`), and a
+  top padding equal to the gutter, so the first row sits as far below the hero
+  as the tiles sit from the window's sides. It takes **no maximum width**, so
+  the wall runs the full window width inside the gutters. It is the only
   band that does (a project detail page's cover and gallery did until spec
   0018). The list is labelled by the page's `h1`; the wall adds no name
   of its own.
@@ -954,7 +991,7 @@ two across from `md`.
   `projectPage.tileFacts`, each only when the project has it. A touch screen
   has no hover (`hover:` needs a pointer that can hover), so there a tile
   stays at rest and a tap opens the project.
-- **The seams are 8px** (`gap-2`), the grid gap's one written exception.
+- **The gap is 24px** (`gap-6`), the standard grid gap.
 - **Every tile is one link** to its project page, following the project tile
   link rule below.
 - **Three motions, each on its own element and property**, so none
@@ -1145,6 +1182,11 @@ stop on every page (`src/scripts/smooth-scroll.ts`, on Lenis), and anchor jumps
 and the skip link glide through `scroll-behavior: smooth` on `html`, still
 stopping below the sticky header. Touch keeps the device's own momentum.
 Reduced motion turns both off, and with no script the page scrolls natively.
+A round `panel` back to top link sits bottom right on every page (48px, 16px
+in, 24px from `md`); it is an anchor to `#main`, so it glides the same way and
+moves focus to the content. It fades and rises 16px into view once the page is
+0.8 of a viewport down (`src/scripts/back-to-top.ts`), and with no script it
+is always shown.
 
 Motion is enhancement only. The built HTML draws every band complete and every
 accent rule full width, and no CSS rule hides anything waiting for a script.

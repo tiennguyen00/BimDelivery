@@ -12,8 +12,20 @@
  *
  * The gutters, padding, and widths are the shared band frame in `styles.ts`,
  * which `CtaBand` and the home hero also use (spec 0005).
+ *
+ * Both edges fade into `canvas` over the band's padding (`bandFadeClass`,
+ * 2026-10-13), so a `raised` band, or a stripe or dot pattern, eases in and
+ * out instead of starting on a hard line. On a plain `canvas` band the fade
+ * paints nothing. It sits under the content, inside the band's own stacking
+ * context (`isolate`).
  */
-import { bandGutterClass, bandPaddingClass, bandWidthClass } from './styles';
+import {
+  bandFadeClass,
+  bandGutterClass,
+  bandPaddingClass,
+  bandWidthClass,
+  cx,
+} from './styles';
 
 interface Props {
   tone?: 'canvas' | 'raised';
@@ -21,6 +33,12 @@ interface Props {
   id?: string;
   /** The id of the heading this section is named by, for screen readers. */
   labelledBy?: string;
+  /**
+   * The nav item this band belongs to, by its href. On a page that imports
+   * `nav-spy.ts` the header underline moves to that item while the band is
+   * the one in view; anywhere else it is inert.
+   */
+  navSection?: string;
   class?: string;
 }
 
@@ -29,6 +47,7 @@ const {
   width = 'default',
   id,
   labelledBy,
+  navSection,
   class: className,
 } = Astro.props;
 
@@ -41,8 +60,20 @@ const tones = {
 <section
   id={id}
   aria-labelledby={labelledBy}
-  class:list={[bandGutterClass, bandPaddingClass, tones[tone], className]}
+  data-nav-section={navSection}
+  class:list={[
+    'relative isolate',
+    bandGutterClass,
+    bandPaddingClass,
+    tones[tone],
+    className,
+  ]}
 >
+  <div aria-hidden="true" class={cx('absolute -z-10', bandFadeClass.top)}></div>
+  <div
+    aria-hidden="true"
+    class={cx('absolute -z-10', bandFadeClass.bottom)}
+  ></div>
   <div class={bandWidthClass[width]}>
     <slot />
   </div>

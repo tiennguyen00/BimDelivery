@@ -91,6 +91,22 @@ export const bandPaddingClass = cx('py-16 md:py-20 lg:py-24');
  * sits straight under its intro (spec 0014).
  */
 export const bandPaddingBottomClass = cx('pb-16 md:pb-20 lg:pb-24');
+/**
+ * A band edge's soft blend (2026-10-13): a `canvas` to transparent gradient
+ * as tall as the band's padding, laid over a photo or a band's own fill so
+ * nothing on the site meets `canvas` in a hard line. Decoration only, and it
+ * never catches the pointer. The caller places it (`absolute`, its side, and
+ * its stacking) and may stretch it; it only ever darkens what is under it, so
+ * no text pair drops below its measured contrast.
+ */
+export const bandFadeClass: Readonly<Record<'top' | 'bottom', string>> = {
+  top: cx(
+    'pointer-events-none inset-x-0 top-0 h-16 bg-linear-to-b from-canvas to-transparent md:h-20 lg:h-24',
+  ),
+  bottom: cx(
+    'pointer-events-none inset-x-0 bottom-0 h-16 bg-linear-to-t from-canvas to-transparent md:h-20 lg:h-24',
+  ),
+};
 export const bandWidthClass: Readonly<Record<'default' | 'narrow', string>> = {
   default: cx('mx-auto w-full max-w-content lg:max-w-[max(75vw,50rem)]'),
   narrow: cx('mx-auto w-full max-w-narrow'),
@@ -105,7 +121,7 @@ export const bandWidthClass: Readonly<Record<'default' | 'narrow', string>> = {
  */
 export const fieldClass = (invalid = false): string =>
   cx(
-    'min-h-11 w-full rounded-ui border bg-canvas px-3 py-2 text-body text-ink',
+    'min-h-11 w-full rounded-ui border bg-canvas px-3 py-2 text-body text-ink outline-none',
     invalid ? 'border-error ring-1 ring-error ring-inset' : 'border-field',
   );
 

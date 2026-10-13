@@ -17,6 +17,10 @@
  * is `canvas`, so a photo that fails to load leaves the same words on a
  * darker band. The fields and cards follow the same dark rules as anywhere.
  *
+ * The photo and its layer fade into `canvas` at the band's top and bottom
+ * (`bandFadeClass`, 2026-10-13), so the band eases out of the intro above and
+ * into the footer below. The fade only darkens, so every ratio above holds.
+ *
  * From `lg` the form takes about seven twelfths and the cards the rest. Below
  * `lg` it is one column: heading, form, cards.
  *
@@ -29,6 +33,7 @@
  */
 import { Image } from 'astro:assets';
 import {
+  bandFadeClass,
   bandGutterClass,
   bandPaddingClass,
   bandWidthClass,
@@ -71,6 +76,11 @@ const { heading, headingId, background, noScript, email, phone } = Astro.props;
   <div
     aria-hidden="true"
     class="absolute inset-0 -z-10 bg-scrim-strong bg-diagonal"
+  ></div>
+  <div aria-hidden="true" class={cx('absolute -z-10', bandFadeClass.top)}></div>
+  <div
+    aria-hidden="true"
+    class={cx('absolute -z-10', bandFadeClass.bottom)}
   ></div>
 
   <div class={bandWidthClass.default}>

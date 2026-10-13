@@ -24,7 +24,9 @@
  * scroll through the hero, marking it `inert` once it is gone. The style
  * block below puts it back in place while the mobile menu is open.
  *
- * It is drawn as a full width `panel` card flush with the top: rounded bottom
+ * It is drawn as a full width frosted card flush with the top: a `glass` fill
+ * (translucent Jet) over a blurred, dimmed backdrop, so the band scrolling
+ * beneath shows through while the card stays distinct, rounded bottom
  * corners (`--radius-card`) and no bottom border. It stays
  * sticky, so every page but home still starts below it, and the home hero opts
  * in to sliding under it (spec 0005). `--header-h` measures the card's box, the
@@ -97,8 +99,14 @@ const barLinkClass =
   'inline-flex min-h-11 items-center gap-1 rounded-ui px-3 font-semibold text-ink-strong hover:text-accent';
 const panelLinkClass =
   'flex min-h-11 items-center rounded-ui px-2 font-semibold text-ink-strong hover:text-accent';
-const activeClass =
-  'text-heading underline decoration-accent decoration-2 underline-offset-8';
+/**
+ * The active state hangs off `data-active` rather than a class, so the home
+ * page's `nav-spy.ts` can move it between items as the visitor scrolls by
+ * toggling one attribute. The server HTML already marks the current page. The
+ * underline itself is the `nav-underline` bar on the label, drawn below.
+ */
+const activeClass = 'data-active:text-heading';
+const active = (on: boolean): '' | undefined => (on ? '' : undefined);
 ---
 
 <header class="sticky top-0 z-40 rounded-b-card bg-panel" data-site-header>
@@ -122,7 +130,7 @@ const activeClass =
             src={logo.src}
             alt={logo.alt ?? siteName}
             loading="eager"
-            class="h-8 w-auto"
+            class="h-10 w-auto"
           />
         </a>
 
@@ -135,12 +143,10 @@ const activeClass =
                   id="nav-services-desktop-btn"
                   aria-expanded="true"
                   aria-controls="nav-services-desktop"
-                  class:list={[
-                    barLinkClass,
-                    isGroupActive(item) && activeClass,
-                  ]}
+                  data-active={active(isGroupActive(item))}
+                  class:list={[barLinkClass, activeClass]}
                 >
-                  {item.label}
+                  <span class="nav-underline">{item.label}</span>
                   <Icon name="chevron-down" size={16} class="nav-chevron" />
                 </button>
 
@@ -157,12 +163,10 @@ const activeClass =
                           aria-current={
                             isCurrent(child.href) ? 'page' : undefined
                           }
-                          class:list={[
-                            panelLinkClass,
-                            isCurrent(child.href) && activeClass,
-                          ]}
+                          data-active={active(isCurrent(child.href))}
+                          class:list={[panelLinkClass, activeClass]}
                         >
-                          {child.label}
+                          <span class="nav-underline">{child.label}</span>
                         </a>
                       </li>
                     ))}
@@ -174,12 +178,11 @@ const activeClass =
                 <a
                   href={item.href}
                   aria-current={isCurrent(item.href) ? 'page' : undefined}
-                  class:list={[
-                    barLinkClass,
-                    isActive(item.href) && activeClass,
-                  ]}
+                  data-nav-item
+                  data-active={active(isActive(item.href))}
+                  class:list={[barLinkClass, activeClass]}
                 >
-                  {item.label}
+                  <span class="nav-underline">{item.label}</span>
                 </a>
               </li>
             ),
@@ -231,13 +234,14 @@ const activeClass =
                 id="nav-services-mobile-btn"
                 aria-expanded="true"
                 aria-controls="nav-services-mobile"
+                data-active={active(isGroupActive(item))}
                 class:list={[
                   panelLinkClass,
                   'w-full justify-between gap-1',
-                  isGroupActive(item) && activeClass,
+                  activeClass,
                 ]}
               >
-                {item.label}
+                <span class="nav-underline">{item.label}</span>
                 <Icon name="chevron-down" size={16} class="nav-chevron" />
               </button>
 
@@ -250,12 +254,10 @@ const activeClass =
                     <a
                       href={child.href}
                       aria-current={isCurrent(child.href) ? 'page' : undefined}
-                      class:list={[
-                        panelLinkClass,
-                        isCurrent(child.href) && activeClass,
-                      ]}
+                      data-active={active(isCurrent(child.href))}
+                      class:list={[panelLinkClass, activeClass]}
                     >
-                      {child.label}
+                      <span class="nav-underline">{child.label}</span>
                     </a>
                   </li>
                 ))}
@@ -266,12 +268,11 @@ const activeClass =
               <a
                 href={item.href}
                 aria-current={isCurrent(item.href) ? 'page' : undefined}
-                class:list={[
-                  panelLinkClass,
-                  isActive(item.href) && activeClass,
-                ]}
+                data-nav-item
+                data-active={active(isActive(item.href))}
+                class:list={[panelLinkClass, activeClass]}
               >
-                {item.label}
+                <span class="nav-underline">{item.label}</span>
               </a>
             </li>
           ),
@@ -327,6 +328,50 @@ const activeClass =
     transform: rotate(180deg);
   }
 
+  /* The active underline: a 2px accent bar under the label, exactly as wide
+     as the words. It is a bar rather than `text-decoration` so it can draw
+     itself: switching on it grows from the left, switching off it shrinks
+     away to the right, so on the home page's scroll (`nav-spy.ts`) the line
+     reads as moving on from one item to the next. Reduced motion makes both
+     instant through the global transition cut. A transform on the bar, never
+     on the header (see `src/scripts/AGENTS.md`). */
+  .nav-underline {
+    position: relative;
+  }
+
+  .nav-underline::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.375rem;
+    height: 2px;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  [data-active] > .nav-underline::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* The frosted fill. The `glass` tint is only safe over a dimmed backdrop
+     (see the token), so the two always come together. A `backdrop-filter`
+     also makes the header the containing block of its fixed descendants,
+     which would shrink the open mobile panel (fixed from `--header-h` to the
+     bottom) to nothing, so the menu rule further down switches it off while
+     the panel is open. That switch needs `:has()`, hence the gate: without it
+     the header stays the solid `bg-panel` card and the menu still works. Not
+     utilities, which could not carry the gate without a square bracket. */
+  @supports selector(:has(*)) {
+    [data-site-header] {
+      background-color: var(--color-glass);
+      -webkit-backdrop-filter: blur(12px) brightness(0.3);
+      backdrop-filter: blur(12px) brightness(0.3);
+    }
+  }
+
   html.js #nav-services-desktop,
   html.js #nav-services-mobile {
     display: none;
@@ -353,15 +398,20 @@ const activeClass =
 
   /* While the menu is open the panel starts exactly at `--header-h`, so the
      card's rounded corners would show two slivers of page above it. Squaring
-     them makes header and panel one sheet (AC-19). Without `:has()` support
-     the corners simply stay rounded.
+     them, and turning the frosted fill into the panel's own solid `panel`,
+     makes header and panel one sheet (AC-19). Dropping the blur here is what
+     lets the fixed panel reach the bottom of the viewport (see the frost rule
+     above). Without `:has()` support the corners simply stay rounded.
 
      This beats the `rounded-b-card` utility only because Astro's
      `is:global` CSS sits outside Tailwind's cascade layers, and unlayered CSS
      always wins over layered CSS. Moving this rule into a layer would silently
-     break it. */
+     break it. It beats the frost rule above on specificity. */
   html.js header:has(#nav-menu-panel[data-open]) {
     border-radius: 0;
+    background-color: var(--color-panel);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   /* The Project page scrubs the header away by its sticky `top` and

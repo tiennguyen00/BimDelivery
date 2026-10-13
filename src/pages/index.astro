@@ -145,7 +145,7 @@ const serviceRow =
    * is `/${slug}`, the same one `[service].astro` builds its route from. Then
    * the `extra` cards, home only, for services with no page yet.
    */}
-  <Section tone="raised" labelledBy="services-heading">
+  <Section tone="raised" labelledBy="services-heading" navSection="/about-us">
     {/**
      * A centred heading with an accent rule under it, the same treatment as the
      * intro band, then a centred intro. The rule comes from the shared
@@ -184,7 +184,12 @@ const serviceRow =
    * stripe, holding the map, the copy, and the why choose list that used to
    * be its own differentiators section.
    */}
-  <Section tone="canvas" labelledBy="presence-heading" class="bg-diagonal">
+  <Section
+    tone="canvas"
+    labelledBy="presence-heading"
+    navSection="/about-us"
+    class="bg-diagonal"
+  >
     <PresenceBand
       heading={home.presence.heading}
       headingId="presence-heading"
@@ -200,7 +205,11 @@ const serviceRow =
    * and it is left out entirely when the language has no projects.
    */}
   {featuredProjects.length > 0 && (
-    <Section tone="raised" labelledBy="project-showcase-heading">
+    <Section
+      tone="raised"
+      labelledBy="project-showcase-heading"
+      navSection="/project"
+    >
       <ProjectShowcase
         heading={home.projectShowcase.heading}
         headingId="project-showcase-heading"
@@ -217,7 +226,13 @@ const serviceRow =
  * The scroll reveal (spec 0005) is the page's choice, not a component's, so
  * it is imported here. The `data-reveal` and `data-reveal-stagger` attributes
  * the bands carry do nothing on a page that does not import it.
+ *
+ * So is the scroll aware nav underline: the bands' `navSection` props say
+ * which nav item each one stands for (hero and intro are Home itself, the
+ * services and presence bands About & Services, the showcase Project), and
+ * only this page moves the underline while scrolling.
  */}
 <script>
   import '../scripts/reveal';
+  import '../scripts/nav-spy';
 </script>

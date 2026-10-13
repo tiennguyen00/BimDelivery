@@ -4,13 +4,12 @@
 # the other, the sides alternating down the page.
 #
 # The intro paragraph and the service texts are the client's copy (BIM
-# Delivery services.pdf). The taglines and the Point Cloud text are
-# placeholder copy, to be replaced before launch. A `**phrase**` renders
-# bold, a `==phrase==` bold brass.
+# Delivery services.pdf). The taglines are placeholder copy, to be replaced
+# before launch. A `**phrase**` renders bold, a `==phrase==` bold brass.
 lang: en
 seo:
   title: About & Services | BIM Delivery
-  description: Who BIM Delivery is, the experience behind the team, and the Architectural, Interior, Landscape, and Point Cloud BIM services we deliver.
+  description: Who BIM Delivery is, the experience behind the team, and the Architectural, Interior, and Landscape BIM services we deliver.
 intro:
   # The company's name, the page's `h1`.
   heading: BIM Delivery
@@ -45,11 +44,3 @@ services:
       text: For interior design projects, BIM supports **3D interior models, furniture and equipment layouts, material specifications, reflected ceiling plans, joinery, and finishes**. We take your design concepts to detailed BIM models and construction documentation, helping you ==improve coordination, efficiency, and project delivery==.
     - service: en/landscape-bim
       text: BIM brings landscape design, site information, and building elements together in a **coordinated 3D environment**. We develop **terrain, hardscape, planting areas, outdoor structures, levels, and paths** from your CAD drawings and design information, as ==detailed and coordinated landscape BIM models==.
-    # PLACEHOLDER copy: no page yet, so no button. Give it a services entry
-    # (slug `pointcloud-bim`) and list it by id above to link it.
-    - title: Point Cloud
-      tagline: Accurate BIM models built from laser scans and point clouds of existing buildings and sites.
-      text: We turn **laser scans and point clouds** of existing buildings and sites into ==accurate, coordinated BIM models==, ready for renovation, fit out, and facility management.
-      image:
-        src: https://images.pexels.com/photos/4620522/pexels-photo-4620522.jpeg?auto=compress&cs=tinysrgb&w=1600
-        alt: A 3D scanner on a tripod in a bright hallway hung with framed prints

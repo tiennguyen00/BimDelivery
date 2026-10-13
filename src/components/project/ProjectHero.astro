@@ -11,6 +11,10 @@
  * and padding from `styles.ts`, and carries `focus-contrast`, the ring for
  * photos and accent fills.
  *
+ * The photo's foot fades into `canvas` (2026-10-13), so the hero melts into
+ * the photo wall below instead of ending in a hard line. The fade sits over
+ * the scrim and under every word, and only darkens it.
+ *
  * Every word sits on the scrim, which covers the whole photo, and every word
  * is `heading`, which reads at 5.91:1 at worst over any photo. The bar adds a
  * second scrim under its labels. The intro passes `onPhoto` to `Emphasis`,
@@ -122,6 +126,10 @@ const tabClass =
     class="absolute inset-0 -z-10 size-full object-cover object-center"
   />
   <div aria-hidden="true" class="absolute inset-0 -z-10 bg-scrim"></div>
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-32 bg-linear-to-t from-canvas to-transparent md:h-40 lg:h-56"
+  ></div>
 
   <div class="pt-(--header-h)">
     <div

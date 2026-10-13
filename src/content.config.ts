@@ -200,6 +200,8 @@ const navigation = defineCollection({
       closeMenu: text,
       primaryNavLabel: text,
       footerNavLabel: text,
+      /** The back to top link's name, which is also its text. */
+      backToTop: text,
     }),
     /** Footer only links, such as the privacy page feature 13 adds. */
     legal: z.array(link).optional(),
