@@ -93,6 +93,11 @@
      percent: `heading` over a pure white pixel seen through it still reads
      5.91:1, so no photo swap can lower the contrast. Never lighter. */
   --color-scrim: rgb(12 21 25 / 0.7);
+  /* The Project hero's lighter layer (2026-10-16), Chinese Black at 50
+     percent, so its photo reads bright. On its own `heading` over a pure
+     white pixel falls to 2.99:1, so every word on it carries `text-glow`,
+     which darkens the photo right round each letter. */
+  --color-scrim-soft: rgb(12 21 25 / 0.5);
   /* The contact form band's layer, where small text sits straight on it,
      and a project tile's hovered caption. At 90 percent, with the
      `bg-diagonal` stripe on top, its worst pixel is #31393c: `heading`
@@ -543,6 +548,18 @@
  * the attribute never arrives and the photo is cropped no more than the
  * still design.
  */
+/**
+ * A soft Chinese Black halo round words on the `scrim-soft` hero
+ * (2026-10-16): a tight shadow for the letter edges and a wide one that
+ * darkens the photo behind the line, so a bright patch of photo never sits
+ * straight behind a word.
+ */
+@utility text-glow {
+  text-shadow:
+    0 1px 2px rgb(12 21 25 / 0.7),
+    0 0 1.25rem rgb(12 21 25 / 0.8);
+}
+
 @utility parallax-photo {
   position: absolute;
   inset: 0;

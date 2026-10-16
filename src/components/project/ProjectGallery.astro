@@ -18,14 +18,17 @@
  * lets the unfolded cue and facts fit under a 60 character title, the
  * content schema's cap. Either way the box is reserved before the photo
  * arrives, so nothing on the page shifts as photos load.
- * The `panel` fill shows only while a photo loads. A `bg-scrim` layer covers
- * the whole photo, so the `heading` words over it read at 5.91:1 at worst
- * over any photo (spec 0003), with no contrast check per photo.
+ * The `panel` fill shows only while a photo loads. At rest the scrim is a
+ * gradient (2026-10-16): the full `scrim` over the foot of the tile, where the
+ * caption sits (the bottom 50%, 40% from `lg`), fading to
+ * clear at the top, so the photo shows bright above the words while the
+ * `heading` words still read at 5.91:1 at worst over any photo (spec 0003).
  *
  * At rest a tile shows its title and its summary, centred at its foot, the
  * summary cut to one line (the full line stays in the HTML for a screen
- * reader). On hover, or while the tile's link has focus, the scrim deepens to
- * `scrim-strong`, the summary wraps to show in full, the cue and the facts
+ * reader). On hover, or while the tile's link has focus, the gradient fades
+ * out as a whole-tile `scrim` fades in (70%, not `scrim-strong`, since
+ * 2026-10-16, still 5.91:1 at worst for the words), the summary wraps to show in full, the cue and the facts
  * unfold under it (`tile-info`), and the whole block glides from the foot to
  * the middle of the tile: two empty spacers sit above and below it, the top
  * one always growing and the bottom one growing from nothing on hover
@@ -154,7 +157,11 @@ const enterStep = (index: number): number | undefined =>
 
         <div
           aria-hidden="true"
-          class="absolute inset-0 -z-10 bg-scrim transition-colors duration-500 ease-out group-focus-within:bg-scrim-strong group-hover:bg-scrim-strong"
+          class="absolute inset-0 -z-10 bg-linear-to-t from-scrim from-50% to-transparent transition-opacity duration-500 ease-out group-focus-within:opacity-0 group-hover:opacity-0 lg:from-40%"
+        />
+        <div
+          aria-hidden="true"
+          class="absolute inset-0 -z-10 bg-scrim opacity-0 transition-opacity duration-500 ease-out group-focus-within:opacity-100 group-hover:opacity-100"
         />
 
         <div

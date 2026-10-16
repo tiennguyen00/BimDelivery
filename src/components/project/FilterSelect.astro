@@ -1,0 +1,116 @@
+---
+/**
+ * One of the Project filter's dropdowns (2026-10-16): a styled listbox in
+ * place of the browser's own option list, the "select only combobox" of the
+ * WAI-ARIA practices.
+ *
+ * The native `<select>` is still the form's field. It ships `hidden`, so it
+ * is out of sight, the tab order, and the accessibility tree, but the form
+ * still reads it, resets it, and hears its `change`, so
+ * `src/scripts/project-filter.ts` needs no change. The visible control is a
+ * `combobox` button and a `listbox` of `option`s, every one written here at
+ * build, which `src/scripts/select-menu.ts` brings to life: it opens and
+ * closes the list, moves the active option, and writes the choice back to
+ * the `<select>`. The filter ships `no-js:hidden`, so the control is never
+ * seen without its script.
+ *
+ * Focus never leaves the button: the active option is named by
+ * `aria-activedescendant` and drawn by `data-active`, the chosen one carries
+ * `aria-selected` and the `accent` check.
+ *
+ * The open list is a `panel` with a `line` hairline and no shadow, laid over
+ * the page below the field. It scrolls on its own past six options and
+ * carries `data-lenis-prevent`, so the wheel scrolls the list, not the page.
+ */
+import Icon, { type IconName } from '../ui/Icon.astro';
+import type { FilterChoice } from '../../lib/project-gallery';
+import { fieldLabelClass } from '../ui/styles';
+
+interface Props {
+  /** The `<select>`'s id; the label, button, and list ids derive from it. */
+  id: string;
+  /** The field's `name`, the tile attribute it matches. */
+  name: string;
+  label: string;
+  /** The empty first choice ("Any"). */
+  anyOption: string;
+  choices: readonly FilterChoice[];
+  /** The glyph before the value and each option. */
+  icon: IconName;
+}
+
+const { id, name, label, anyOption, choices, icon } = Astro.props;
+
+const labelId = `${id}-label`;
+const buttonId = `${id}-button`;
+const listId = `${id}-list`;
+const options: readonly FilterChoice[] = [
+  { value: '', label: anyOption },
+  ...choices,
+];
+---
+
+<div data-select-menu class="group relative flex flex-col gap-1.5">
+  <span id={labelId} class={fieldLabelClass}>
+    {label}
+  </span>
+
+  <select id={id} name={name} hidden>
+    {options.map((choice) => (
+      <option value={choice.value}>{choice.label}</option>
+    ))}
+  </select>
+
+  <button
+    type="button"
+    id={buttonId}
+    role="combobox"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-controls={listId}
+    aria-labelledby={labelId}
+    data-select-button
+    class="flex min-h-11 w-full cursor-pointer items-center gap-2.5 rounded-ui border border-field bg-canvas px-3 py-2 text-start text-body text-ink transition-colors duration-150 group-data-open:border-accent hover:border-ink-muted"
+  >
+    <Icon name={icon} size={18} class="shrink-0 text-accent" />
+    <span data-select-value class="min-w-0 flex-1 truncate">
+      {anyOption}
+    </span>
+    <Icon
+      name="chevron-down"
+      size={18}
+      class="shrink-0 transition-transform duration-150 group-data-open:rotate-180"
+    />
+  </button>
+
+  <ul
+    id={listId}
+    role="listbox"
+    aria-labelledby={labelId}
+    tabindex="-1"
+    hidden
+    data-select-list
+    data-lenis-prevent
+    class="absolute inset-x-0 top-full z-20 mt-2 flex origin-top max-h-80 flex-col gap-1 overflow-y-auto overscroll-contain rounded-ui border border-line bg-panel p-1.5"
+  >
+    {options.map((choice, index) => (
+      <li
+        id={`${id}-option-${index}`}
+        role="option"
+        aria-selected={index === 0 ? 'true' : 'false'}
+        data-value={choice.value}
+        class="group/option flex min-h-11 cursor-pointer items-center gap-3 rounded-ui px-3 py-2 text-body text-ink transition-colors duration-100 aria-selected:bg-accent/15 aria-selected:font-semibold aria-selected:text-heading data-active:bg-heading/10"
+      >
+        <Icon name={icon} size={16} class="shrink-0 text-ink-muted" />
+        <span data-select-label class="min-w-0 flex-1">
+          {choice.label}
+        </span>
+        <Icon
+          name="check"
+          size={18}
+          class="shrink-0 text-accent opacity-0 group-aria-selected/option:opacity-100"
+        />
+      </li>
+    ))}
+  </ul>
+</div>

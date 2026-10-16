@@ -63,8 +63,9 @@ what it paints and the next palette change is values only.
 | `--color-line` | `#724b39` Coffee | Decorative borders and dividers, the process timeline's connector, the footer's top hairline. Never a control boundary, never a word |
 | `--color-field` | `#8c8480` | Form field borders, a control boundary: 5.04:1 against the `canvas` fill |
 | `--color-error` | `#ff8a7a` | Error text and error borders, on every surface |
-| `--color-scrim` | `rgb(12 21 25 / 0.7)` | The see through layer under words on a photo. `heading` on it is 5.91:1 over a pure white pixel, so no photo can break it. Never lighter |
-| `--color-scrim-strong` | `rgb(12 21 25 / 0.9)` | The contact form band's layer, and a project tile's hovered caption. With the `bg-diagonal` stripe on top, its worst pixel is `#31393c` |
+| `--color-scrim` | `rgb(12 21 25 / 0.7)` | The see through layer under words on a photo. `heading` on it is 5.91:1 over a pure white pixel, so no photo can break it. Never lighter, except `scrim-soft` on the Project hero |
+| `--color-scrim-soft` | `rgb(12 21 25 / 0.5)` | The Project hero's layer only (2026-10-16, so its photo reads bright). `heading` on it alone is 2.99:1 over a pure white pixel, so every word on it carries `text-glow` (a Chinese Black halo round each letter) |
+| `--color-scrim-strong` | `rgb(12 21 25 / 0.9)` | The contact form band's layer. With the `bg-diagonal` stripe on top, its worst pixel is `#31393c` |
 | `--color-glass` | `rgb(58 53 52 / 0.8)` Jet | The header's frosted fill, and nothing else. Reads as a `panel` card (1.33:1 on canvas). Only valid over its backdrop filter (`blur(12px) brightness(0.3)`): a pure white pixel then lands at `#3e3a39`, `accent` 4.69:1. Never lighter, never without the dimming |
 
 Two values are written out outside `global.css`, each named beside its token
@@ -156,7 +157,7 @@ alpha blending over the worst case pixel. The working is in spec 0003's
 | heading (presence marker labels) on their `canvas` chip at 80%, over the globe or a flat map dot | | at least 6.81 | 4.5 |
 | heading at 50% (inactive carousel dot) / heading (active) | canvas | 4.73 / 15.83 | 3.0 |
 | heading / ink / ink-muted / accent on a `bg-dots` dot centre (`#2e3639`) | | 10.57 / 7.78 / 5.56 / 5.15 | 4.5 |
-| heading on `scrim` over a pure white pixel (`#555b5e`): the Project hero, every project tile caption | | 5.91 | 4.5 |
+| heading on `scrim` over a pure white pixel (`#555b5e`): every project tile caption, at rest and hovered, and the Project hero's filter bar | | 5.91 | 4.5 |
 | on the contact form band's worst pixel (`#31393c`): heading / ink / ink-muted / error / accent | | 10.11 / 7.44 / 5.32 / 5.15 / 4.92 | 4.5 |
 | heading on the Coffee wash's darkest point (`#614438`) | | 7.52 | 4.5 |
 | heading / ink on the project rooms band (`accent-deep`, `#724b39`, spec 0018). `ink-muted` (3.40) and `accent` (3.15) fail, so neither is a word there | | 6.47 / 4.77 | 4.5 |
@@ -295,7 +296,8 @@ section has no seam; the patterns carry the rhythm there.
 The bands that are not a tone each borrow the band frame:
 
 - **Photo bands** (the Project hero, the contact form band):
-  a photo under `scrim` or `scrim-strong`, on a `canvas` band so a photo that
+  a photo under `scrim-soft` (the Project hero, every word on it with
+  `text-glow`) or `scrim-strong` (the form band), on a `canvas` band so a photo that
   fails to load leaves the same words on a dark band. Every word is `heading`
   (on the form band, the field and card rules hold too: they are measured at
   its worst pixel). Each carries `focus-contrast`.
@@ -974,16 +976,21 @@ two across from `md`.
   The box is reserved before the photo arrives, so nothing shifts. The photo
   covers the box, centred, so a tall tower is cropped; choose photos with
   that in mind.
-- **A `bg-scrim` layer covers the whole photo**, so every word on the tile is
-  `heading` at 5.91:1 at worst over any photo. Lighter would break that (the
-  engineer chose the guarantee over the reference's lighter wash).
+- **The scrim is a gradient at rest** (2026-10-16, replacing the whole-photo
+  `bg-scrim`, which read too dark): the full `scrim` over the tile's foot,
+  where the caption sits (the bottom 50%, 40% from `lg`),
+  fading to clear at the top. Every word at rest still sits on the full
+  `scrim`, so it is `heading` at 5.91:1 at worst over any photo, while the
+  photo above the caption shows at full brightness.
 - **At rest**: the title (`h2`, `text-h3`, bold) and, 4px under it, the
   summary (`text-small`, medium) on one line (`truncate`; the whole line stays in the HTML),
   centred at the tile's foot. Project titles are capped at 60 characters in
   the content schema, which is what keeps them inside the tile at every width,
   at rest and unfolded.
-- **On hover, or while the tile's link has keyboard focus**: the scrim deepens
-  to `scrim-strong` over 500ms, and under the summary the cue and the facts
+- **On hover, or while the tile's link has keyboard focus**: the gradient fades
+  out as a whole-tile `scrim` fades in over 500ms (70%, lighter than the
+  former `scrim-strong`, 2026-10-16) (the caption moves to the middle,
+  so the whole photo has to be covered), and under the summary the cue and the facts
   unfold (`tile-info` in `global.css`, a grid row from nothing to its own
   height), lifting the title by exactly what appears. The cue is "Read more"
   in a `heading` outlined pill (`rounded-full`), `aria-hidden`; the facts are a
@@ -1047,9 +1054,15 @@ on it, then the filter.
     tab is "All"; the rest are the services that have projects, in the
     services' `order`.
   - **The bar**: a `bg-scrim` panel with a `line` hairline, holding the
-    country and floor area dropdowns, native `<select>`s in the shared field
-    box (`selectClass`, the same on every surface) with the shared field
-    labels above them, side by side from `md`. Each starts on
+    country and floor area dropdowns with the shared field labels above
+    them, side by side from `md`. Each is a `FilterSelect` (2026-10-16): a
+    `combobox` button in the field box (`canvas` fill, `field` border,
+    `accent` while open, a leading `accent` glyph, a chevron that turns)
+    opening a `listbox` below it, a `panel` with a `line` hairline and no
+    shadow. Each option is a 44px row with the field's glyph; the one under
+    the pointer or the arrow keys is `heading` at 10%, the chosen one
+    `accent` at 15%, semibold, with an `accent` check. A hidden native
+    `<select>` stays the form's field (`src/scripts/select-menu.ts`). The list opens with motion (fade, 8px drop, 200ms, options staggered 25ms) and closes in 120ms; still under reduced motion. Each starts on
     "Any". Countries are the text after the last comma of each project's
     `location`; the floor area bands are `projectPage.filter.areaRanges`
     (`min` counts in, `max` does not), and a band no project falls in is left

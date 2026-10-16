@@ -1,7 +1,8 @@
 ---
 /**
  * The Project page's opening band (spec 0014, revised 2026-10-09): a full
- * width photo under the 70% scrim, the page's `h1` and intro centred on it,
+ * width photo under the 50% `scrim-soft` (lighter since 2026-10-16), the
+ * page's `h1` and intro centred on it,
  * and, when there are projects, the filter: the service tabs, then a bar
  * holding the country and floor area dropdowns.
  *
@@ -15,9 +16,11 @@
  * the photo wall below instead of ending in a hard line. The fade sits over
  * the scrim and under every word, and only darkens it.
  *
- * Every word sits on the scrim, which covers the whole photo, and every word
- * is `heading`, which reads at 5.91:1 at worst over any photo. The bar adds a
- * second scrim under its labels. The intro passes `onPhoto` to `Emphasis`,
+ * Every word sits on `scrim-soft`, which covers the whole photo, and every
+ * word is `heading` with `text-glow`: the layer alone gives 2.99:1 over a pure
+ * white pixel (6.24:1 over this photo's median), so the glow darkens the
+ * photo round each letter where the layer cannot. The bar adds the full
+ * `scrim` under its labels, so its fields keep 5.91:1 at worst. The intro passes `onPhoto` to `Emphasis`,
  * so a `==accent==` phrase there renders bold `heading`, not brass: brass
  * over the scrim is 2.88:1.
  *
@@ -35,8 +38,10 @@
  *   reference's underline, and cream rather than brass because brass over
  *   the scrim is 2.88:1). Its focus ring is the two colour ring, drawn on the
  *   label, since the input itself is invisible.
- * - The dropdowns are native `<select>`s in the shared field box, the same
- *   on every surface, so they keep the browser's own keyboard and phone picker.
+ * - The dropdowns are `FilterSelect`s (2026-10-16): a styled listbox over a
+ *   hidden native `<select>`, which stays the form's field. Their open list
+ *   hangs below the band over the wall, so the band sits at `z-10`, above
+ *   the wall's positioned tiles and below the header's `z-40`.
  *
  * Each field's `name` is the `data-` attribute the tiles carry (`service`,
  * `country`, `area`), and each choice's value comes from
@@ -59,15 +64,10 @@
  */
 import { Image } from 'astro:assets';
 import Emphasis from '../ui/Emphasis.astro';
+import FilterSelect from './FilterSelect.astro';
 import type { ProjectPage } from '../../lib/content';
 import type { FilterChoices } from '../../lib/project-gallery';
-import {
-  bandGutterClass,
-  bandPaddingClass,
-  cx,
-  fieldLabelClass,
-  selectClass,
-} from '../ui/styles';
+import { bandGutterClass, bandPaddingClass, cx } from '../ui/styles';
 
 type FilterCopy = ProjectPage['filter'];
 
@@ -104,14 +104,14 @@ const { heading, headingId, intro, image, filter } = Astro.props;
  * the same weight, so choosing one never shifts its neighbours.
  */
 const tabClass =
-  'inline-flex min-h-11 items-center border-b-2 border-transparent px-1 text-lead text-heading transition-colors duration-150 peer-checked:border-heading peer-focus-visible:ring-2 peer-focus-visible:ring-canvas peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-heading hover:border-heading/60';
+  'inline-flex min-h-11 items-center border-b-2 border-transparent px-1 text-lead text-heading text-glow transition-colors duration-150 peer-checked:border-heading peer-focus-visible:ring-2 peer-focus-visible:ring-canvas peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-heading hover:border-heading/60';
 ---
 
 <section
   aria-labelledby={headingId}
   data-hero-scroll
   class={cx(
-    'focus-contrast relative isolate -mt-(--header-h) bg-canvas',
+    'focus-contrast relative isolate z-10 -mt-(--header-h) bg-canvas',
     bandGutterClass,
   )}
 >
@@ -125,7 +125,7 @@ const tabClass =
     fetchpriority="high"
     class="absolute inset-0 -z-10 size-full object-cover object-center"
   />
-  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-scrim"></div>
+  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-scrim-soft"></div>
   <div
     aria-hidden="true"
     class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-32 bg-linear-to-t from-canvas to-transparent md:h-40 lg:h-56"
@@ -139,13 +139,17 @@ const tabClass =
       )}
     >
       <div data-hero-layer>
-        <h1 id={headingId} data-enter="0" class="text-balance text-heading">
+        <h1
+          id={headingId}
+          data-enter="0"
+          class="text-balance text-heading text-glow"
+        >
           {heading}
         </h1>
       </div>
 
       <div data-hero-layer class="mt-6 max-w-narrow">
-        <p data-enter="1" class="text-lead text-heading">
+        <p data-enter="1" class="text-lead text-heading text-glow">
           <Emphasis text={intro} onPhoto />
         </p>
       </div>
@@ -181,37 +185,22 @@ const tabClass =
             </fieldset>
 
             <div class="mx-auto mt-6 grid max-w-narrow grid-cols-1 gap-4 rounded-ui border border-line bg-scrim p-4 text-start md:grid-cols-2 md:p-5">
-              <div class="flex flex-col gap-1.5">
-                <label for={`${filter.id}-country`} class={fieldLabelClass}>
-                  {filter.copy.countryLabel}
-                </label>
-                <select
-                  id={`${filter.id}-country`}
-                  name="country"
-                  class={selectClass()}
-                >
-                  <option value="">{filter.copy.anyOption}</option>
-                  {filter.choices.countries.map((choice) => (
-                    <option value={choice.value}>{choice.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div class="flex flex-col gap-1.5">
-                <label for={`${filter.id}-area`} class={fieldLabelClass}>
-                  {filter.copy.areaLabel}
-                </label>
-                <select
-                  id={`${filter.id}-area`}
-                  name="area"
-                  class={selectClass()}
-                >
-                  <option value="">{filter.copy.anyOption}</option>
-                  {filter.choices.areas.map((choice) => (
-                    <option value={choice.value}>{choice.label}</option>
-                  ))}
-                </select>
-              </div>
+              <FilterSelect
+                id={`${filter.id}-country`}
+                name="country"
+                label={filter.copy.countryLabel}
+                anyOption={filter.copy.anyOption}
+                choices={filter.choices.countries}
+                icon="map-pin"
+              />
+              <FilterSelect
+                id={`${filter.id}-area`}
+                name="area"
+                label={filter.copy.areaLabel}
+                anyOption={filter.copy.anyOption}
+                choices={filter.choices.areas}
+                icon="ruler"
+              />
             </div>
           </form>
         </div>
