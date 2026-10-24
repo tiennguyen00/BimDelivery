@@ -15,7 +15,8 @@ feel of a firm that delivers precise drawings, at night.
 **Source**: the five colours are the client's own palette (Chinese Black, Dark
 Jungle Green, Jet, Coffee, Antique Brass), adopted on 2026-10-09; the cream
 text family is derived from the brass hue. Headings moved to Playfair Display
-on 2026-10-11, with Inter kept for body copy and UI. The logo and
+on 2026-10-11, and body copy and UI from Inter to EB Garamond on 2026-10-16,
+when the client asked for serif type throughout. The logo and
 certification badges are still placeholders. Replacing those before launch is
 a tracked follow up (feature 14).
 
@@ -65,6 +66,7 @@ what it paints and the next palette change is values only.
 | `--color-error` | `#ff8a7a` | Error text and error borders, on every surface |
 | `--color-scrim` | `rgb(12 21 25 / 0.7)` | The see through layer under words on a photo. `heading` on it is 5.91:1 over a pure white pixel, so no photo can break it. Never lighter, except `scrim-soft` on the Project hero |
 | `--color-scrim-soft` | `rgb(12 21 25 / 0.5)` | The Project hero's layer only (2026-10-16, so its photo reads bright). `heading` on it alone is 2.99:1 over a pure white pixel, so every word on it carries `text-glow` (a Chinese Black halo round each letter) |
+| `--color-scrim-faint` | `rgb(12 21 25 / 0.3)` | The home hero's layer over its whole photo only (2026-10-24, so the night photo reads bright). Never alone under words: the copy sits on a `scrim-soft` radial pool, and every word carries `text-glow` |
 | `--color-scrim-strong` | `rgb(12 21 25 / 0.9)` | The contact form band's layer. With the `bg-diagonal` stripe on top, its worst pixel is `#31393c` |
 | `--color-glass` | `rgb(58 53 52 / 0.8)` Jet | The header's frosted fill, and nothing else. Reads as a `panel` card (1.33:1 on canvas). Only valid over its backdrop filter (`blur(12px) brightness(0.3)`): a pure white pixel then lands at `#3e3a39`, `accent` 4.69:1. Never lighter, never without the dimming |
 
@@ -184,27 +186,32 @@ as it loads (2026-10-11):
   hero's line beside the building, the numbers of the stats bars, and the
   `01` numerals on the home service cards and the service features cards.
   Numerals in it also take `lining-nums`, so they sit on the baseline.
-- **Inter** (`font-sans`, the body default) for everything else: body and lead
-  copy, nav, buttons, fields, eyebrows, and small capitals labels.
+- **EB Garamond** (`font-body`, the body default), a Garamond text serif, for
+  everything else: body and lead copy, nav, buttons, fields, eyebrows, and
+  small capitals labels. It replaced Inter on 2026-10-16: the client wants
+  serif type wherever it can go, and a classic book serif carries body and UI
+  text where Playfair cannot.
 
 **Never set Playfair at the body or small size.** Its hairlines thin out
 against the dark surfaces below about 20px, which is why labels, eyebrows, and
-UI words stay Inter even beside a serif heading.
+UI words stay EB Garamond even beside a Playfair heading.
 
-Headings interpolate linearly between a 360px and a 1200px viewport, so they
-grow smoothly and never jump at a breakpoint. Every size is in `rem`, so full
-page browser zoom scales them.
+Every size interpolates linearly between a 360px and a 1920px viewport
+(2026-10-16), so type grows smoothly, never jumps at a breakpoint, and keeps
+growing on large desktop screens. Each clamp has a `rem` term, so full page
+browser zoom scales them. Body, lead, and small start a step above the usual
+16, 18, and 14px because EB Garamond's small x-height reads about a size
+smaller than a sans at the same value.
 
 | Token | Size | Line height | Letter spacing | Weight | Role |
 |---|---|---|---|---|---|
-| `--text-h1` | 36px to 56px | 1.1 | -0.02em | 700 | Page title |
-| `--text-h2` | 28px to 40px | 1.2 | normal | 700 | Section heading |
-| `--text-h3` | 20px to 24px | 1.3 | normal | 600 | Card and sub heading |
-| `--text-lead` | 18px | 1.6 | normal | 400 | Intro paragraphs |
-| `--text-body` | 16px | 1.6 | normal | 400 | Body text |
-| `--text-small` | 14px | 1.5 | normal | 400 | Labels, hints, errors, captions |
-| `--text-display` | 13cqi, 13 percent of its container's width | 1 | -0.02em | 700 | The home hero's `h1` behind its building, in capitals. Only inside an `@container` (the building's column), so it scales with the building and the roof covers the same share of the letters |
-| `--text-eyebrow` | 14px | 1.5 | 0.16em | 600 | The short brass label in capitals above a large title (the home hero's) |
+| `--text-h1` | 36px to 72px | 1.1 | -0.02em | 700 | Page title |
+| `--text-h2` | 28px to 52px | 1.2 | normal | 700 | Section heading |
+| `--text-h3` | 20px to 30px | 1.3 | normal | 600 | Card and sub heading |
+| `--text-lead` | 19px to 23px | 1.6 | normal | 400 | Intro paragraphs |
+| `--text-body` | 17px to 20px | 1.6 | normal | 400 | Body text |
+| `--text-small` | 15px to 17px | 1.5 | normal | 400 | Labels, hints, errors, captions |
+| `--text-eyebrow` | 14px to 16px | 1.5 | 0.16em | 600 | The short brass label in capitals above a large title (the home hero's) |
 
 Line height and letter spacing are companion keys on the size token, so
 `text-h1` sets all three at once. **Never write line height or letter spacing
@@ -214,9 +221,10 @@ on a component**; if a size needs different ones, it is a new token.
 from the base layer, so a plain `<h2>` is correct with no classes on it. An
 `h4` takes only the typeface; its size and colour are set where it is used.
 
-Only the heading clamps use a `vw` term, which does not respond to a browser's
-text-only scaling setting the way a pure `rem` value does. The `rem` half still
-does, and body, lead, and small are pure `rem`.
+Every clamp has a `vw` term, which does not respond to a browser's text-only
+scaling setting the way a pure `rem` value does. The `rem` half and both
+bounds still do, and the `vw` share of body, lead, and small is small (at most
+3px of the 20px body), so text-only scaling still moves them almost fully.
 
 ## Spacing and rhythm
 
@@ -301,15 +309,18 @@ The bands that are not a tone each borrow the band frame:
   fails to load leaves the same words on a dark band. Every word is `heading`
   (on the form band, the field and card rules hold too: they are measured at
   its worst pixel). Each carries `focus-contrast`.
-- **The home hero** (2026-10-11, after the engineer's reference): a `canvas`
-  band in the page's default width (the band frame), two columns from `lg`.
-  The copy (a brass eyebrow, the title with a brass `==` phrase, the
-  paragraph, the button) sits beside a dotted rule; the building, a cut-out
-  on a transparent background, sits on the end side with the `h1` set large
-  behind its roof (`text-display`, and `hero-overlap` pulls the building up
-  over the letters). The numbers sit in an outlined bar along the bottom.
-  Everything is on `canvas`, so every pair is a `canvas` one and the band
-  takes no `focus-contrast`.
+- **The home hero** (2026-10-24, after the client's sketch): a photo band.
+  The night photo of the tower and the hillside covers the band under
+  `scrim-faint`, with a `scrim-soft` radial pool behind the copy only. The copy (a brass eyebrow, the title, which is the `h1`,
+  with a brass `==` phrase, the paragraph, the button) sits on the sky, and
+  from `lg` its start edge lines up with the tower's right edge
+  (`hero-photo` draws the photo at a known width, `hero-copy-inset` puts the
+  copy at the tower's share of it, `copyStart` in content). Every word
+  carries `text-glow`; the brass words are the client's call, measured over
+  this photo's sky rather than a pure white pixel. The numbers sit in a
+  `scrim-strong` bar with a `line` outline along the bottom. It carries
+  `focus-contrast`. The copy's four parts play the CSS `entrance` on load,
+  80ms apart.
 - **The accent band** (`CtaBand`): brass, `on-accent` words, a `canvas` link.
   It carries `focus-contrast`.
 - **The home intro band**: a `canvas` band with `heading` copy and `accent`
@@ -477,14 +488,14 @@ and so on).
 | `strokeWidth` | `number`, on the 24 unit grid; fill glyphs ignore it | `2` |
 | `class` | `string` | none |
 
-The whole set, thirty six glyphs on one 24 unit grid: `menu`, `close`,
+The whole set, thirty seven glyphs on one 24 unit grid: `menu`, `close`,
 `chevron-down`, `check` (the home presence band's why choose list, spec 0005),
 `arrow-right` (the home service card's cue, spec 0005, and the home project
 tiles' cue and the next project link, spec 0015), `arrow-left` (a project room's
 previous photo arrow, its mirror, spec 0018), `plus` and `minus`
 (an `Accordion` item closed and open, spec 0010), the footer's contact glyphs
-`phone`, `mail`, `globe`, the five social marks `linkedin`, `facebook`,
-`youtube`, `x`, `instagram`, and the four solid stat glyphs
+`phone`, `mail`, `globe`, the six social marks `linkedin`, `facebook`,
+`youtube`, `x`, `instagram`, `tiktok` (Simple Icons, CC0), and the four solid stat glyphs
 `briefcase-clock`, `users`, `building`, `map-pin` (the home intro band's
 cards), and `headset` and `envelope`, which with `map-pin` fill the contact
 page's cards (spec 0011). A glyph whose details are holes punched through it sets `evenodd` in
@@ -517,8 +528,9 @@ is a path in the map and its name in the list.
 - A name outside the map is a **type error**, not a blank square. There is no
   icon library and no dynamic lookup.
 - Without `title` the icon is hidden from assistive tech, which is right
-  whenever visible text sits beside it. **Do** pass `title` only when the icon
-  is the whole accessible name of a control, as the footer's social links are.
+  whenever visible text sits beside it, as in the footer's social links.
+  **Do** pass `title` only when the icon is the whole accessible name of a
+  control.
 - Use 20 beside a label, 24 for a standalone control.
 
 ### `PageLayout` · `src/layouts/PageLayout.astro`
@@ -527,13 +539,10 @@ is a path in the map and its name in the list.
 |---|---|---|
 | `title` | `string` (required) | |
 | `description` | `string` | none |
-| `footerCertification` | `boolean`, passed to `Footer`'s `showCertification` | `true` |
 
 The frame every public page sits inside: the skip link, `Header`,
 `<main id="main" tabindex="-1">`, `Footer`. It reads the navigation and the
-settings itself, so a page passes only its own title and description, plus
-`footerCertification={false}` on the one page that shows the badges itself
-(About, spec 0010).
+settings itself, so a page passes only its own title and description.
 
 - **Do** import this in every page under `src/pages/`. `BaseLayout` is the bare
   document shell and is for the dev only style guide. A page that imports the
@@ -621,28 +630,23 @@ listener**.
 | `ui` | `NavUi` (required) | |
 | `legal` | `readonly Link[]` (required, may be empty) | |
 | `settings` | `Settings` (required) | |
-| `showCertification` | `boolean` | `true` |
 
-A `canvas` band with a `line` hairline on top: brand, contact, and
-certification, three columns at `lg`, two at `md`, one below. Copy is
+A `canvas` band with a `line` hairline on top: brand, contact, and social,
+three columns at `lg`, two at `md` (social spanning both), one below. Copy is
 `heading`, links and contact icons turn `accent` on hover, and its marked copy
 goes through `Emphasis`. The base ring passes there, so no `focus-contrast`.
-It shows the one light logo (`settings.logo`), the same as the header. The
-badges carry their own light tiles and sit straight on the band, with no
-strip behind them.
+It shows the one light logo (`settings.logo`), the same as the header.
 
-- **The hidden panel** (spec 0010): with `showCertification` off, the
-  certification column is left out and the brand and contact columns share
-  the row, two at `md` and at `lg`. Only `/about-us` turns it off, through
-  `PageLayout`'s `footerCertification`, because that page shows the same
-  badges in a band of its own. Every other page's footer is unchanged, and the
-  badges appear once per page.
+- **The social column** (2026-10-24, replacing the certification column and
+  the brand column's icon row): `footer.socialHeading` over a two column list,
+  each link an `accent` 18px mark beside the network's name, the same shape as
+  a contact row. The name is visible, so the mark carries no `title`.
 
 - Both link columns come from the same `getNavigation` call the header uses, so
   the two can never fall out of step and a fourth service file appears in both.
 - Footer links **never** carry `aria-current`. That belongs to the header, so a
   screen reader hears the current page once.
-- An empty `social` list drops the whole block, and an empty `legal` list leaves
+- An empty `social` list drops the whole column, and an empty `legal` list leaves
   just the copyright. Neither renders an empty row.
 - Social links open in a new tab and carry `rel="noopener noreferrer"`.
 
@@ -1084,21 +1088,33 @@ spec 0005's "the photo stays still"):
   with the parallax, so the `::after` reaches 24px past them on every side
   (`after:-inset-6`) and the tile clips the rest: the whole tile stays
   clickable wherever the words have drifted.
-- **The cue**: "Read more" from content (`projectPage.tileCue`,
-  `home.projectShowcase.cue`), `heading`, `text-small font-semibold`,
+- **The cue** (`/project` only): "Read more" from content
+  (`projectPage.tileCue`), `heading`, `text-small font-semibold`,
   **`aria-hidden`**, so a screen reader hears six distinct titles rather
-  than six "Read more"s. On home it sits under the summary with an
-  `arrow-right`; on `/project` it is a `heading` outlined pill that unfolds on
-  hover (above).
-- **Keyboard focus** draws the `accent` ring round the whole tile
-  (`link-focus:outline-accent` on the `<li>`), never round the title
-  alone; the link itself sets `focus-visible:outline-none`.
-- **Hover zooms the photo alone**, 105% over 500ms, `motion-safe`: `group`
-  and `isolate` on the `<li>` with its clipping (`overflow-hidden` on home,
-  `overflow-clip` on `/project`, for the parallax), and
+  than six "Read more"s, in a `heading` outlined pill that unfolds on hover
+  (above). The home showcase has no cue (2026-10-24).
+- **Keyboard focus** on `/project` draws the `accent` ring round the whole
+  tile (`link-focus:outline-accent` on the `<li>`); the link itself sets
+  `focus-visible:outline-none`. On home the L pane's clip would cut a ring
+  round the tile, so the title link takes the ring itself.
+- **Hover on `/project` zooms the photo alone**, 105% over 500ms,
+  `motion-safe`: `group` and `isolate` on the `<li>` with `overflow-clip`
+  (for the parallax), and
   `transition-[scale] duration-500 ease-out motion-safe:group-hover:scale-105`
-  on the `Image`. The box and the layout never move. On home the caption
-  stays still; on `/project` the scrim deepens and the cue and facts unfold.
+  on the `Image`. The box and the layout never move; the scrim deepens and
+  the cue and facts unfold.
+- **The home showcase** (2026-10-24) is one photo split into panes: each
+  pane paints its own window onto the one optimised file, so at rest the
+  picture is unbroken across 8px `raised` seams. At rest a pane names only
+  its service (Playfair, `text-h3`) on a light `scrim-soft` fade; hover or
+  focus unfolds the project title under it (`tile-info`), and on touch it is
+  always open. Each tile is two layers: the card you see (`aria-hidden`)
+  and, over it, the one link, which fills the tile, never moves, and names
+  the project in `sr-only` text. On hover the card tilts in 3D like
+  daisyUI's `hover-3d` (below). Every pane rests under a `scrim-soft`
+  shade; the one hovered or focused fades it out over 500ms, brightens, and
+  draws a 1.5px `heading` rim at 80% round its outline (on the L a ring
+  clipped by `shape()`, so it follows the inside corner too).
 - The home band's "View all projects" button stays, the one way to the list.
 
 ### The project detail page · `src/pages/project/[slug].astro`
@@ -1351,8 +1367,18 @@ pages use the same reveal script and add the carousel (spec 0013).
   same way. The hero's `h1` has no rule. The empty state and the accent band
   do not move. On hover a tile's photo slowly zooms to 105% (`motion-safe`
   only), its scrim deepens, and its cue and facts unfold over 500ms (the
-  `tile-info` grid row; under reduced motion they appear at once). The home
-  showcase tiles zoom the same way (spec 0015) and unfold nothing.
+  `tile-info` grid row; under reduced motion they appear at once).
+- **The home showcase tilt** (2026-10-24), after daisyUI's `hover-3d`,
+  `src/scripts/tilt.ts`, a plain script with no motion import. While a
+  mouse moves over a tile (`data-tilt`), the tile's card turns in 3D up to
+  10deg so the edge nearest the pointer rises toward the visitor (as much in
+  a corner as on a side), under a perspective four times the tile's longer
+  side; it grows to 103% and lifts above its neighbours, and a soft
+  `heading` glare at 20% follows the pointer. The script writes only the
+  axis, angle, depth, and glare position, once a frame; the card follows on
+  daisyUI's hover spring and returns on its livelier rest spring (both
+  `linear()` curves, 500ms), staying lifted until it has settled. Touch and
+  reduced motion get no tilt.
 - **The tile parallax** on the Project page (spec 0014, revised 2026-10-09),
   `src/scripts/parallax.ts` on motion's `scroll()`. As a tile crosses the
   screen, from its top entering at the bottom of the viewport to its bottom

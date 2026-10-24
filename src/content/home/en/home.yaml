@@ -4,15 +4,13 @@ seo:
   description: Accurate BIM and Revit models, scan to BIM, and clash coordination for architects, engineers, and contractors worldwide.
 hero:
   eyebrow: BIM and Revit specialists
-  heading: BIM Delivery
-  subheading: BIM and Revit modeling ==you can build from==
+  heading: BIM and Revit modeling ==you can build from==
   lead: Accurate models, clean drawings, and coordinated trades, delivered by a team that speaks the language of construction.
-  # PLACEHOLDER illustration: replace with the real building cut-out, a
-  # transparent PNG about 1600 x 1070 (3:2), the roof touching the top edge.
-  # It is drawn over the heading, so its roof covers the bottom of the words.
   image:
-    src: ../../../assets/images/home/test.png
-    alt: An illustration of a modern two storey house with glass walls, a flat concrete roof, and warm lights inside
+    src: ../../../assets/images/home/banner-homepage.jpg
+    alt: A residential tower and terraced hillside homes at dusk, their windows and pools lit warm among the trees
+  # The tower's right edge: 473 of the photo's 1678 px.
+  copyStart: 0.282
   primaryCta:
     label: Talk to our team
     href: /contact-us
@@ -127,7 +125,9 @@ presence:
 projectShowcase:
   heading: Featured projects
   intro: A few of the models we have delivered for design and site teams.
-  cue: Read more
+  image:
+    src: ../../../assets/images/projects/projects-banner.jpg
+    alt: Terraced garden residences round a lagoon pool at sunset, a river and city skyline beyond
   link:
     label: View all projects
     href: /project

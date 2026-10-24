@@ -98,6 +98,11 @@
      white pixel falls to 2.99:1, so every word on it carries `text-glow`,
      which darkens the photo right round each letter. */
   --color-scrim-soft: rgb(12 21 25 / 0.5);
+  /* The home hero's layer over its whole photo (2026-10-24), Chinese Black
+     at 30 percent, so the night photo reads bright. Never alone under words:
+     the copy adds a `scrim-soft` radial pool behind itself, and every word
+     carries `text-glow`. */
+  --color-scrim-faint: rgb(12 21 25 / 0.3);
   /* The contact form band's layer, where small text sits straight on it,
      and a project tile's hovered caption. At 90 percent, with the
      `bg-diagonal` stripe on top, its worst pixel is #31393c: `heading`
@@ -123,23 +128,21 @@
      the only font sizes that exist. Without it, `text-sm` and `text-small`
      would both work and the scale would drift.
 
-     Headings interpolate linearly between a 360px and a 1200px viewport, so
-     they grow smoothly and never jump at a breakpoint. The rem term keeps
-     them responsive to full page zoom; body, lead, and small are pure rem. */
+     Every size interpolates linearly between a 360px and a 1920px viewport
+     (2026-10-16), so type grows smoothly, never jumps at a breakpoint, and
+     keeps growing on large desktop screens instead of stopping at 1200px. The
+     rem term keeps each size responsive to full page zoom. Body, lead, and
+     small start a step above the usual 16/18/14px because EB Garamond's small
+     x-height reads about a size smaller than a sans at the same value. */
   --text-*: initial;
-  --text-h1: clamp(2.25rem, 1.714rem + 2.381vw, 3.5rem);
-  --text-h2: clamp(1.75rem, 1.429rem + 1.429vw, 2.5rem);
-  --text-h3: clamp(1.25rem, 1.143rem + 0.476vw, 1.5rem);
-  --text-lead: 1.125rem;
-  --text-body: 1rem;
-  --text-small: 0.875rem;
-  /* The home hero's display line, over its photo. It is sized by its
-     container (`cqi`, the building's own width), not the viewport, so the words
-     keep their place against the building at every screen width. Only inside
-     an `@container`. */
-  --text-display: 13cqi;
+  --text-h1: clamp(2.25rem, 1.731rem + 2.308vw, 4.5rem);
+  --text-h2: clamp(1.75rem, 1.404rem + 1.538vw, 3.25rem);
+  --text-h3: clamp(1.25rem, 1.106rem + 0.641vw, 1.875rem);
+  --text-lead: clamp(1.1875rem, 1.13rem + 0.256vw, 1.4375rem);
+  --text-body: clamp(1.0625rem, 1.019rem + 0.192vw, 1.25rem);
+  --text-small: clamp(0.9375rem, 0.909rem + 0.128vw, 1.0625rem);
   /* The short label in capitals above a large title (the home hero's). */
-  --text-eyebrow: 0.875rem;
+  --text-eyebrow: clamp(0.875rem, 0.846rem + 0.128vw, 1rem);
 
   /* Companion keys: line height and letter spacing ride on the size token, so
      `text-h1` is the whole type treatment and no component ever repeats them.
@@ -151,8 +154,6 @@
   --text-lead--line-height: 1.6;
   --text-body--line-height: 1.6;
   --text-small--line-height: 1.5;
-  --text-display--line-height: 1;
-  --text-display--letter-spacing: -0.02em;
   --text-eyebrow--line-height: 1.5;
   --text-eyebrow--letter-spacing: 0.16em;
 
@@ -177,17 +178,18 @@
 
 /**
  * `inline` because the values point at variables Astro's fonts API defines
- * elsewhere in the page CSS. Inlining them means `font-sans` and
+ * elsewhere in the page CSS. Inlining them means `font-body` and
  * `font-display` emit the whole stack rather than a var() chain that could
  * resolve to nothing.
  *
- * `font-sans` (Inter) is body copy and every UI word: nav, buttons, fields,
- * eyebrows, and small capitals labels. `font-display` (Playfair Display) is
+ * Both faces are serif (2026-10-16). `font-body` (EB Garamond) is body copy
+ * and every UI word: nav, buttons, fields, eyebrows, and small capitals
+ * labels. `font-display` (Playfair Display) is
  * headings and the large display numerals only, never text at the small or
  * body size, where its hairlines thin out on the dark surfaces.
  */
 @theme inline {
-  --font-sans: var(--font-inter), sans-serif;
+  --font-body: var(--font-garamond), serif;
   --font-display: var(--font-playfair), serif;
 }
 
@@ -260,15 +262,25 @@
 }
 
 /**
- * The home hero's building rising over the bottom of its display line
- * (2026-10-11). The building image follows the `h1` and is pulled up by
- * about a third of the line's cap height, so its roof covers the lower part of
- * the letters and the words still read. In `cqi`, like `--text-display`, so
- * the overlap keeps its share of the words at every width. Only inside an
- * `@container`.
+ * The home hero's photo from `lg` (2026-10-24): pinned to the band's top left
+ * corner at a width the CSS can know, the band's width or the first screen's
+ * height times the photo's ratio, whichever is larger, so it always covers
+ * the first screen. Because that width is known, `hero-copy-inset` can put
+ * the copy's start edge on the tower's right edge. The band sets
+ * `--hero-photo-ratio` and `--hero-copy-start` and is the `@container`.
  */
-@utility hero-overlap {
-  margin-top: -3.5cqi;
+@utility hero-photo {
+  inset: 0 auto auto 0;
+  width: max(100cqi, 100svh * var(--hero-photo-ratio));
+  max-width: none;
+  height: auto;
+}
+
+/** The copy's start edge on the tower's right edge, from the band's left. */
+@utility hero-copy-inset {
+  padding-left: calc(
+    max(100cqi, 100svh * var(--hero-photo-ratio)) * var(--hero-copy-start)
+  );
 }
 
 /**
@@ -472,7 +484,8 @@
  * rises 24px into place over 600ms with an ease out, the scroll reveal's own
  * language, with no script at all. Callers set `--entrance-step` in a
  * `style` attribute, and each step waits 80ms, the scroll reveal's stagger.
- * Today the About band's heading, paragraph, and numbers, the Contact intro,
+ * Today the home hero's copy, the About band's heading, paragraph, and
+ * numbers, the Contact intro,
  * and each service page's intro (spec 0013). The Project page plays the same
  * entrance through motion instead, held by the `data-enter` rule below.
  *
@@ -615,7 +628,7 @@
   }
 
   body {
-    @apply bg-canvas font-sans text-body text-ink antialiased;
+    @apply bg-canvas font-body text-body text-ink antialiased;
   }
 
   h1 {

@@ -52,17 +52,18 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false },
   },
 
-  // The site's two typefaces: Inter for body copy and UI (spec 0003), and
-  // Playfair Display for headings and display numerals (2026-10-11). Astro
+  // The site's two typefaces, both serif (the client asked for serif
+  // throughout, 2026-10-16): EB Garamond for body copy and UI, and Playfair
+  // Display for headings and display numerals (2026-10-11). Astro
   // downloads the files at build and serves them from this site's own origin,
   // so there is no third party request and no layout shift from a late swap:
   // `optimizedFallbacks` (on by default) generates a metric matched local
   // fallback.
   //
   // Each `cssVariable` is what a Tailwind font token points at, in
-  // src/styles/global.css: `--font-sans` for Inter, `--font-display` for
-  // Playfair. Each weight range pulls the variable font once: Inter covers
-  // body (400), semibold (600), and bold (700); Playfair the regular
+  // src/styles/global.css: `--font-body` for EB Garamond, `--font-display`
+  // for Playfair. Each weight range pulls the variable font once: EB Garamond
+  // covers body (400), semibold (600), and bold (700); Playfair the regular
   // numerals (400) up to bold headings (700).
   //
   // Note for an offline build: the first build on a new machine or in CI needs
@@ -70,11 +71,11 @@ export default defineConfig({
   fonts: [
     {
       provider: fontProviders.fontsource(),
-      name: 'Inter',
-      cssVariable: '--font-inter',
+      name: 'EB Garamond',
+      cssVariable: '--font-garamond',
       weights: ['400 700'],
       subsets: ['latin'],
-      fallbacks: ['sans-serif'],
+      fallbacks: ['serif'],
     },
     {
       provider: fontProviders.fontsource(),

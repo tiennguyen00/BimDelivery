@@ -301,32 +301,32 @@ const typeScale = [
   {
     token: 'text-h1',
     class: 'text-h1 font-bold text-heading',
-    note: '36px to 56px, line height 1.1, tracking -0.02em',
+    note: '36px to 72px, line height 1.1, tracking -0.02em',
   },
   {
     token: 'text-h2',
     class: 'text-h2 font-bold text-heading',
-    note: '28px to 40px, line height 1.2',
+    note: '28px to 52px, line height 1.2',
   },
   {
     token: 'text-h3',
     class: 'text-h3 font-semibold text-ink-strong',
-    note: '20px to 24px, line height 1.3',
+    note: '20px to 30px, line height 1.3',
   },
   {
     token: 'text-lead',
     class: 'text-lead text-ink',
-    note: '18px fixed, line height 1.6',
+    note: '19px to 23px, line height 1.6',
   },
   {
     token: 'text-body',
     class: 'text-body text-ink',
-    note: '16px fixed, line height 1.6',
+    note: '17px to 20px, line height 1.6',
   },
   {
     token: 'text-small',
     class: 'text-small text-ink-muted',
-    note: '14px fixed, line height 1.5',
+    note: '15px to 17px, line height 1.5',
   },
 ] as const;
 
@@ -590,11 +590,12 @@ const headCellClass =
     <Section labelledBy="sg-type">
       <h2 id="sg-type">Type</h2>
       <p class="mt-4 max-w-narrow">
-        Playfair Display for headings and Inter for everything else, both served
-        from this site's own origin. Headings grow smoothly with the viewport
-        rather than jumping at a breakpoint. Line height and letter spacing ride
-        on the size token, so <code class="font-mono text-small">text-h1</code>{' '}
-        is the whole treatment and no component ever repeats them.
+        Serif throughout: Playfair Display for headings and EB Garamond for
+        everything else, both served from this site's own origin. Headings grow
+        smoothly with the viewport rather than jumping at a breakpoint. Line
+        height and letter spacing ride on the size token, so{' '}
+        <code class="font-mono text-small">text-h1</code> is the whole treatment
+        and no component ever repeats them.
       </p>
 
       <dl class="mt-8 flex flex-col gap-8">
@@ -1039,23 +1040,6 @@ const headCellClass =
         />
         <Footer legal={navigation.legal} settings={settings} />
       </div>
-
-      <h3 class="mt-12">The footer with its certification panel hidden</h3>
-      <p class="mt-4 max-w-narrow">
-        For a page that shows the badges in a band of its own (spec 0010; no
-        page does since the About &amp; Services page, 2026-10-11): it passes{' '}
-        <code class="font-mono text-small">
-          footerCertification=&#123;false&#125;
-        </code>
-        and the brand and contact columns share the row.
-      </p>
-      <div class="mt-8 overflow-hidden rounded-ui border border-line">
-        <Footer
-          legal={navigation.legal}
-          settings={settings}
-          showCertification={false}
-        />
-      </div>
     </Section>
 
     <Section tone="raised" labelledBy="sg-mediatext">
@@ -1314,7 +1298,7 @@ const headCellClass =
           class="absolute inset-0 -z-10 size-full object-cover object-center"
         />
         <p class="rounded-ui bg-scrim px-6 py-4 text-lead text-heading">
-          <Emphasis text={home.hero.subheading} onPhoto />
+          <Emphasis text={home.hero.heading} onPhoto />
         </p>
         <Button href={home.hero.primaryCta.href}>
           {home.hero.primaryCta.label}

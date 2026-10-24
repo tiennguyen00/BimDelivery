@@ -10,8 +10,7 @@
  *
  * The reference site's "Delivering Precision BIM & Revit Modeling" section is
  * deliberately absent; it was cut in the scope. So are the certification row
- * and the accent closing band: the footer already carries the badges, and the
- * page now ends on the project showcase. The company overview band was
+ * and the accent closing band: the page now ends on the project showcase. The company overview band was
  * removed as well (2026-09-22), so the intro band leads straight into the
  * services.
  */
@@ -117,9 +116,9 @@ const serviceRow =
     eyebrow={home.hero.eyebrow}
     heading={home.hero.heading}
     headingId="hero-heading"
-    subheading={home.hero.subheading}
     lead={home.hero.lead}
     image={{ src: home.hero.image.src, alt: home.hero.image.alt ?? '' }}
+    copyStart={home.hero.copyStart}
     primaryCta={home.hero.primaryCta}
     stats={stats}
     lang={lang}
@@ -214,8 +213,11 @@ const serviceRow =
         heading={home.projectShowcase.heading}
         headingId="project-showcase-heading"
         intro={home.projectShowcase.intro}
+        image={{
+          src: home.projectShowcase.image.src,
+          alt: home.projectShowcase.image.alt ?? '',
+        }}
         projects={featuredProjects}
-        cue={home.projectShowcase.cue}
         link={home.projectShowcase.link}
       />
     </Section>

@@ -5,7 +5,7 @@ whenever you add one.
 
 ## Photos (internet links, spec 0006)
 
-One photo lives in this folder, the home hero's building (below). Every other one is an `https` link on
+Two photos live in this folder, the home hero's building and the project showcase's banner (below). Every other one is an `https` link on
 `images.pexels.com`, written in its content entry. Astro downloads it at build,
 optimises it, and serves the copies from this site's own domain.
 
@@ -63,9 +63,10 @@ placeholders until real project photography arrives.
 
 ## Local images
 
-| Used for  | File                                                                 | Source and licence                                                                                                          |
-| --------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Home hero | `home/test.png`, a building illustration on a transparent background | Drawn for this project as a placeholder on 2026-10-11; no third party licence. Replace with the real building before launch |
+| Used for              | File                                                                            | Source and licence                                                 |
+| --------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Home hero             | `home/banner-homepage.jpg`, a tower and terraced hillside homes at dusk         | Supplied by the client on 2026-10-24 for the home hero             |
+| Home project showcase | `projects/projects-banner.jpg`, terraced garden residences round a pool at dusk | Supplied by the client on 2026-10-24 for the home project showcase |
 
 ## Icons copied from open licence sets (spec 0013)
 
@@ -82,6 +83,8 @@ icon package is installed; only the path data is copied.
   Apache License 2.0, where Tabler has no solid match: `co_present` (as
   `presenter`), `architecture` (as `compass`), `engineering` (as
   `hard-hat`), `manage_accounts` (as `users-gear`).
+- [Simple Icons](https://simpleicons.org/), CC0: `tiktok`, for the footer's
+  social column (2026-10-24).
 
 ## Generated from public domain data
 

@@ -2,7 +2,7 @@
 /**
  * The site footer: a `canvas` band in three columns on desktop, stacked on a
  * phone. The brand and a short introduction, how to reach the company, and
- * the certifications it holds. A `line` hairline marks where it starts, since
+ * where to follow it. A `line` hairline marks where it starts, since
  * the band above it is usually `canvas` too; it fades out towards both ends
  * (2026-10-13), so the footer opens with a soft rule, not a hard edge.
  *
@@ -14,13 +14,9 @@
  * and icons turn `accent` on hover. The base focus ring passes here (7.71:1),
  * so the band needs no `focus-contrast`.
  *
- * The badges carry their own light tiles, so they sit straight on the band
- * with nothing behind them.
- *
- * `showCertification` exists for the About page (spec 0010), which shows the
- * same badges in a band of its own. Off, the certification column is left
- * out and the brand and contact columns share the row, so the badges appear
- * once per page.
+ * The social column (2026-10-24, in place of the certification column) names
+ * each network beside its mark, so the icon is decorative and the visible
+ * name is the link's accessible name.
  */
 import { Image } from 'astro:assets';
 import Emphasis from './Emphasis.astro';
@@ -31,8 +27,6 @@ import type { Link, Settings, SocialNetwork } from '../../lib/content';
 interface Props {
   legal?: readonly Link[];
   settings: Settings;
-  /** Leave out the certification column. Only `/about-us` turns it off. */
-  showCertification?: boolean;
   /**
    * The nav item the footer stands for, by its href, read by `nav-spy.ts` on
    * a page that imports it (the same hook as `Section`'s `navSection`).
@@ -40,17 +34,12 @@ interface Props {
   navSection?: string;
 }
 
-const {
-  legal = [],
-  settings,
-  showCertification = true,
-  navSection,
-} = Astro.props;
+const { legal = [], settings, navSection } = Astro.props;
 const { contact, footer } = settings;
 
 /**
  * The social networks' own spelling. `network` is the enum key, which is
- * lowercase; this is what a screen reader should actually say.
+ * lowercase; this is the link text a visitor reads and a screen reader says.
  */
 const SOCIAL_NAMES: Readonly<Record<SocialNetwork, string>> = {
   linkedin: 'LinkedIn',
@@ -58,6 +47,7 @@ const SOCIAL_NAMES: Readonly<Record<SocialNetwork, string>> = {
   youtube: 'YouTube',
   x: 'X',
   instagram: 'Instagram',
+  tiktok: 'TikTok',
 };
 
 /** `https://www.example.com/` shown as `www.example.com`. */
@@ -83,15 +73,7 @@ const contactIconClass = 'shrink-0 text-accent';
     class="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-line to-transparent"
   ></div>
   <div class={cx(bandWidthClass.default, bandGutterClass, 'py-16 md:py-20')}>
-    <div
-      class={
-        showCertification
-          ? cx(
-              'grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3 lg:gap-16',
-            )
-          : cx('grid grid-cols-1 gap-12 md:grid-cols-2 lg:gap-16')
-      }
-    >
+    <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3 lg:gap-16">
       <div>
         <Image
           src={settings.logo.src}
@@ -105,27 +87,6 @@ const contactIconClass = 'shrink-0 text-accent';
             </p>
           ))}
         </div>
-
-        {settings.social.length > 0 && (
-          <ul class="mt-6 flex list-none flex-wrap gap-1 p-0">
-            {settings.social.map((account) => (
-              <li>
-                <a
-                  href={account.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-ui hover:text-accent"
-                >
-                  <Icon
-                    name={account.network}
-                    size={20}
-                    title={SOCIAL_NAMES[account.network]}
-                  />
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
 
       <div>
@@ -158,21 +119,25 @@ const contactIconClass = 'shrink-0 text-accent';
         </ul>
       </div>
 
-      {showCertification && (
+      {settings.social.length > 0 && (
         <div class="md:col-span-2 lg:col-span-1">
-          <h2 class={headingClass}>{footer.certification.heading}</h2>
-          <p class="mt-6">
-            <Emphasis text={footer.certification.text} />
-          </p>
-          <ul class="mt-8 flex max-w-sm list-none flex-wrap justify-center gap-4 p-4">
-            {footer.certification.badges.map((badge) => (
+          <h2 class={headingClass}>{footer.socialHeading}</h2>
+          <ul class="mt-6 grid list-none grid-cols-2 gap-x-6 p-0">
+            {settings.social.map((account) => (
               <li>
-                <Image
-                  src={badge.src}
-                  alt={badge.alt ?? ''}
-                  loading="lazy"
-                  class="h-24 w-auto"
-                />
+                <a
+                  href={account.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class={cx(linkClass, 'gap-3')}
+                >
+                  <Icon
+                    name={account.network}
+                    size={18}
+                    class={contactIconClass}
+                  />
+                  {SOCIAL_NAMES[account.network]}
+                </a>
               </li>
             ))}
           </ul>

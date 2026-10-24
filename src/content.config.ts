@@ -159,20 +159,18 @@ const settings = defineCollection({
             'youtube',
             'x',
             'instagram',
+            'tiktok',
           ]),
           url: z.url({ protocol: /^https$/ }),
         }),
       ),
-      // The footer band. In `intro` and the certification text a
-      // `==phrase==` renders in the accent and a `**phrase**` in bold.
+      // The footer band. In `intro` a `==phrase==` renders in the accent and
+      // a `**phrase**` in bold.
       footer: z.strictObject({
         intro: z.array(emphasisText).min(1),
         contactHeading: text,
-        certification: z.object({
-          heading: text,
-          text: emphasisText,
-          badges: z.array(imageSchema(image)).min(1),
-        }),
+        /** The heading over the social links column. */
+        socialHeading: text,
         copyright: text,
       }),
     }),
@@ -302,21 +300,23 @@ const home = defineCollection({
       // `secondaryCta`, or any other unknown key, fails the build by name
       // instead of being dropped without a word.
       hero: z.strictObject({
-        /** The short line above `subheading`, in brass capitals. */
+        /** The short line above `heading`, in brass capitals. */
         eyebrow: text,
-        /** The display line over the photo, the page's `h1`. */
-        heading: text,
-        /** The large title on the dark side; `==phrase==` turns it brass. */
-        subheading: emphasisText,
-        /** The paragraph under `subheading`. */
+        /** The large title, the page's `h1`; `==phrase==` turns it brass. */
+        heading: emphasisText,
+        /** The paragraph under `heading`. */
         lead: text,
         /**
-         * The building, cut out on a transparent background: a local PNG or
-         * WebP, the one photo that is not a Pexels link (a cut-out cannot be).
-         * It is drawn over `heading`, so its roof covers the bottom of the
-         * words.
+         * The photo behind the whole band (2026-10-24): a local file, the
+         * client's own render, not a Pexels link.
          */
         image: imageSchema(image),
+        /**
+         * The tower's right edge in `image`, as a share of its width from
+         * the left (0 to 1). From `lg` the copy starts there, so change it
+         * with the photo.
+         */
+        copyStart: z.number().min(0).max(1),
         primaryCta: link,
       }),
       // The intro band under the hero (spec 0005). Its numbers are the
@@ -388,8 +388,12 @@ const home = defineCollection({
       projectShowcase: z.strictObject({
         heading: text,
         intro: text,
-        /** The words under each tile's summary, "Read more" (spec 0015). */
-        cue: text,
+        /**
+         * The one wide photo behind every tile. Each tile is a window onto
+         * part of it, so the photo is never cut into separate pictures. A
+         * local file, the client's own render.
+         */
+        image: imageSchema(image),
         link,
       }),
     }),

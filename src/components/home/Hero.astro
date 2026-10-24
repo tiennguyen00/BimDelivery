@@ -1,54 +1,67 @@
 ---
 /**
  * The front door's opening screen (spec 0005; redesigned 2026-10-11 after the
- * engineer's reference, not yet folded into the spec). From `lg` it fills the
- * first screen in two columns inside the page's content width: the copy on
- * the start side (a brass eyebrow, a large title, a paragraph, and one
- * button) beside a thin dotted rule, and on the end side the building, cut out
- * on a transparent background, with the page's `h1` set large behind its
- * roof. The site's numbers sit in an outlined bar along the bottom. Below
- * `lg` it is one column: the `h1` and the building, the copy, then the
- * numbers.
+ * engineer's reference, then 2026-10-24 after the client's sketch, neither
+ * yet folded into the spec). A photo band: the night photo of the tower and
+ * the hillside covers the whole band, under `scrim-faint`, and the copy (a
+ * brass eyebrow, the title, which is the page's `h1`, a paragraph, and one
+ * button) sits on the sky beside the tower. The site's numbers sit in a
+ * frosted bar along the bottom. Below `lg` the photo simply covers the band
+ * and the copy and the numbers stack in the band frame.
  *
- * It is its own band, not a `Section` tone, but it takes `Section`'s frame
- * from `styles.ts` (gutters and the default width), so it lines up with every
- * band below it. It slides up under the header card by `--header-h` and pads
- * its content down by the same amount, so it fills the first screen exactly.
+ * From `lg` the copy's start edge lines up with the tower's right edge. The
+ * photo is drawn at a width the CSS can know, `max(100cqi, 100svh × ratio)`
+ * (`hero-photo`), pinned to the band's top left corner, so the tower's edge
+ * sits at that width times `copyStart`, its share of the photo from the left
+ * (`hero-copy-inset`). The band is the `@container` both read. The ratio comes
+ * from the photo's own size; `copyStart` comes from content, beside the
+ * photo, so a new photo brings its own edge. The band fills the first screen
+ * (`min-h-svh`), so the photo covers it; if the copy ever makes it taller,
+ * the photo's foot ends early and the fade into `canvas` hides the seam.
  *
- * The depth is two things in source order, inside one `@container` (the
- * building's column): the `h1`, sized by that column's width
- * (`text-display`, in `cqi`), then the building, pulled up over the bottom of
- * the letters by `hero-overlap` (also in `cqi`). Both scale with the column,
- * so the roof covers the same share of the words at every width. Everything
- * sits on `canvas`, so every word takes the plain dark pairs and the band
- * needs no `focus-contrast`.
+ * It is its own band, not a `Section` tone, but it takes `Section`'s gutters
+ * and default width for the numbers, so they line up with every band below.
+ * It slides up under the header card by `--header-h` and pads its content
+ * down by the same amount, so it fills the first screen exactly. It carries
+ * `focus-contrast`, the ring for photos and accent fills.
  *
- * The building is the page's largest contentful paint, so it loads eagerly
- * and at a high fetch priority. The only thing that moves is the counter, the
- * same `counters.ts` the stat bands use: it counts figures that are already
- * correct in the HTML.
+ * The photo reads bright under `scrim-faint` (30%); the copy darkens only
+ * the sky behind itself, with a `scrim-soft` radial pool, and every word
+ * carries `text-glow`, as on the Project hero. The eyebrow and the `==`
+ * phrase stay brass, as the client's sketch has them, measured over this
+ * photo's sky rather than the pure white pixel the 4.5:1 rule assumes.
+ *
+ * The photo is the page's largest contentful paint, so it loads eagerly and
+ * at a high fetch priority. Two things move. The copy's four parts play the
+ * CSS `entrance` on load, 80ms apart (steps 0 to 3; the button through a
+ * wrapper, since `Button` takes no `style`), and the counter, the same
+ * `counters.ts` the stat bands use, counts figures already correct in the
+ * HTML.
  */
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import Button from '../ui/Button.astro';
 import Emphasis from '../ui/Emphasis.astro';
 import Icon from '../ui/Icon.astro';
-import { bandGutterClass, bandWidthClass, cx } from '../ui/styles';
+import { bandGutterClass, bandWidthClass } from '../ui/styles';
 import type { Locale } from '../../i18n/locales';
 import type { Link, StatItem } from '../../lib/content';
 
 interface Props {
-  /** The short line in brass capitals above `subheading`. */
+  /** The short line in brass capitals above `heading`. */
   eyebrow: string;
-  /** The display line behind the building. */
+  /** The title, the page's `h1`; a `==phrase==` in it turns brass. */
   heading: string;
   /** The id this band points at with `aria-labelledby`, on the `h1`. */
   headingId: string;
-  /** The large title; a `==phrase==` in it turns brass. */
-  subheading: string;
   lead: string;
-  /** The building on a transparent background. */
+  /** The photo behind the whole band. */
   image: { src: ImageMetadata; alt: string };
+  /**
+   * The tower's right edge as a share of the photo's width, from the left,
+   * where the copy starts from `lg`.
+   */
+  copyStart: number;
   primaryCta: Link;
   stats: readonly StatItem[];
   /** The page's language, used to group the numbers and handed to the script. */
@@ -59,130 +72,125 @@ const {
   eyebrow,
   heading,
   headingId,
-  subheading,
   lead,
   image,
+  copyStart,
   primaryCta,
   stats,
   lang,
 } = Astro.props;
 
-/** The widths the building is generated at, before the source width cap. */
-const HERO_STEPS: readonly number[] = [480, 720, 960, 1280];
+/** The widths the photo is generated at, before the source width cap. */
+const HERO_STEPS: readonly number[] = [640, 960, 1280, 1600, 2000, 2400];
 
 /**
  * The steps below the source width, then the source width itself, so nothing
- * is ever upscaled. A source under 480px yields just its own width.
+ * is ever upscaled. A source under 640px yields just its own width.
  */
 const heroWidths = (sourceWidth: number): number[] => [
   ...HERO_STEPS.filter((width) => width < sourceWidth),
   sourceWidth,
 ];
 
-/** The building's column: the full width below `lg`, about half from it. */
-const HERO_SIZES = '(min-width: 64rem) 40vw, 100vw';
+/** What `hero-photo` and `hero-copy-inset` read, set on the band. */
+const photoVars = `--hero-photo-ratio: ${image.src.width / image.src.height}; --hero-copy-start: ${copyStart};`;
 
 const format = new Intl.NumberFormat(lang);
-
-/** The dotted rule's ends: three small dots each. */
-const RULE_DOTS: readonly number[] = [0, 1, 2];
 ---
 
 <section
   aria-labelledby={headingId}
-  class={cx(
-    bandGutterClass,
-    'relative isolate -mt-(--header-h) bg-canvas pt-(--header-h) lg:flex lg:min-h-svh lg:flex-col',
-  )}
+  style={photoVars}
+  class="focus-contrast @container relative isolate -mt-(--header-h) overflow-hidden bg-canvas pt-(--header-h) lg:flex lg:min-h-svh lg:flex-col"
 >
-  <div class={cx(bandWidthClass.default, 'flex flex-col lg:flex-1')}>
-    <div class="grid items-center gap-10 py-10 md:py-12 lg:flex-1 lg:grid-cols-2 lg:gap-12">
+  <Image
+    src={image.src}
+    alt={image.alt}
+    widths={heroWidths(image.src.width)}
+    sizes="100vw"
+    loading="eager"
+    fetchpriority="high"
+    class="absolute inset-0 -z-10 size-full object-cover object-[25%_50%] lg:hero-photo"
+  />
+  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-scrim-faint"></div>
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-24 bg-linear-to-t from-canvas to-transparent lg:h-32"
+  ></div>
+
+  <div class="flex items-center px-4 py-10 md:px-6 md:py-12 lg:flex-1 lg:pe-8 lg:hero-copy-inset">
+    <div class="relative mx-auto w-full max-w-content lg:mx-0 lg:max-w-narrow">
       {/**
-       * The building's column, first in the source so the `h1` leads the
-       * band; from `lg` it moves to the end side. A faint `raised` glow sits
-       * behind it, decoration only.
+       * A soft dark pool behind the copy only, so the photo can stay bright
+       * everywhere else. Decoration, under every word.
        */}
-      <div class="@container relative lg:col-start-2 lg:row-start-1">
-        <div
-          aria-hidden="true"
-          class="absolute inset-0 -z-10 bg-radial from-raised to-transparent to-70%"
-        ></div>
-        <h1
-          id={headingId}
-          class="text-center text-display whitespace-nowrap uppercase"
-        >
-          {heading}
-        </h1>
-        <Image
-          src={image.src}
-          alt={image.alt}
-          widths={heroWidths(image.src.width)}
-          sizes={HERO_SIZES}
-          loading="eager"
-          fetchpriority="high"
-          class="relative hero-overlap h-auto w-full"
-        />
-      </div>
-
-      <div class="relative lg:col-start-1 lg:row-start-1 lg:ps-12">
-        <div
-          aria-hidden="true"
-          class="absolute inset-y-0 inset-s-0 hidden flex-col items-center gap-1.5 lg:flex"
-        >
-          {RULE_DOTS.map(() => (
-            <span class="size-1 rounded-full bg-heading" />
-          ))}
-          <span class="w-px flex-1 bg-heading/30"></span>
-          {RULE_DOTS.map(() => (
-            <span class="size-1 rounded-full bg-heading" />
-          ))}
-        </div>
-
-        <p class="text-eyebrow font-semibold text-accent uppercase">
-          {eyebrow}
-        </p>
-        <p class="mt-4 font-display text-h1 font-medium text-balance text-heading">
-          <Emphasis text={subheading} />
-        </p>
-        <p class="mt-6 max-w-narrow text-lead text-ink">{lead}</p>
-        <Button href={primaryCta.href} class="mt-8">
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute -inset-x-16 -inset-y-12 -z-10 bg-radial from-scrim-soft to-transparent to-70%"
+      ></div>
+      <p
+        class="entrance text-eyebrow font-semibold text-accent uppercase text-glow"
+        style="--entrance-step: 0"
+      >
+        {eyebrow}
+      </p>
+      <h1
+        id={headingId}
+        class="entrance mt-4 font-display text-h1 font-medium text-balance text-heading text-glow"
+        style="--entrance-step: 1"
+      >
+        <Emphasis text={heading} />
+      </h1>
+      <p
+        class="entrance mt-6 max-w-narrow text-lead text-heading text-glow"
+        style="--entrance-step: 2"
+      >
+        {lead}
+      </p>
+      <div class="entrance mt-8" style="--entrance-step: 3">
+        <Button href={primaryCta.href}>
           {primaryCta.label}
           <Icon name="arrow-right" size={20} />
         </Button>
       </div>
     </div>
+  </div>
 
-    {/**
-     * One description list, as in `StatsBand`: each label is the term and its
-     * number the definition, shown number first by `flex-col-reverse`. The
-     * icon is hidden, because the label already says what it pictures. An
-     * outline on `canvas`, not a filled box, so every pair is a `canvas` one.
-     */}
-    <dl
-      data-stats-band
-      data-locale={lang}
-      class="mb-10 grid grid-cols-2 gap-y-2 rounded-card border border-line py-4 lg:mb-8 lg:grid-cols-4 lg:divide-x lg:divide-line lg:py-6"
-    >
-      {stats.map((item) => (
-        <div class="flex flex-col items-start gap-3 px-5 py-2 lg:flex-row lg:items-center lg:justify-center lg:gap-4">
-          <span
-            aria-hidden="true"
-            class="grid size-12 shrink-0 place-items-center rounded-full border border-accent"
-          >
-            <Icon name={item.icon} size={24} class="fill-accent" />
-          </span>
-          <div class="flex flex-col-reverse">
-            <dt class="text-small text-ink-muted">{item.label}</dt>
-            <dd class="font-display text-h2 font-semibold text-heading lining-nums">
-              <span data-count-to={item.value}>
-                {format.format(item.value)}
-              </span>
-              {item.suffix && <span class="text-accent">{item.suffix}</span>}
-            </dd>
+  <div class={bandGutterClass}>
+    <div class={bandWidthClass.default}>
+      {/**
+       * One description list, as in `StatsBand`: each label is the term and
+       * its number the definition, shown number first by `flex-col-reverse`.
+       * The icon is hidden, because the label already says what it pictures.
+       * A `scrim-strong` fill under a `line` outline, so every pair keeps its
+       * contrast over any part of the photo.
+       */}
+      <dl
+        data-stats-band
+        data-locale={lang}
+        class="mb-10 grid grid-cols-2 gap-y-2 rounded-card border border-line bg-scrim-strong py-4 backdrop-blur-sm lg:mb-8 lg:grid-cols-4 lg:divide-x lg:divide-line lg:py-6"
+      >
+        {stats.map((item) => (
+          <div class="flex flex-col items-start gap-3 px-5 py-2 lg:flex-row lg:items-center lg:justify-center lg:gap-4">
+            <span
+              aria-hidden="true"
+              class="grid size-12 shrink-0 place-items-center rounded-full border border-accent"
+            >
+              <Icon name={item.icon} size={24} class="fill-accent" />
+            </span>
+            <div class="flex flex-col-reverse">
+              <dt class="text-small text-ink-muted">{item.label}</dt>
+              <dd class="font-display text-h2 font-semibold text-heading lining-nums">
+                <span data-count-to={item.value}>
+                  {format.format(item.value)}
+                </span>
+                {item.suffix && <span class="text-accent">{item.suffix}</span>}
+              </dd>
+            </div>
           </div>
-        </div>
-      ))}
-    </dl>
+        ))}
+      </dl>
+    </div>
   </div>
 </section>
 

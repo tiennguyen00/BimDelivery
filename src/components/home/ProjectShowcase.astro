@@ -1,44 +1,65 @@
 ---
 /**
- * The home project showcase (spec 0005): a centred heading and intro, a grid
- * of project tiles, and one link to the full list.
+ * The home project showcase (spec 0005): a centred heading and intro, one
+ * wide photo split into a pane per project, and one link to the full list.
  *
  * It renders only the inside of the band. The page wraps it in a `raised`
  * `Section` and decides which projects reach it (the first three by `order`),
  * so this component never reads a tone or a collection.
  *
- * Each tile is a photo with a `bg-scrim` caption panel at its foot, and every
- * word on it is `heading`: 5.91:1 even over a pure white pixel (spec 0003,
- * AC-18), so any project photo is safe here without a contrast check. An
- * empty frame is `panel`, so a photo that fails to load still reads as a
- * tile.
+ * One photo, many windows (2026-10-24). The band's own `image` is optimised
+ * once, to one file at one URL, and every pane paints its own part of it: a
+ * window sized to the whole mosaic and shifted back by the pane's place in
+ * it, so at rest the picture runs unbroken from one pane into the next. The
+ * panes sit on a grid with 8px seams onto the `raised` band, each with the
+ * `rounded-ui` corner. With three projects the mosaic follows the picture
+ * from `lg`: a tall column on the left, a wide pane at top centre, and an L
+ * of the bottom centre and the right column, clipped by `shape()` so even
+ * its inside corner is round (a `polygon()` with square inner corners where
+ * `shape()` is missing). Each pane is `panel` underneath, so a photo that
+ * fails to load still reads as panes.
  *
- * Each tile is exactly one link to its project page (spec 0015), the same
- * rule as the `/project` wall: the `h3`'s text is the link, stretched over
- * the whole tile (the `Card` pattern), so it has one tab stop, the project
- * title as its name, and the pointer anywhere on the tile. Under the summary
- * the panel carries the cue, "Read more" and an arrow, `aria-hidden` because
- * the name already says which project it opens. Keyboard focus draws the
- * `accent` ring round the whole tile on the `raised` band (`link-focus:`,
- * as `Card`). The band's button still leads to the full list.
+ * At rest a pane names only its service, in Playfair at its foot. Hover or
+ * keyboard focus unfolds the project's title under it (`tile-info`); on
+ * touch, with no hover, the title is always there. The words sit on a light
+ * fade, `scrim-soft` at the foot to nothing, so the photo stays bright. That
+ * fade alone no longer guarantees contrast over any photo (spec 0003, AC-18
+ * assumed a full `scrim`). Measured over this photo (2026-10-24, 390 to
+ * 1600px), 95% of the pixels behind each word give at least 4.3:1 for the
+ * large service name and 4.5:1 for the project title, with medians over
+ * 10:1; only a few lit windows and lamps dip lower, down to about 2.3:1.
+ * A new photo needs that check again.
  *
- * On hover the photo alone zooms slowly, 105% over 500ms, `motion-safe`, as
- * on `/project` (spec 0014): only the `Image` moves, by `scale`, while the
- * scroll reveal moves only the `<li>`, so neither overwrites the other.
- * `isolate` with `overflow-hidden` keeps the growing photo clipped to the
- * rounded corners.
+ * Each tile has two layers. The card is what you see: the photo window, the
+ * shade, the glare, and the words, all `aria-hidden`. Over it lies the
+ * tile's one link (spec 0015), an `h3` whose link fills the whole tile, so
+ * it has one tab stop, the project title as its name (in `sr-only` text,
+ * with the service named just before it), and the pointer anywhere on the
+ * tile. The link never moves, so it is also the hover area: the card tilts
+ * above it without ever sliding out from under the pointer. Keyboard focus
+ * rings the words in `accent`, since the L's clip would cut a ring round
+ * the tile.
+ *
+ * Hover, with a real pointer, is daisyUI's `hover-3d` card: the pane's card
+ * turns in 3D, up to 10deg, so the edge nearest the pointer rises toward
+ * the visitor, grows to 103%, and lifts above its neighbours, while a soft
+ * glare follows the pointer across it. Every pane rests under a
+ * `scrim-soft` shade, and the one in use clears it, brightens, and draws a
+ * 1.5px `heading` rim round its own outline, the L's included.
+ * `src/scripts/tilt.ts` writes the angle and glare position once a frame;
+ * the turn and its spring are CSS, on daisyUI's own `linear()` curves.
+ * Nothing moves with reduced motion, and the whole mosaic rises as one on
+ * the scroll reveal.
  */
-import { Image } from 'astro:assets';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Button from '../ui/Button.astro';
-import Icon from '../ui/Icon.astro';
 import { projectHref } from '../../lib/project-detail';
 
 interface ShowcaseProject {
   id: string;
   slug: string;
   title: string;
-  summary: string;
-  image: { src: string; alt?: string };
   service: { title: string };
 }
 
@@ -47,35 +68,194 @@ interface Props {
   /** The id the surrounding Section points at with `aria-labelledby`. */
   headingId: string;
   intro: string;
+  /** The one photo behind every tile. */
+  image: { src: ImageMetadata; alt: string };
   projects: readonly ShowcaseProject[];
-  /** The words under each summary, "Read more". */
-  cue: string;
   link: { label: string; href: string };
 }
 
-const { heading, headingId, intro, projects, cue, link } = Astro.props;
+const { heading, headingId, intro, image, projects, link } = Astro.props;
 
 /**
- * The layout depends on how many projects arrive (spec 0005, AC-29), so a
- * language with few projects never shows an empty cell or a lone half tile.
+ * Optimised once, at its own size: the panes crop it tall on a phone and
+ * wide on a desktop, so it shows well over the content width everywhere and
+ * a smaller copy would only blur.
+ */
+const photo = await getImage({ src: image.src });
+
+/*
+ * The geometry, all CSS lengths. `GAP` is the seam (`gap-2`), `RADIUS` the
+ * pane corner. The mosaic is the container, so `cqw` is its width, the
+ * same width the grid's percentages read.
+ */
+const GAP = '0.5rem';
+const RADIUS = 'var(--radius-ui)';
+
+/** A pane's top left corner in the mosaic, which its window is shifted back by. */
+type Point = readonly [x: string, y: string];
+type Placement = Readonly<{ base: Point; md: Point; lg: Point }>;
+
+const TOP_LEFT: Point = ['0px', '0px'];
+/** The right half's left edge, from `md`, with the seam split across it. */
+const HALF = `calc(50cqw + ${GAP} / 2)`;
+/**
+ * Three from `lg`: the left column is 26% but never under 19rem, so its
+ * words still fit at 1024px; the rest, less two seams, splits 54 to 20. The
+ * top row is 22rem of a 40rem mosaic.
+ */
+const MID: Point = [`calc(max(19rem, 26cqw) + ${GAP})`, '0px'];
+
+const everywhere = (point: Point): Placement => ({
+  base: point,
+  md: point,
+  lg: point,
+});
+
+/**
+ * The L tile covers the centre and right columns over both rows, so it is
+ * clipped to the L: that keeps its photo, hover, click, and shade off the
+ * top pane. In its own box the top pane is 54 / 74 of the width less one
+ * seam and 22rem tall. The `polygon()` is the fallback; where `shape()`
+ * exists the style block below swaps in the rounded one, whose inside
+ * corner curves round the top pane's at the seam's distance, radius plus
+ * gap, so the seam keeps one width all the way round.
+ */
+const TOP_END = '22rem';
+const STRIP_TOP = `calc(${TOP_END} + ${GAP})`;
+const MID_END = `calc((100% - ${GAP}) * 54 / 74)`;
+const RIGHT_START = `calc(${MID_END} + ${GAP})`;
+
+const lPolygon = `polygon(0 ${STRIP_TOP}, ${RIGHT_START} ${STRIP_TOP}, ${RIGHT_START} 0, 100% 0, 100% 100%, 0 100%)`;
+
+/**
+ * The L's outline as a `shape()` subpath, drawn `inset` inside its edge.
+ * Every corner keeps the same centre whatever the inset, so a ring between
+ * two of them is even all the way round: a convex corner's radius shrinks
+ * by the inset, the concave one's grows. Zero is `0px` here: a bare `0` is
+ * not a length inside `calc()`.
+ */
+const lPath = (inset: string): string => {
+  const convex = `calc(${RADIUS} - ${inset})`;
+  return [
+    `move to ${inset} calc(${STRIP_TOP} + ${RADIUS})`,
+    `arc to ${RADIUS} calc(${STRIP_TOP} + ${inset}) of ${convex} cw`,
+    `hline to calc(${MID_END} - ${RADIUS})`,
+    `arc to calc(${RIGHT_START} + ${inset}) calc(${TOP_END} - ${RADIUS}) of calc(${RADIUS} + ${GAP} + ${inset}) ccw`,
+    `vline to ${RADIUS}`,
+    `arc to calc(${RIGHT_START} + ${RADIUS}) ${inset} of ${convex} cw`,
+    `hline to calc(100% - ${RADIUS})`,
+    `arc to calc(100% - ${inset}) ${RADIUS} of ${convex} cw`,
+    `vline to calc(100% - ${RADIUS})`,
+    `arc to calc(100% - ${RADIUS}) calc(100% - ${inset}) of ${convex} cw`,
+    `hline to ${RADIUS}`,
+    `arc to ${inset} calc(100% - ${RADIUS}) of ${convex} cw`,
+    'close',
+  ].join(', ');
+};
+
+const opening = (path: string): string => path.replace(/^move to/, 'from');
+
+const lShape = `shape(${opening(lPath('0px'))})`;
+
+/**
+ * The hover rim's width, and the L's rim: the band between its outline and
+ * the same outline `RIM` inside, filled `evenodd` so only the ring shows.
+ * Where `shape()` is missing the L simply has no rim (`inset(50%)` clips
+ * it all away).
+ */
+const RIM = '3px';
+const lRim = `shape(evenodd ${opening(lPath('0px'))}, ${lPath(RIM)})`;
+
+/**
+ * The L's words keep to the bottom strip, clear of the right column. The
+ * margin is a share of the caption's content box, which is the tile less
+ * 2rem of padding each side at `lg`.
+ */
+const lCaptionEnd = `calc(100% * 20 / 74 + (4rem - ${GAP}) * 20 / 74 + ${GAP})`;
+
+/**
+ * The mosaic for one to three projects (spec 0005, AC-29), so a language
+ * with few projects never shows an empty pane. `grid` shapes the tiles and
+ * `height` names the mosaic's height for the windows; rows are fixed, so the
+ * two agree. Each tile has its classes and its `at`, its place at each
+ * breakpoint.
  *
- * Three: one column on a phone; two at `md` with the first tile across both;
- * at `lg` two columns and two rows, the first tile spanning both rows.
- * Two: side by side from `md`. One: a single tile at full content width.
+ * Three: stacked on a phone; at `md` the first tile is a column down the
+ * left with the other two stacked beside it; from `lg` the picture's own
+ * split. Two: stacked, then side by side from `md`. One: a single pane.
  *
  * The class strings are written out in full so Tailwind can find them.
  */
-const featured = projects.length === 3;
-const gridClass = featured
-  ? 'grid-cols-1 md:grid-cols-2 lg:grid-rows-[repeat(2,minmax(18rem,auto))]'
-  : projects.length === 2
-    ? 'grid-cols-1 md:grid-cols-2'
-    : 'grid-cols-1';
-const firstTileClass =
-  'md:col-span-2 lg:col-span-1 lg:row-span-2 lg:min-h-full';
+const MOSAICS = {
+  1: {
+    grid: 'grid-rows-[22rem] lg:grid-rows-[32rem]',
+    height: '[--mosaic-h:22rem] lg:[--mosaic-h:32rem]',
+    tiles: [{ class: '', at: everywhere(TOP_LEFT) }],
+  },
+  2: {
+    grid: 'grid-rows-[repeat(2,20rem)] md:grid-cols-2 md:grid-rows-[28rem]',
+    height: '[--mosaic-h:40.5rem] md:[--mosaic-h:28rem]',
+    tiles: [
+      { class: '', at: everywhere(TOP_LEFT) },
+      {
+        class: '',
+        at: { base: ['0px', '20.5rem'], md: [HALF, '0px'], lg: [HALF, '0px'] },
+      },
+    ],
+  },
+  3: {
+    grid: 'grid-rows-[repeat(3,20rem)] md:grid-cols-2 md:grid-rows-[repeat(2,20rem)] lg:grid-cols-[max(19rem,26%)_minmax(0,54fr)_minmax(0,20fr)] lg:grid-rows-[22rem_17.5rem]',
+    height: '[--mosaic-h:61rem] md:[--mosaic-h:40.5rem] lg:[--mosaic-h:40rem]',
+    tiles: [
+      {
+        class: 'md:row-span-2 lg:col-start-1 lg:row-start-1',
+        at: everywhere(TOP_LEFT),
+      },
+      {
+        class: 'lg:col-start-2 lg:row-start-1',
+        at: { base: ['0px', '20.5rem'], md: [HALF, '0px'], lg: MID },
+      },
+      {
+        class:
+          'tile-l lg:col-span-2 lg:col-start-2 lg:row-span-2 lg:row-start-1',
+        at: { base: ['0px', '41rem'], md: [HALF, '20.5rem'], lg: MID },
+      },
+    ],
+  },
+} as const;
 
-/** From `md` a tile is roughly half the band wide in the usual layouts. */
-const imageSizes = '(min-width: 48rem) 50vw, 100vw';
+const count = projects.length as keyof typeof MOSAICS;
+const mosaic = MOSAICS[count];
+const isL = (index: number): boolean => count === 3 && index === 2;
+
+/** What the windows and the L read, set on the mosaic. */
+const mosaicVars = [
+  `--photo: url("${photo.src}")`,
+  `--l-clip: ${lPolygon}`,
+  `--l-shape: ${lShape}`,
+  `--l-rim: inset(50%)`,
+  `--l-rim-shape: ${lRim}`,
+  `--l-caption-end: ${lCaptionEnd}`,
+].join('; ');
+
+/** A tile's place at each breakpoint, picked up by `PLACE` below. */
+const placeVars = ({ base, md, lg }: Placement): string =>
+  [
+    `--x-base: ${base[0]}; --y-base: ${base[1]}`,
+    `--x-md: ${md[0]}; --y-md: ${md[1]}`,
+    `--x-lg: ${lg[0]}; --y-lg: ${lg[1]}`,
+  ].join('; ');
+
+const PLACE =
+  '[--x:var(--x-base)] [--y:var(--y-base)] md:[--x:var(--x-md)] md:[--y:var(--y-md)] lg:[--x:var(--x-lg)] lg:[--y:var(--y-lg)]';
+
+/**
+ * The outline both layers share: every pane is `rounded-ui`, and the L is
+ * clipped to its shape from `lg`, the card for what shows and the link for
+ * where the pointer counts.
+ */
+const L_SHAPE = 'lg:rounded-none lg:[clip-path:var(--l-clip)]';
+const outline = (index: number) => ['rounded-ui', isL(index) && L_SHAPE];
 ---
 
 <div class="mx-auto max-w-narrow text-center" data-reveal>
@@ -85,53 +265,218 @@ const imageSizes = '(min-width: 48rem) 50vw, 100vw';
   <p class="mt-8 text-lead">{intro}</p>
 </div>
 
-{/**
- * `minmax(18rem, auto)` rows: a tile is never shorter than 18rem, and grows
- * when its caption needs more room, so no summary is ever clipped.
- */}
-<ul class:list={['mt-12 grid gap-6 lg:gap-8', gridClass]} data-reveal-stagger>
-  {projects.map((project, index) => (
-    <li
-      class:list={[
-        'group relative isolate flex min-h-72 flex-col justify-end overflow-hidden rounded-ui bg-panel link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-accent',
-        featured && index === 0 && firstTileClass,
-      ]}
-    >
-      <Image
-        src={project.image.src}
-        alt={project.image.alt ?? ''}
-        inferSize
-        widths={[400, 640, 960, 1280]}
-        sizes={imageSizes}
-        class="absolute inset-0 -z-10 size-full object-cover object-center transition-[scale] duration-500 ease-out motion-safe:group-hover:scale-105"
-      />
-      <div class="m-3 rounded-ui bg-scrim p-5 text-heading md:m-4 md:p-6">
-        <p class="text-small font-semibold tracking-wide uppercase">
-          {project.service.title}
-        </p>
-        <h3 class="mt-1 text-h3 font-semibold text-balance text-heading">
+<div
+  class:list={['mosaic @container relative isolate mt-12', mosaic.height]}
+  style={mosaicVars}
+  data-reveal
+>
+  {/* The panes paint the photo as backgrounds, so its description lives here. */}
+  {image.alt && <span role="img" aria-label={image.alt} class="sr-only" />}
+
+  <ul class:list={['grid gap-2', mosaic.grid]}>
+    {projects.map((project, index) => (
+      <li
+        class:list={[
+          'tile group pointer-events-none relative',
+          PLACE,
+          mosaic.tiles[index]?.class,
+        ]}
+        style={placeVars(mosaic.tiles[index]?.at ?? everywhere(TOP_LEFT))}
+        data-tilt
+      >
+        <div
+          aria-hidden="true"
+          class:list={[
+            'card absolute inset-0 isolate flex flex-col justify-end overflow-hidden bg-panel',
+            outline(index),
+          ]}
+        >
+          <div class="window" />
+          {/* <div class="shade absolute inset-0 bg-scrim-soft transition-opacity duration-500 ease-out" /> */}
+          <div class="glare absolute inset-0" />
+          <div class="relative bg-linear-to-t from-scrim-soft to-transparent px-5 pt-24 pb-5 text-heading md:px-6 md:pb-6 lg:px-8 lg:pb-8">
+            <div
+              class:list={[
+                'rounded-ui group-has-[a:focus-visible]:outline-2 group-has-[a:focus-visible]:outline-offset-8 group-has-[a:focus-visible]:outline-accent',
+                isL(index) && 'lg:me-(--l-caption-end)',
+              ]}
+            >
+              <p class="font-display text-h3 font-semibold text-balance">
+                {project.service.title}
+              </p>
+              {/**
+               * The project's title unfolds under the service on hover or
+               * focus, as on the `/project` wall (`tile-info`), rising and
+               * fading in as it opens. Without a fine pointer there is no
+               * hover, so it is simply open.
+               */}
+              <div class="tile-info group-focus-within:tile-info-open group-hover:tile-info-open not-pointer-fine:tile-info-open">
+                <p class="pt-1 text-lead transition-[opacity,translate] duration-500 ease-out group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transition-none pointer-fine:translate-y-2 pointer-fine:opacity-0">
+                  {project.title}
+                </p>
+              </div>
+            </div>
+          </div>
+          {/**
+           * The hover rim, `RIM` wide in `heading` at 80%: a border on a
+           * rectangle, and on the L from `lg` a filled layer clipped to its
+           * ring, since a border would only follow the tile's box.
+           */}
+          <div
+            class:list={[
+              'rim pointer-events-none absolute inset-0 rounded-ui border-[3px] border-heading/80 opacity-0 transition-opacity duration-500 ease-out',
+              isL(index) &&
+                'lg:rounded-none lg:border-0 lg:bg-heading/80 lg:[clip-path:var(--l-rim)]',
+            ]}
+          />
+        </div>
+        <p class="sr-only">{project.service.title}</p>
+        <h3>
           <a
             href={projectHref(project.slug)}
-            class="after:absolute after:inset-0 focus-visible:outline-none"
+            class:list={[
+              'pointer-events-auto absolute inset-0 z-10 focus-visible:outline-none',
+              outline(index),
+            ]}
           >
-            {project.title}
+            <span class="sr-only">{project.title}</span>
           </a>
         </h3>
-        <p class="mt-2">{project.summary}</p>
-        <p
-          aria-hidden="true"
-          class="mt-3 inline-flex items-center gap-1.5 text-small font-semibold"
-        >
-          {cue}
-          <Icon name="arrow-right" size={16} />
-        </p>
-      </div>
-    </li>
-  ))}
-</ul>
+      </li>
+    ))}
+  </ul>
+</div>
 
 <div class="mt-12 text-center" data-reveal>
   <Button href={link.href} variant="secondary">
     {link.label}
   </Button>
 </div>
+
+<script>
+  import '../../scripts/tilt';
+</script>
+
+<style>
+  /*
+   * A pane's part of the one photo: a window the size of the whole mosaic,
+   * shifted back by the pane's place (`--x`, `--y`). Every window has the
+   * same size and the same crop, so at rest the panes line up into one
+   * picture.
+   */
+  .window {
+    position: absolute;
+    left: calc(-1 * var(--x));
+    top: calc(-1 * var(--y));
+    width: 100cqw;
+    height: var(--mosaic-h);
+    background: var(--photo) center / cover no-repeat;
+  }
+
+  /*
+   * The glare, daisyUI's: a soft light centred on the pointer
+   * (`--glare-x`, `--glare-y` from `tilt.ts`), shown only while the card
+   * tilts.
+   */
+  .glare {
+    background: radial-gradient(
+      circle 22rem at var(--glare-x, 50%) var(--glare-y, 50%),
+      color-mix(in srgb, var(--color-heading) 20%, transparent),
+      transparent
+    );
+    opacity: 0;
+    transition: opacity 400ms ease-out;
+  }
+
+  /*
+   * The tilt. `tilt.ts` writes the axis and angle while the pointer moves
+   * (`--tilt-axis`, `--tilt-angle`) and a perspective four times the pane's
+   * longer side (`--tilt-depth`), daisyUI's ratio, so a tall column and a
+   * wide L turn by the same feel. The card eases toward each new angle on
+   * daisyUI's hover spring, and back to rest on its livelier one. The tile
+   * lifts above its neighbours while hovered, and stays lifted until the
+   * card has settled.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .tile {
+      transition: z-index 0s 600ms;
+    }
+
+    .card {
+      /* daisyUI's two springs: back to rest, and following on hover. */
+      --spring-rest: linear(
+        0,
+        0.931 13.8%,
+        1.196 21.4%,
+        1.343 29.8%,
+        1.378 36%,
+        1.365 43.2%,
+        1.059 78%,
+        1
+      );
+      --spring-hover: linear(
+        0,
+        0.708 15.2%,
+        0.927 23.6%,
+        1.067 33%,
+        1.12 41%,
+        1.13 50.2%,
+        1.019 83.2%,
+        1
+      );
+
+      transition:
+        transform 500ms var(--spring-rest),
+        scale 500ms var(--spring-rest);
+    }
+
+    @media (hover: hover) {
+      .tile:hover {
+        z-index: 1;
+        transition-delay: 0s;
+      }
+
+      /* At rest the card has no transform, so its words stay flat and sharp. */
+      .tile:hover .card {
+        transform: perspective(var(--tilt-depth, 100rem))
+          rotate3d(var(--tilt-axis, 1, 0), 0, var(--tilt-angle, 0deg));
+        scale: 1.03;
+        transition-timing-function: var(--spring-hover);
+      }
+
+      .tile:hover .glare {
+        opacity: 1;
+      }
+    }
+  }
+
+  @supports (clip-path: shape(from 0 0, line to 0 0)) {
+    .tile-l {
+      --l-clip: var(--l-shape);
+      --l-rim: var(--l-rim-shape);
+    }
+  }
+
+  /*
+   * Every pane rests under a `scrim-soft` shade; the one hovered or holding
+   * focus clears it, lights up, and draws its bright rim, so it stands out
+   * of the one picture. Hover only where there is a real pointer.
+   */
+  @media (hover: hover) {
+    .tile:hover .shade {
+      opacity: 0;
+    }
+
+    .tile:hover .rim {
+      opacity: 1;
+    }
+  }
+
+  .tile:has(a:focus-visible) .shade {
+    opacity: 0;
+  }
+
+  .tile:has(a:focus-visible) .rim {
+    opacity: 1;
+  }
+</style>
