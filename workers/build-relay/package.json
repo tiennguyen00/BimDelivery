@@ -1,0 +1,19 @@
+{
+  "name": "bim-delivery-build-relay",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "wrangler dev -c wrangler.jsonc",
+    "deploy": "wrangler deploy -c wrangler.jsonc",
+    "types": "wrangler types -c wrangler.jsonc",
+    "typecheck": "wrangler types -c wrangler.jsonc && tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.0",
+    "wrangler": "4.134.0"
+  }
+}

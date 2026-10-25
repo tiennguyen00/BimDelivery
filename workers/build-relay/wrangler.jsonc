@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // The build relay (spec 0019): Sanity's webhook calls it, it checks the
+  // signature and starts a GitHub Actions run. Deploy with
+  //   pnpm --filter bim-delivery-build-relay run deploy
+  "name": "bim-delivery-build-relay",
+  "main": "src/index.ts",
+  // The same date as the site's Worker; raising it is a deliberate act.
+  "compatibility_date": "2026-09-19",
+
+  // Its one address, https://bim-delivery-build-relay.bimdelivery.workers.dev,
+  // which the Sanity webhook points at. No custom domain, no route on
+  // bimdelivery.vn.
+  "workers_dev": true,
+
+  "observability": {
+    "enabled": true,
+  },
+
+  // Secrets, set with `wrangler secret put`, never in this file:
+  //   GITHUB_DISPATCH_TOKEN  fine grained, this repository only, Contents
+  //                          read and write, expiry at most a year
+  //   SANITY_WEBHOOK_SECRET  the `site-build` webhook's secret
+}

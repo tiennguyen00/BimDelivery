@@ -11,3 +11,8 @@ skills-lock.json
 
 # Workflow docs are edited by the workflow skills; keep their layout as written
 docs/
+
+# The Studio's build output and local state, and generated Worker types (spec 0019)
+studio/dist/
+studio/.sanity/
+workers/*/worker-configuration.d.ts

@@ -1,7 +1,9 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  // The Studio and the relay Worker are their own packages, each with its
+  // own tsconfig (spec 0019), so `astro check` leaves them out.
+  "exclude": ["dist", "studio", "workers"],
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "react"

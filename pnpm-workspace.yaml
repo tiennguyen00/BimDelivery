@@ -1,6 +1,13 @@
+# The site at the root, plus the Sanity Studio and the build relay Worker
+# (spec 0019). Each has its own package.json; the site's CI install leaves
+# the Studio's packages out.
+packages:
+  - studio
+  - workers/*
+
 # Build-script approval. Packages not listed here are blocked from running
 # install scripts. Both of these are core to the toolchain:
-#   esbuild  - Astro's bundler
+#   esbuild  - Astro's bundler, and the Studio's through Vite
 #   workerd  - Cloudflare's runtime, used by wrangler for local dev and deploy
 allowBuilds:
   esbuild: true

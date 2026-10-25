@@ -8,7 +8,19 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig(
   // Generated output, local state, and vendored agent skills.
-  globalIgnores(['dist/', '.astro/', '.wrangler/', '.agents/', '.claude/']),
+  // The Studio's and the relay Worker's build output and generated types too
+  // (spec 0019); their source is linted like the site's.
+  globalIgnores([
+    'dist/',
+    '.astro/',
+    '.wrangler/',
+    '.agents/',
+    '.claude/',
+    'studio/dist/',
+    'studio/.sanity/',
+    'workers/*/.wrangler/',
+    'workers/*/worker-configuration.d.ts',
+  ]),
   js.configs.recommended,
   tseslint.configs.recommended,
   astro.configs.recommended,
