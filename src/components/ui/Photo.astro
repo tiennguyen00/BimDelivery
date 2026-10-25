@@ -1,0 +1,81 @@
+---
+/**
+ * Every photo a component draws, from either source (spec 0019):
+ *
+ * - A Sanity upload (a project's photos) is a plain `<img>` on
+ *   `cdn.sanity.io`: a `srcset` of the caller's widths, each asking for the
+ *   editor's crop and `auto=format`, the cropped size as `width` and
+ *   `height`, so nothing jumps while it loads, and the editor's focal point
+ *   as `object-position`. Built from stored data only (`sanity-image.ts`).
+ * - A Pexels link (spec 0006, every page that has not moved yet) goes
+ *   through Astro's `<Image>`, optimised at build, as before.
+ *
+ * The caller keeps its own frame: its widths, `sizes`, loading, and classes
+ * (`object-cover` and the rest) pass straight through.
+ */
+import { Image } from 'astro:assets';
+import {
+  isSanityPhoto,
+  photoPosition,
+  photoSize,
+  photoSrcset,
+  photoUrl,
+  photoWidths,
+  type PhotoSource,
+} from '../../lib/sanity-image';
+
+interface Props {
+  photo: PhotoSource;
+  /** The widths to offer, in pixels, smallest first. */
+  widths: readonly number[];
+  sizes: string;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  class?: string;
+}
+
+const {
+  photo,
+  widths,
+  sizes,
+  loading = 'lazy',
+  fetchpriority,
+  class: className,
+} = Astro.props;
+
+const sanity = isSanityPhoto(photo)
+  ? {
+      src: photoUrl(photo, photoWidths(photo, widths).at(-1) ?? photo.width),
+      srcset: photoSrcset(photo, widths),
+      ...photoSize(photo),
+      position: photoPosition(photo),
+    }
+  : undefined;
+---
+
+{sanity ? (
+  <img
+    src={sanity.src}
+    srcset={sanity.srcset}
+    sizes={sizes}
+    width={sanity.width}
+    height={sanity.height}
+    alt={photo.alt}
+    loading={loading}
+    decoding="async"
+    fetchpriority={fetchpriority}
+    class={className}
+    style={`object-position: ${sanity.position}`}
+  />
+) : (
+  <Image
+    src={'src' in photo ? photo.src : ''}
+    alt={photo.alt}
+    inferSize
+    widths={[...widths]}
+    sizes={sizes}
+    loading={loading}
+    fetchpriority={fetchpriority}
+    class={className}
+  />
+)}

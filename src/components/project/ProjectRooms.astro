@@ -33,14 +33,22 @@
  * rise in. The first room carries `data-active` in the HTML. With no script
  * every work list shows, each under its room's name.
  *
+ * Each room's category (spec 0019) sits over its name as a small capitals
+ * label in `ink`, in the names list and in the no script fallback over each
+ * work list, so a project whose rooms span services says which is which.
+ *
+ * The photos come from Sanity's image CDN through `Photo`, framed at the
+ * editor's focal point, every one lazy, so a project at the caps (10 rooms
+ * of 20 photos) loads only what the visitor reaches.
+ *
  * The band's `h2` names it for a screen reader only; the names list is what
  * the eye reads, as in the reference.
  *
  * Motion: the photos carry `data-reveal` and the words
  * `data-reveal-stagger`, inert until the page imports `reveal.ts`.
  */
-import { Image } from 'astro:assets';
 import Icon from '../ui/Icon.astro';
+import Photo from '../ui/Photo.astro';
 import { bandGutterClass, bandPaddingClass, cx } from '../ui/styles';
 import type { Project } from '../../lib/content';
 
@@ -88,10 +96,8 @@ const arrowClass = cx(
     >
       {slides.map(({ photo, roomIndex }) => (
         <li class="relative w-full shrink-0 snap-start" data-room={roomIndex}>
-          <Image
-            src={photo.src}
-            alt={photo.alt}
-            inferSize
+          <Photo
+            photo={photo}
             widths={[640, 960, 1280, 1600, 2000]}
             sizes="(min-width: 1024px) 67vw, 100vw"
             loading="lazy"
@@ -143,7 +149,12 @@ const arrowClass = cx(
           data-room-name={index}
           data-active={isFirst(index)}
         >
-          {room.name}
+          <span class="flex flex-col">
+            <span class="font-body text-eyebrow font-semibold text-ink">
+              {room.category.title}
+            </span>
+            <span>{room.name}</span>
+          </span>
         </li>
       ))}
     </ul>
@@ -162,6 +173,9 @@ const arrowClass = cx(
             data-active={isFirst(index)}
           >
             <p class="mb-2 hidden font-semibold text-heading no-js:block">
+              <span class="block text-eyebrow text-ink uppercase">
+                {room.category.title}
+              </span>
               {room.name}
             </p>
             <ul class="flex flex-col gap-2 text-ink">

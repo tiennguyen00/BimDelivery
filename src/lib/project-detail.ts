@@ -8,28 +8,59 @@
  * reads the same and the numbers follow the page's locale in one place.
  */
 import type { Locale } from '../i18n/locales';
-import type { Project, ProjectPage } from './content';
+import type { Project, ProjectCategory, ProjectPage } from './content';
 
 /** A project's page, `/project/<slug>`. */
 export const projectHref = (slug: string): string => `/project/${slug}`;
 
 /**
- * The project after `current` in `order`, the last wrapping round to the
- * first. With fewer than two projects there is none, so the page never links
- * to itself.
+ * The project after `current` in the site's order (`getProjects` sorts once,
+ * by `orderRank`), the last wrapping round to the first. With fewer than two
+ * projects there is none, so the page never links to itself.
  */
 export const nextProject = (
   projects: readonly Project[],
   current: Project,
 ): Project | undefined => {
   if (projects.length < 2) return undefined;
-  const sorted = projects.toSorted((a, b) => a.order - b.order);
-  const index = sorted.findIndex((project) => project.id === current.id);
-  return index === -1 ? undefined : sorted[(index + 1) % sorted.length];
+  const index = projects.findIndex((project) => project.id === current.id);
+  return index === -1 ? undefined : projects[(index + 1) % projects.length];
 };
 
-/** One fact row. `href` makes the value a link, as the service's is. */
-export type Fact = Readonly<{ label: string; value: string; href?: string }>;
+/** A piece of a fact's value: a link when it has an `href`, else plain text. */
+export type FactPart = Readonly<{ text: string; href?: string }>;
+
+/**
+ * One fact row. `value` is its plain text. `links`, when present, is the
+ * same value in pieces, some of them links, as the categories row draws it
+ * ("Architectural BIM and Interior BIM", each a link).
+ */
+export type Fact = Readonly<{
+  label: string;
+  value: string;
+  links?: readonly FactPart[];
+}>;
+
+/**
+ * The categories as one list in the page's language, each title a link to
+ * its service page: `Intl.ListFormat` writes the words between them.
+ */
+const categoryParts = (
+  categories: readonly ProjectCategory[],
+  lang: Locale,
+): readonly FactPart[] =>
+  new Intl.ListFormat(lang, { type: 'conjunction' })
+    .formatToParts(categories.map((category) => category.title))
+    .map((part, index, parts) => {
+      if (part.type === 'literal') return { text: part.value };
+      const position = parts
+        .slice(0, index)
+        .filter((earlier) => earlier.type === 'element').length;
+      const category = categories[position];
+      return category === undefined
+        ? { text: part.value }
+        : { text: part.value, href: `/${category.slug}` };
+    });
 
 type DetailCopy = ProjectPage['detail'];
 
@@ -46,8 +77,11 @@ export const formatArea = (
 /**
  * The overview's fact rows (spec 0018), in the fixed order floor area,
  * location, service, year, client, storeys, LOD, software, duration. A fact
- * the entry leaves out has no row at all, never an empty one. The service
- * links to its page.
+ * the entry leaves out has no row at all, never an empty one.
+ *
+ * The service row lists every category of the project's rooms (spec 0019),
+ * each a link to its service page, under `factLabels.service` for one and
+ * `factLabels.services` for several.
  *
  * The year is written as it is (no thousands separator); the floor area is
  * grouped for the locale, then the unit; the software list is joined the
@@ -59,7 +93,12 @@ export const projectFacts = (
   lang: Locale,
 ): readonly Fact[] => {
   const { factLabels: labels } = detail;
-  const rows: readonly (readonly [string, string | undefined, string?])[] = [
+  const services = categoryParts(project.categories, lang);
+  const rows: readonly (readonly [
+    string,
+    string | undefined,
+    (readonly FactPart[])?,
+  ])[] = [
     [
       labels.floorArea,
       project.floorArea === undefined
@@ -67,7 +106,11 @@ export const projectFacts = (
         : formatArea(project.floorArea, detail.areaUnit, lang),
     ],
     [labels.location, project.location],
-    [labels.service, project.service.title, `/${project.service.slug}`],
+    [
+      project.categories.length > 1 ? labels.services : labels.service,
+      services.map((part) => part.text).join(''),
+      services,
+    ],
     [labels.year, String(project.year)],
     [labels.client, project.client],
     [
@@ -88,9 +131,9 @@ export const projectFacts = (
     ],
     [labels.duration, project.duration],
   ];
-  return rows.flatMap(([label, value, href]) => {
+  return rows.flatMap(([label, value, links]) => {
     if (value === undefined) return [];
-    return href === undefined ? [{ label, value }] : [{ label, value, href }];
+    return links === undefined ? [{ label, value }] : [{ label, value, links }];
   });
 };
 

@@ -1,0 +1,112 @@
+# Every deploy of the site (spec 0019): a push to main, Publish in Sanity
+# (via the relay Worker), and "Preview on site" all run here. Workers Builds
+# no longer deploys.
+#
+# - production: bimdelivery.vn, from published Sanity content, strict.
+# - preview:    the dev link, from every current Sanity draft, noindex.
+#
+# Secrets and variables live in the `production` GitHub Environment, which
+# allows deployments from main only, so a workflow on any other branch gets
+# none of them. The token that starts these runs is held by the relay Worker
+# alone. Each third party action is pinned to a full commit SHA.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  repository_dispatch:
+    types: [sanity-publish, sanity-preview]
+  workflow_dispatch:
+    inputs:
+      lenient:
+        description: Leave out an invalid published project (with a warning) instead of failing
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  production:
+    if: github.event_name != 'repository_dispatch' || github.event.action == 'sanity-publish'
+    runs-on: ubuntu-latest
+    environment: production
+    # The newest run always includes everything published before it.
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: true
+    env:
+      HUSKY: '0'
+      SANITY_PERSPECTIVE: published
+      SANITY_LENIENT: ${{ github.event_name == 'workflow_dispatch' && inputs.lenient && 'true' || 'false' }}
+      PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.PUBLIC_TURNSTILE_SITE_KEY }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      # Caches the pnpm store only, never `.astro` or `node_modules/.astro`.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      # The site's packages only; the Studio's are not needed to build it.
+      - run: pnpm install --frozen-lockfile --filter bim-delivery-site
+      # Code changes are type checked; a content publish changed no code.
+      - name: Type check
+        if: github.event_name != 'repository_dispatch'
+        run: pnpm check
+      - run: pnpm build
+      - name: Deploy to bimdelivery.vn
+        run: pnpm exec wrangler deploy
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+  preview:
+    if: github.event_name == 'repository_dispatch' && github.event.action == 'sanity-preview'
+    runs-on: ubuntu-latest
+    environment: production
+    # A newer preview request cancels a running one.
+    concurrency:
+      group: deploy-preview
+      cancel-in-progress: true
+    env:
+      HUSKY: '0'
+      CLOUDFLARE_ENV: dev
+      SANITY_PERSPECTIVE: drafts
+      SANITY_READ_TOKEN: ${{ secrets.SANITY_READ_TOKEN }}
+      SITE_NOINDEX: 'true'
+      # Cloudflare's public, always passing Turnstile test key: the dev link
+      # never sends real enquiries.
+      PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --filter bim-delivery-site
+      - run: pnpm build
+      # Stops a preview from ever reaching production: the build must target
+      # the dev Worker, with no route on bimdelivery.vn.
+      - name: Confirm the build targets the dev link
+        run: |
+          node -e '
+            const config = JSON.parse(require("node:fs").readFileSync("dist/client/wrangler.json", "utf8"));
+            const routes = config.routes;
+            if (config.name !== "bim-delivery-site-dev" || !Array.isArray(routes) || routes.length !== 0) {
+              console.error(`Refusing to deploy: name "${config.name}", routes ${JSON.stringify(routes)}`);
+              process.exit(1);
+            }
+            console.log("Deploying to bim-delivery-site-dev with no routes.");
+          '
+      - name: Deploy to the dev link
+        run: pnpm exec wrangler deploy
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

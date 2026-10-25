@@ -6,9 +6,13 @@
  * shared `projectPage` copy, or the site name, so a project page needs no
  * code edit to exist.
  *
- * 1. Hero (`SplitBand`): the title as the `h1`, the service as the
- *    tagline, the intro, a "Discover more" button down to the overview, and
- *    the cover photo.
+ * 1. Hero (`SplitBand`): the title as the `h1`, the project's categories
+ *    (every category of its rooms, spec 0019) as the tagline, the intro, a
+ *    "Discover more" button down to the overview, and the cover photo.
+ *
+ * The project, its words, and its photos come from Sanity at build (spec
+ * 0019); the photos load from Sanity's image CDN, so the page opens that
+ * connection early.
  * 2. Overview: the portrait photo beside the tagline, the title, and the
  *    facts.
  * 3. The rooms, one Coffee band: every room's photos in one carousel beside
@@ -40,6 +44,7 @@ import {
   projectHead,
   projectHref,
 } from '../../lib/project-detail';
+import { categoryLine } from '../../lib/project-gallery';
 
 /**
  * As on the service route, `getStaticPaths` has no `Astro.currentLocale`, so
@@ -76,13 +81,15 @@ const OVERVIEW_ID = 'project-overview';
 ---
 
 <PageLayout title={head.title} description={head.description}>
+  <link slot="head" rel="preconnect" href="https://cdn.sanity.io" />
+
   <SplitBand
     headingLevel={1}
     heading={project.title}
     headingId="project-detail-heading"
-    tagline={project.service.title}
+    tagline={categoryLine(project.categories)}
     paragraphs={project.intro}
-    image={{ src: project.image.src, alt: project.image.alt ?? '' }}
+    image={project.image}
     imageSide="end"
     action={{
       label: detail.discoverLabel,

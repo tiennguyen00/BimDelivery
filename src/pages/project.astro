@@ -37,6 +37,11 @@ const LIST_ID = 'project-list';
 ---
 
 <PageLayout title={page.seo.title} description={page.seo.description}>
+  {/* The tiles' photos load from Sanity's image CDN (spec 0019). */}
+  {projects.length > 0 && (
+    <link slot="head" rel="preconnect" href="https://cdn.sanity.io" />
+  )}
+
   <ProjectHero
     heading={page.heading}
     headingId="project-heading"

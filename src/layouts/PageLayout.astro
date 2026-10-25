@@ -52,6 +52,9 @@ const [navigation, settings] = await Promise.all([
     <script is:inline>
       document.documentElement.classList.add('js');
     </script>
+    {/* A page's own head tags, such as the project pages' `preconnect` to
+        Sanity's image CDN (spec 0019). */}
+    <slot name="head" />
   </Fragment>
 
   {/**

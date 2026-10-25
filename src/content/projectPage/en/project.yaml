@@ -50,6 +50,7 @@ detail:
     floorArea: Area
     location: Location
     service: Service
+    services: Services
     year: Year
     client: Client
     storeys: Storeys

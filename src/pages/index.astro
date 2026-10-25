@@ -38,8 +38,9 @@ const [home, stats, projects] = await Promise.all([
 ]);
 
 /**
- * The showcase shows the first three projects by `order` (spec 0005), so an
- * editor reorders it by editing `order`, never this file.
+ * The showcase shows the first three projects in the site's order (spec
+ * 0005), so an editor changes it by dragging projects in the Studio (spec
+ * 0019), never by editing this file.
  */
 const FEATURED_PROJECTS_COUNT = 3;
 const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);

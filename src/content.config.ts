@@ -2,25 +2,61 @@
  * The content model (spec 0002): ten collections, one per kind of content,
  * each entry in a language folder, `src/content/<collection>/<lang>/<file>`.
  *
+ * One exception (spec 0019): `projects` is read from Sanity at build, by the
+ * loader at the end of this file, and checked by the same kind of strict
+ * schema. Its entry ids are still `<lang>/<slug>`.
+ *
  * This file checks one entry at a time: required fields, types, lengths,
  * local image files that exist, photo links on the one allowed host. Rules that need to see several entries at once
  * (unique slugs, matching language folders, valid references) live in
  * `src/lib/content.ts`, the only module that reads these collections.
  */
 import { defineCollection, reference } from 'astro:content';
+import type { Loader } from 'astro/loaders';
 import type { SchemaContext } from 'astro/content/config';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import {
+  SANITY_DATASET,
+  SANITY_LENIENT,
+  SANITY_PERSPECTIVE,
+  SANITY_PROJECT_ID,
+  SANITY_READ_TOKEN,
+} from 'astro:env/server';
 import { LOCALES } from './i18n/locales';
 import { hasBalancedEmphasis } from './lib/emphasis';
+import {
+  INTRO_MAX,
+  LOD_LEVELS,
+  PHOTOS_MAX,
+  ROOMS_MAX,
+  SEO_DESCRIPTION_MAX,
+  SEO_DESCRIPTION_MIN,
+  SEO_TITLE_MAX,
+  SLUG_PATTERN,
+  TITLE_MAX,
+  WORKLOAD_MAX,
+  YEAR_MAX,
+  YEAR_MIN,
+} from './lib/project-fields';
+import {
+  PROJECTS_QUERY,
+  documentLabel,
+  entryIdOf,
+  publishedId,
+  sanityClient,
+  toProjectData,
+  type SanityBuildConfig,
+  type SanityPerspective,
+} from './lib/sanity';
 
 // Shared shapes
 
 const lang = z.enum(LOCALES);
 
 const seo = z.object({
-  title: z.string().min(1).max(60),
-  description: z.string().min(50).max(160),
+  title: z.string().min(1).max(SEO_TITLE_MAX),
+  description: z.string().min(SEO_DESCRIPTION_MIN).max(SEO_DESCRIPTION_MAX),
 });
 
 const link = z.object({
@@ -88,9 +124,10 @@ const withAlt = <Src extends z.ZodType>(src: Src) =>
 const imageSchema = (image: SchemaContext['image']) => withAlt(image());
 
 /**
- * Every photo is an internet link on Pexels (spec 0006, assumed). The host is
- * the one `image.domains` allows in `astro.config.mjs`; a link anywhere else
- * would render unoptimised, so it fails the build here instead.
+ * Every photo outside projects is an internet link on Pexels (spec 0006,
+ * until its page moves to Sanity). The host is the one `image.domains`
+ * allows in `astro.config.mjs`; a link anywhere else would render
+ * unoptimised, so it fails the build here instead.
  */
 const photoUrl = z.url({
   protocol: /^https$/,
@@ -100,13 +137,42 @@ const photoUrl = z.url({
 
 const photoSchema = withAlt(photoUrl);
 
+/** A share of a photo's width or height, for a crop or a focal point. */
+const fraction = z.number().min(0).max(1);
+
 /**
- * A project photo (spec 0015, now a room or portrait photo, spec 0018): the
- * same link rule, but `alt` is required and non empty, and `decorative` is
- * not allowed (strict, so it fails as an unknown key). These photos exist to
- * show the work, so none is decorative.
+ * A project photo uploaded to Sanity (spec 0019), as the `projects` loader
+ * stores it: the original's CDN address and pixel size, the alt text, and
+ * the editor's crop and focal point. `Photo.astro` tells it from a Pexels
+ * link by `source`. Strict, and `alt` is required and non empty: these
+ * photos exist to show the work, so none is decorative.
  */
-const galleryPhoto = z.strictObject({ src: photoUrl, alt: text });
+const sanityPhoto = z.strictObject({
+  source: z.literal('sanity'),
+  url: z.url({
+    protocol: /^https$/,
+    hostname: /^cdn\.sanity\.io$/,
+    error: 'must be an https link on cdn.sanity.io',
+  }),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+  alt: text.refine((alt) => alt.trim() !== '', 'must not be blank'),
+  crop: z
+    .strictObject({
+      top: fraction,
+      bottom: fraction,
+      left: fraction,
+      right: fraction,
+    })
+    .refine(
+      (crop) => crop.left + crop.right < 1 && crop.top + crop.bottom < 1,
+      {
+        error: 'the crop leaves nothing of the photo',
+      },
+    )
+    .optional(),
+  hotspot: z.strictObject({ x: fraction, y: fraction }).optional(),
+});
 
 // Strict, like every shape the service entries use (spec 0013): a typo
 // inside a step or the closing call to action fails the build by name.
@@ -632,7 +698,10 @@ const projectPage = defineCollection({
       factLabels: z.strictObject({
         floorArea: text,
         location: text,
+        /** Over a project's category when its rooms have one (spec 0019). */
         service: text,
+        /** Over a project's categories when its rooms have several. */
+        services: text,
         year: text,
         client: text,
         storeys: text,
@@ -847,40 +916,181 @@ const services = defineCollection({
   }),
 });
 
-/** The levels of development a project may name (spec 0015). */
-const LOD_LEVELS = [100, 200, 300, 350, 400, 500] as const;
+const slug = z
+  .string()
+  .regex(
+    SLUG_PATTERN,
+    'must be lowercase kebab case, for example `harbour-tower`',
+  );
+
+const messageOf = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
+
+/**
+ * Reads every project from Sanity, once per build (spec 0019).
+ *
+ * - One query, in the perspective the build asks for: `published` (no token)
+ *   for production, `drafts` (the Viewer token) for a preview.
+ * - Each document is mapped to a new object (`toProjectData`) and checked by
+ *   the schema below. Every message names the project, `<lang>/<slug>` and
+ *   its Sanity `_id`, then Zod's field.
+ * - A failure, published and strict: the build stops, naming every invalid
+ *   project. Published and lenient (a manual run): the project is left out
+ *   with a warning. In a preview: the draft gives way to its published
+ *   version when that passes, else it is left out, with a warning, so one
+ *   unfinished draft never fails a preview.
+ * - Two documents with one `<lang>/<slug>` are caught before either is
+ *   stored: a strict build stops naming both ids; a lenient or preview build
+ *   keeps the first by order and warns.
+ * - The store is cleared first, so an unpublished or deleted project never
+ *   lingers from an earlier build.
+ */
+const sanityProjects = (): Loader => ({
+  name: 'sanity-projects',
+  load: async ({ store, parseData, logger, generateDigest }) => {
+    const config: SanityBuildConfig = {
+      projectId: SANITY_PROJECT_ID,
+      dataset: SANITY_DATASET,
+      perspective: SANITY_PERSPECTIVE,
+      token: SANITY_READ_TOKEN,
+      lenient: SANITY_LENIENT,
+    };
+    const preview = config.perspective === 'drafts';
+    const strict = !preview && !config.lenient;
+
+    const read = async (
+      perspective: SanityPerspective,
+    ): Promise<readonly Record<string, unknown>[]> => {
+      const result = sanityClient(config, perspective);
+      if (!result.ok) throw new Error(result.reason);
+      try {
+        return await result.client.fetch(PROJECTS_QUERY);
+      } catch (error) {
+        throw new Error(
+          `[content] projects: could not read Sanity project "${config.projectId}", dataset "${config.dataset}" (${perspective}): ${messageOf(error)}`,
+          { cause: error },
+        );
+      }
+    };
+
+    type Checked =
+      | Readonly<{
+          ok: true;
+          id: string;
+          order: string;
+          data: Record<string, unknown>;
+          label: string;
+        }>
+      | Readonly<{ ok: false; message: string }>;
+
+    const check = async (doc: Record<string, unknown>): Promise<Checked> => {
+      const label = documentLabel(doc);
+      try {
+        const data = await parseData({
+          id: entryIdOf(doc) ?? label,
+          data: toProjectData(doc),
+        });
+        return {
+          ok: true,
+          id: entryIdOf(doc) ?? '',
+          order: `${String(doc.orderRank)}\u0000${publishedId(doc._id)}`,
+          data,
+          label,
+        };
+      } catch (error) {
+        return {
+          ok: false,
+          message: `[content] projects: ${label} is invalid. ${messageOf(error)}`,
+        };
+      }
+    };
+
+    const [documents, published] = await Promise.all([
+      read(config.perspective),
+      preview ? read('published') : Promise.resolve([]),
+    ]);
+
+    const results = await Promise.all(
+      documents.map(async (doc): Promise<Checked> => {
+        const first = await check(doc);
+        if (first.ok || !preview) return first;
+        const fallback = published.find(
+          (candidate) => publishedId(candidate._id) === publishedId(doc._id),
+        );
+        const second =
+          fallback === undefined ? undefined : await check(fallback);
+        if (second?.ok) {
+          logger.warn(
+            `${first.message}\nThis preview shows its published version instead.`,
+          );
+          return second;
+        }
+        return {
+          ok: false,
+          message: `${first.message}\nLeft out of this preview: it has no valid published version.`,
+        };
+      }),
+    );
+
+    const failures = results.flatMap((result) =>
+      result.ok ? [] : [result.message],
+    );
+    if (strict && failures.length > 0) {
+      throw new Error(failures.join('\n\n'));
+    }
+    failures.forEach((message) => {
+      logger.warn(
+        preview ? message : `${message}\nLeft out of this lenient run.`,
+      );
+    });
+
+    const valid = results
+      .flatMap((result) => (result.ok ? [result] : []))
+      .toSorted((a, b) => (a.order < b.order ? -1 : a.order > b.order ? 1 : 0));
+    const kept = valid.filter((entry, index) => {
+      const earlier = valid
+        .slice(0, index)
+        .find((other) => other.id === entry.id);
+      if (earlier === undefined) return true;
+      const message = `[content] projects: ${earlier.label} and ${entry.label} share "${entry.id}". Each slug must be unique within a language.`;
+      if (strict) throw new Error(message);
+      logger.warn(`${message}\nKeeping the first, leaving out the second.`);
+      return false;
+    });
+
+    store.clear();
+    kept.forEach(({ id, data }) => {
+      store.set({ id, data, digest: generateDigest(data) });
+    });
+  },
+});
 
 // Strict at every level (spec 0015), so an optional fact with a typo
-// (`floorarea`) fails the build by name instead of quietly vanishing from
-// the facts panel. Each entry is one detail page at `/project/<slug>`.
+// fails the build by name instead of quietly vanishing from the facts panel.
+// Each entry is one detail page at `/project/<slug>`. The same rules are the
+// Studio's validation (`src/lib/project-fields.ts`), so an editor cannot
+// publish what this rejects (spec 0019).
 const projects = defineCollection({
-  loader: load('projects', 'yaml'),
+  loader: sanityProjects(),
   schema: z.strictObject({
+    /** The Sanity document's `_id`, for build messages. */
+    sanityId: text,
+    /** The tiles' order, the showcase's, and the next link's (`getProjects`). */
+    orderRank: text,
     lang,
-    /** The page's path, `/project/<slug>`. Unique per language (`getProjects`). */
-    slug: z
-      .string()
-      .regex(
-        /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-        'must be lowercase kebab case, for example `harbour-tower`',
-      ),
-    // Capped so a title always fits the Project page's 5:4 tile caption at
-    // every width (spec 0014, AC-8). Loosening it means checking that again.
-    title: text.max(60),
+    /** The page's path, `/project/<slug>`. Unique per language. */
+    slug,
+    title: text.max(TITLE_MAX),
     /** The tile's line, the detail intro, and the default description. */
     summary: text,
     /** The tile and the detail page's cover. */
-    image: photoSchema,
-    /** The tiles' order, and which project the next link points to. */
-    order: z.number().int().positive(),
-    // Astro only logs a missing reference; src/lib/content.ts fails the build.
-    service: reference('services'),
+    image: sanityPhoto,
     /** Absent: the title and description are derived (`projectHead`). */
     seo: z.strictObject(seo.shape).optional(),
     // The facts panel, in the order it shows them. A fact left out has no row.
     location: text,
     /** The year completed. */
-    year: z.number().int().min(1900).max(2100),
+    year: z.number().int().min(YEAR_MIN).max(YEAR_MAX),
     client: text.optional(),
     /** In square metres. */
     floorArea: z.number().int().positive().optional(),
@@ -892,24 +1102,28 @@ const projects = defineCollection({
     // The detail page's own words and photos (spec 0018).
     /** The short line in capitals over the overview's title. */
     tagline: text,
-    /** The hero's paragraphs, beside the cover photo. */
-    intro: z.array(emphasisText).min(1).max(4),
+    /** The hero's paragraphs, from the Studio's rich text (`toProjectData`). */
+    intro: z.array(emphasisText).min(1).max(INTRO_MAX),
     /** The overview's upright photo, beside the facts. */
-    portrait: galleryPhoto,
+    portrait: sanityPhoto,
     /**
      * The rooms band, in this order: each room's photos join one carousel,
-     * and its name and the work done in it show while they are on screen.
+     * and its name, its category, and the work done in it show while they
+     * are on screen. A project's categories are its rooms', never stored on
+     * the project (`src/lib/content.ts` checks each against the services).
      */
     rooms: z
       .array(
         z.strictObject({
           name: text,
-          workload: z.array(text).min(1).max(8),
-          photos: z.array(galleryPhoto).min(1).max(9),
+          /** A service's slug in the project's language. */
+          category: slug,
+          workload: z.array(text).min(1).max(WORKLOAD_MAX),
+          photos: z.array(sanityPhoto).min(1).max(PHOTOS_MAX),
         }),
       )
       .min(1)
-      .max(6),
+      .max(ROOMS_MAX),
   }),
 });
 

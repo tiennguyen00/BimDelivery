@@ -24,9 +24,10 @@
  * clear at the top, so the photo shows bright above the words while the
  * `heading` words still read at 5.91:1 at worst over any photo (spec 0003).
  *
- * At rest a tile shows its title and its summary, centred at its foot, the
- * summary cut to one line (the full line stays in the HTML for a screen
- * reader). On hover, or while the tile's link has focus, the gradient fades
+ * At rest a tile shows its categories (spec 0019: every category of its
+ * rooms, joined with ` · `, as a small capitals line over the title), its
+ * title, and its summary, centred at its foot, the summary cut to one line
+ * (the full line stays in the HTML for a screen reader). On hover, or while the tile's link has focus, the gradient fades
  * out as a whole-tile `scrim` fades in (70%, not `scrim-strong`, since
  * 2026-10-16, still 5.91:1 at worst for the words), the summary wraps to show in full, the cue and the facts
  * unfold under it (`tile-info`), and the whole block glides from the foot to
@@ -47,8 +48,9 @@
  * Three things move inside a tile, each on its own element and property, so
  * none overwrites another:
  *
- * - The hover zoom: the `Image` alone, by `scale`, 105% over 500ms,
- *   `motion-safe`.
+ * - The hover zoom: the photo alone, by `scale`, 105% over 500ms,
+ *   `motion-safe`. The photo comes from Sanity's image CDN through `Photo`,
+ *   framed at the editor's focal point (spec 0019).
  * - The scroll parallax, `src/scripts/parallax.ts` on motion's `scroll()`:
  *   the photo's frame (`data-parallax-photo`) slides down inside the tile and
  *   the words (`data-parallax-text`) drift up, by `transform`, as the tile
@@ -79,9 +81,9 @@
  * `data-enter` step, not the CSS `entrance`: it plays a tile on screen at
  * load and leaves one below the fold to the scroll reveal.
  */
-import { Image } from 'astro:assets';
+import Photo from '../ui/Photo.astro';
 import type { ProjectPage } from '../../lib/content';
-import type { GalleryTile } from '../../lib/project-gallery';
+import { categoryLine, type GalleryTile } from '../../lib/project-gallery';
 import { projectHref } from '../../lib/project-detail';
 import type { Locale } from '../../i18n/locales';
 import { bandPaddingBottomClass, buttonClass, cx } from '../ui/styles';
@@ -144,10 +146,8 @@ const enterStep = (index: number): number | undefined =>
         class="group relative isolate aspect-3/2 overflow-clip rounded-ui bg-panel md:aspect-4/3 lg:aspect-3/2 link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-accent"
       >
         <div class="parallax-photo -z-10" data-parallax-photo>
-          <Image
-            src={project.image.src}
-            alt={project.image.alt ?? ''}
-            inferSize
+          <Photo
+            photo={project.image}
             widths={[640, 960, 1280, 1600, 2000]}
             sizes="(min-width: 48rem) 50vw, 100vw"
             loading={index < FIRST_ROW ? 'eager' : 'lazy'}
@@ -169,6 +169,9 @@ const enterStep = (index: number): number | undefined =>
           data-parallax-text
         >
           <div aria-hidden="true" class="grow" />
+          <p class="mb-2 shrink-0 text-eyebrow font-semibold text-balance text-heading uppercase">
+            {categoryLine(project.categories)}
+          </p>
           <h2 class="shrink-0 text-h3 font-bold text-balance text-heading">
             <a
               href={projectHref(project.slug)}

@@ -11,9 +11,11 @@
  *
  * Matching is by name. Each field's `name` is a `data-` attribute on every
  * tile, written at build from `src/lib/project-gallery.ts`, and a tile shows
- * when, for every field with a value, its attribute equals that value. An
- * empty value ("All", "Any") matches everything. So a new filter is a new
- * field and a new attribute, never a change here.
+ * when, for every field with a value, that value is one of its attribute's
+ * values. An attribute may hold several, separated by `|` (a project's
+ * categories, spec 0019); one with a single value must equal it. An empty
+ * value ("All", "Any") matches everything. So a new filter is a new field
+ * and a new attribute, never a change here.
  *
  * It reads four hooks, written in markup, never in content:
  *
@@ -52,10 +54,16 @@ const choicesOf = (
     typeof value === 'string' && value !== '' ? [[name, value] as const] : [],
   );
 
+/** Between a key's values; `KEY_SEPARATOR` in `project-gallery.ts`. */
+const SEPARATOR = '|';
+
 const matches = (
   tile: HTMLElement,
   choices: readonly (readonly [string, string])[],
-): boolean => choices.every(([name, value]) => tile.dataset[name] === value);
+): boolean =>
+  choices.every(([name, value]) =>
+    (tile.dataset[name] ?? '').split(SEPARATOR).includes(value),
+  );
 
 /**
  * "4 projects shown": the template the page's plural rules pick, `one` or

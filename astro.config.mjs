@@ -33,10 +33,13 @@ export default defineConfig({
     imageService: 'compile',
   }),
 
-  // Photos are internet links on Pexels (spec 0006, assumed). Allowing the one
-  // host here is what lets `<Image>` download and optimise them at build like
-  // a local file, so visitors get copies from this site's own origin. A link on
-  // any other host is also refused by the content schema.
+  // Photos outside projects are internet links on Pexels (spec 0006, now
+  // superseded for projects by spec 0019). Allowing the one host here is what
+  // lets `<Image>` download and optimise them at build like a local file, so
+  // visitors get copies from this site's own origin. A link on any other host
+  // is also refused by the content schema. Project photos come from Sanity's
+  // image CDN instead, drawn as plain `<img srcset>` by `Photo.astro`, so
+  // `cdn.sanity.io` needs no entry here.
   image: {
     domains: ['images.pexels.com'],
   },
@@ -100,6 +103,51 @@ export default defineConfig({
       PUBLIC_TURNSTILE_SITE_KEY: envField.string({
         context: 'client',
         access: 'public',
+      }),
+
+      // Projects come from Sanity (spec 0019), read once per build by the
+      // `projects` loader in src/content.config.ts. The project id and the
+      // dataset are public (they sit in every photo address), so they have
+      // defaults and `pnpm dev`, `pnpm build`, and CI need no env file. The
+      // id is also written in studio/project.ts; change both together.
+      SANITY_PROJECT_ID: envField.string({
+        context: 'server',
+        access: 'public',
+        default: 'bfqofid8',
+      }),
+      SANITY_DATASET: envField.string({
+        context: 'server',
+        access: 'public',
+        default: 'production',
+      }),
+      // `published` for production; `drafts` only in the preview job, which
+      // builds the dev link with every current draft.
+      SANITY_PERSPECTIVE: envField.enum({
+        context: 'server',
+        access: 'public',
+        values: ['published', 'drafts'],
+        default: 'published',
+      }),
+      // A Viewer token, needed only to read drafts. Held by the preview job
+      // alone; a production build reads published content with no token.
+      SANITY_READ_TOKEN: envField.string({
+        context: 'server',
+        access: 'secret',
+        optional: true,
+      }),
+      // On only from a manual run's `lenient` input: an invalid published
+      // project is left out with a warning instead of failing the build.
+      SANITY_LENIENT: envField.boolean({
+        context: 'server',
+        access: 'public',
+        default: false,
+      }),
+      // True on every build that is not production (the preview job and
+      // manual dev link deploys): every page gets `noindex`.
+      SITE_NOINDEX: envField.boolean({
+        context: 'server',
+        access: 'public',
+        default: false,
       }),
     },
   },

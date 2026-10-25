@@ -787,10 +787,7 @@ const headCellClass =
           <Card
             title={firstProject.title}
             text={firstProject.summary}
-            image={{
-              src: firstProject.image.src,
-              alt: firstProject.image.alt ?? '',
-            }}
+            image={firstProject.image}
           />
         )}
         {secondService && (
@@ -1201,7 +1198,10 @@ const headCellClass =
         The Project page's photo wall, from the real project entries: fixed 3:2
         tiles, two across from 768px, 8px seams (the grid gap's one written
         exception), and a scrim over the whole photo, so the centred title and
-        one line summary read in heading at 5.91:1 at worst over any photo.
+        one line summary read in heading at 5.91:1 at worst over any photo. Over
+        the title, the project's categories (every category of its rooms, joined
+        with a middle dot) in small capitals. The photos come from Sanity's
+        image CDN, framed at the editor's focal point.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
         Hover a tile, or tab to it: the scrim deepens and the "Read more" pill
@@ -1229,8 +1229,9 @@ const headCellClass =
       <p class="mt-4 max-w-narrow">
         A project page's overview and its way on, from the real entries: the
         portrait beside the tagline, the title, and the facts, then the next
-        project link. Labels are ink muted, values ink strong, and the service
-        is an accent link. Only the facts a project has are listed.
+        project link. Labels are ink muted, values ink strong, and each category
+        is an accent link to its service page, under "Service" for one and
+        "Services" for several. Only the facts a project has are listed.
       </p>
       <p class="mt-3 max-w-narrow text-small text-ink">
         Below 768px the photo comes first; from 768px it takes five of twelve

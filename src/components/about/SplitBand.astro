@@ -32,7 +32,7 @@
  *   another as they scroll into view (`data-reveal-stagger`), and the photo
  *   with them. Inert until the page imports `src/scripts/reveal.ts`.
  */
-import { Image } from 'astro:assets';
+import Photo from '../ui/Photo.astro';
 import Button from '../ui/Button.astro';
 import Emphasis from '../ui/Emphasis.astro';
 import Icon from '../ui/Icon.astro';
@@ -42,6 +42,7 @@ import {
   bandPaddingClass,
   cx,
 } from '../ui/styles';
+import type { PhotoSource } from '../../lib/sanity-image';
 
 interface Props {
   /** The band's id, the target of the button in the band above. */
@@ -54,7 +55,8 @@ interface Props {
   tagline: string;
   /** Each may carry `**bold**` and `==accent==` phrases. */
   paragraphs: readonly string[];
-  image: Readonly<{ src: string; alt: string }>;
+  /** A Pexels link (About), or a project's Sanity photo (spec 0019). */
+  image: PhotoSource;
   imageSide: 'start' | 'end';
   /** Absent: no button. `arrow-down` for a jump down the page. */
   action?: Readonly<{
@@ -149,10 +151,8 @@ const actionStep = 2 + paragraphs.length;
     )}
     data-reveal={onLoad ? undefined : ''}
   >
-    <Image
-      src={image.src}
-      alt={image.alt}
-      inferSize
+    <Photo
+      photo={image}
       widths={[640, 960, 1280, 1600, 2000]}
       sizes="(min-width: 1024px) 58vw, 100vw"
       loading={onLoad ? 'eager' : 'lazy'}

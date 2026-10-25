@@ -14,21 +14,26 @@
  *
  * The facts are a `<dl>` of only the facts the project has, in two columns.
  * Their rows come ready formatted from `projectFacts`, so this component
- * formats nothing; a row with an `href` (the service) is a link. A long value
- * wraps inside its column rather than pushing it wider.
+ * formats nothing; a row with `links` (the categories, spec 0019) draws its
+ * pieces in order, each one with an `href` as a link to its service page. A
+ * long value wraps inside its column rather than pushing it wider.
+ *
+ * The portrait comes from Sanity's image CDN through `Photo`, framed at the
+ * editor's focal point.
  *
  * Motion: the photo carries `data-reveal` and the words
  * `data-reveal-stagger`, so they fade and rise in as they arrive.
  */
-import { Image } from 'astro:assets';
+import Photo from '../ui/Photo.astro';
 import type { Fact } from '../../lib/project-detail';
+import type { SanityPhoto } from '../../lib/sanity-image';
 
 interface Props {
   tagline: string;
   title: string;
   /** The id of the band's `h2`. */
   headingId: string;
-  portrait: Readonly<{ src: string; alt: string }>;
+  portrait: SanityPhoto;
   /** One row per fact the project has, in order. */
   facts: readonly Fact[];
 }
@@ -41,10 +46,8 @@ const { tagline, title, headingId, portrait, facts } = Astro.props;
     class="relative aspect-4/5 overflow-hidden rounded-ui bg-panel md:col-span-5"
     data-reveal
   >
-    <Image
-      src={portrait.src}
-      alt={portrait.alt}
-      inferSize
+    <Photo
+      photo={portrait}
       widths={[480, 640, 960, 1280]}
       sizes="(min-width: 1200px) 480px, (min-width: 768px) 40vw, 100vw"
       loading="lazy"
@@ -67,13 +70,17 @@ const { tagline, title, headingId, portrait, facts } = Astro.props;
             {fact.label}
           </dt>
           <dd class="mt-1 wrap-break-word text-ink-strong">
-            {fact.href === undefined ? (
-              fact.value
-            ) : (
-              <a href={fact.href} class="text-accent hover:underline">
-                {fact.value}
-              </a>
-            )}
+            {fact.links === undefined
+              ? fact.value
+              : fact.links.map((part) =>
+                  part.href === undefined ? (
+                    part.text
+                  ) : (
+                    <a href={part.href} class="text-accent hover:underline">
+                      {part.text}
+                    </a>
+                  ),
+                )}
           </dd>
         </div>
       ))}

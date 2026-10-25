@@ -1,16 +1,23 @@
 # Content entries
 
-Every word and image on the site lives here (spec 0002). One folder per
-collection, one folder per language inside it:
+Every word and image on the site lives here (spec 0002), except projects.
+One folder per collection, one folder per language inside it:
 `src/content/<collection>/<lang>/<file>`. The schemas are in
 `src/content.config.ts`; pages read content only through `src/lib/content.ts`.
+
+**Projects live in Sanity** (spec 0019), not here: the client's team edits
+them in the Studio (`studio/`), and the build reads the published ones. Each
+room carries its own category, a service's slug, and a project is listed
+under every category its rooms have. The Studio refuses what the build would
+reject; a project that still breaks a rule fails the build naming
+`<lang>/<slug>`, its Sanity `_id`, and the field. The other pages move to
+Sanity one at a time, later.
 
 - Every entry has a `lang` field equal to its language folder.
 - Image paths are relative to the entry file, for example
   `../../../assets/images/services/scan-to-bim.jpg`. Record every new stock
   photo in `src/assets/images/CREDITS.md`.
 - Every image needs a non empty `alt`, or `decorative: true`.
-- A project points to its service by id: `service: en/architectural-bim`.
 - A service is one YAML file built from ordered sections. See the recipes
   under Services below.
 - A broken entry fails `pnpm build` with a message naming the file.
@@ -74,7 +81,8 @@ two map entries. Its heading id (`<type>-heading`) comes from its type.
 2. Give it a unique `slug` and `order`, then its own `title`, `summary`,
    `seo`, `subServices`, and sections.
 3. Build. Its page exists at `/<slug>`, and it appears in the nav and in the
-   contact form's choices, in `order`.
+   contact form's choices, in `order`. For project rooms to name it, add it
+   to `CATEGORIES` in `studio/project.ts` and redeploy the Studio.
 4. It is not on the home page until you add its id (`<lang>/<slug>`) to
    `services.featured` in `home/<lang>/home.yaml`, which lists one to three
    services.
@@ -90,10 +98,11 @@ most four cards; a fifth fails the build.
 ### Remove a service
 
 1. Delete its file.
-2. Build. The build fails and names every file that still points at the
-   service: each project whose `service` is its id, and `home.yaml` when
-   `services.featured` lists it.
-3. Point each of those projects at another service, and take the id out of
+2. Build. The build fails and names everything that still points at the
+   service: each project room in Sanity whose category is its slug, and
+   `home.yaml` when `services.featured` lists it.
+3. Give each of those rooms another category in the Studio (and drop the
+   slug from `CATEGORIES` in `studio/project.ts`), and take the id out of
    `services.featured`. The build passes.
 4. The removed page's old URL now serves the 404 page. Redirects are a follow
    up.

@@ -19,7 +19,9 @@
  * `shape()` is missing). Each pane is `panel` underneath, so a photo that
  * fails to load still reads as panes.
  *
- * At rest a pane names only its service, in Playfair at its foot. Hover or
+ * At rest a pane names only its categories (every category of the project's
+ * rooms, joined with ` · `, spec 0019; the line may wrap), in Playfair at
+ * its foot. Hover or
  * keyboard focus unfolds the project's title under it (`tile-info`); on
  * touch, with no hover, the title is always there. The words sit on a light
  * fade, `scrim-soft` at the foot to nothing, so the photo stays bright. That
@@ -34,7 +36,7 @@
  * shade, the glare, and the words, all `aria-hidden`. Over it lies the
  * tile's one link (spec 0015), an `h3` whose link fills the whole tile, so
  * it has one tab stop, the project title as its name (in `sr-only` text,
- * with the service named just before it), and the pointer anywhere on the
+ * with its categories named just before it), and the pointer anywhere on the
  * tile. The link never moves, so it is also the hover area: the card tilts
  * above it without ever sliding out from under the pointer. Keyboard focus
  * rings the words in `accent`, since the L's clip would cut a ring round
@@ -54,13 +56,15 @@
 import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Button from '../ui/Button.astro';
+import type { ProjectCategory } from '../../lib/content';
 import { projectHref } from '../../lib/project-detail';
+import { categoryLine } from '../../lib/project-gallery';
 
 interface ShowcaseProject {
   id: string;
   slug: string;
   title: string;
-  service: { title: string };
+  categories: readonly ProjectCategory[];
 }
 
 interface Props {
@@ -302,7 +306,7 @@ const outline = (index: number) => ['rounded-ui', isL(index) && L_SHAPE];
               ]}
             >
               <p class="font-display text-h3 font-semibold text-balance">
-                {project.service.title}
+                {categoryLine(project.categories)}
               </p>
               {/**
                * The project's title unfolds under the service on hover or
@@ -330,7 +334,7 @@ const outline = (index: number) => ['rounded-ui', isL(index) && L_SHAPE];
             ]}
           />
         </div>
-        <p class="sr-only">{project.service.title}</p>
+        <p class="sr-only">{categoryLine(project.categories)}</p>
         <h3>
           <a
             href={projectHref(project.slug)}

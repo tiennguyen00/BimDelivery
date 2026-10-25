@@ -1055,8 +1055,10 @@ on it, then the filter.
     the scrim is 2.88:1. Every tab is the same weight, so choosing
     one never shifts the row. The two colour focus ring is drawn on the
     label (`peer-focus-visible:`), since the input cannot show one. The first
-    tab is "All"; the rest are the services that have projects, in the
-    services' `order`.
+    tab is "All"; the rest are the services any project's room has, in the
+    services' `order`. A tile shows when one of its rooms has the chosen
+    service (its `data-service` holds every category, `|` between them,
+    spec 0019).
   - **The bar**: a `bg-scrim` panel with a `line` hairline, holding the
     country and floor area dropdowns with the shared field labels above
     them, side by side from `md`. Each is a `FilterSelect` (2026-10-16): a
@@ -1088,6 +1090,14 @@ spec 0005's "the photo stays still"):
   with the parallax, so the `::after` reaches 24px past them on every side
   (`after:-inset-6`) and the tile clips the rest: the whole tile stays
   clickable wherever the words have drifted.
+- **The categories** (spec 0019): a project's categories are its rooms',
+  each once, in the services' `order`, joined with ` · `. On `/project`
+  they sit over the title as a `text-eyebrow` line in `heading` capitals,
+  at rest and on hover; in the home showcase they are the pane's Playfair
+  line.
+- **The photo** of a `/project` tile comes from Sanity's image CDN through
+  `Photo` (a plain `<img srcset>`, `auto=format`, the editor's crop, and
+  `object-position` from the editor's focal point), framed `object-cover`.
 - **The cue** (`/project` only): "Read more" from content
   (`projectPage.tileCue`), `heading`, `text-small font-semibold`,
   **`aria-hidden`**, so a screen reader hears six distinct titles rather
@@ -1101,12 +1111,13 @@ spec 0005's "the photo stays still"):
   `motion-safe`: `group` and `isolate` on the `<li>` with `overflow-clip`
   (for the parallax), and
   `transition-[scale] duration-500 ease-out motion-safe:group-hover:scale-105`
-  on the `Image`. The box and the layout never move; the scrim deepens and
+  on the photo. The box and the layout never move; the scrim deepens and
   the cue and facts unfold.
 - **The home showcase** (2026-10-24) is one photo split into panes: each
   pane paints its own window onto the one optimised file, so at rest the
   picture is unbroken across 8px `raised` seams. At rest a pane names only
-  its service (Playfair, `text-h3`) on a light `scrim-soft` fade; hover or
+  its categories (Playfair, `text-h3`, joined with ` · `; the line may
+  wrap) on a light `scrim-soft` fade; hover or
   focus unfolds the project title under it (`tile-info`), and on touch it is
   always open. Each tile is two layers: the card you see (`aria-hidden`)
   and, over it, the one link, which fills the tile, never moves, and names
@@ -1122,12 +1133,13 @@ spec 0005's "the photo stays still"):
 One page per project at `/project/<slug>` (spec 0015), its bands redrawn by
 spec 0018 after the engineer's reference: the hero, the overview, the rooms
 band, the next project link (two or more projects only), and the accent
-`CtaBand`. Every word comes from the project's entry, its service,
-`projectPage.detail`, or the site name; the derived values (the next project,
+`CtaBand`. Every word comes from the project's Sanity document (spec 0019),
+its rooms' services, `projectPage.detail`, or the site name; the derived values (the next project,
 the fact rows, the head) come from `src/lib/project-detail.ts`.
 
 - **The hero** is the About page's `SplitBand`, unchanged: the title as the
-  `h1`, the service's title as the brass tagline, the entry's `intro`
+  `h1`, the project's categories (joined with ` · `) as the brass tagline,
+  the entry's `intro`
   paragraphs, and a "Discover more" button (`arrow-down`) to
   `#project-overview`, beside the cover photo, with the CSS `entrance`.
 - **`ProjectOverview`**, the overview: a `raised` `Section` with the id
@@ -1139,8 +1151,10 @@ the fact rows, the head) come from `src/lib/project-detail.ts`.
   one `<dl>` in two columns, each `<dt>` a `text-small font-semibold
   tracking-wide uppercase` label in `ink-muted`, each `<dd>` the value in
   `ink-strong` with `wrap-break-word`. The order is area, location, service,
-  year, client, storeys, LOD, software, duration; the service is an `accent`
-  link to its page. A fact the entry leaves out has **no row at all**. The
+  year, client, storeys, LOD, software, duration; the service row lists
+  every category, each an `accent` link to its page, joined the locale's
+  way ("Architectural BIM and Interior BIM"), under "Service" for one and
+  "Services" for several. A fact the entry leaves out has **no row at all**. The
   rows and their formatting (`42,000 m²`, `LOD 300`, `Revit, Navisworks`)
   come from `projectFacts`, never a component.
 - **`ProjectRooms`**, the rooms: one band on `accent-deep` (Coffee), not a
@@ -1150,11 +1164,15 @@ the fact rows, the head) come from `src/lib/project-detail.ts`.
   columns and the words one, at least a screen tall (`split-band-height`),
   the photos on the left. Below `lg` the photos come first, full width at
   4:3, so a swipe changes the words just under it. The words are every
-  room's name at the top (`room-name`: Playfair at `text-h3`, capitals) and,
+  room's name at the top (`room-name`: Playfair at `text-h3`, capitals),
+  each under its category as a small `text-eyebrow` label in `ink` (spec
+  0019; it stays `ink` while the name turns `heading`), and,
   at the foot, a `text-eyebrow` label in `heading` between decorative
   slashes over the room's work list in `ink` (`room-work`). Only `heading`
   and `ink` are words on Coffee.
-- **The photos** are every room's, in content order, side by side in one
+- **The photos** are every room's, in content order, from Sanity's image
+  CDN through `Photo` (every one lazy, so 10 rooms of 20 photos load only as
+  reached), side by side in one
   `carousel-track` (a native sideways scroller, one photo per view,
   snapping), so they work with no script. With two or more, two round 44px
   arrow buttons (`arrow-left`, `arrow-right`, on `scrim`, `scrim-strong` on
@@ -1168,9 +1186,10 @@ the fact rows, the head) come from `src/lib/project-detail.ts`.
   slides in before it; the work lists share one grid cell, and the new one's
   items fade and rise 24px, 60ms apart, over 500ms, while the old one goes at
   once. Reduced motion: an instant swap. With no script every work list
-  shows, one under another, each under its room's name.
+  shows, one under another, each under its room's category and name.
 - **`NextProject`**, the way on: a `canvas`, narrow `Section` holding one centred
-  link to the next project by `order` (the last wraps to the first). Inside
+  link to the next project in the site's order (the Studio's drag and drop
+  `orderRank`, spec 0019; the last wraps to the first). Inside
   it, the label (`text-small font-semibold tracking-wide uppercase`,
   `ink-muted`) on its own line, then the title (`text-h3 font-semibold`,
   `ink-strong`) and an `arrow-right` in `accent`. Its name is the label and

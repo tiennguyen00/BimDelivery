@@ -7,6 +7,7 @@
  * Feature 5 (Site shell) adds the header, nav, and footer around the slot.
  */
 import { Font } from 'astro:assets';
+import { SITE_NOINDEX } from 'astro:env/server';
 import { resolveLocale } from '../i18n/locales';
 import '../styles/global.css';
 
@@ -31,6 +32,9 @@ const lang = resolveLocale(Astro.currentLocale);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    {/* Every build that is not production (the dev link's previews carry
+        unpublished drafts) keeps out of search results (spec 0019). */}
+    {SITE_NOINDEX && <meta name="robots" content="noindex" />}
     {/* Emits the @font-face rules and preloads the EB Garamond and Playfair files,
         which Astro serves from this site's own origin. */}
     <Font cssVariable="--font-garamond" preload />

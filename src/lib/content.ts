@@ -71,8 +71,26 @@ export type ServiceLookup =
   | Readonly<{ ok: true; service: Service }>
   | Readonly<{ ok: false; reason: 'not-found' }>;
 
-export type Project = Readonly<Omit<Entry<'projects'>['data'], 'service'>> &
-  Readonly<{ id: string; service: Readonly<{ slug: string; title: string }> }>;
+/** A service as a project names it: a category of one of its rooms. */
+export type ProjectCategory = Readonly<{ slug: string; title: string }>;
+
+type ProjectData = Entry<'projects'>['data'];
+
+export type ProjectRoom = Readonly<
+  Omit<ProjectData['rooms'][number], 'category'> & { category: ProjectCategory }
+>;
+
+/**
+ * A project, with each room's category resolved to its service and the
+ * project's `categories`: every category its rooms have, each once, in the
+ * services' `order` (spec 0019).
+ */
+export type Project = Readonly<Omit<ProjectData, 'rooms'>> &
+  Readonly<{
+    id: string;
+    rooms: readonly ProjectRoom[];
+    categories: readonly ProjectCategory[];
+  }>;
 
 /** The Project page's copy, and the copy every detail page shares (spec 0015). */
 export type ProjectPage = Readonly<Entry<'projectPage'>['data']>;
@@ -186,31 +204,51 @@ const expandNavigation = (
   );
 };
 
-/** Attaches each project's service, failing when the reference is missing or in another language. */
-const resolveProjectService = (
+/**
+ * Resolves each room's category to a service in the project's own language,
+ * and derives the project's categories (spec 0019): each once, in the
+ * services' `order`. A category that names no such service fails the build,
+ * naming the project, its Sanity id, and the room.
+ */
+const resolveProjectCategories = (
   project: Entry<'projects'>,
   services: readonly Entry<'services'>[],
 ): Project => {
-  const target = services.find(
-    (service) => service.id === project.data.service.id,
-  );
-  if (!target) {
-    throw new Error(
-      `[content] projects: ${fileOf(project)} points to service "${project.data.service.id}", ` +
-        'which does not exist. Use a service id such as "en/architectural-bim".',
-    );
-  }
-  if (target.data.lang !== project.data.lang) {
-    throw new Error(
-      `[content] projects: ${fileOf(project)} (lang "${project.data.lang}") points to ` +
-        `${fileOf(target)} (lang "${target.data.lang}"). A project and its service must share a language.`,
-    );
-  }
-  return {
-    ...project.data,
-    id: project.id,
-    service: { slug: target.data.slug, title: target.data.title },
-  };
+  const { data } = project;
+  const own = services
+    .filter((service) => service.data.lang === data.lang)
+    .toSorted(byOrder);
+  const rooms = data.rooms.map((room, index): ProjectRoom => {
+    const target = own.find((service) => service.data.slug === room.category);
+    if (!target) {
+      throw new Error(
+        `[content] projects: ${project.id} (Sanity _id "${data.sanityId}") rooms[${index}].category ` +
+          `is "${room.category}", which names no service in "${data.lang}". ` +
+          `Use one of: ${own.map((service) => service.data.slug).join(', ')}.`,
+      );
+    }
+    return {
+      ...room,
+      category: { slug: target.data.slug, title: target.data.title },
+    };
+  });
+  const categories = own
+    .filter((service) =>
+      rooms.some((room) => room.category.slug === service.data.slug),
+    )
+    .map((service) => ({ slug: service.data.slug, title: service.data.title }));
+  return { ...data, id: project.id, rooms, categories };
+};
+
+/**
+ * The site's project order (spec 0019): the Studio's drag and drop order,
+ * `orderRank` (a LexoRank key, so a plain string sort), ties broken by the
+ * Sanity id. Sorted once, here; every caller keeps this order.
+ */
+const byOrderRank = (a: Entry<'projects'>, b: Entry<'projects'>): number => {
+  const left = `${a.data.orderRank}\u0000${a.data.sanityId}`;
+  const right = `${b.data.orderRank}\u0000${b.data.sanityId}`;
+  return left < right ? -1 : left > right ? 1 : 0;
 };
 
 /**
@@ -432,7 +470,11 @@ export const getNavigation = async (lang: Locale): Promise<Navigation> => {
   };
 };
 
-/** Every project in `lang`, sorted by `order`, each with its service. Empty when there are none. */
+/**
+ * Every project in `lang`, in the Studio's order, each with its rooms'
+ * categories resolved. Empty when there are none. Read from Sanity at build
+ * (spec 0019); the loader has already caught a repeated slug.
+ */
 export const getProjects = async (
   lang: Locale,
 ): Promise<readonly Project[]> => {
@@ -442,8 +484,7 @@ export const getProjects = async (
   ]);
   const entries = inLang(lang, projects);
   checkUnique('projects', lang, 'slug', entries, (entry) => entry.data.slug);
-  checkUnique('projects', lang, 'order', entries, (entry) => entry.data.order);
   return entries
-    .toSorted(byOrder)
-    .map((entry) => resolveProjectService(entry, services));
+    .toSorted(byOrderRank)
+    .map((entry) => resolveProjectCategories(entry, services));
 };

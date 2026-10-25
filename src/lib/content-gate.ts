@@ -2,8 +2,8 @@
  * The one place that calls every getter in `content.ts`, once per build.
  *
  * Why this exists: the cross entry checks in `content.ts` (unique slugs and
- * orders, matching language folders, reserved paths, a project pointing at a
- * real service in its own language) only run when the getter that owns them is
+ * orders, matching language folders, reserved paths, each project room's
+ * category naming a real service in its own language) only run when the getter that owns them is
  * actually called. Until features 6 to 10 land, several getters have no page
  * reading them, so a broken content file would sail through the build and
  * surface much later, in the feature that finally reads it.

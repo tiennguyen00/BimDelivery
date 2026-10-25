@@ -10,8 +10,21 @@
  * disagree.
  */
 import type { Locale } from '../i18n/locales';
-import type { Project, ProjectPage, Service } from './content';
+import type { Project, ProjectCategory, ProjectPage, Service } from './content';
 import { formatArea, type Fact } from './project-detail';
+
+/**
+ * Titles joined with ` · `, as the tile, the home showcase, and the detail
+ * hero's tagline show a project's categories (spec 0019).
+ */
+export const categoryLine = (categories: readonly ProjectCategory[]): string =>
+  categories.map((category) => category.title).join(' · ');
+
+/**
+ * Between the values of a key that holds several, such as a project's
+ * categories. No country, slug, or area key contains it.
+ */
+export const KEY_SEPARATOR = '|';
 
 type AreaRange = ProjectPage['filter']['areaRanges'][number];
 
@@ -23,7 +36,12 @@ export type FilterChoices = Readonly<{
   areas: readonly FilterChoice[];
 }>;
 
-/** What a tile carries for the filter, one key per field `name`. */
+/**
+ * What a tile carries for the filter, one key per field `name`. `service`
+ * holds every category of the project's rooms, joined by `KEY_SEPARATOR`
+ * (spec 0019); the filter shows the tile when the chosen value is one of
+ * them. `country` and `area` hold one value each.
+ */
 export type TileKeys = Readonly<{
   service: string;
   country: string;
@@ -65,10 +83,16 @@ export const tileKeys = (
   project: Project,
   ranges: readonly AreaRange[],
 ): TileKeys => ({
-  service: project.service.slug,
+  service: project.categories
+    .map((category) => category.slug)
+    .join(KEY_SEPARATOR),
   country: countryOf(project.location),
   area: areaKeyOf(project.floorArea, ranges),
 });
+
+/** True when `value` is one of the key's values; the filter script reads keys the same way. */
+const keyHas = (key: string, value: string): boolean =>
+  key.split(KEY_SEPARATOR).includes(value);
 
 /**
  * The filter's choices. Each list holds only what at least one project has,
@@ -86,7 +110,7 @@ export const filterChoices = (
 ): FilterChoices => {
   const keys = projects.map((project) => tileKeys(project, ranges));
   const has = (field: keyof TileKeys, value: string): boolean =>
-    keys.some((key) => key[field] === value);
+    keys.some((key) => keyHas(key[field], value));
 
   const countries = [...new Set(keys.map((key) => key.country))].toSorted(
     new Intl.Collator(lang).compare,
