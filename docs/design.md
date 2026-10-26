@@ -1330,8 +1330,9 @@ pages use the same reveal script and add the carousel (spec 0013).
     two tiles, a desktop's first row, take the entrance at steps 3 and 4
     (`entranceFrom`) and stay in the list's scroll reveal stagger. Only
     those two, never every tile, so a long list never stacks up delay. On
-    this page the entrance is motion's (below), a Web Animation, which a
-    tile the filter brings back from `display: none` does not replay.
+    this page the entrance is motion's (below), a Web Animation, which
+    `display: none` does not replay by itself; the filter redeal (below)
+    plays it again on purpose.
 - **The accordion slide**, in the `accordion-item` utility (spec 0010). Where
   the browser supports `::details-content` and `interpolate-size` (Chrome and
   Edge today), a panel's height slides between nothing and its content over
@@ -1383,7 +1384,24 @@ pages use the same reveal script and add the carousel (spec 0013).
   open the header is held at rest (`!important` in `Header.astro`). Under
   reduced motion nothing moves and the header never leaves. Below the fold each tile reveals after the one before as
   it scrolls into view, and a tile the filter brings into view reveals the
-  same way. The hero's `h1` has no rule. The empty state and the accent band
+  same way. The stagger counts within each batch of tiles arriving
+  together, so the first of a batch starts at once however far down the
+  wall it is (2026-10-26).
+- **The tile loading shimmer** on the Project page (2026-10-26),
+  `src/scripts/tile-shimmer.ts` on motion. While a tile's photo is still on
+  its way from the image CDN, a band of `heading` at 20% (the showcase
+  glare's strength), half the tile wide
+  and fading out at both edges, sweeps across the `panel` fill left to
+  right over 1.28s, rests off the edge for 0.32s, and repeats, every tile in
+  step. Once the photo has arrived and decoded, it fades in over 500ms with
+  an ease out and the shimmer stops. A photo already there is shown as is.
+  With no script, or under reduced motion, there is only the fill.
+- **The filter redeal** on the Project page (2026-10-26): after each change
+  to the filter, the tiles it shows on screen enter again through
+  `enter.ts`, the load entrance's fade and 24px rise over 600ms, 80ms apart
+  from the first; tiles it hides go at once. A tile the scroll reveal still
+  holds reveals by its own rule (above). Under reduced motion the wall
+  simply redraws. The hero's `h1` has no rule. The empty state and the accent band
   do not move. On hover a tile's photo slowly zooms to 105% (`motion-safe`
   only), its scrim deepens, and its cue and facts unfold over 500ms (the
   `tile-info` grid row; under reduced motion they appear at once).

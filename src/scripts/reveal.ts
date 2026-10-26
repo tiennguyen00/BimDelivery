@@ -84,8 +84,8 @@ const DURATION_S = 0.6;
 /** The wait between one stagger child and the next. */
 const STAGGER_S = 0.08;
 
-/** An element to reveal, with the wait before it starts. */
-type Target = Readonly<{ element: HTMLElement; delay: number }>;
+/** An element to reveal, with its stagger container when it has one. */
+type Target = Readonly<{ element: HTMLElement; group?: Element }>;
 
 /** Entirely below the viewport, so hiding it cannot be seen. */
 const isBelowFold = (element: Element): boolean =>
@@ -94,19 +94,15 @@ const isBelowFold = (element: Element): boolean =>
 const singles = (): readonly Target[] =>
   [...document.querySelectorAll<HTMLElement>('[data-reveal]')]
     .filter(isBelowFold)
-    .map((element) => ({ element, delay: 0 }));
+    .map((element) => ({ element }));
 
-/**
- * N counts only the hidden children, so when the first cards of a row are
- * already on screen the next hidden one starts at once rather than waiting
- * behind cards that never animate.
- */
+/** Only the hidden children; one already on screen never animates. */
 const staggered = (): readonly Target[] =>
   [...document.querySelectorAll('[data-reveal-stagger]')].flatMap((container) =>
     [...container.children]
       .filter((child): child is HTMLElement => child instanceof HTMLElement)
       .filter(isBelowFold)
-      .map((element, index) => ({ element, delay: index * STAGGER_S })),
+      .map((element) => ({ element, group: container })),
   );
 
 const hide = ({ element }: Target): void => {
@@ -123,7 +119,7 @@ const hide = ({ element }: Target): void => {
  * A heading inside this element is waiting on it, and what it waits for is
  * the element at rest, cleanup included, not merely its last frame.
  */
-const reveal = ({ element, delay }: Target): void => {
+const reveal = (element: HTMLElement, delay: number): void => {
   animate(
     element,
     { opacity: 1, transform: 'none' },
@@ -135,21 +131,53 @@ const reveal = ({ element, delay }: Target): void => {
   });
 };
 
+const inDocumentOrder = (a: Node, b: Node): number =>
+  a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+
+/**
+ * Each stagger container's batch: its children that one scroll, or one
+ * filter, brings into view together. Every `inView` callback of a batch
+ * runs in the browser's one task for intersection changes, in no order to
+ * rely on (bottom first, in Chrome), so the batch waits for that task to
+ * end, then starts in document order, the first at once and the next ones
+ * 80ms apart.
+ *
+ * Counting per batch, not per container (2026-10-26), is what keeps a long
+ * list quick: the 18th tile of a wall no longer waits 1.4s behind tiles
+ * that revealed long ago.
+ */
+const batches = new WeakMap<Element, readonly HTMLElement[]>();
+
+const queue = (element: HTMLElement, group: Element): void => {
+  const batch = batches.get(group) ?? [];
+  if (batch.length === 0) {
+    setTimeout(() => {
+      const ready = batches.get(group) ?? [];
+      batches.delete(group);
+      ready.toSorted(inDocumentOrder).forEach((child, index) => {
+        reveal(child, index * STAGGER_S);
+      });
+    });
+  }
+  batches.set(group, [...batch, element]);
+};
+
 const startReveals = (): void => {
   if (!wantsMotion()) return;
 
   const targets = [...singles(), ...staggered()];
   targets.forEach(hide);
 
-  targets.forEach((target) => {
+  targets.forEach(({ element, group }) => {
     /**
      * The callback returns nothing, so `inView` stops watching the element
      * after its first entry: each one reveals once and never replays.
      */
     inView(
-      target.element,
+      element,
       () => {
-        reveal(target);
+        if (group) queue(element, group);
+        else reveal(element, 0);
       },
       { amount: AMOUNT },
     );

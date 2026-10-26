@@ -39,6 +39,11 @@
  * removing both hands the element back to its classes, so hover styles and
  * the scroll reveal own it again.
  *
+ * The same entrance replays after a filter change (2026-10-26): the tiles
+ * the filter shows on screen enter again, 80ms apart, from the first one
+ * (`replayFiltered`, below). There is no hold to lift there: the filter
+ * shows a tile and this plays it in the same task, before any paint.
+ *
  * Writes go through `setAttribute` and `style.removeProperty`, never
  * property assignment, for the `no-param-reassign` reason given in
  * `counters.ts`.
@@ -67,14 +72,14 @@ const isHeld = (element: Element): boolean =>
 const stepOf = (element: HTMLElement): number =>
   Number(element.getAttribute('data-enter')) || 0;
 
-const enter = (element: HTMLElement): void => {
+const enter = (element: HTMLElement, delay: number): void => {
   animate(
     element,
     {
       opacity: [0, 1],
       transform: [`translateY(${RISE_PX}px)`, 'none'],
     },
-    { duration: DURATION_S, delay: stepOf(element) * STEP_S, ease: 'easeOut' },
+    { duration: DURATION_S, delay, ease: 'easeOut' },
   ).then(() => {
     element.style.removeProperty('opacity');
     element.style.removeProperty('transform');
@@ -89,10 +94,56 @@ const startEntrance = (): void => {
     ? elements.filter((element) => !isBelowFold(element) && isHeld(element))
     : [];
 
-  toPlay.forEach(enter);
+  toPlay.forEach((element) => {
+    enter(element, stepOf(element) * STEP_S);
+  });
   elements.forEach((element) => {
     element.setAttribute('data-entered', '');
   });
 };
 
+/**
+ * The event `project-filter.ts` sends from the list after the visitor
+ * changes the filter. The name is written in both files, so neither imports
+ * the other.
+ */
+const FILTER_EVENT = 'project-filter:change';
+
+/** Any part of it is on screen. */
+const isOnScreen = (element: Element): boolean => {
+  const { top, bottom } = element.getBoundingClientRect();
+  return bottom > 0 && top < window.innerHeight;
+};
+
+/** Still hidden inline by the scroll reveal, which plays it as it arrives. */
+const isRevealHeld = (element: HTMLElement): boolean =>
+  element.style.getPropertyValue('opacity') === '0';
+
+/**
+ * After a filter change, every tile it shows on screen enters again, one
+ * after another, so the visitor sees the wall redealt. A tile the scroll
+ * reveal still holds is left to it, which plays it the same way. Anything
+ * still moving from an earlier change or the load is cancelled first, so a
+ * quick second change starts clean.
+ */
+const replayFiltered = (event: Event): void => {
+  const list = event.target;
+  if (!wantsMotion() || !(list instanceof HTMLElement)) return;
+
+  const toPlay = [...list.children]
+    .filter(
+      (child): child is HTMLElement =>
+        child instanceof HTMLElement && !child.hidden,
+    )
+    .filter((tile) => isOnScreen(tile) && !isRevealHeld(tile));
+
+  toPlay.forEach((tile, index) => {
+    tile.getAnimations().forEach((running) => {
+      running.cancel();
+    });
+    enter(tile, index * STEP_S);
+  });
+};
+
 startEntrance();
+document.addEventListener(FILTER_EVENT, replayFiltered);

@@ -59,6 +59,13 @@
  *   `data-parallax-on`, so without the script the photo is not cropped more.
  * - The load entrance and the scroll reveal: the `<li>`.
  *
+ * While a photo loads, the tile shows more than its `panel` fill (2026-10-26):
+ * `src/scripts/tile-shimmer.ts` unhides the shimmer layer under the photo
+ * (`data-shimmer`, shipped `hidden`, so with no script there is only the
+ * fill) and sweeps its `heading` band across, then fades the photo in once
+ * it has arrived. The photo's `opacity` is a fourth property on its own
+ * element, so it fights none of the three.
+ *
  * The tile clips with `overflow-clip` and keeps `isolate`, the stacking
  * context that keeps the moving, growing photo clipped to the rounded
  * corners.
@@ -144,7 +151,20 @@ const enterStep = (index: number): number | undefined =>
         data-area={keys.area}
         data-enter={enterStep(index)}
         class="group relative isolate aspect-3/2 overflow-clip rounded-ui bg-panel md:aspect-4/3 lg:aspect-3/2 link-focus:outline-2 link-focus:outline-offset-2 link-focus:outline-accent"
+        data-tile-shimmer
       >
+        <div
+          aria-hidden="true"
+          hidden
+          class="absolute inset-0 -z-10 overflow-clip"
+          data-shimmer
+        >
+          <div
+            class="h-full w-1/2 bg-linear-to-r from-transparent via-heading/20 to-transparent"
+            data-shimmer-band
+          />
+        </div>
+
         <div class="parallax-photo -z-10" data-parallax-photo>
           <Photo
             photo={project.image}

@@ -30,17 +30,22 @@
  * A tile is hidden with the `hidden` attribute, so the grid closes up behind
  * it. A tile the scroll reveal is still holding back (`reveal.ts`) reveals
  * as usual when the filter brings it into view. Nothing here animates, so
- * reduced motion needs no check of its own. The first row's load entrance is
- * motion's (`enter.ts`), a Web Animation, which a tile coming back from
- * `display: none` does not replay, so there is nothing to tidy after it.
+ * reduced motion needs no check of its own. After each change the visitor
+ * makes, it sends `project-filter:change` from the list, and `enter.ts`
+ * plays the shown tiles in again (2026-10-26); with that script absent the
+ * event goes unheard and the wall simply redraws.
  *
  * Writes go through `toggleAttribute` and `replaceChildren`,
  * never property assignment, for the `no-param-reassign` reason given in
  * `counters.ts`.
  */
 
+/** Sent from the list after a visitor's change; `enter.ts` listens for it. */
+const FILTER_EVENT = 'project-filter:change';
+
 type Hooks = Readonly<{
   form: HTMLFormElement;
+  list: HTMLElement;
   tiles: readonly HTMLElement[];
   status: HTMLElement | null;
   empty: HTMLElement | null;
@@ -85,7 +90,10 @@ const countLine = (status: HTMLElement, count: number): string => {
  * first run, which only catches up with a form the browser restored (the
  * back button), so a visitor arriving on the page hears nothing extra.
  */
-const apply = ({ form, tiles, status, empty }: Hooks, announce: boolean) => {
+const apply = (
+  { form, list, tiles, status, empty }: Hooks,
+  announce: boolean,
+) => {
   const choices = choicesOf(form);
   const shown = tiles.filter((tile) => matches(tile, choices));
 
@@ -93,7 +101,10 @@ const apply = ({ form, tiles, status, empty }: Hooks, announce: boolean) => {
     tile.toggleAttribute('hidden', !shown.includes(tile));
   });
   empty?.toggleAttribute('hidden', shown.length > 0);
-  if (announce) status?.replaceChildren(countLine(status, shown.length));
+  if (announce) {
+    status?.replaceChildren(countLine(status, shown.length));
+    list.dispatchEvent(new CustomEvent(FILTER_EVENT, { bubbles: true }));
+  }
 };
 
 const startFilter = (): void => {
@@ -107,6 +118,7 @@ const startFilter = (): void => {
 
   const hooks: Hooks = {
     form,
+    list,
     tiles: [...list.children].filter(
       (child): child is HTMLElement => child instanceof HTMLElement,
     ),

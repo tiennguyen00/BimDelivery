@@ -92,7 +92,7 @@ const LIST_ID = 'project-list';
 </PageLayout>
 
 {/**
- * Five scripts, the page's choice, and every animation on the page is
+ * Seven scripts, the page's choice, and every animation on the page is
  * motion's (2026-10-09). `reveal.ts` (spec 0005), as on the About and
  * Contact pages: every tile below the fold reveals through the list's
  * stagger. `enter.ts` plays the load entrance: the hero (steps 0 to 2), then
@@ -102,7 +102,9 @@ const LIST_ID = 'project-list';
  * the hero, and back. The empty state and the accent band do not move.
  * `project-filter.ts` runs the hero's filter, and finds nothing to do when
  * the page has no projects. `parallax.ts` slides each tile's photo and words
- * as it crosses the screen.
+ * as it crosses the screen. `tile-shimmer.ts` sweeps a shimmer over each
+ * tile until its photo arrives, then fades the photo in (2026-10-26); after
+ * a filter change `enter.ts` plays the shown tiles in again.
  */}
 <script>
   import '../scripts/reveal';
@@ -111,4 +113,5 @@ const LIST_ID = 'project-list';
   import '../scripts/project-filter';
   import '../scripts/select-menu';
   import '../scripts/parallax';
+  import '../scripts/tile-shimmer';
 </script>
