@@ -1,6 +1,6 @@
 # 0006 · Photos served from internet links, and a white hero photo
 
-**Status**: Assumed
+**Status**: Superseded by [0019](0019-sanity-editing-layer/index.md) (ratified 2026-10-25: project photos move to Sanity's image CDN; every other photo stays a Pexels link only until its page moves to Sanity)
 **Date**: 2026-09-21
 **Authorized by**: tiennguyen00, during /develop ("refine the whole homepage first for the demo, then get back to update the architecture later")
 

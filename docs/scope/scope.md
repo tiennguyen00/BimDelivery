@@ -23,6 +23,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 10 | Contact page | Release 1 | in-progress |
 | 16 | Project detail pages | Release 1 | in-progress |
 | 17 | Smooth scrolling | Release 1 | in-progress |
+| 18 | Client editing in Sanity | Release 1 | in-progress |
 | 11 | SEO foundation | Release 2 | planned |
 | 12 | Performance & image handling | Release 2 | planned |
 | 13 | Privacy policy page | Release 2 | planned |
@@ -195,6 +196,18 @@ spec [0016](../specs/0016-smooth-wheel-scrolling.md) · code in [src/scripts/smo
   - [x] Anchors and checks: `scroll-behavior: smooth`, then the wheel, reduced motion, menu, Project page, skip link, and 390px checks in Chrome (AC-4, AC-5, AC-8)
 - [x] Verify it: `/check verify smooth scrolling`
 
+### 18. Client editing in Sanity
+The client's team edits the site themselves in Sanity Studio: Google or email sign in, drafts, a preview on the dev link, and Publish, with no developer in the loop. Projects come first, each room (subproject) carrying its own category and up to 20 large PNG photos served resized from Sanity's image CDN; every other page moves in later slices. Moved out of Deferred on 2026-10-25 (from spec 0019).
+**Done when:** an editor with no GitHub account adds a project with rooms in two categories and large PNG photos, previews it on the dev link, publishes it, and sees it live within minutes with no developer step; a bad entry never reaches the live site; and every page still prerenders.
+spec [0019](../specs/0019-sanity-editing-layer/index.md) · code in `studio/`, `workers/build-relay/`, `.github/workflows/`, and the `projects` loader in [src/content.config.ts](../../src/content.config.ts) (shared: `src/lib/sanity.ts`, `src/lib/sanity-image.ts`, `src/components/ui/Photo.astro`)
+- [x] Design it (spec): `/architect client editing in Sanity`
+- [ ] Build it: `/develop client editing in Sanity`
+  - [x] The Studio and the import: the Sanity project, the `studio/` workspace with every type, rule, and the media browser, and the six placeholder projects imported (AC-1 to AC-3, AC-12, AC-18)
+  - [x] The site reads Sanity: the loader and its Zod shape, derived categories, photos from the CDN through `Photo.astro`, the `|` filter keys, and the room label (AC-5, AC-7 to AC-10, AC-12, AC-15, AC-17)
+  - [ ] Gated and protected: the check, lint, and build gates, `noindex`, Cloudflare Access on the dev link, and a page by page comparison with production (AC-13, AC-15, AC-19)
+  - [ ] Publish and preview, end to end: GitHub Actions with the `production` Environment, the relay Worker, the webhook, the Preview on site button, the drills, and the editors invited (AC-4 to AC-6, AC-11, AC-14, AC-16, AC-19)
+- [ ] Verify it: `/check verify client editing in Sanity`
+
 ## Release 2: findable, fast, and live
 
 ### 11. SEO foundation · needs a decision
@@ -233,7 +246,8 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Working contact form delivery**: the message actually reaches an inbox, with spam protection · needs a decision
 - **Services overview page and more services**: grow from three toward the reference site's ten; decide then whether the home page keeps showing every service or a featured subset. Spec 0005 makes this a deliberate moment rather than a silent one: a fourth service entry stops the build until the home page's grid is decided (from specs 0002 and 0005)
 - **Second language**: the switcher and a full second set of copy; the content model is already shaped for it · needs a decision
-- **Content editing in a browser**: a real content system so copy changes need no code · needs a decision
+- **Every other page editable in Sanity**: the Project page copy, home, About, Contact, then settings, navigation, stats, and the 404 page, and services last; each moves its collection and its photos to Sanity, one child spec each in `docs/specs/0019-sanity-editing-layer/` · needs a decision (from spec 0019)
+- **Redirects for renamed project slugs**: an editor renaming a project's slug breaks its old URL; decide with the other redirects (from spec 0019)
 - **Cookie consent banner**: once you run tracking that legally needs consent · needs a decision
 - **Blog or insights section** · needs a decision
 - **Real brand**: the real logo, brand colours, and typeface replace the palette borrowed from paviliusbim.com before launch; update the tokens, both contrast tables, and walk `/styleguide` again (from spec 0003)
