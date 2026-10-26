@@ -31,6 +31,12 @@
       "skillPath": "skills/cloudflare/SKILL.md",
       "computedHash": "61b6c4b68c6b155302edeb63779d39600d88a0029ef2bb0667aedc07c9732ba4"
     },
+    "content-modeling-best-practices": {
+      "source": "sanity-io/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/content-modeling-best-practices/SKILL.md",
+      "computedHash": "7e2b080109bfc77dc16696da77dbe63786fe08f726e525b0704cf255fed49da9"
+    },
     "debug": {
       "source": "JavaScript-Mastery-Pro/skills",
       "sourceType": "github",
@@ -61,11 +67,29 @@
       "skillPath": "skills/pnpm/SKILL.md",
       "computedHash": "20bca721bb934e39c8ff2dc3df2cd1712f9efb5419afe2cb847267f6fe0eacbc"
     },
+    "portable-text-serialization": {
+      "source": "sanity-io/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/portable-text-serialization/SKILL.md",
+      "computedHash": "96693a472132e56c6a3f472c240348249d3e513b7a8ffd0089a267574227598a"
+    },
     "resend": {
       "source": "resend/resend-skills",
       "sourceType": "github",
       "skillPath": "skills/resend/SKILL.md",
       "computedHash": "f501c67f4f598480082c3b62f05ba7d0b9a13ef242c5d8f8bfc1090135f31ecd"
+    },
+    "sanity-best-practices": {
+      "source": "sanity-io/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/sanity-best-practices/SKILL.md",
+      "computedHash": "7d89951db0068c47558823835df28504142b83216ab7976828b8ba2a863a3915"
+    },
+    "sanity-migration": {
+      "source": "sanity-io/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/sanity-migration/SKILL.md",
+      "computedHash": "8eefb3651b0da4caab43d3414388fd5db8e92e11bd5b7dc09da0fefcf24d4ee7"
     },
     "scope": {
       "source": "JavaScript-Mastery-Pro/skills",
