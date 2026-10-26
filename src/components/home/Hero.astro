@@ -3,7 +3,7 @@
  * The front door's opening screen (spec 0005; redesigned 2026-10-11 after the
  * engineer's reference, then 2026-10-24 after the client's sketch, neither
  * yet folded into the spec). A photo band: the night photo of the tower and
- * the hillside covers the whole band, under `scrim-faint`, and the copy (a
+ * the hillside covers the whole band, and the copy (a
  * brass eyebrow, the title, which is the page's `h1`, a paragraph, and one
  * button) sits on the sky beside the tower. The site's numbers sit in a
  * frosted bar along the bottom. Below `lg` the photo simply covers the band
@@ -25,8 +25,9 @@
  * down by the same amount, so it fills the first screen exactly. It carries
  * `focus-contrast`, the ring for photos and accent fills.
  *
- * The photo reads bright under `scrim-faint` (30%); the copy darkens only
- * the sky behind itself, with a `scrim-soft` radial pool, and every word
+ * The photo reads bright, with no scrim over the band; the copy darkens only
+ * the sky behind itself, with a feathered radial pool (`scrim-strong` at its
+ * heart, through `scrim`, out to nothing), and every word
  * carries `text-glow`, as on the Project hero. The eyebrow and the `==`
  * phrase stay brass, as the client's sketch has them, measured over this
  * photo's sky rather than the pure white pixel the 4.5:1 rule assumes.
@@ -112,7 +113,6 @@ const format = new Intl.NumberFormat(lang);
     fetchpriority="high"
     class="absolute inset-0 -z-10 size-full object-cover object-[25%_50%] lg:hero-photo"
   />
-  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-scrim-faint"></div>
   <div
     aria-hidden="true"
     class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-24 bg-linear-to-t from-canvas to-transparent lg:h-32"
@@ -121,12 +121,13 @@ const format = new Intl.NumberFormat(lang);
   <div class="flex items-center px-4 py-10 md:px-6 md:py-12 lg:flex-1 lg:pe-8 lg:hero-copy-inset">
     <div class="relative mx-auto w-full max-w-content lg:mx-0 lg:max-w-narrow">
       {/**
-       * A soft dark pool behind the copy only, so the photo can stay bright
-       * everywhere else. Decoration, under every word.
+       * A wide, feathered dark pool behind the copy only, centred on it,
+       * darkest under the words and fading out with no edge, so the photo
+       * can stay bright everywhere else. Decoration, under every word.
        */}
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute -inset-x-16 -inset-y-12 -z-10 bg-radial from-scrim-soft to-transparent to-70%"
+        class="pointer-events-none absolute -inset-x-24 -inset-y-20 -z-10 -translate-x-5 bg-radial from-scrim-strong via-scrim via-40% to-transparent to-75%"
       ></div>
       <p
         class="entrance text-eyebrow font-semibold text-accent uppercase text-glow"

@@ -4,8 +4,9 @@
  * wide photo split into a pane per project, and one link to the full list.
  *
  * It renders only the inside of the band. The page wraps it in a `raised`
- * `Section` and decides which projects reach it (the first three by `order`),
- * so this component never reads a tone or a collection.
+ * `Section` and decides which projects reach it (one per category) and which
+ * categories each pane names, so this component never reads a tone or a
+ * collection.
  *
  * One photo, many windows (2026-10-24). The band's own `image` is optimised
  * once, to one file at one URL, and every pane paints its own part of it: a
@@ -19,9 +20,9 @@
  * `shape()` is missing). Each pane is `panel` underneath, so a photo that
  * fails to load still reads as panes.
  *
- * At rest a pane names only its categories (every category of the project's
- * rooms, joined with ` · `, spec 0019; the line may wrap), in Playfair at
- * its foot. Hover or
+ * At rest a pane names only the categories the page gives it (joined with
+ * ` · `, spec 0019; the line may wrap; the home page gives each project the
+ * one category it stands for), in Playfair at its foot. Hover or
  * keyboard focus unfolds the project's title under it (`tile-info`); on
  * touch, with no hover, the title is always there. The words sit on a light
  * fade, `scrim-soft` at the foot to nothing, so the photo stays bright. That

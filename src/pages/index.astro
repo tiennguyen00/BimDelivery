@@ -27,6 +27,8 @@ import {
   getProjects,
   getStats,
   servicePhoto,
+  type Project,
+  type ProjectCategory,
 } from '../lib/content';
 
 const lang = resolveLocale(Astro.currentLocale);
@@ -38,12 +40,42 @@ const [home, stats, projects] = await Promise.all([
 ]);
 
 /**
- * The showcase shows the first three projects in the site's order (spec
- * 0005), so an editor changes it by dragging projects in the Studio (spec
- * 0019), never by editing this file.
+ * The showcase features one project per category (2026-10-26), so its panes
+ * name three services, never one service three times. It walks the projects
+ * in the site's order and takes each one that brings a category no earlier
+ * pick has, and its pane names that category alone. So an editor still
+ * chooses which project stands for a category, and which pane comes first,
+ * by dragging projects in the Studio (spec 0019), never by editing this
+ * file. With fewer categories than panes, the mosaic has fewer panes.
  */
 const FEATURED_PROJECTS_COUNT = 3;
-const featuredProjects = projects.slice(0, FEATURED_PROJECTS_COUNT);
+
+type FeaturedProject = Readonly<{
+  project: Project;
+  category: ProjectCategory;
+}>;
+
+const featuredByCategory = (
+  all: readonly Project[],
+  count: number,
+): readonly FeaturedProject[] =>
+  all.reduce<readonly FeaturedProject[]>((picked, project) => {
+    if (picked.length === count) return picked;
+    const category = project.categories.find(
+      ({ slug }) => !picked.some((pick) => pick.category.slug === slug),
+    );
+    return category === undefined ? picked : [...picked, { project, category }];
+  }, []);
+
+const featuredProjects = featuredByCategory(
+  projects,
+  FEATURED_PROJECTS_COUNT,
+).map(({ project, category }) => ({
+  id: project.id,
+  slug: project.slug,
+  title: project.title,
+  categories: [category],
+}));
 
 /**
  * The services row's grid for one to four cards (spec 0013). Four fill
