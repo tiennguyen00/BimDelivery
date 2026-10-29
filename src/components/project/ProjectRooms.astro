@@ -17,9 +17,9 @@
  * work list at the foot. Below `lg` the photos come first, full width at 4:3,
  * so a swipe changes the words just under it.
  *
- * The photo's edge against the words fades into `accent-deep` (2026-10-13):
- * its foot below `lg`, its end side, a fifth of its width, from `lg`. It is
- * decoration over the track, under the arrows, and never catches a swipe.
+ * The photo meets the words in a hard edge (2026-10-29, the client's call):
+ * the old fade into `accent-deep` read as a stain over a white background
+ * render.
  *
  * The photos sit side by side in a `carousel-track`, every room's in content
  * order, each tagged with its room (`data-room`). The track is a native
@@ -27,10 +27,11 @@
  * script. With two or more photos, two round arrow buttons sit at the
  * photo's bottom corners; they ship `no-js:hidden`.
  *
- * `room-carousel.ts` makes the arrows step one photo and wrap, and keeps the
- * words in step with the photo on show: the matching name (`room-name`) and
- * work list (`room-work`) take `data-active`, and the list's items fade and
- * rise in. The first room carries `data-active` in the HTML. With no script
+ * `room-carousel.ts` makes the arrows step one photo, loops the track (a
+ * press or swipe past the last photo runs on to the first, and back), and
+ * keeps the words in step with the photo on show: the matching name
+ * (`room-name`) and work list (`room-work`) take `data-active`, and the
+ * list's items fade and rise in. The first room carries `data-active` in the HTML. With no script
  * every work list shows, each under its room's name.
  *
  * Each room's category (spec 0019) sits over its name as a small capitals
@@ -106,11 +107,6 @@ const arrowClass = cx(
         </li>
       ))}
     </ul>
-
-    <div
-      aria-hidden="true"
-      class="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-accent-deep to-transparent md:h-20 lg:inset-x-auto lg:inset-y-0 lg:inset-e-0 lg:h-auto lg:w-1/5 lg:bg-linear-to-l"
-    ></div>
 
     {slides.length > 1 && (
       <div class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-between p-4 no-js:hidden md:p-6">

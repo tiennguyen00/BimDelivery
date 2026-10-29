@@ -138,7 +138,9 @@ const ruleClass = 'heading-rule inline-block';
    * it the box is the flat map's own size.
    *
    * The globe layer stays `invisible` until it is on, so in the fallback it
-   * never covers the flat map's hover targets.
+   * never covers the flat map's hover targets. Once on it takes every touch
+   * (`touch-none`, 2026-10-29, the client's call): a drag that starts on the
+   * globe only turns it, in any direction, and never scrolls the page.
    */}
   <div class="lg:order-first lg:col-span-7">
     <div
@@ -162,7 +164,7 @@ const ruleClass = 'heading-rule inline-block';
       </div>
 
       <div
-        class="invisible absolute inset-0 cursor-grab touch-pan-y opacity-0 transition-opacity duration-700 group-data-globe-on/globe:visible group-data-globe-on/globe:opacity-100 active:cursor-grabbing"
+        class="invisible absolute inset-0 cursor-grab touch-none opacity-0 transition-opacity duration-700 group-data-globe-on/globe:visible group-data-globe-on/globe:opacity-100 active:cursor-grabbing"
         data-globe-layer
       >
         <div class="absolute inset-0">

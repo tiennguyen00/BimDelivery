@@ -32,6 +32,12 @@
  * phrase stay brass, as the client's sketch has them, measured over this
  * photo's sky rather than the pure white pixel the 4.5:1 rule assumes.
  *
+ * Below `lg` (2026-10-29, the client's call: the phone hero read black) the
+ * copy fills the band's width, so the pool would darken nearly all of the
+ * photo; there it is `scrim-soft` at heart, through `scrim-faint`. The
+ * numbers card is `scrim-soft` with no blur, its words carrying `text-glow`
+ * instead, so the photo shows through it sharp.
+ *
  * The photo is the page's largest contentful paint, so it loads eagerly and
  * at a high fetch priority. Two things move. The copy's four parts play the
  * CSS `entrance` on load, 80ms apart (steps 0 to 3; the button through a
@@ -93,8 +99,18 @@ const heroWidths = (sourceWidth: number): number[] => [
   sourceWidth,
 ];
 
+const photoRatio = image.src.width / image.src.height;
+
 /** What `hero-photo` and `hero-copy-inset` read, set on the band. */
-const photoVars = `--hero-photo-ratio: ${image.src.width / image.src.height}; --hero-copy-start: ${copyStart};`;
+const photoVars = `--hero-photo-ratio: ${photoRatio}; --hero-copy-start: ${copyStart};`;
+
+/**
+ * How wide the photo is drawn, so the browser picks a sharp enough file. It
+ * covers the band, so on a screen shaped narrower than the photo (every
+ * phone) it is drawn about a screen tall and as wide as its ratio asks, far
+ * wider than the screen. `100vw` there fetched a file 3 to 4 times too small.
+ */
+const photoSizes = `(min-aspect-ratio: ${image.src.width}/${image.src.height}) 100vw, ${Math.ceil(photoRatio * 100)}vh`;
 
 const format = new Intl.NumberFormat(lang);
 ---
@@ -108,7 +124,7 @@ const format = new Intl.NumberFormat(lang);
     src={image.src}
     alt={image.alt}
     widths={heroWidths(image.src.width)}
-    sizes="100vw"
+    sizes={photoSizes}
     loading="eager"
     fetchpriority="high"
     class="absolute inset-0 -z-10 size-full object-cover object-[25%_50%] lg:hero-photo"
@@ -127,7 +143,7 @@ const format = new Intl.NumberFormat(lang);
        */}
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute -inset-x-24 -inset-y-20 -z-10 -translate-x-5 bg-radial from-scrim-strong via-scrim via-40% to-transparent to-75%"
+        class="pointer-events-none absolute -inset-x-24 -inset-y-20 -z-10 -translate-x-5 bg-radial from-scrim-soft via-scrim-faint via-40% to-transparent to-75% lg:from-scrim-strong lg:via-scrim"
       ></div>
       <p
         class="entrance text-eyebrow font-semibold text-accent uppercase text-glow"
@@ -164,12 +180,13 @@ const format = new Intl.NumberFormat(lang);
        * its number the definition, shown number first by `flex-col-reverse`.
        * The icon is hidden, because the label already says what it pictures.
        * A `scrim-strong` fill under a `line` outline, so every pair keeps its
-       * contrast over any part of the photo.
+       * contrast over any part of the photo; below `lg`, `scrim-soft` with
+       * `text-glow` on the words (see the top of this file).
        */}
       <dl
         data-stats-band
         data-locale={lang}
-        class="mb-10 grid grid-cols-2 gap-y-2 rounded-card border border-line bg-scrim-strong py-4 backdrop-blur-sm lg:mb-8 lg:grid-cols-4 lg:divide-x lg:divide-line lg:py-6"
+        class="mb-10 grid grid-cols-2 gap-y-2 rounded-card border border-line bg-scrim-soft py-4 max-lg:text-glow lg:mb-8 lg:bg-scrim-strong lg:backdrop-blur-sm lg:grid-cols-4 lg:divide-x lg:divide-line lg:py-6"
       >
         {stats.map((item) => (
           <div class="flex flex-col items-start gap-3 px-5 py-2 lg:flex-row lg:items-center lg:justify-center lg:gap-4">

@@ -341,13 +341,15 @@ the band padding):
   ease in and out. On a plain `canvas` band the fade paints nothing.
 - The Project hero's photo fades into the wall below, over a taller stretch.
 - A `SplitBand` photo fades at its top and bottom and, from `lg`, along the
-  side that faces the copy.
+  side that faces the copy, except a project detail page's hero (below).
 - The contact form band fades at its top and bottom.
-- `ProjectRooms` fades its photo into its own `accent-deep` where they meet.
 
 A fade sits under every word and only ever darkens, so no contrast pair
 drops. The brass `CtaBand` keeps its hard edges: it is the one block meant to
-stand out.
+stand out. So does `ProjectRooms` where its photo meets its own
+`accent-deep` (2026-10-29, the client's call): the fade read as a stain over
+a white background render. A project detail page's hero `SplitBand` drops
+its fades for the same reason (`edge="hard"`, 2026-10-29).
 
 ## Components
 
@@ -1137,7 +1139,8 @@ band, the next project link (two or more projects only), and the accent
 its rooms' services, `projectPage.detail`, or the site name; the derived values (the next project,
 the fact rows, the head) come from `src/lib/project-detail.ts`.
 
-- **The hero** is the About page's `SplitBand`, unchanged: the title as the
+- **The hero** is the About page's `SplitBand`, with a hard edge
+  (`edge="hard"`, 2026-10-29: no fades over its white render): the title as the
   `h1`, the project's categories (joined with ` · `) as the brass tagline,
   the entry's `intro`
   paragraphs, and a "Discover more" button (`arrow-down`) to
@@ -1180,7 +1183,9 @@ the fact rows, the head) come from `src/lib/project-detail.ts`.
   `projectPage.detail.photoControls`. They ship `no-js:hidden`. The band
   takes `focus-contrast`.
 - **The words follow the photo**: `src/scripts/room-carousel.ts` makes each
-  arrow step one photo and wrap, and whenever the photo on show belongs to
+  arrow step one photo and loops the track (2026-10-29): a press or swipe past
+  the last photo glides on to the first, and past the first back to the last,
+  never back across them all. Whenever the photo on show belongs to
   another room (by arrow or by swipe), that room's name and work list take
   `data-active`. The active name turns `ink` to `heading` as a 24px rule
   slides in before it; the work lists share one grid cell, and the new one's

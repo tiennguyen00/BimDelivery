@@ -10,6 +10,9 @@
  * bottom fade into `canvas` over the band padding (`bandFadeClass`), and from
  * `lg` the side that faces the copy fades too, a quarter of its width, so the
  * copy and the photo read as one surface and two stacked bands melt together.
+ * A project's hero passes `edge="hard"` and drops all three fades
+ * (2026-10-29, as `ProjectRooms` did): over a white background render they
+ * read as a stain.
  *
  * It is its own band, not a `Section` tone, because its photo bleeds past the
  * band frame. The copy column borrows the frame's gutters and padding from
@@ -58,6 +61,8 @@ interface Props {
   /** A Pexels link (About), or a project's Sanity photo (spec 0019). */
   image: PhotoSource;
   imageSide: 'start' | 'end';
+  /** How the photo meets `canvas`: faded (the default) or a hard line. */
+  edge?: 'fade' | 'hard';
   /** Absent: no button. `arrow-down` for a jump down the page. */
   action?: Readonly<{
     label: string;
@@ -76,6 +81,7 @@ const {
   paragraphs,
   image,
   imageSide,
+  edge = 'fade',
   action,
   motion,
 } = Astro.props;
@@ -159,16 +165,20 @@ const actionStep = 2 + paragraphs.length;
       fetchpriority={onLoad ? 'high' : 'auto'}
       class="absolute inset-0 size-full object-cover"
     />
-    <div aria-hidden="true" class={cx('absolute', bandFadeClass.top)}></div>
-    <div aria-hidden="true" class={cx('absolute', bandFadeClass.bottom)}></div>
-    <div
-      aria-hidden="true"
-      class={cx(
-        'pointer-events-none absolute inset-y-0 hidden w-1/4 from-canvas to-transparent lg:block',
-        imageSide === 'start'
-          ? 'inset-e-0 bg-linear-to-l'
-          : 'inset-s-0 bg-linear-to-r',
-      )}
-    ></div>
+    {edge === 'fade' && (
+      <>
+        <div aria-hidden="true" class={cx('absolute', bandFadeClass.top)} />
+        <div aria-hidden="true" class={cx('absolute', bandFadeClass.bottom)} />
+        <div
+          aria-hidden="true"
+          class={cx(
+            'pointer-events-none absolute inset-y-0 hidden w-1/4 from-canvas to-transparent lg:block',
+            imageSide === 'start'
+              ? 'inset-e-0 bg-linear-to-l'
+              : 'inset-s-0 bg-linear-to-r',
+          )}
+        />
+      </>
+    )}
   </div>
 </section>
