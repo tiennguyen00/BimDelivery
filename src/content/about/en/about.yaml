@@ -1,11 +1,14 @@
 # The About & Services page (2026-10-11), top to bottom: the company, its
-# experience and services, one band per service, then the media band, which
-# has no copy yet. Each band is copy on one side and a full height photo on
-# the other, the sides alternating down the page.
+# expertise, the services overview, one band per service, then the media
+# band, which has no copy yet. The company, expertise, and service bands are
+# copy on one side and a full height photo on the other, the sides
+# alternating down the page; the overview is a band of tiles.
 #
-# The intro paragraph and the service texts are the client's copy (BIM
-# Delivery services.pdf). The taglines are placeholder copy, to be replaced
-# before launch. A `**phrase**` renders bold, a `==phrase==` bold brass.
+# The paragraphs and the service texts are the client's copy (BIM Delivery
+# services.pdf). The Team and Expertise points and the services overview are
+# the client's website copy (Desciptions.pdf, 2026-10-29). The taglines are
+# placeholder copy, to be replaced before launch. A `**phrase**` renders
+# bold, a `==phrase==` bold brass.
 lang: en
 seo:
   title: About & Services | BIM Delivery
@@ -16,31 +19,98 @@ intro:
   tagline: BIM and CAD production for design teams
   paragraphs:
     - With extensive experience in **BIM and CAD production**, our team works with design drawings, CAD files, sketches, and other project information to develop ==accurate and coordinated 3D BIM models== and project documentation. Our services specialize in **Architecture, Interior Design, and Landscape** for 3D modeling and 2D documentation.
+    - By working with **BIM Delivery**, clients extend their production capacity with a ==flexible BIM team== while keeping their core teams focused on design, coordination, and project management.
+  lists:
+    - heading: Our team
+      points:
+        - Detail-oriented professionals with a strong commitment to quality and project success.
+        - Energetic and proactive teams adapting to diverse project requirements.
+        - Experienced BIM leaders driving technical, team development, and quality oversight.
   cta: Discover more
   # PLACEHOLDER photo: the client is still choosing it.
   image:
     src: https://images.pexels.com/photos/6615107/pexels-photo-6615107.jpeg?auto=compress&cs=tinysrgb&w=1600
     alt: Three architects studying a white scale model of a building on a studio table
 experience:
-  heading: Experience and services
+  heading: Expertise in BIM project delivery
   tagline: Your BIM partner from concept to handover
   paragraphs:
-    - Our team has delivered ==more than a thousand projects== across residential, commercial, healthcare, education, and infrastructure work. We understand that every project has different requirements, standards, and workflows, and we work within our clients' **existing processes and project environments**.
-    - By working with **BIM Delivery**, clients extend their production capacity with a ==flexible BIM team== while keeping their core teams focused on design, coordination, and project management.
+    - We understand that every project has different requirements, standards, and workflows, and we work within our clients' **existing processes and project environments**.
+  lists:
+    - points:
+        - Extensive experience in BIM modeling and documentation for architecture, interior design, and landscape projects.
+        - Strong understanding of LOD requirements throughout design, tender, and construction stages.
+        - Proven capability to deliver projects in accordance with **ISO 19650**, BEP requirements, and client standards.
+        - Proficient in model coordination, clash detection, and design review workflows.
+        - Commitment to maintaining consistency between models, drawings, and issued documentation.
+        - Structured model management processes to accommodate design changes efficiently and accurately.
   cta: Explore our services
   # PLACEHOLDER photo: the client is still choosing it.
   image:
     src: https://images.pexels.com/photos/3862135/pexels-photo-3862135.jpeg?auto=compress&cs=tinysrgb&w=1600
     alt: Two engineers leaning over a large printed drawing spread out on a table
 services:
+  heading: Our services
+  intro: Trusted by prestigious global clients, investors, luxury brands, and leading design consultants, with extensive experience collaborating with renowned **Lead Design Consultants** on complex international projects.
+  # One tile each, in this order. `icon` is a line icon, as on the service
+  # pages' tiles, or `globe`.
+  facts:
+    - icon: layers
+      title: Disciplines
+      points:
+        - Architecture
+        - Interior
+        - Landscape
+    # Numbered, four to a column: 4, 4, 1 across three columns.
+    - icon: globe
+      title: Project locations
+      layout: index
+      points:
+        - Saudi Arabia
+        - United Arab Emirates
+        - United States
+        - United Kingdom
+        - Russia
+        - Japan
+        - Singapore
+        - Vietnam
+        - Egypt
+    - icon: blueprint
+      title: Project stages
+      points:
+        - Concept
+        - Schematic
+        - Detail
+        - Tender
+        - IFC
+    - icon: building-check
+      title: Delivery
+      points:
+        - BIM models from LOD 100 to LOD 500
+        - Drawings, schedules, and reports
+        - Clash detection and coordination
+    - icon: clash
+      title: AEC BIM platform
+      points:
+        - BIM authoring tools
+        - Coordination and clash detection
+        - Cloud collaboration and CDE
+        - BIM development and automation tools and plugins
+    - icon: clipboard-check
+      title: Quality assurance commitment
+      points:
+        - Responsive and highly collaborative project teams
+        - Rigorous and consistent QA/QC standards across all deliverables
+        - Utilization of advanced QA/QC software and BIM productivity tools
+        - Ongoing BIM model audits and proactive review of interdisciplinary change impacts
   cue: Discover more
   # One band per service, in this order. A service with a page is named by
   # id; its title, summary, and photo come from that entry. A service with
   # no page yet writes its own title, tagline, and photo, and has no button.
   items:
-    - service: en/architectural-bim
-      text: For architectural projects, BIM supports the development of **3D building models, floor plans, elevations, sections, architectural details, schedules, and construction documentation**. We take your CAD drawings and design information to detailed BIM models, helping you ==improve coordination and deliver projects more efficiently==.
     - service: en/interior-bim
       text: For interior design projects, BIM supports **3D interior models, furniture and equipment layouts, material specifications, reflected ceiling plans, joinery, and finishes**. We take your design concepts to detailed BIM models and construction documentation, helping you ==improve coordination, efficiency, and project delivery==.
+    - service: en/architectural-bim
+      text: For architectural projects, BIM supports the development of **3D building models, floor plans, elevations, sections, architectural details, schedules, and construction documentation**. We take your CAD drawings and design information to detailed BIM models, helping you ==improve coordination and deliver projects more efficiently==.
     - service: en/landscape-bim
       text: BIM brings landscape design, site information, and building elements together in a **coordinated 3D environment**. We develop **terrain, hardscape, planting areas, outdoor structures, levels, and paths** from your CAD drawings and design information, as ==detailed and coordinated landscape BIM models==.

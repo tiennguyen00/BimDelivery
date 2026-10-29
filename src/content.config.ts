@@ -475,14 +475,45 @@ const splitBand = z.strictObject({
   /** The short brass line under the heading. */
   tagline: text,
   paragraphs: z.array(emphasisText).min(1),
+  /**
+   * Point lists after the paragraphs (2026-10-29), each under its own small
+   * heading when it has one: the client's Team and Expertise points.
+   */
+  lists: z
+    .array(
+      z.strictObject({
+        heading: text.optional(),
+        points: z.array(emphasisText).min(1),
+      }),
+    )
+    .default([]),
   cta: text,
   image: photoSchema,
 });
 
+/**
+ * One fact in the About page's services overview (2026-10-29): a line icon,
+ * a title, and its short points, such as the project stages. `layout`
+ * `index` numbers the points and runs them four to a column, in up to three
+ * columns (the project locations); `list` is one plain column.
+ */
+const serviceFact = z
+  .strictObject({
+    icon: z.enum([...lineIcons, 'globe']),
+    title: text,
+    layout: z.enum(['list', 'index']).default('list'),
+    points: z.array(text).min(1),
+  })
+  .refine((fact) => fact.layout !== 'index' || fact.points.length <= 12, {
+    path: ['points'],
+    message: 'an `index` fact holds at most 12 points, three columns of four',
+  });
+
 // The About & Services page (2026-10-11, replacing spec 0010's three bands):
-// the company, its experience, one band per service, then the media band,
-// which has no copy yet. Strict at every level, so a leftover `capability`
-// or `certification` from the old page, or a typo, fails the build by name.
+// the company, its experience, the services overview, one band per service,
+// then the media band, which has no copy yet. Strict at every level, so a
+// leftover `capability` or `certification` from the old page, or a typo,
+// fails the build by name.
 const about = defineCollection({
   loader: load('about', 'yaml'),
   schema: z.strictObject({
@@ -492,6 +523,13 @@ const about = defineCollection({
     intro: splitBand,
     experience: splitBand,
     services: z.strictObject({
+      /**
+       * The overview band before the service bands (2026-10-29): the
+       * heading, who the team works for, then two to six facts.
+       */
+      heading: text,
+      intro: emphasisText,
+      facts: z.array(serviceFact).min(2).max(6),
       /** The button on a band whose service has a page, "Discover more". */
       cue: text,
       /**

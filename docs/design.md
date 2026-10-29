@@ -362,6 +362,15 @@ are React because the contact island (feature 10) needs them, and the button
 exists in both idioms sharing one class map so they cannot drift apart;
 everything else is Astro.
 
+The About & Services page's own bands live in `src/components/about/`
+(2026-10-29): `SplitBand` may end its copy with point lists, each a `check`
+list in the accent as the presence band's why choose list, under a small
+`text-h3` heading when it has one; `ServicesOverview` is a `raised` band of
+`FeaturesSplit` tiles (a 40px line icon, an `h3`, and short points in the
+small size), one column, two from `md`, three from `lg`. A tile in the
+`index` layout (the project locations) fills four rows down per column, with
+no number or marker before a name.
+
 ### `Section` · `src/components/ui/Section.astro`
 
 A full width band with its content centred. It owns page width and gutters, so

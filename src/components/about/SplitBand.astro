@@ -3,8 +3,10 @@
  * One band of the About & Services page (2026-10-11): copy on one side, a
  * full height photo on the other, after the engineer's reference. The copy
  * is a heading (capitals, CSS only, so a screen reader reads words), a brass
- * tagline, the paragraphs, and an optional button; the photo runs to the
- * screen's edge and the band's top and bottom.
+ * tagline, the paragraphs, any point lists (2026-10-29, each a `check` list
+ * as the presence band's, under a small heading when it has one), and an
+ * optional button; the photo runs to the screen's edge and the band's top
+ * and bottom.
  *
  * The photo never meets `canvas` in a hard line (2026-10-13): its top and
  * bottom fade into `canvas` over the band padding (`bandFadeClass`), and from
@@ -58,6 +60,11 @@ interface Props {
   tagline: string;
   /** Each may carry `**bold**` and `==accent==` phrases. */
   paragraphs: readonly string[];
+  /** After the paragraphs; each point may carry marks too. */
+  lists?: readonly Readonly<{
+    heading?: string;
+    points: readonly string[];
+  }>[];
   /** A Pexels link (About), or a project's Sanity photo (spec 0019). */
   image: PhotoSource;
   imageSide: 'start' | 'end';
@@ -79,6 +86,7 @@ const {
   headingId,
   tagline,
   paragraphs,
+  lists = [],
   image,
   imageSide,
   edge = 'fade',
@@ -87,12 +95,14 @@ const {
 } = Astro.props;
 
 const Heading = headingLevel === 1 ? 'h1' : 'h2';
+const ListHeading = headingLevel === 1 ? 'h2' : 'h3';
 const onLoad = motion === 'entrance';
 
 /** The copy's parts in order, so each knows its entrance step. */
 const step = (index: number): Readonly<{ class?: string; style?: string }> =>
   onLoad ? { class: 'entrance', style: `--entrance-step: ${index}` } : {};
-const actionStep = 2 + paragraphs.length;
+const listStep = 2 + paragraphs.length;
+const actionStep = listStep + lists.length;
 ---
 
 <section
@@ -135,6 +145,32 @@ const actionStep = 2 + paragraphs.length;
         >
           <Emphasis text={paragraph} />
         </p>
+      ))}
+      {lists.map((list, index) => (
+        <div
+          class:list={['mt-8', step(listStep + index).class]}
+          style={step(listStep + index).style}
+        >
+          {list.heading && (
+            <ListHeading class="mb-4 text-h3 text-heading">
+              {list.heading}
+            </ListHeading>
+          )}
+          <ul class="flex flex-col gap-3 text-body text-ink">
+            {list.points.map((point) => (
+              <li class="flex items-start gap-3">
+                <Icon
+                  name="check"
+                  size={20}
+                  class="mt-1 shrink-0 text-accent"
+                />
+                <span>
+                  <Emphasis text={point} />
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       ))}
       {action && (
         <div

@@ -1,0 +1,104 @@
+---
+/**
+ * The About & Services page's services overview (2026-10-29): the client's
+ * "Our Services" facts in one band before the service bands. A centred ruled
+ * heading and a lead line, then one tile per fact, such as the project
+ * stages or the delivery.
+ *
+ * The page wraps it in a `Section`; its colours are the band strings in
+ * `styles.ts`. Each tile is the `FeaturesSplit` tile: a 40px line icon with
+ * a 1.5 stroke, the title as an `h3`, then the points as a list in the small
+ * size. The tiles run one column below `md`, two from it, and three from
+ * `lg`, so six facts sit as two rows.
+ *
+ * A fact in the `index` layout (the project locations) fills four rows down
+ * before starting the next column, so nine points read 4, 4, 1 across three
+ * columns, with no number or marker before a name. Each column is as wide as
+ * its longest name allows. The three columns need about 220px, which a tile
+ * in the `lg` row lacks below about 1280px, so the tile is a container and
+ * the list stays one column until its tile is 15.75rem wide, never clipping
+ * a name.
+ *
+ * Motion: the heading block reveals as one, then the tiles one after another,
+ * and the heading draws its rule with the scroll direction. Inert until the
+ * page imports `src/scripts/reveal.ts`.
+ */
+import Emphasis from '../ui/Emphasis.astro';
+import Icon, { type IconName } from '../ui/Icon.astro';
+import {
+  bandBodyClass,
+  bandHeadingClass,
+  bandIconClass,
+  bandTileClass,
+  cx,
+} from '../ui/styles';
+
+interface Props {
+  heading: string;
+  headingId: string;
+  /** May carry `**bold**` and `==accent==` phrases. */
+  intro: string;
+  facts: readonly Readonly<{
+    icon: IconName;
+    title: string;
+    layout: 'list' | 'index';
+    points: readonly string[];
+  }>[];
+}
+
+const { heading, headingId, intro, facts } = Astro.props;
+---
+
+<div class="mx-auto max-w-narrow text-center" data-reveal>
+  <h2
+    id={headingId}
+    class={cx('heading-rule inline-block', bandHeadingClass)}
+    data-heading-rule
+  >
+    {heading}
+  </h2>
+  <p class={cx('mt-8 text-lead', bandBodyClass)}>
+    <Emphasis text={intro} />
+  </p>
+</div>
+
+<div
+  class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+  data-reveal-stagger
+>
+  {facts.map((fact) => (
+    <div
+      class={cx(
+        'flex flex-col p-6',
+        bandTileClass,
+        fact.layout === 'index' && '@container',
+      )}
+    >
+      <Icon
+        name={fact.icon}
+        size={40}
+        strokeWidth={1.5}
+        class={bandIconClass}
+      />
+      <h3 class={cx('mt-4', bandHeadingClass)}>{fact.title}</h3>
+      {fact.layout === 'index' ? (
+        <ul
+          class={cx(
+            'mt-3 flex flex-col gap-1.5 text-small @min-[15.75rem]:grid @min-[15.75rem]:grid-flow-col @min-[15.75rem]:grid-rows-[repeat(4,auto)] @min-[15.75rem]:gap-x-6',
+            bandBodyClass,
+          )}
+        >
+          {fact.points.map((point) => (
+            <li>{point}</li>
+          ))}
+        </ul>
+      ) : (
+        <ul class={cx('mt-3 flex flex-col gap-1.5 text-small', bandBodyClass)}>
+          {fact.points.map((point) => (
+            <li>{point}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  ))}
+</div>

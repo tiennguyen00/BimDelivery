@@ -1,7 +1,7 @@
 lang: en
 seo:
   title: BIM Delivery | BIM and Revit Modeling Services
-  description: Accurate BIM and Revit models, scan to BIM, and clash coordination for architects, engineers, and contractors worldwide.
+  description: BIM consulting and production for Architecture, Interior, and Landscape projects, with models and documentation checked by rigorous QA/QC.
 hero:
   eyebrow: BIM and Revit specialists
   heading: BIM and Revit modeling ==you can build from==
@@ -20,11 +20,12 @@ intro:
     - worldwide
     - abcxyz
     - xyzcba
+  # The client's website copy (Desciptions.pdf, 2026-10-29).
   lead:
-    highlight: BIM Delivery
-    text: is a BIM consulting and engineering team delivering accurate Revit models, BIM coordination, and digital construction support to the architecture, engineering, and construction industry. We partner with architects, engineers, contractors, manufacturers, and facility managers to make project delivery smoother through clear BIM workflows.
+    highlight: BIMD
+    text: is a trusted BIM consulting and production partner specializing in Architecture, Interior, and Landscape projects. With extensive experience collaborating with leading clients, design consultants, and multidisciplinary teams across the global AEC industry, we deliver high-quality BIM models and documentation through efficient workflow collaboration, rigorous QA/QC processes, and reliable project delivery.
   paragraphs:
-    - Our team brings accuracy, speed, and value to every stage of a project. By pairing technical depth with fast turnaround and close collaboration, we help you reduce risk, improve coordination, and deliver successful projects in every market you work in.
+    - At BIMD, our core values go beyond delivering quality BIM services with cost efficiency and speed. We are committed to fostering long-term partnerships through trust, client satisfaction, and responsive support throughout every stage of the project lifecycle.
 overview:
   heading: A BIM partner for the whole project
   paragraphs:
@@ -48,68 +49,53 @@ services:
     - en/landscape-bim
 presence:
   heading: Delivering BIM excellence across the globe
-  # PLACEHOLDER locations (spec 0017): replace with the real offices and
-  # projects. `office` is green with its name always shown, `project` is red
-  # with its name on hover.
+  # The headquarters, then the client's project locations (Desciptions.pdf,
+  # 2026-10-29), one marker per country at its capital or main project city.
+  # `office` is green with its name always shown, `project` is red with its
+  # name on hover.
   locations:
     - name: Headquarters, Ho Chi Minh City
       kind: office
       lon: 106.7
       lat: 10.8
-    - name: London office
-      kind: office
-      lon: -0.1
-      lat: 51.5
-    - name: Sydney office
-      kind: office
-      lon: 151.2
-      lat: -33.9
-    - name: New York
-      kind: project
-      lon: -74
-      lat: 40.7
-    - name: Los Angeles
-      kind: project
-      lon: -118.2
-      lat: 34.1
-    - name: Toronto
-      kind: project
-      lon: -79.4
-      lat: 43.7
-    - name: Berlin
-      kind: project
-      lon: 13.4
-      lat: 52.5
-    - name: Paris
-      kind: project
-      lon: 2.35
-      lat: 48.9
-    - name: Dubai
-      kind: project
-      lon: 55.3
-      lat: 25.2
-    - name: Riyadh
+    - name: Saudi Arabia
       kind: project
       lon: 46.7
       lat: 24.7
+    - name: United Arab Emirates
+      kind: project
+      lon: 55.3
+      lat: 25.2
+    - name: United States
+      kind: project
+      lon: -74
+      lat: 40.7
+    - name: United Kingdom
+      kind: project
+      lon: -0.1
+      lat: 51.5
+    - name: Russia
+      kind: project
+      lon: 37.6
+      lat: 55.8
+    - name: Japan
+      kind: project
+      lon: 139.7
+      lat: 35.7
     - name: Singapore
       kind: project
       lon: 103.8
       lat: 1.35
-    - name: Tokyo
+    - name: Vietnam
       kind: project
-      lon: 139.7
-      lat: 35.7
-    - name: Melbourne
+      lon: 105.8
+      lat: 21
+    - name: Egypt
       kind: project
-      lon: 145
-      lat: -37.8
-    - name: Auckland
-      kind: project
-      lon: 174.8
-      lat: -36.8
+      lon: 31.2
+      lat: 30
   legend:
-    offices: Headquarters and offices
+    offices: Headquarters
     projects: Project locations
   whyChoose:
     heading: Why choose BIM Delivery?
