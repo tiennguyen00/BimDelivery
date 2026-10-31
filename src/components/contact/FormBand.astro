@@ -30,8 +30,16 @@
  *
  * Reveal order: the heading, then the form, then each card in turn. All
  * inert unless the page imports `reveal.ts`.
+ *
+ * The band starts on screen at load on every screen, its top about two
+ * thirds of the way down, where the scroll reveal leaves it alone. So
+ * `entranceFrom` (2026-10-31) also gives the heading and the form the load
+ * `entrance`, at that step and the next, the spec 0012/0013 rule; the page
+ * gives each card the steps after them. On screen the entrance moves a unit,
+ * below the fold the scroll reveal.
  */
 import { Image } from 'astro:assets';
+import { entranceClass, entranceStyle } from '../ui/entrance';
 import {
   bandFadeClass,
   bandGutterClass,
@@ -51,9 +59,15 @@ interface Props {
   noScript: string;
   email: string;
   phone: string;
+  /**
+   * The heading's `--entrance-step`, the form's is the next. Without it the
+   * band does not move on load.
+   */
+  entranceFrom?: number;
 }
 
-const { heading, headingId, background, noScript, email, phone } = Astro.props;
+const { heading, headingId, background, noScript, email, phone, entranceFrom } =
+  Astro.props;
 ---
 
 <section
@@ -84,7 +98,15 @@ const { heading, headingId, background, noScript, email, phone } = Astro.props;
   ></div>
 
   <div class={bandWidthClass.default}>
-    <h2 id={headingId} class="text-balance text-heading uppercase" data-reveal>
+    <h2
+      id={headingId}
+      class={cx(
+        'text-balance text-heading uppercase',
+        entranceClass(entranceFrom),
+      )}
+      style={entranceStyle(entranceFrom, 0)}
+      data-reveal
+    >
       {heading}
     </h2>
 
@@ -107,7 +129,11 @@ const { heading, headingId, background, noScript, email, phone } = Astro.props;
           </div>
         </noscript>
 
-        <div data-reveal>
+        <div
+          class={entranceClass(entranceFrom)}
+          style={entranceStyle(entranceFrom, 1)}
+          data-reveal
+        >
           <slot />
         </div>
       </div>

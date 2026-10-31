@@ -1328,10 +1328,10 @@ pages use the same reveal script and add the carousel (spec 0013).
   motion it does not run, so everything is simply there. It moves by
   `translate`, so nothing around it shifts. **Never** combine it with
   `data-reveal` on one element; the About band takes no scroll reveal for that
-  reason. The rule has three written exceptions, all for a band that is on
+  reason. The rule has four written exceptions, all for a band that is on
   screen at load on a desktop, where the scroll reveal never moves anything,
-  and below the fold on a phone. Whichever applies moves it; the other stays
-  out of sight.
+  and below the fold on a phone, or partly so. Whichever applies moves it;
+  the other stays out of sight.
   - The About capability band (spec 0012): its two columns take the entrance
     at the steps after the last number (`entranceFrom`, `2 + stats.length`)
     and stay in the scroll reveal's stagger.
@@ -1348,6 +1348,11 @@ pages use the same reveal script and add the carousel (spec 0013).
     this page the entrance is motion's (below), a Web Animation, which
     `display: none` does not replay by itself; the filter redeal (below)
     plays it again on purpose.
+  - The Contact page's form band (2026-10-31): it starts about two thirds of
+    the way down the first screen on every screen, so its heading and form
+    take the entrance at steps 3 and 4 (`entranceFrom`) and each card the
+    next step in turn (5 to 7), all staying in the scroll reveal. Before,
+    the heading, the form, and a desktop's first card sat still on load.
 - **The accordion slide**, in the `accordion-item` utility (spec 0010). Where
   the browser supports `::details-content` and `interpolate-size` (Chrome and
   Edge today), a panel's height slides between nothing and its content over
@@ -1356,8 +1361,9 @@ pages use the same reveal script and add the carousel (spec 0013).
 - The Contact page imports `reveal.ts` too (spec 0011): its intro band moves
   on load through the `entrance` utility (heading 0, paragraph 1, photo 2)
   and takes no `data-reveal`; in the form band the heading, then the form,
-  then each card reveal on scroll, and the intro heading's rule draws with
-  the scroll direction.
+  then each card play the entrance on load (steps 3 to 7) and reveal on
+  scroll when they start below the fold (above), and the intro heading's
+  rule draws with the scroll direction.
 - The About page imports `reveal.ts` too: its capability band's two columns
   reveal one after the other when they start below the fold (and move by the
   load entrance when they start on screen, above), its certification band's heading block,

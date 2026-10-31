@@ -17,8 +17,9 @@
  *
  * It lives in `ui` because spec 0014 shared it with the Project page's
  * gallery. That page's animations are all motion's now (2026-10-09), so its
- * first row takes a `data-enter` step for `src/scripts/enter.ts` instead, and
- * the service bands are the helpers' one caller.
+ * first row takes a `data-enter` step for `src/scripts/enter.ts` instead.
+ * The service bands call the helpers, and so does the Contact page's form
+ * band (2026-10-31), with its cards.
  */
 
 export const entranceClass = (

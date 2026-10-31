@@ -22,6 +22,7 @@ import IntroBand from '../components/contact/IntroBand.astro';
 import FormBand from '../components/contact/FormBand.astro';
 import ContactCard from '../components/contact/ContactCard.astro';
 import { ContactForm } from '../components/react/ContactForm';
+import { entranceClass, entranceStyle } from '../components/ui/entrance';
 import { resolveLocale } from '../i18n/locales';
 import { getContactPage, getServices } from '../lib/content';
 import { telHref } from '../lib/contact';
@@ -50,6 +51,17 @@ const needs = services.map((service) => ({
   value: service.slug,
   label: service.title,
 }));
+
+/**
+ * The form band's load entrance picks up where the intro's ends (steps 0 to
+ * 2): its heading at 3 and its form at 4, then each card in turn, the cards
+ * counted from the band's third unit.
+ */
+const FORM_ENTRANCE = 3;
+const cardEntrance = (index: number) => ({
+  class: entranceClass(FORM_ENTRANCE),
+  style: entranceStyle(FORM_ENTRANCE, 2 + index),
+});
 ---
 
 <PageLayout title={page.seo.title} description={page.seo.description}>
@@ -69,6 +81,7 @@ const needs = services.map((service) => ({
     noScript={form.noScript}
     email={details.email}
     phone={details.phone}
+    entranceFrom={FORM_ENTRANCE}
   >
     <ContactForm
       client:visible={{ rootMargin: '200px' }}
@@ -85,17 +98,20 @@ const needs = services.map((service) => ({
       icon="headset"
       heading={page.cards.talk.heading}
       body={{ label: details.phone, href: telHref(details.phone) }}
+      {...cardEntrance(0)}
     />
     <ContactCard
       slot="cards"
       icon="map-pin"
       heading={page.cards.visit.heading}
       body={details.address}
+      {...cardEntrance(1)}
     />
     <ContactCard
       slot="cards"
       icon="envelope"
       heading={{ label: details.email, href: `mailto:${details.email}` }}
+      {...cardEntrance(2)}
     />
   </FormBand>
 </PageLayout>
@@ -104,6 +120,9 @@ const needs = services.map((service) => ({
  * The scroll reveal and the heading rule (spec 0005), the page's choice as on
  * the About page. The intro band carries no `data-reveal`: it moves on load
  * through the CSS `entrance` instead, so the two never touch the same thing.
+ * The form band takes both (2026-10-31): it starts on screen at load, where
+ * the entrance moves it, and what of it starts below the fold the scroll
+ * reveal moves.
  */}
 <script>
   import '../scripts/reveal';

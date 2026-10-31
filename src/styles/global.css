@@ -480,7 +480,7 @@
  * language, with no script at all. Callers set `--entrance-step` in a
  * `style` attribute, and each step waits 80ms, the scroll reveal's stagger.
  * Today the home hero's copy, the About band's heading, paragraph, and
- * numbers, the Contact intro,
+ * numbers, the Contact intro and form band,
  * and each service page's intro (spec 0013). The Project page plays the same
  * entrance through motion instead, held by the `data-enter` rule below.
  *
@@ -489,16 +489,18 @@
  * everything is simply there. It moves by `translate`, never `transform`, so
  * nothing around it shifts and it composes with anything else that moves.
  *
- * Never put it on an element that also takes `data-reveal`, with three
+ * Never put it on an element that also takes `data-reveal`, with four
  * written exceptions, all for a band that is on screen at load on a desktop
- * and below the fold on a phone:
+ * and below the fold on a phone, or partly so:
  *
  * - the About page's capability band (spec 0012), whose two columns take
  *   both;
  * - the block right after a service intro (spec 0013, the same rule
  *   generalised), whose every reveal unit takes both;
  * - the Project page's gallery (spec 0014), whose first row takes both, now
- *   by `data-enter` (below), and only that row.
+ *   by `data-enter` (below), and only that row;
+ * - the Contact page's form band (2026-10-31), whose heading, form, and
+ *   cards take both.
  *
  * The scroll reveal leaves on screen units alone, and under a unit it hides,
  * this animation runs from opacity 0 to the scroll reveal's inline 0, unseen.
