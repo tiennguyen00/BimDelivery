@@ -98,11 +98,6 @@
      white pixel falls to 2.99:1, so every word on it carries `text-glow`,
      which darkens the photo right round each letter. */
   --color-scrim-soft: rgb(12 21 25 / 0.5);
-  /* The home hero's layer over its whole photo (2026-10-24), Chinese Black
-     at 30 percent, so the night photo reads bright. Never alone under words:
-     the copy adds a `scrim-soft` radial pool behind itself, and every word
-     carries `text-glow`. */
-  --color-scrim-faint: rgb(12 21 25 / 0.3);
   /* The contact form band's layer, where small text sits straight on it,
      and a project tile's hovered caption. At 90 percent, with the
      `bg-diagonal` stripe on top, its worst pixel is #31393c: `heading`

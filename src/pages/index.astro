@@ -26,7 +26,6 @@ import {
   getHomePage,
   getProjects,
   getStats,
-  servicePhoto,
   type Project,
   type ProjectCategory,
 } from '../lib/content';
@@ -111,15 +110,16 @@ const SERVICE_ROWS = {
 } as const;
 
 /**
- * The row's cards: the featured services, each linking to its page, then the
- * `extra` ones, which have no page and so no link.
+ * The row's cards: the featured services, each linking to its page with the
+ * photo `getHomePage` picked for it, then the `extra` ones, which have no
+ * page and so no link.
  */
 const serviceCards = [
-  ...home.services.featured.map((service) => ({
+  ...home.services.featured.map(({ service, image }) => ({
     title: service.title,
     summary: service.summary,
     href: `/${service.slug}` as string | undefined,
-    image: servicePhoto(service),
+    image,
   })),
   ...home.services.extra.map((card) => ({
     title: card.title,
@@ -152,6 +152,7 @@ const serviceRow =
     lead={home.hero.lead}
     image={{ src: home.hero.image.src, alt: home.hero.image.alt ?? '' }}
     copyStart={home.hero.copyStart}
+    phoneImage={home.hero.phoneImage}
     primaryCta={home.hero.primaryCta}
     stats={stats}
     lang={lang}

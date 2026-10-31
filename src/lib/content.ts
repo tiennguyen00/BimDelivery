@@ -15,6 +15,7 @@
  * `load*` wrappers touch Astro.
  */
 import { getCollection } from 'astro:content';
+import type { ImageMetadata } from 'astro';
 import type { CollectionEntry, CollectionKey } from 'astro:content';
 import type { Locale } from '../i18n/locales';
 
@@ -390,18 +391,40 @@ export const getSettings = async (lang: Locale) =>
 export const getStats = async (lang: Locale): Promise<readonly StatItem[]> =>
   (await loadSingle('stats', lang, 'stats')).data.items;
 
+/** One featured home card: its service, and the photo the card draws. */
+export type FeaturedService = Readonly<{
+  service: Service;
+  /** The card's own local file, or else the service's intro photo. */
+  image: Readonly<{ src: ImageMetadata | string; alt: string }>;
+}>;
+
 /** The home page, with `services.featured` resolved to its services, in order. */
 export const getHomePage = async (lang: Locale) => {
   const [entry, services] = await Promise.all([
     loadSingle('home', lang, 'home'),
     loadChecked('services'),
   ]);
-  const featured = resolveServiceRefs(
+  const items = entry.data.services.featured;
+  const resolved = resolveServiceRefs(
     { page: 'home', file: fileOf(entry), field: 'services.featured' },
     lang,
-    entry.data.services.featured,
+    items.map((item) => item.service),
     services,
   );
+  const featured = items.map((item): FeaturedService => {
+    const service = resolved.find(
+      (candidate) => candidate.id === item.service.id,
+    );
+    if (!service) {
+      throw new Error(`[content] home: "${item.service.id}" did not resolve`);
+    }
+    return {
+      service,
+      image: item.image
+        ? { src: item.image.src, alt: item.image.alt ?? '' }
+        : servicePhoto(service),
+    };
+  });
   return { ...entry.data, services: { ...entry.data.services, featured } };
 };
 

@@ -9,8 +9,10 @@ hero:
   image:
     src: ../../../assets/images/home/banner-homepage.jpg
     alt: A residential tower and terraced hillside homes at dusk, their windows and pools lit warm among the trees
-  # The tower's right edge: 473 of the photo's 1678 px.
+  # The tower's right edge: 541 of the photo's 1920 px.
   copyStart: 0.282
+  # The same render for phones: its x 210 to 1290 of 1920, the full height.
+  phoneImage: ../../../assets/images/home/banner-homepage-phone.jpg
   primaryCta:
     label: Talk to our team
     href: /contact-us
@@ -42,11 +44,22 @@ services:
     decorative: true
   cardCue: Learn more
   # The services that get a card, in this order: one to three service ids.
-  # A new service reaches the home page only once it is listed here.
+  # A new service reaches the home page only once it is listed here. `image`
+  # is the card's own photo, cut from the client's project renders (see
+  # CREDITS.md); without one the card shows the service's first intro photo.
   featured:
-    - en/architectural-bim
-    - en/interior-bim
-    - en/landscape-bim
+    - service: en/interior-bim
+      image:
+        src: ../../../assets/images/services/card-interior-bim.jpg
+        alt: A hotel lobby model with a backlit green marble feature wall, a reception desk, and olive lounge chairs
+    - service: en/architectural-bim
+      image:
+        src: ../../../assets/images/services/card-architectural-bim.jpg
+        alt: The front elevation of a mixed use tower model, its two wings joined by a bridge of floors over a tall opening
+    - service: en/landscape-bim
+      image:
+        src: ../../../assets/images/services/card-landscape-bim.jpg
+        alt: A hillside residence model seen from above, with terraced villas among trees, lawns, and a planted roundabout
 presence:
   heading: Delivering BIM excellence across the globe
   # The headquarters, then the client's project locations (Desciptions.pdf,

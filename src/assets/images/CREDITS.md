@@ -63,10 +63,55 @@ placeholders until real project photography arrives.
 
 ## Local images
 
-| Used for              | File                                                                            | Source and licence                                                 |
-| --------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| Home hero             | `home/banner-homepage.jpg`, a tower and terraced hillside homes at dusk         | Supplied by the client on 2026-10-24 for the home hero             |
-| Home project showcase | `projects/projects-banner.jpg`, terraced garden residences round a pool at dusk | Supplied by the client on 2026-10-24 for the home project showcase |
+| Used for                     | File                                                                                 | Source and licence                                                |
+| ---------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| Home hero                    | `home/banner-homepage.jpg`, a tower and terraced hillside homes at dusk              | Supplied by the client on 2026-10-24, at 1920px on 2026-10-31 (1) |
+| Home project showcase        | `projects/projects-banner.jpg`, terraced garden residences round a pool at dusk      | Supplied by the client on 2026-10-24, resupplied 2026-10-31 (3)   |
+| Home card: Interior BIM      | `services/card-interior-bim.jpg`, from the SS Apartment Complex cover render         | The client's project render in Sanity, cut on 2026-10-31 (2)      |
+| Home card: Architectural BIM | `services/card-architectural-bim.jpg`, from the TK Mixed-Used Buildings cover render | The client's project render in Sanity, cut on 2026-10-31 (2)      |
+| Home card: Landscape BIM     | `services/card-landscape-bim.jpg`, from the Seaside Residence cover render           | The client's project render in Sanity, cut on 2026-10-31 (2)      |
+
+(1) The home hero is the client's 1920 × 1080 render at its own tones,
+prepared once with sharp so desktops at 2x and 4K get a sharp photo
+(`Hero.astro`): a Lanczos upscale to 3840 × 2160, then
+`sharpen({ sigma: 1.2, m1: 0.4, m2: 2 })`, saved as a JPEG at quality 95 with
+4:4:4 chroma. A new render needs the same steps. Its brightness is left alone:
+a gamma lift was tried on 2026-10-31 and read too bright.
+
+`home/banner-homepage-phone.jpg` is the same master cut for phones
+(`phoneImage` in `home.yaml`): a full height square starting at 25 percent of
+the width cut away (`extract({ left: 420, top: 0, width: 2160, height: 2160 })`
+on the 3840 master, the render's x 210 to 1290), scaled to 1080 × 1080 with
+Lanczos, JPEG at quality 95 with 4:4:4 chroma. The 25 percent is the band's
+`object-position`, so a phone frames the slice exactly as it framed the whole.
+A new render needs a new cut.
+
+(2) The home service cards (`services.featured` in `home.yaml`) are the
+client's project renders, downloaded at full size from Sanity's CDN and cut
+once with sharp to the card's 4:5 frame, so a wide render is never stretched
+across a tall card. Each is one `extract` on the original, a Lanczos resize to
+1200 × 1500, `sharpen({ sigma: 1.2, m1: 0.4, m2: 2 })`, and a JPEG at quality
+90 with 4:4:4 chroma:
+
+- Interior: `extract({ left: 791, top: 0, width: 602, height: 752 })` on the
+  1883 × 835 render, the top 90 percent, centred on the feature wall.
+- Architectural: `extract({ left: 637, top: 0, width: 653, height: 816 })` on
+  the 1927 × 816 render, full height, centred.
+- Landscape: `extract({ left: 418, top: 0, width: 779, height: 974 })` on the
+  1614 × 974 render, full height, centred.
+
+They were picked from projects other than the first of each category, which
+the project showcase at the foot of the page already shows.
+
+(3) The project showcase's photo was resupplied by the client on 2026-10-31
+as a 1920 × 1080 screenshot, the render letterboxed between blurred bars. It
+is the render alone, cut once with sharp:
+`extract({ left: 0, top: 133, width: 1920, height: 812 })` (the last photo
+row, 945, dropped as a possible blend into the bar), saved as a JPEG at
+quality 95 with 4:4:4 chroma. It is the same picture at the same pixel size
+as the first copy (1926 × 816) and the same tones (mean level 93.8 against
+93.9), only cleaner, so the contrast check in `ProjectShowcase.astro` still
+holds.
 
 ## Icons copied from open licence sets (spec 0013)
 

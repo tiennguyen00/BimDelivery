@@ -383,6 +383,13 @@ const home = defineCollection({
          * with the photo.
          */
         copyStart: z.number().min(0).max(1),
+        /**
+         * The same render cut for phones (2026-10-31): a full height square
+         * starting at 25 percent of the width cut away, the share the band
+         * frames `image` at, so a phone shows the same slice and fetches
+         * only that. Cut it again with a new `image` (`CREDITS.md`).
+         */
+        phoneImage: image(),
         primaryCta: link,
       }),
       // The intro band under the hero (spec 0005). Its numbers are the
@@ -417,8 +424,20 @@ const home = defineCollection({
            * such as `en/architectural-bim`. One to three, so a new service
            * reaches the home page only when it is listed here. `getHomePage`
            * checks every id itself; Astro would only log a missing one.
+           *
+           * `image` is the card's own photo (2026-10-31), a local file cut
+           * to the card's 4:5 frame; without one the card takes the first
+           * photo of the service page's intro carousel.
            */
-          featured: z.array(reference('services')).min(1).max(3),
+          featured: z
+            .array(
+              z.strictObject({
+                service: reference('services'),
+                image: imageSchema(image).optional(),
+              }),
+            )
+            .min(1)
+            .max(3),
           /**
            * Cards for services with no page of their own (2026-10-11), drawn
            * after the featured ones, home only: no route, no nav item, and

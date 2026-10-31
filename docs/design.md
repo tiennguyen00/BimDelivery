@@ -65,8 +65,7 @@ what it paints and the next palette change is values only.
 | `--color-field` | `#8c8480` | Form field borders, a control boundary: 5.04:1 against the `canvas` fill |
 | `--color-error` | `#ff8a7a` | Error text and error borders, on every surface |
 | `--color-scrim` | `rgb(12 21 25 / 0.7)` | The see through layer under words on a photo. `heading` on it is 5.91:1 over a pure white pixel, so no photo can break it. Never lighter, except `scrim-soft` on the Project hero |
-| `--color-scrim-soft` | `rgb(12 21 25 / 0.5)` | The Project hero's layer only (2026-10-16, so its photo reads bright). `heading` on it alone is 2.99:1 over a pure white pixel, so every word on it carries `text-glow` (a Chinese Black halo round each letter) |
-| `--color-scrim-faint` | `rgb(12 21 25 / 0.3)` | The home hero's layer over its whole photo only (2026-10-24, so the night photo reads bright). Never alone under words: the copy sits on a `scrim-soft` radial pool, and every word carries `text-glow` |
+| `--color-scrim-soft` | `rgb(12 21 25 / 0.5)` | The Project hero's layer (2026-10-16, so its photo reads bright) and the home hero's numbers bar (2026-10-31). `heading` on it alone is 2.99:1 over a pure white pixel, so every word on it carries `text-glow` (a Chinese Black halo round each letter) |
 | `--color-scrim-strong` | `rgb(12 21 25 / 0.9)` | The contact form band's layer. With the `bg-diagonal` stripe on top, its worst pixel is `#31393c` |
 | `--color-glass` | `rgb(58 53 52 / 0.8)` Jet | The header's frosted fill, and nothing else. Reads as a `panel` card (1.33:1 on canvas). Only valid over its backdrop filter (`blur(12px) brightness(0.3)`): a pure white pixel then lands at `#3e3a39`, `accent` 4.69:1. Never lighter, never without the dimming |
 
@@ -310,15 +309,17 @@ The bands that are not a tone each borrow the band frame:
   (on the form band, the field and card rules hold too: they are measured at
   its worst pixel). Each carries `focus-contrast`.
 - **The home hero** (2026-10-24, after the client's sketch): a photo band.
-  The night photo of the tower and the hillside covers the band under
-  `scrim-faint`, with a `scrim-soft` radial pool behind the copy only. The copy (a brass eyebrow, the title, which is the `h1`,
+  The night photo of the tower and the hillside covers the band with no
+  scrim over it and none behind the copy (2026-10-31, the client's call: a
+  dark pool behind the title read as a black patch on the sky). The copy (a brass eyebrow, the title, which is the `h1`,
   with a brass `==` phrase, the paragraph, the button) sits on the sky, and
   from `lg` its start edge lines up with the tower's right edge
   (`hero-photo` draws the photo at a known width, `hero-copy-inset` puts the
   copy at the tower's share of it, `copyStart` in content). Every word
   carries `text-glow`; the brass words are the client's call, measured over
   this photo's sky rather than a pure white pixel. The numbers sit in a
-  `scrim-strong` bar with a `line` outline along the bottom. It carries
+  `scrim-soft` bar with a `line` outline along the bottom, with no blur and
+  `text-glow` on every word, so the photo shows through it sharp. It carries
   `focus-contrast`. The copy's four parts play the CSS `entrance` on load,
   80ms apart.
 - **The accent band** (`CtaBand`): brass, `on-accent` words, a `canvas` link.

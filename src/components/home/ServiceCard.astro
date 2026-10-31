@@ -4,11 +4,12 @@
  * service's own photo, its two digit number (`01`), the title, and the
  * summary, left aligned with no panel box around them.
  *
- * The photo is the first one in the service page's intro carousel, so the
- * card and the page it opens show the same picture; the route picks it (a
- * home only card names its own). A fixed frame keeps the photos the same
- * height whatever their source sizes: 4:3 on a phone, so it is not all
- * photo, and 4:5 from `lg`.
+ * The photo is the card's own local file when `home.yaml` names one (cut to
+ * 4:5 so a wide render is never stretched to fill the frame), else the first
+ * one in the service page's intro carousel; the route picks it (a home only
+ * card names its own). A fixed frame keeps the photos the same height
+ * whatever their source sizes: 4:3 on a phone, so it is not all photo, and
+ * 4:5 from `lg`.
  *
  * The whole card is clickable through exactly one link and one tab stop, the
  * same pattern as `Card`: the link wraps the title and its `::after` is
@@ -23,6 +24,7 @@
  * `hover:` applies only on devices that can hover, so a tap never leaves the
  * card stuck in its hover state.
  */
+import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 
 interface Props {
@@ -35,8 +37,11 @@ interface Props {
    * which then has no link and no hover: it is not a tab stop at all.
    */
   href?: string;
-  /** A remote photo; `alt` is `''` when the photo is decorative. */
-  image: { src: string; alt: string };
+  /**
+   * A local file or a remote photo; `alt` is `''` when the photo is
+   * decorative.
+   */
+  image: { src: ImageMetadata | string; alt: string };
   /**
    * Extra classes on the card's root, for the grid it sits in: the home row
    * places one or two cards by column (spec 0013). Nothing else changes.
@@ -45,6 +50,12 @@ interface Props {
 }
 
 const { number, title, summary, href, image, class: className } = Astro.props;
+
+/** A remote photo has no size until Astro reads it; a local file knows its own. */
+const source =
+  typeof image.src === 'string'
+    ? { src: image.src, inferSize: true as const }
+    : { src: image.src };
 ---
 
 <article
@@ -56,9 +67,8 @@ const { number, title, summary, href, image, class: className } = Astro.props;
 >
   <div class="relative aspect-4/3 overflow-hidden rounded-ui bg-panel lg:aspect-4/5">
     <Image
-      src={image.src}
+      {...source}
       alt={image.alt}
-      inferSize
       widths={[400, 640, 960]}
       sizes="(min-width: 1024px) 30vw, (min-width: 768px) 50vw, 100vw"
       loading="lazy"

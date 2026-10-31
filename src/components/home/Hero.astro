@@ -6,7 +6,7 @@
  * the hillside covers the whole band, and the copy (a
  * brass eyebrow, the title, which is the page's `h1`, a paragraph, and one
  * button) sits on the sky beside the tower. The site's numbers sit in a
- * frosted bar along the bottom. Below `lg` the photo simply covers the band
+ * see-through bar along the bottom. Below `lg` the photo simply covers the band
  * and the copy and the numbers stack in the band frame.
  *
  * From `lg` the copy's start edge lines up with the tower's right edge. The
@@ -25,28 +25,35 @@
  * down by the same amount, so it fills the first screen exactly. It carries
  * `focus-contrast`, the ring for photos and accent fills.
  *
- * The photo reads bright, with no scrim over the band; the copy darkens only
- * the sky behind itself, with a feathered radial pool (`scrim-strong` at its
- * heart, through `scrim`, out to nothing), and every word
- * carries `text-glow`, as on the Project hero. The eyebrow and the `==`
- * phrase stay brass, as the client's sketch has them, measured over this
- * photo's sky rather than the pure white pixel the 4.5:1 rule assumes.
+ * The photo reads bright, with no scrim over the band and none behind the
+ * copy (2026-10-31, the client's call: the dark pool behind the title read as
+ * a black patch on the sky). Every word carries `text-glow`, as on the
+ * Project hero, which darkens the photo right round each letter. The eyebrow
+ * and the `==` phrase stay brass, as the client's sketch has them, measured
+ * over this photo's night sky rather than the pure white pixel the 4.5:1
+ * rule assumes.
  *
- * Below `lg` (2026-10-29, the client's call: the phone hero read black) the
- * copy fills the band's width, so the pool would darken nearly all of the
- * photo; there it is `scrim-soft` at heart, through `scrim-faint`. The
- * numbers card is `scrim-soft` with no blur, its words carrying `text-glow`
- * instead, so the photo shows through it sharp.
+ * The numbers card is `scrim-soft` with no blur, its words carrying
+ * `text-glow` instead, so the photo shows through it sharp: on phones since
+ * 2026-10-29 (the client's call: the phone hero read black), and from `lg`
+ * since 2026-10-31 (the desktop hero read dark and blurred).
  *
  * The photo is the page's largest contentful paint, so it loads eagerly and
- * at a high fetch priority. Two things move. The copy's four parts play the
+ * at a high fetch priority, as a `<picture>`: AVIF first, about 40 percent
+ * lighter than WebP at the same look on this photo's dark sky, then WebP,
+ * then JPEG for a browser with neither. It has two ladders (2026-10-31): from
+ * `md` the whole photo up to 3840, so desktops and tablets get it sharp on 2x
+ * and 4K screens; below `md`, `phoneImage`, the slice a phone shows at the
+ * render's own detail, so a phone fetches about half the bytes (89KB of AVIF
+ * against 160KB for the whole photo) for the same picture.
+ * Two things move. The copy's four parts play the
  * CSS `entrance` on load, 80ms apart (steps 0 to 3; the button through a
  * wrapper, since `Button` takes no `style`), and the counter, the same
  * `counters.ts` the stat bands use, counts figures already correct in the
  * HTML.
  */
 import type { ImageMetadata } from 'astro';
-import { Image } from 'astro:assets';
+import { getImage } from 'astro:assets';
 import Button from '../ui/Button.astro';
 import Emphasis from '../ui/Emphasis.astro';
 import Icon from '../ui/Icon.astro';
@@ -69,6 +76,11 @@ interface Props {
    * where the copy starts from `lg`.
    */
   copyStart: number;
+  /**
+   * The same render cut for phones: a full height square starting at 25
+   * percent of the width cut away, the share the band frames `image` at.
+   */
+  phoneImage: ImageMetadata;
   primaryCta: Link;
   stats: readonly StatItem[];
   /** The page's language, used to group the numbers and handed to the script. */
@@ -82,22 +94,58 @@ const {
   lead,
   image,
   copyStart,
+  phoneImage,
   primaryCta,
   stats,
   lang,
 } = Astro.props;
 
-/** The widths the photo is generated at, before the source width cap. */
-const HERO_STEPS: readonly number[] = [640, 960, 1280, 1600, 2000, 2400];
+/**
+ * From `md` the photo takes the wide ladder: a desktop draws it often at 2x
+ * or on a 4K screen (a 1440px wide MacBook, about 3200 device px wide), and a
+ * tablet about 3000 device px wide, the band showing a slice of it
+ * (2026-10-31, the client's call: sharp on tablets too, at some weight). So
+ * this ladder climbs to 3840, as wide as the master (see `CREDITS.md`).
+ */
+const WIDE_MEDIA = '(min-width: 48rem)';
+const WIDE_STEPS: readonly number[] = [1280, 1600, 1920, 2560, 3200, 3840];
 
 /**
- * The steps below the source width, then the source width itself, so nothing
- * is ever upscaled. A source under 640px yields just its own width.
+ * Below `md` the ladder stops at 1920, so a phone on a mobile connection,
+ * which asks for the widest file at 2x and 3x, never pulls a 4K photo. It
+ * cuts `phoneImage` short at its own 1080.
  */
-const heroWidths = (sourceWidth: number): number[] => [
-  ...HERO_STEPS.filter((width) => width < sourceWidth),
-  sourceWidth,
+const PHONE_STEPS: readonly number[] = [640, 960, 1280, 1600, 1920];
+
+interface Encoding {
+  readonly format: 'avif' | 'webp';
+  readonly quality: number;
+}
+
+/**
+ * AVIF first, then WebP; a browser with neither takes the `img`'s JPEG. Each
+ * quality is set rather than left to sharp: its AVIF default (50) smeared
+ * the trees into soft blobs. The wide ladder spends more: at 3840, AVIF 70
+ * keeps 98 percent of the master's fine detail, against 96 at 60, for about
+ * 100KB more, and past 70 it barely climbs.
+ */
+const WIDE_ENCODINGS: readonly Encoding[] = [
+  { format: 'avif', quality: 70 },
+  { format: 'webp', quality: 85 },
 ];
+const PHONE_ENCODINGS: readonly Encoding[] = [
+  { format: 'avif', quality: 60 },
+  { format: 'webp', quality: 80 },
+];
+
+/**
+ * The steps the source is wide enough for, then the source width itself if
+ * it falls short of the top step, so nothing is ever upscaled.
+ */
+const ladder = (steps: readonly number[], sourceWidth: number): number[] => {
+  const kept = steps.filter((width) => width < sourceWidth);
+  return kept.length === steps.length ? kept : [...kept, sourceWidth];
+};
 
 const photoRatio = image.src.width / image.src.height;
 
@@ -105,12 +153,73 @@ const photoRatio = image.src.width / image.src.height;
 const photoVars = `--hero-photo-ratio: ${photoRatio}; --hero-copy-start: ${copyStart};`;
 
 /**
- * How wide the photo is drawn, so the browser picks a sharp enough file. It
- * covers the band, so on a screen shaped narrower than the photo (every
- * phone) it is drawn about a screen tall and as wide as its ratio asks, far
- * wider than the screen. `100vw` there fetched a file 3 to 4 times too small.
+ * Below `lg` the band is as tall as its stacked copy and numbers, about 800
+ * to 900px on every screen from 320 to 1023 wide, not a screen tall.
  */
-const photoSizes = `(min-aspect-ratio: ${image.src.width}/${image.src.height}) 100vw, ${Math.ceil(photoRatio * 100)}vh`;
+const STACKED_BAND_HEIGHT = 900;
+
+/**
+ * How wide the photo is drawn, so the browser picks a sharp enough file. It
+ * covers the band, so it is drawn as tall as the band and as wide as its
+ * ratio asks, far wider than a phone. From `lg` the band is a screen tall;
+ * below it, `STACKED_BAND_HEIGHT` (a screen tall there fetched a landscape
+ * phone half the file it needed).
+ */
+const wideSizes = `(min-width: 64rem) and (min-aspect-ratio: ${image.src.width}/${image.src.height}) 100vw, (min-width: 64rem) ${Math.ceil(photoRatio * 100)}vh, ${Math.ceil(STACKED_BAND_HEIGHT * photoRatio)}px`;
+
+/** `phoneImage` is drawn at the same height, so as wide as its own ratio asks. */
+const phoneSizes = `${Math.ceil((STACKED_BAND_HEIGHT * phoneImage.width) / phoneImage.height)}px`;
+
+/**
+ * Wide sources first: a browser takes the first whose media and type match.
+ * The phone sources need no media: a wide screen without AVIF and WebP skips
+ * them by type too, and lands on the `img`.
+ */
+const sources = await Promise.all(
+  [
+    {
+      media: WIDE_MEDIA,
+      src: image.src,
+      steps: WIDE_STEPS,
+      encodings: WIDE_ENCODINGS,
+      sizes: wideSizes,
+    },
+    {
+      media: undefined,
+      src: phoneImage,
+      steps: PHONE_STEPS,
+      encodings: PHONE_ENCODINGS,
+      sizes: phoneSizes,
+    },
+  ].flatMap(({ media, src, steps, encodings, sizes }) =>
+    encodings.map(async ({ format, quality }) => ({
+      media,
+      type: `image/${format}`,
+      sizes,
+      srcset: (
+        await getImage({
+          src,
+          widths: ladder(steps, src.width),
+          format,
+          quality,
+        })
+      ).srcSet.attribute,
+    })),
+  ),
+);
+
+/**
+ * The `img` itself, for a browser with neither format: the whole photo on the
+ * phone ladder, so it is right on any screen.
+ */
+const fallbackWidths = ladder(PHONE_STEPS, image.src.width);
+const fallback = await getImage({
+  src: image.src,
+  width: fallbackWidths.at(-1),
+  widths: fallbackWidths,
+  format: 'jpg',
+  quality: 80,
+});
 
 const format = new Intl.NumberFormat(lang);
 ---
@@ -120,31 +229,35 @@ const format = new Intl.NumberFormat(lang);
   style={photoVars}
   class="focus-contrast @container relative isolate -mt-(--header-h) overflow-hidden bg-canvas pt-(--header-h) lg:flex lg:min-h-svh lg:flex-col"
 >
-  <Image
-    src={image.src}
-    alt={image.alt}
-    widths={heroWidths(image.src.width)}
-    sizes={photoSizes}
-    loading="eager"
-    fetchpriority="high"
-    class="absolute inset-0 -z-10 size-full object-cover object-[25%_50%] lg:hero-photo"
-  />
+  {/**
+   * Built by hand rather than with `<Picture>`, which has one ladder for
+   * every screen. The `<picture>` is `contents`, so the `img` is laid out
+   * against the band alone, as a bare `img` was.
+   */}
+  <picture class="contents">
+    {sources.map(({ media, type, srcset, sizes }) => (
+      <source media={media} type={type} srcset={srcset} sizes={sizes} />
+    ))}
+    <img
+      src={fallback.src}
+      srcset={fallback.srcSet.attribute}
+      sizes={wideSizes}
+      alt={image.alt}
+      width={image.src.width}
+      height={image.src.height}
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+      class="absolute inset-0 -z-10 size-full object-cover object-[25%_50%] lg:hero-photo"
+    />
+  </picture>
   <div
     aria-hidden="true"
     class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-24 bg-linear-to-t from-canvas to-transparent lg:h-32"
   ></div>
 
   <div class="flex items-center px-4 py-10 md:px-6 md:py-12 lg:flex-1 lg:pe-8 lg:hero-copy-inset">
-    <div class="relative mx-auto w-full max-w-content lg:mx-0 lg:max-w-narrow">
-      {/**
-       * A wide, feathered dark pool behind the copy only, centred on it,
-       * darkest under the words and fading out with no edge, so the photo
-       * can stay bright everywhere else. Decoration, under every word.
-       */}
-      <div
-        aria-hidden="true"
-        class="pointer-events-none absolute -inset-x-24 -inset-y-20 -z-10 -translate-x-5 bg-radial from-scrim-soft via-scrim-faint via-40% to-transparent to-75% lg:from-scrim-strong lg:via-scrim"
-      ></div>
+    <div class="mx-auto w-full max-w-content lg:mx-0 lg:max-w-narrow">
       <p
         class="entrance text-eyebrow font-semibold text-accent uppercase text-glow"
         style="--entrance-step: 0"
@@ -179,14 +292,13 @@ const format = new Intl.NumberFormat(lang);
        * One description list, as in `StatsBand`: each label is the term and
        * its number the definition, shown number first by `flex-col-reverse`.
        * The icon is hidden, because the label already says what it pictures.
-       * A `scrim-strong` fill under a `line` outline, so every pair keeps its
-       * contrast over any part of the photo; below `lg`, `scrim-soft` with
+       * A `scrim-soft` fill under a `line` outline, with no blur, and
        * `text-glow` on the words (see the top of this file).
        */}
       <dl
         data-stats-band
         data-locale={lang}
-        class="mb-10 grid grid-cols-2 gap-y-2 rounded-card border border-line bg-scrim-soft py-4 max-lg:text-glow lg:mb-8 lg:bg-scrim-strong lg:backdrop-blur-sm lg:grid-cols-4 lg:divide-x lg:divide-line lg:py-6"
+        class="mb-10 grid grid-cols-2 gap-y-2 rounded-card border border-line bg-scrim-soft py-4 text-glow lg:mb-8 lg:grid-cols-4 lg:divide-x lg:divide-line lg:py-6"
       >
         {stats.map((item) => (
           <div class="flex flex-col items-start gap-3 px-5 py-2 lg:flex-row lg:items-center lg:justify-center lg:gap-4">

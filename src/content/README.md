@@ -83,9 +83,11 @@ two map entries. Its heading id (`<type>-heading`) comes from its type.
 3. Build. Its page exists at `/<slug>`, and it appears in the nav and in the
    contact form's choices, in `order`. For project rooms to name it, add it
    to `CATEGORIES` in `studio/project.ts` and redeploy the Studio.
-4. It is not on the home page until you add its id (`<lang>/<slug>`) to
-   `services.featured` in `home/<lang>/home.yaml`, which lists one to three
-   services.
+4. It is not on the home page until you add an item to `services.featured`
+   in `home/<lang>/home.yaml`, which lists one to three services: its id as
+   `service` (`<lang>/<slug>`), and optionally an `image`, a local file with
+   its `alt`, cut to 4:5 (see `src/assets/images/CREDITS.md`). Without an
+   `image` the card shows the first photo of the service's intro carousel.
 
 ### A home only service card
 
