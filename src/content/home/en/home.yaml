@@ -18,10 +18,14 @@ hero:
     href: /contact-us
 intro:
   heading: Delivering BIM modeling services
+  # The typed endings (spec 0009). The first is the real one: screen readers,
+  # no JavaScript, and reduced motion get it alone. The rest name the three
+  # service lines, in the services row's order.
   headingHighlight:
     - worldwide
-    - abcxyz
-    - xyzcba
+    - for interiors
+    - for architecture
+    - for landscapes
   # The client's website copy (Desciptions.pdf, 2026-10-29).
   lead:
     highlight: BIMD
