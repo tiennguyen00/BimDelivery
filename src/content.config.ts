@@ -124,10 +124,10 @@ const withAlt = <Src extends z.ZodType>(src: Src) =>
 const imageSchema = (image: SchemaContext['image']) => withAlt(image());
 
 /**
- * Every photo outside projects is an internet link on Pexels (spec 0006,
- * until its page moves to Sanity). The host is the one `image.domains`
- * allows in `astro.config.mjs`; a link anywhere else would render
- * unoptimised, so it fails the build here instead.
+ * Every photo outside projects and the service carousels is an internet link
+ * on Pexels (spec 0006, until its page moves to Sanity). The host is the one
+ * `image.domains` allows in `astro.config.mjs`; a link anywhere else would
+ * render unoptimised, so it fails the build here instead.
  */
 const photoUrl = z.url({
   protocol: /^https$/,
@@ -142,10 +142,11 @@ const fraction = z.number().min(0).max(1);
 
 /**
  * A project photo uploaded to Sanity (spec 0019), as the `projects` loader
- * stores it: the original's CDN address and pixel size, the alt text, and
- * the editor's crop and focal point. `Photo.astro` tells it from a Pexels
- * link by `source`. Strict, and `alt` is required and non empty: these
- * photos exist to show the work, so none is decorative.
+ * stores it and a service carousel copies it: the original's CDN address
+ * and pixel size, the alt text, and the editor's crop and focal point.
+ * `Photo.astro` tells it from a Pexels link by `source`. Strict, and `alt`
+ * is required and non empty: these photos exist to show the work, so none
+ * is decorative.
  */
 const sanityPhoto = z.strictObject({
   source: z.literal('sanity'),
@@ -812,8 +813,13 @@ const introCarousel = z.strictObject({
   /** The page's `h1`. */
   heading: text,
   paragraphs: z.array(emphasisText).min(1),
-  /** The carousel's photos, in order; the first is the one that loads first. */
-  images: z.array(photoSchema).min(1).max(3),
+  /**
+   * The carousel's photos, in order; the first is the one that loads first.
+   * They are the client's own renders, picked from the projects in Sanity
+   * and copied here by address (2026-11-13), so a project edit never changes
+   * them and they survive a photo being swapped out of its project.
+   */
+  images: z.array(sanityPhoto).min(1).max(3),
 });
 
 const featuresCards = z.strictObject({

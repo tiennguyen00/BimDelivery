@@ -22,13 +22,24 @@ sections:
       - Building Information Modeling (BIM) provides a smarter and more coordinated approach to architectural design and documentation. By creating a **detailed 3D digital model** of a building, BIM allows architects, engineers, contractors, and other project stakeholders to work with consistent and coordinated project information throughout the design and construction process.
       - For architectural projects, BIM can support the development of **3D building models, floor plans, elevations, sections, architectural details, schedules, and construction documentation**. Building elements can be modeled with relevant information, making it easier to develop, coordinate, and manage design changes throughout the project.
       - At BIM Delivery, we support architecture firms by providing BIM modeling and documentation services from CAD drawings and design information to detailed BIM models and construction documentation, helping our clients **improve coordination, increase production capacity, and deliver projects more efficiently**.
+    # The client's renders, copied from their projects in Sanity: TK
+    # Mixed-Used Buildings, DS Resort, and Amenities Complex.
     images:
-      - src: https://images.pexels.com/photos/15764095/pexels-photo-15764095.jpeg?auto=compress&cs=tinysrgb&w=1600
-        alt: Two people discussing a 3D house model on a laptop
-      - src: https://images.pexels.com/photos/15764116/pexels-photo-15764116.jpeg?auto=compress&cs=tinysrgb&w=1600
-        alt: A designer at a desk with a house elevation drawing on a large monitor and a rendered view on a laptop beside it
-      - src: https://images.pexels.com/photos/9618456/pexels-photo-9618456.jpeg?auto=compress&cs=tinysrgb&w=1600
-        alt: Seen from above, an architect marking up a printed site plan with drafting tools laid out beside it
+      - source: sanity
+        url: https://cdn.sanity.io/images/bfqofid8/production/c2f9bf716088ae403b91a1d004e4fa85870343ec-1927x816.png
+        width: 1927
+        height: 816
+        alt: Architectural BIM render of the TK Mixed-Used Buildings street facade, two towers joined by a bridging block over a tall opening
+      - source: sanity
+        url: https://cdn.sanity.io/images/bfqofid8/production/87260ddf323666135abd94d0f0ec3d2232179b3a-1774x887.png
+        width: 1774
+        height: 887
+        alt: Architectural BIM render of the DS Resort from above, its low guest wings and arrival building set in a desert landscape
+      - source: sanity
+        url: https://cdn.sanity.io/images/bfqofid8/production/941d42d6fa898662d2a674765a6fa86ac1f6e30b-1448x1086.png
+        width: 1448
+        height: 1086
+        alt: Architectural BIM isometric of the Amenities Complex, an L shaped building with its roof opened to show the rooms inside
   - type: features
     layout: cards
     surface: dots

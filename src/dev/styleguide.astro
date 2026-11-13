@@ -774,12 +774,7 @@ const headCellClass =
           <Card
             title={firstService.title}
             text={firstService.summary}
-            image={
-              firstServicePhoto && {
-                src: firstServicePhoto.src,
-                alt: firstServicePhoto.alt ?? '',
-              }
-            }
+            image={firstServicePhoto}
             href={`/${firstService.slug}`}
           />
         )}

@@ -22,13 +22,24 @@ sections:
       - BIM brings landscape design, site information, and building elements together within a **coordinated 3D environment**. It allows landscape designers and project teams to better understand how outdoor spaces interact with the surrounding architecture, terrain, infrastructure, and other disciplines.
       - For landscape projects, BIM can be used to develop **3D site and landscape models, terrain, hardscape, planting areas, outdoor structures, levels, paths**, and other landscape elements. These models provide a clear representation of the proposed design while allowing project information to be organized and updated throughout the design process.
       - At BIM Delivery, we support landscape designers and multidisciplinary design teams with Landscape BIM modeling and documentation services. We can work from CAD drawings and design information to develop **detailed and coordinated landscape BIM models** and documentation, helping our clients manage complex projects and deliver their designs more efficiently.
+    # The client's renders, copied from their projects in Sanity: HP
+    # Branded Residence, Seaside Residence, and Coastal Hotel.
     images:
-      - src: https://images.pexels.com/photos/3818947/pexels-photo-3818947.jpeg?auto=compress&cs=tinysrgb&w=1600
-        alt: Steel beams and columns of a building frame under construction
-      - src: https://images.pexels.com/photos/1216589/pexels-photo-1216589.jpeg?auto=compress&cs=tinysrgb&w=1600
-        alt: Two engineers in hard hats reading a drawing on site, under ducts and pipes running across the ceiling
-      - src: https://images.pexels.com/photos/3862135/pexels-photo-3862135.jpeg?auto=compress&cs=tinysrgb&w=1600
-        alt: Two engineers leaning over a large printed drawing spread out on a table
+      - source: sanity
+        url: https://cdn.sanity.io/images/bfqofid8/production/b0776cded80f5599c875b2643be11727c78df8b3-1933x814.png
+        width: 1933
+        height: 814
+        alt: Landscape BIM master plan of the HP Branded Residence, with villas set among terraced planting, water features, and winding paths
+      - source: sanity
+        url: https://cdn.sanity.io/images/bfqofid8/production/027aafb04303457912bee7f4a3500fb6acc51f09-1614x974.png
+        width: 1614
+        height: 974
+        alt: Landscape BIM model of the Seaside Residence, its buildings, roads, and planting laid over the hillside terrain
+      - source: sanity
+        url: https://cdn.sanity.io/images/bfqofid8/production/67b6041f6a7c9d18bdf82617d4d3a537dda9e569-1461x1077.png
+        width: 1461
+        height: 1077
+        alt: Landscape BIM model of the Coastal Hotel, with terraced gardens, retaining walls, tennis courts, and pools
   - type: features
     layout: split
     surface: dots

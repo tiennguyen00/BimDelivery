@@ -37,9 +37,10 @@ export default defineConfig({
   // superseded for projects by spec 0019). Allowing the one host here is what
   // lets `<Image>` download and optimise them at build like a local file, so
   // visitors get copies from this site's own origin. A link on any other host
-  // is also refused by the content schema. Project photos come from Sanity's
-  // image CDN instead, drawn as plain `<img srcset>` by `Photo.astro`, so
-  // `cdn.sanity.io` needs no entry here.
+  // is also refused by the content schema. Project photos, and the client
+  // renders in the service carousels, come from Sanity's image CDN instead,
+  // drawn as plain `<img srcset>` by `Photo.astro`, so `cdn.sanity.io` needs
+  // no entry here.
   image: {
     domains: ['images.pexels.com'],
   },

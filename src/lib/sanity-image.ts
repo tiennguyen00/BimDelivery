@@ -80,6 +80,28 @@ export const photoSize = (
   return { width, height };
 };
 
+/**
+ * How many times its frame's width a photo is drawn at under `object-cover`,
+ * in a frame `frameAspect` wide for each unit of height: a photo wider than
+ * its frame fills the frame's height and spills past its sides. 1 for a
+ * photo no wider than its frame.
+ */
+export const coverScale = (photo: SanityPhoto, frameAspect: number): number => {
+  const { width, height } = photoSize(photo);
+  return Math.max(1, width / height / frameAspect);
+};
+
+/**
+ * A `sizes` length for a photo covering a frame `vw` wide: the frame's
+ * width times `coverScale`, so a wide render is fetched sharp at the height
+ * it is drawn, not blown up from a file the frame's width.
+ */
+export const coverVw = (
+  photo: SanityPhoto,
+  vw: number,
+  frameAspect: number,
+): string => `${Math.ceil(vw * coverScale(photo, frameAspect))}vw`;
+
 /** One address at `width` pixels wide. */
 export const photoUrl = (photo: SanityPhoto, width: number): string => {
   const params = new URLSearchParams();

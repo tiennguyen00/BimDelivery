@@ -25,11 +25,24 @@ sections:
       - Building Information Modeling (BIM) provides a smarter and more coordinated approach to interior design and documentation. By creating a **detailed 3D digital model** of an interior space, BIM allows designers, architects, engineers, and contractors to work with consistent and coordinated project information throughout the design and construction process.
       - For interior design projects, BIM can support the development of **3D interior models, detailed drawings, furniture and equipment layouts, material specifications, reflected ceiling plans, joinery, finishes, and construction documentation**. Design elements can be modeled with relevant information, making it easier to coordinate and manage changes throughout the project.
       - At BIM Delivery, we support interior design teams by providing BIM modeling and documentation services from design concepts to detailed BIM models and construction documentation, helping our clients **improve coordination, efficiency, and project delivery**.
+    # The client's renders, copied from their projects in Sanity: SS
+    # Apartment Complex, MN3 Luxury Hotel, and SC Hotel Complex.
     images:
-      - src: https://images.pexels.com/photos/5802822/pexels-photo-5802822.jpeg?auto=compress&cs=tinysrgb&w=1600
-        alt: A surveyor setting up a measuring instrument on a tripod at a construction site
-      - src: https://images.pexels.com/photos/236709/pexels-photo-236709.jpeg?auto=compress&cs=tinysrgb&w=1600
-        alt: The long, empty hall of an old industrial building, with steel columns and cranes under a glass roof
+      - source: sanity
+        url: https://cdn.sanity.io/images/bfqofid8/production/8d6a03049fd1f87247d41767dec092a277635fc6-1883x835.png
+        width: 1883
+        height: 835
+        alt: Interior BIM render of the SS Apartment Complex lobby, with timber wall panels, a backlit stone feature wall, and lounge seating
+      - source: sanity
+        url: https://cdn.sanity.io/images/bfqofid8/production/ee09272fb252a6f1890a77d0caf04eb6a0c3ce29-2170x725.png
+        width: 2170
+        height: 725
+        alt: Interior BIM cutaway of the MN3 Luxury Hotel's restaurant and lounge, with joinery, lighting, and furniture modeled
+      - source: sanity
+        url: https://cdn.sanity.io/images/bfqofid8/production/6286a96e62f7149b097f10dee7616966ed87321f-1791x878.png
+        width: 1791
+        height: 878
+        alt: Interior BIM isometric of the SC Hotel Complex lobby, its seating areas, planting, and columns laid out under a curved facade
   - type: features
     layout: split
     surface: stripe

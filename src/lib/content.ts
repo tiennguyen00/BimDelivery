@@ -18,6 +18,7 @@ import { getCollection } from 'astro:content';
 import type { ImageMetadata } from 'astro';
 import type { CollectionEntry, CollectionKey } from 'astro:content';
 import type { Locale } from '../i18n/locales';
+import type { PhotoSource, SanityPhoto } from './sanity-image';
 
 /**
  * Top level paths a service slug may not take, since services live at
@@ -294,15 +295,13 @@ const resolveServiceRefs = (
  * or band and the page it opens share a picture. The schema gives every
  * service exactly one intro with at least one photo, so a miss is a bug.
  */
-export const servicePhoto = (
-  service: Service,
-): Readonly<{ src: string; alt: string }> => {
+export const servicePhoto = (service: Service): SanityPhoto => {
   const intro = service.sections.find((block) => block.type === 'intro');
   if (!intro) {
     throw new Error(`[content] service "${service.id}" has no intro block`);
   }
   const [photo] = intro.images;
-  return { src: photo.src, alt: photo.alt ?? '' };
+  return photo;
 };
 
 /** One service band on the About & Services page, ready to draw. */
@@ -311,7 +310,7 @@ export type AboutServiceBand = Readonly<{
   tagline: string;
   /** May carry `**bold**` and `==accent==` phrases. */
   text: string;
-  image: Readonly<{ src: string; alt: string }>;
+  image: PhotoSource;
   /** The service's page; absent for a service with no page yet. */
   href?: string;
 }>;
@@ -395,7 +394,7 @@ export const getStats = async (lang: Locale): Promise<readonly StatItem[]> =>
 export type FeaturedService = Readonly<{
   service: Service;
   /** The card's own local file, or else the service's intro photo. */
-  image: Readonly<{ src: ImageMetadata | string; alt: string }>;
+  image: Readonly<{ src: ImageMetadata | string; alt: string }> | SanityPhoto;
 }>;
 
 /** The home page, with `services.featured` resolved to its services, in order. */

@@ -22,6 +22,10 @@
  * third of the screen from `lg`. With one photo there is no carousel at all,
  * and no dots.
  *
+ * The photos are the client's renders on Sanity's image CDN, drawn through
+ * `Photo` at the editor's focal point. Each sits in its own slide box, which
+ * carries the carousel's hooks and fade, as `ProjectRooms` wraps its photos.
+ *
  * On page load the heading, then each paragraph, then the carousel fade in
  * and rise 24px through the `entrance` utility, pure CSS, 80ms apart
  * (`--entrance-step` 0, 1 to n, then n + 1). The band never takes
@@ -29,25 +33,21 @@
  * animates. The block after this one carries on from step n + 2
  * (`planServicePage`).
  */
-import { Image, inferRemoteSize } from 'astro:assets';
 import CarouselDots from '../ui/CarouselDots.astro';
 import Emphasis from '../ui/Emphasis.astro';
+import Photo from '../ui/Photo.astro';
 import { cx } from '../ui/styles';
+import { coverVw } from '../../lib/sanity-image';
 import type { BandProps } from '../../lib/service-page';
 
 type Props = BandProps<'intro/carousel'>;
 
 const { block, headingId } = Astro.props;
 
-// Read once at build from each link, like a local file's metadata.
-const slides = await Promise.all(
-  block.images.map(async (image) => ({
-    src: image.src,
-    alt: image.alt ?? '',
-    source: await inferRemoteSize(image.src),
-  })),
-);
-const hasCarousel = slides.length > 1;
+/** The frame's width over its height: `aspect-4/3` below. */
+const FRAME_ASPECT = 4 / 3;
+
+const hasCarousel = block.images.length > 1;
 ---
 
 <div class="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
@@ -78,27 +78,28 @@ const hasCarousel = slides.length > 1;
     data-carousel={hasCarousel ? '' : undefined}
   >
     <div class="relative aspect-4/3 overflow-hidden rounded-ui bg-panel">
-      {slides.map(({ src, alt, source }, index) => (
-        <Image
-          src={src}
-          alt={alt}
-          width={source.width}
-          height={source.height}
-          widths={[480, 800, 1200]}
-          sizes="(min-width: 1024px) 32vw, 100vw"
-          loading={index === 0 ? 'eager' : 'lazy'}
-          fetchpriority={index === 0 ? 'high' : undefined}
+      {block.images.map((photo, index) => (
+        <div
           aria-hidden={index === 0 ? undefined : 'true'}
           data-carousel-slide
           class={cx(
-            'absolute inset-0 size-full object-cover object-center transition-opacity duration-1000',
+            'absolute inset-0 transition-opacity duration-1000',
             index === 0 ? 'opacity-100' : 'opacity-0',
           )}
-        />
+        >
+          <Photo
+            photo={photo}
+            widths={[480, 800, 1200, 1600, 2000]}
+            sizes={`(min-width: 1024px) ${coverVw(photo, 32, FRAME_ASPECT)}, ${coverVw(photo, 100, FRAME_ASPECT)}`}
+            loading={index === 0 ? 'eager' : 'lazy'}
+            fetchpriority={index === 0 ? 'high' : undefined}
+            class="size-full object-cover"
+          />
+        </div>
       ))}
     </div>
 
-    {hasCarousel && <CarouselDots count={slides.length} class="mt-4" />}
+    {hasCarousel && <CarouselDots count={block.images.length} class="mt-4" />}
   </div>
 </div>
 

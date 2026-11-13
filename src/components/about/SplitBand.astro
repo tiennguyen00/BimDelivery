@@ -47,7 +47,11 @@ import {
   bandPaddingClass,
   cx,
 } from '../ui/styles';
-import type { PhotoSource } from '../../lib/sanity-image';
+import {
+  coverVw,
+  isSanityPhoto,
+  type PhotoSource,
+} from '../../lib/sanity-image';
 
 interface Props {
   /** The band's id, the target of the button in the band above. */
@@ -103,6 +107,15 @@ const step = (index: number): Readonly<{ class?: string; style?: string }> =>
   onLoad ? { class: 'entrance', style: `--entrance-step: ${index}` } : {};
 const listStep = 2 + paragraphs.length;
 const actionStep = listStep + lists.length;
+
+/**
+ * From `lg` the frame is seven twelfths wide and about a screen tall, near
+ * square, and below it `aspect-3/2`. A Sanity photo's size is known, so a
+ * wide render asks for what it is drawn at once it fills that height.
+ */
+const imageSizes = isSanityPhoto(image)
+  ? `(min-width: 1024px) ${coverVw(image, 58, 1)}, ${coverVw(image, 100, 3 / 2)}`
+  : '(min-width: 1024px) 58vw, 100vw';
 ---
 
 <section
@@ -196,7 +209,7 @@ const actionStep = listStep + lists.length;
     <Photo
       photo={image}
       widths={[640, 960, 1280, 1600, 2000]}
-      sizes="(min-width: 1024px) 58vw, 100vw"
+      sizes={imageSizes}
       loading={onLoad ? 'eager' : 'lazy'}
       fetchpriority={onLoad ? 'high' : 'auto'}
       class="absolute inset-0 size-full object-cover"
