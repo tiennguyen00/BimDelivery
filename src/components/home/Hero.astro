@@ -286,7 +286,12 @@ const format = new Intl.NumberFormat(lang);
     </div>
   </div>
 
-  <div class={bandGutterClass}>
+  {/**
+   * Hidden for now (2026-11-19, the client's call): the numbers come back once
+   * the client confirms them. The markup stays so showing them again is just
+   * dropping `hidden`.
+   */}
+  <div hidden class={bandGutterClass}>
     <div class={bandWidthClass.default}>
       {/**
        * One description list, as in `StatsBand`: each label is the term and
