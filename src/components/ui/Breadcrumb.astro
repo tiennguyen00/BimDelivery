@@ -1,0 +1,60 @@
+---
+/**
+ * A visible breadcrumb trail (spec 0020): an ordered list of links inside a
+ * labelled `nav`, after the WAI-ARIA breadcrumb pattern. The FAQ region
+ * pages use it first; the project detail pages and feature 11 may follow.
+ *
+ * The last item is the page itself: still a link, marked
+ * `aria-current="page"` and drawn as plain `ink-strong` text (14.05:1 on
+ * raised), so it reads as where you are rather than somewhere to go. Every
+ * other item is an `accent` link (7.71:1 on canvas, 6.84:1 on raised) that
+ * underlines on hover. Each link is at least 44px tall.
+ *
+ * The chevrons between items are decoration, hidden from assistive tech: the
+ * list itself tells a screen reader the order. A long trail wraps onto a
+ * second line rather than scrolling sideways.
+ */
+import Icon from './Icon.astro';
+import { cx } from './styles';
+
+type Crumb = Readonly<{ label: string; href: string }>;
+
+interface Props {
+  /** The `nav`'s name, "Breadcrumb". */
+  label: string;
+  /** In order, from the top level down; the last one is this page. */
+  items: readonly Crumb[];
+  class?: string;
+}
+
+const { label, items, class: className } = Astro.props;
+const last = items.length - 1;
+---
+
+<nav aria-label={label} class={className}>
+  <ol class="flex flex-wrap items-center gap-x-2 text-small">
+    {items.map((item, index) => (
+      <li class="flex items-center gap-2">
+        {index > 0 && (
+          <Icon
+            name="chevron-down"
+            size={16}
+            class="-rotate-90 text-ink-muted"
+          />
+        )}
+        <a
+          href={item.href}
+          aria-current={index === last ? 'page' : undefined}
+          class={cx(
+            'inline-flex min-h-11 items-center rounded-ui underline-offset-4',
+            index === last
+              ? 'font-semibold text-ink-strong'
+              : 'text-accent hover:text-accent-hover hover:underline',
+          )}
+        >
+          {item.label}
+        </a>
+      </li>
+    ))}
+  </ol>
+</nav>

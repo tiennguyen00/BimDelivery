@@ -1,6 +1,7 @@
 /**
- * The content model (spec 0002): ten collections, one per kind of content,
+ * The content model (spec 0002): twelve collections, one per kind of content,
  * each entry in a language folder, `src/content/<collection>/<lang>/<file>`.
+ * The FAQ's two, `faqPage` and `faqRegions`, came with spec 0020.
  *
  * One exception (spec 0019): `projects` is read from Sanity at build, by the
  * loader at the end of this file, and checked by the same kind of strict
@@ -652,6 +653,8 @@ const contact = defineCollection({
     seo,
     heading: text,
     intro: emphasisText,
+    /** The link to the FAQ under the intro (spec 0020). */
+    faqLink: z.strictObject(link.shape),
     photo: photoSchema,
     form: z.strictObject({
       heading: text,
@@ -817,6 +820,43 @@ const projectPage = defineCollection({
 const notFound = defineCollection({
   loader: load('notFound', 'yaml'),
   schema: z.object({ lang, seo, heading: text, text, button: link }),
+});
+
+// The FAQ's shared words (spec 0020): the hub's own copy, and the words every
+// region page uses around its region's questions. Strict at every level. The
+// regions and their questions are the `faqRegions` entries.
+const faqPage = defineCollection({
+  loader: load('faqPage', 'yaml'),
+  schema: z.strictObject({
+    lang,
+    /** The hub only; each region page has its own. */
+    seo: z.strictObject(seo.shape),
+    /** The hub's `h1`. */
+    heading: text,
+    intro: emphasisText,
+    /** The `h2` over the region cards, "Browse by region". */
+    regionsHeading: text,
+    /** "{count} questions", on the hub cards and each region page's header. */
+    questionCount: z.strictObject({ one: countText, other: countText }),
+    /** Both search boxes, the hub's and each region page's. */
+    search: z.strictObject({
+      /** The box's name for a screen reader, not shown. */
+      label: text,
+      placeholder: text,
+      /** Read out after each change, `one` or `other` by the count. */
+      results: z.strictObject({ one: countText, other: countText }),
+      noResults: z.strictObject({ heading: text, text }),
+    }),
+    breadcrumb: z.strictObject({
+      /** The `nav`'s name, "Breadcrumb". */
+      navLabel: text,
+      /** The first crumb, and the first item of the breadcrumb schema. */
+      label: text,
+    }),
+    /** The region nav's name and its visible title, "Regions". */
+    regionNavLabel: text,
+    cta: callToAction,
+  }),
 });
 
 // Many entry collections
@@ -1221,6 +1261,65 @@ const projects = defineCollection({
   }),
 });
 
+/** A region page holds at most this many questions (spec 0020). */
+const FAQ_QUESTIONS_MAX = 30;
+
+/**
+ * A question's anchor, `/faq/<slug>#<id>` (spec 0020). Written in content, not
+ * derived from the question, so rewording a question keeps the links people
+ * already shared. The page's own element ids all start with `faq-`, and
+ * `main` is the skip link's target, so a question may take neither.
+ */
+const faqQuestionId = z
+  .string()
+  .regex(
+    SLUG_PATTERN,
+    'must be lowercase kebab case, for example `gdpr-data-sovereignty`',
+  )
+  .refine(
+    (id) => !id.startsWith('faq-'),
+    'must not start with `faq-`, which the FAQ pages keep for their own element ids',
+  )
+  .refine(
+    (id) => id !== 'main',
+    'must not be `main`, which the skip link points at',
+  );
+
+// One FAQ region per language (spec 0020), `src/content/faqRegions/<lang>/
+// <slug>.yaml`: its hub card, its own page at `/faq/<slug>`, and its
+// questions in page order. A new region is one new file. Unique slugs,
+// codes, orders, and question ids are checked in `src/lib/content.ts`.
+const faqRegions = defineCollection({
+  loader: load('faqRegions', 'yaml'),
+  schema: z.strictObject({
+    lang,
+    /** The URL segment, `/faq/<slug>`. */
+    slug,
+    /** The badge, two capitals, "US". */
+    code: z
+      .string()
+      .regex(/^[A-Z]{2}$/, 'must be two capital letters, for example `US`'),
+    /** The `h1`, the card title, the nav, the breadcrumb, and the schema. */
+    name: text,
+    /** The line under the name on the card and the page. */
+    focus: text,
+    /** The cards, the region nav, and the search follow it. */
+    order: z.number().int().positive(),
+    seo: z.strictObject(seo.shape),
+    questions: z
+      .array(
+        z.strictObject({
+          id: faqQuestionId,
+          /** Also the schema's `Question.name`, word for word. */
+          question: text,
+          answer: emphasisText,
+        }),
+      )
+      .min(1)
+      .max(FAQ_QUESTIONS_MAX),
+  }),
+});
+
 export const collections = {
   settings,
   navigation,
@@ -1230,6 +1329,8 @@ export const collections = {
   contact,
   projectPage,
   notFound,
+  faqPage,
   services,
   projects,
+  faqRegions,
 };

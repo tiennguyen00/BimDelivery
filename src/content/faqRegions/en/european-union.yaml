@@ -1,0 +1,44 @@
+# Placeholder content (spec 0020): the engineer's sample questions and
+# answers, copied word for word from the spec's sample-content.md. It awaits
+# the client's review before launch; spec 0020's Follow-up lists the claims
+# a customer could hold them to.
+lang: en
+slug: european-union
+code: EU
+name: European Union
+focus: 'GDPR & Data Sovereignty, OpenBIM (IFC 4.3), EU Taxonomy/ESG, & Public Procurement Mandates.'
+order: 3
+seo:
+  title: 'FAQ for European developers | BIM Delivery'
+  description: 'GDPR and data sovereignty, OpenBIM with IFC 4.3, ISO 19650, EU Taxonomy and carbon reporting, and public tenders: answers for EU projects.'
+questions:
+  - id: gdpr-data-sovereignty
+    question: 'How do you guarantee strict GDPR compliance and EU data sovereignty when working offshore?'
+    answer: 'All project files remain hosted exclusively on your EU-region cloud servers (e.g., ACC Europe, Dalux, or BIMcollab). Our staff access data via encrypted, role-restricted sessions under EU Standard Contractual Clauses (SCCs) and strict NDAs, with zero unauthorized local data retention.'
+  - id: openbim-ifc-bcf
+    question: 'Do you work strictly in OpenBIM (IFC 4.3 and BCF) rather than locking us into proprietary software?'
+    answer: 'Yes. While we author primarily in Revit, we are fully fluent in OpenBIM workflows—exporting validated IFC 2x3 / IFC 4.3 models with clean Property Sets (Psets) and managing issue tracking via BCF (BIM Collaboration Format) in Solibri, BIMcollab, or Dalux.'
+  - id: iso-19650-information-management
+    question: 'Are your teams certified or fully experienced in ISO 19650-1, -2, and -3 information management?'
+    answer: 'Yes. We operate strictly within ISO 19650 CDE states (WIP → Shared → Published → Archived), adhering to your Exchange Information Requirements (EIR) and Master Information Delivery Plan (MIDP).'
+  - id: taxonomy-epbd-carbon
+    question: 'How can your BIM models help us meet EU Taxonomy, EPBD, and Embodied Carbon (LCA) reporting requirements?'
+    answer: 'We enrich architectural, interior, and landscape elements with accurate material quantities, volume data, and structured classification codes (Uniclass, OmniClass, or DIN 276) so your sustainability engineers can run automated Life Cycle Assessments (LCA) and carbon accounting directly from the model.'
+  - id: urban-digital-twins-citygml
+    question: 'Can you support Urban Digital Twins and CityGML workflows for European municipal planners?'
+    answer: 'Yes. Our Landscape and Architectural BIM teams deliver georeferenced 3D district models compatible with CityGML and GIS platforms, helping city planners visualize urban heat islands, green-space ratios, and infrastructure integration.'
+  - id: national-standards
+    question: 'How do you handle country-specific European standards (e.g., German HOAI/DIN, French DTU, or Nordic BIM standards)?'
+    answer: 'During onboarding, we map your local national templates, drawing conventions, and phase deliverables (such as HOAI Leistungsphasen 1–5) into a project-specific QA checklist and execute a calibration sample before full-scale production.'
+  - id: heritage-scan-to-bim
+    question: 'Can you handle adaptive reuse and heritage renovation projects using Scan-to-BIM?'
+    answer: 'Yes. Historic renovation is huge across Europe. We convert dense LiDAR point clouds into accurate, high-tolerance LOD 300–400 Revit models—capturing irregular facades, heritage interiors, and courtyards—so developers can plan retrofits without structural surprises.'
+  - id: public-tenders
+    question: 'What is your experience with public tender BIM mandates across Europe?'
+    answer: 'We understand the strict compliance thresholds of EU public procurement. We deliver auditable, clash-free models, full revision histories, and structured asset data packages that pass rigorous third-party BIM audits.'
+  - id: multilingual-teams
+    question: 'How do you manage communication and language across multilingual European project teams?'
+    answer: 'All project leads are fluent in English for technical coordination, and we can populate drawing sheets, schedules, and IFC parameters using your localized terminology glossaries (German, French, Dutch, Nordic languages, etc.).'
+  - id: high-end-interiors
+    question: "How do you ensure design quality isn't lost in high-end European hospitality or residential interiors?"
+    answer: 'Unlike generic MEP drafting shops, BIM Delivery has dedicated Interior and Landscape BIM specialists who understand millwork, FF&E tolerances, bespoke finishes, and material transitions—preserving the exact design intent of European architects and developers.'

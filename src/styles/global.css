@@ -433,6 +433,37 @@
 }
 
 /**
+ * A page with a sidebar (spec 0020, the FAQ region pages): from `lg`, a 14rem
+ * column for the sidebar beside a content column that takes the rest, and
+ * two rows, the header and then the body, with any spare height going to the
+ * body. The sidebar spans both rows, so a short body (a search that leaves
+ * one question) never stretches the gap under the header. Below `lg` it is
+ * one column. It owns the columns at every width, so it never shares an
+ * element with a `grid-cols-*` class, whose order against it in the
+ * stylesheet is not ours to pick. Use with `grid`; the items place
+ * themselves with `lg:col-start-*` and `lg:row-*`.
+ */
+@utility sidebar-grid {
+  grid-template-columns: minmax(0, 1fr);
+
+  @media (width >= 64rem) {
+    grid-template-columns: 14rem minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+}
+
+/**
+ * Stays in view while the page scrolls, stopping where an anchor jump stops:
+ * the header's height (`--header-h`, written in `PageLayout.astro`) plus the
+ * same 1.5rem as the page's `scroll-padding-top`, so it never slides under
+ * the sticky header card. The FAQ region nav uses it from `lg`.
+ */
+@utility sticky-below-header {
+  position: sticky;
+  top: calc(var(--header-h) + 1.5rem);
+}
+
+/**
  * One item of the `Accordion` (spec 0010), on its `<details>`.
  *
  * It hides the browser's disclosure triangle, because the item draws its own

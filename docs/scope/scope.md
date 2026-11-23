@@ -216,7 +216,7 @@ A help center style FAQ grouped by market: `/faq` is a hub with instant search a
 spec [0020](../specs/0020-faq-knowledge-base/index.md) · code in `src/pages/faq/`, `src/components/faq/`, `src/lib/faq.ts`, and `src/scripts/faq.ts` (shared: `src/components/ui/Accordion.astro`, `src/components/ui/Breadcrumb.astro`, content: `src/content/faqPage/en/`, `src/content/faqRegions/en/`)
 - [x] Design it (spec): `/architect FAQ knowledge base`
 - [ ] Build it: `/develop FAQ knowledge base`
-  - [ ] The FAQ stands up, no script: `site` in the config, the two collections and their checks, the 50 sample questions, the `Accordion` list look, the breadcrumb, badge, cards, and region nav, both routes, the nav item, and the Contact link (AC-1 to AC-4, AC-8, AC-10 to AC-16, AC-18)
+  - [x] The FAQ stands up, no script: `site` in the config, the two collections and their checks, the 50 sample questions, the `Accordion` list look, the breadcrumb, badge, cards, and region nav, both routes, the nav item, and the Contact link (AC-1 to AC-4, AC-8, AC-10 to AC-16, AC-18)
   - [ ] The schema: `FAQPage` and `BreadcrumbList` on each region page from pure helpers (AC-9)
   - [ ] Search and deep links: `data-faq-text`, the search boxes, and `faq.ts` (AC-5 to AC-8, AC-18)
   - [ ] Motion, docs, and gates: entrance and reveal, `design.md` and `/styleguide`, the check, lint, and build gates, the schema validators, and the 390px, 1024px, no script, and reduced motion checks (AC-1, AC-9, AC-10, AC-17, AC-19)

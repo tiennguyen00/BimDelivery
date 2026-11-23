@@ -1,0 +1,80 @@
+---
+/**
+ * The FAQ hub, `/faq` (spec 0020): three bands, in order, then the footer.
+ * Every word comes from the `faqPage` entry and the `faqRegions` entries, so
+ * a new region is one new YAML file and no edit here.
+ *
+ * 1. The heading block on the dot grid: the ruled `h1` and the intro.
+ * 2. Browse by region, on `raised`: one card per region, in `order`, each
+ *    one link to `/faq/<slug>`. One column on a phone, two from `md`, three
+ *    from `lg`.
+ * 3. The accent closing band, linking to Contact.
+ *
+ * The hub shows no answers, so it carries no `FAQPage` schema; each region
+ * page carries its own. This file owns the page's element ids, every one
+ * starting with `faq-`, so none can meet a question's id (spec 0020).
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import PatternBand from '../../components/ui/PatternBand.astro';
+import Section from '../../components/ui/Section.astro';
+import CtaBand from '../../components/ui/CtaBand.astro';
+import Emphasis from '../../components/ui/Emphasis.astro';
+import RegionCard from '../../components/faq/RegionCard.astro';
+import { resolveLocale } from '../../i18n/locales';
+import { getFaqPage, getFaqRegions } from '../../lib/content';
+import { countLine } from '../../lib/faq';
+
+const lang = resolveLocale(Astro.currentLocale);
+
+const [page, regions] = await Promise.all([
+  getFaqPage(lang),
+  getFaqRegions(lang),
+]);
+---
+
+<PageLayout title={page.seo.title} description={page.seo.description}>
+  <PatternBand surface="dots" labelledBy="faq-heading">
+    <div class="mx-auto max-w-narrow text-center">
+      <h1 id="faq-heading" class="heading-rule inline-block" data-heading-rule>
+        {page.heading}
+      </h1>
+      <p class="mt-8 text-lead">
+        <Emphasis text={page.intro} />
+      </p>
+    </div>
+  </PatternBand>
+
+  <Section tone="raised" labelledBy="faq-regions-heading">
+    <h2
+      id="faq-regions-heading"
+      class="heading-rule inline-block"
+      data-heading-rule
+    >
+      {page.regionsHeading}
+    </h2>
+    <ul class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {regions.map((region) => (
+        <li>
+          <RegionCard
+            code={region.code}
+            name={region.name}
+            focus={region.focus}
+            count={countLine(page.questionCount, region.questions.length, lang)}
+            href={`/faq/${region.slug}`}
+          />
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <CtaBand
+    heading={page.cta.heading}
+    headingId="faq-cta-heading"
+    text={page.cta.text}
+    button={page.cta.button}
+  />
+</PageLayout>
+
+<script>
+  import '../../scripts/reveal';
+</script>

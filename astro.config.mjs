@@ -153,11 +153,12 @@ export default defineConfig({
     },
   },
 
-  // `site` is intentionally NOT set yet: the public domain is not chosen.
-  // Feature 11 (SEO foundation) sets it for canonical URLs and the sitemap.
-  // Left unset deliberately so a missing domain fails loudly when the sitemap
-  // lands, rather than quietly emitting canonical URLs pointing at a
-  // placeholder host.
+  // The address the live Worker answers on, the apex domain its route in
+  // wrangler.jsonc serves (spec 0020). Pages read it as `Astro.site` and build
+  // absolute URLs with `new URL(path, Astro.site)`: today the FAQ's
+  // structured data, later feature 11's canonical URLs and sitemap. Not
+  // `www`, which the Worker's route does not list.
+  site: 'https://bimdelivery.vn',
 
   vite: {
     // Tailwind v4 runs as a Vite plugin; there is no tailwind.config file.

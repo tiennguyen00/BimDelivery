@@ -1,0 +1,32 @@
+# The FAQ hub's copy and the words every region page shares (spec 0020).
+# Placeholder copy, awaiting the client's review. Each region and its
+# questions live in src/content/faqRegions/en/<slug>.yaml.
+lang: en
+seo:
+  title: FAQ by region | BIM Delivery
+  description: Answers to what developers, architects, and city planners ask before they outsource BIM to Vietnam, grouped by market and searchable.
+heading: Frequently asked questions
+intro: Straight answers to what developers, architects, and city planners ask before they outsource BIM, grouped by market. ==Search every question== at once, or open the region you build in.
+regionsHeading: Browse by region
+questionCount:
+  one: '{count} question'
+  other: '{count} questions'
+search:
+  label: Search the FAQ
+  placeholder: Search questions, for example GDPR or LOD 500
+  results:
+    one: '{count} question found'
+    other: '{count} questions found'
+  noResults:
+    heading: No questions match
+    text: Try a shorter or different word, or ask us directly and we'll answer within one business day.
+breadcrumb:
+  navLabel: Breadcrumb
+  label: FAQ
+regionNavLabel: Regions
+cta:
+  heading: Still have a question?
+  text: Tell us about your project and get a clear answer within one business day.
+  button:
+    label: Contact us
+    href: /contact-us

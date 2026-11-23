@@ -32,6 +32,7 @@ const RESERVED_PATHS: readonly string[] = [
   'about-us',
   'project',
   'contact-us',
+  'faq',
   'privacy',
   'api',
   '404',
@@ -96,6 +97,15 @@ export type Project = Readonly<Omit<ProjectData, 'rooms'>> &
 
 /** The Project page's copy, and the copy every detail page shares (spec 0015). */
 export type ProjectPage = Readonly<Entry<'projectPage'>['data']>;
+
+/** The FAQ hub's copy, and the words every region page shares (spec 0020). */
+export type FaqPage = Readonly<Entry<'faqPage'>['data']>;
+
+/** One FAQ region, its questions in page order (spec 0020). */
+export type FaqRegion = Readonly<Entry<'faqRegions'>['data']> &
+  Readonly<{ id: string }>;
+
+export type FaqQuestion = FaqRegion['questions'][number];
 
 // Pure checks and transforms
 
@@ -165,6 +175,39 @@ const checkServices = (
         `which is a reserved path (${RESERVED_PATHS.join(', ')}). Pick another slug.`,
     );
   }
+};
+
+/**
+ * The FAQ regions of one language (spec 0020): one slug, one badge code, and
+ * one place in the order each, and within a region no two questions share an
+ * `id`, since the id is the question's address on its page. The schema has
+ * already checked each id's shape.
+ */
+const checkFaqRegions = (
+  lang: Locale,
+  entries: readonly Entry<'faqRegions'>[],
+): void => {
+  checkUnique('faqRegions', lang, 'slug', entries, (entry) => entry.data.slug);
+  checkUnique('faqRegions', lang, 'code', entries, (entry) => entry.data.code);
+  checkUnique(
+    'faqRegions',
+    lang,
+    'order',
+    entries,
+    (entry) => entry.data.order,
+  );
+  entries.forEach((entry) => {
+    const { questions } = entry.data;
+    questions.forEach((question, index) => {
+      const first = questions.findIndex((other) => other.id === question.id);
+      if (first !== index) {
+        throw new Error(
+          `[content] faqRegions (${lang}): ${fileOf(entry)} questions[${first}].id and ` +
+            `questions[${index}].id are both "${question.id}". Each question id must be unique within its region.`,
+        );
+      }
+    });
+  });
 };
 
 const byOrder = <T extends { data: { order: number } }>(a: T, b: T): number =>
@@ -456,6 +499,24 @@ export const getProjectPage = async (lang: Locale): Promise<ProjectPage> =>
 
 export const getNotFoundPage = async (lang: Locale) =>
   (await loadSingle('notFound', lang, 'not-found')).data;
+
+export const getFaqPage = async (lang: Locale): Promise<FaqPage> =>
+  (await loadSingle('faqPage', lang, 'faq')).data;
+
+/**
+ * Every FAQ region in `lang`, sorted by `order`, after the checks above. The
+ * hub cards, the region nav, the routes, and the search all read this one
+ * list, so a new region file shows up everywhere at once (spec 0020).
+ */
+export const getFaqRegions = async (
+  lang: Locale,
+): Promise<readonly FaqRegion[]> => {
+  const entries = inLang(lang, await loadChecked('faqRegions'));
+  checkFaqRegions(lang, entries);
+  return entries
+    .toSorted(byOrder)
+    .map((entry) => ({ ...entry.data, id: entry.id }));
+};
 
 /** Every service in `lang`, sorted by `order`. */
 export const getServices = async (

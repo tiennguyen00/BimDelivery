@@ -1,0 +1,111 @@
+---
+/**
+ * Every FAQ region page, `/faq/<slug>`, from one route (spec 0020): one band
+ * and the closing band, then the footer. Every word comes from the region's
+ * own `faqRegions` entry or the shared `faqPage` entry, so a new region is
+ * one new YAML file and no edit here.
+ *
+ * The band, top to bottom: the breadcrumb (FAQ, then this region), then a
+ * grid. Below `lg` it is one column: the region's header (badge, `h1`, focus
+ * line, question count), the region nav as a row of chips, and the
+ * questions. From `lg` (`sidebar-grid` in `global.css`) the region nav is a
+ * sidebar on the left that stays in view as the page scrolls, and the header
+ * and the questions share the column beside it. The reading order is the
+ * same at every width, so the `h1` is always the first heading.
+ *
+ * The questions are the `Accordion`'s `list` look, every one closed, several
+ * open at once, each `details` carrying the question's `id`, so
+ * `/faq/<slug>#<id>` jumps to it even with JavaScript off.
+ *
+ * This file owns the page's element ids, every one starting with `faq-`, so
+ * none can meet a question's id, which may not (spec 0020).
+ */
+import type { GetStaticPaths } from 'astro';
+import PageLayout from '../../layouts/PageLayout.astro';
+import Section from '../../components/ui/Section.astro';
+import CtaBand from '../../components/ui/CtaBand.astro';
+import Accordion from '../../components/ui/Accordion.astro';
+import Breadcrumb from '../../components/ui/Breadcrumb.astro';
+import RegionBadge from '../../components/faq/RegionBadge.astro';
+import RegionNav from '../../components/faq/RegionNav.astro';
+import { DEFAULT_LOCALE } from '../../i18n/locales';
+import { getFaqPage, getFaqRegions, type FaqRegion } from '../../lib/content';
+import { countLine } from '../../lib/faq';
+
+/**
+ * As on the project route, `getStaticPaths` has no `Astro.currentLocale`, so
+ * it reads the default locale, which is the whole route table today. Each
+ * page gets its region and the full list for the region nav as props, so
+ * the page body reads no collection a second time.
+ */
+export const getStaticPaths = (async () => {
+  const regions = await getFaqRegions(DEFAULT_LOCALE);
+  return regions.map((region) => ({
+    params: { region: region.slug },
+    props: { region, regions },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  region: FaqRegion;
+  regions: readonly FaqRegion[];
+}
+
+const { region, regions } = Astro.props;
+const page = await getFaqPage(region.lang);
+
+const regionHref = `/faq/${region.slug}`;
+---
+
+<PageLayout title={region.seo.title} description={region.seo.description}>
+  <Section tone="canvas" labelledBy="faq-region-heading">
+    <Breadcrumb
+      label={page.breadcrumb.navLabel}
+      items={[
+        { label: page.breadcrumb.label, href: '/faq' },
+        { label: region.name, href: regionHref },
+      ]}
+    />
+
+    <div class="sidebar-grid mt-6 grid gap-y-10 lg:mt-10 lg:gap-x-12">
+      <div class="lg:col-start-2 lg:row-start-1">
+        <RegionBadge code={region.code} size="lg" />
+        <h1 id="faq-region-heading" class="mt-5 text-balance">
+          {region.name}
+        </h1>
+        <p class="mt-4 max-w-narrow text-lead">{region.focus}</p>
+        <p class="mt-4 text-small font-semibold text-accent">
+          {countLine(page.questionCount, region.questions.length, region.lang)}
+        </p>
+      </div>
+
+      <RegionNav
+        label={page.regionNavLabel}
+        labelId="faq-region-nav-label"
+        regions={regions}
+        current={region.slug}
+        class="lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:self-start"
+      />
+
+      <div class="lg:col-start-2 lg:row-start-2">
+        <div id="faq-questions">
+          <Accordion
+            variant="list"
+            items={region.questions.map((question) => ({
+              id: question.id,
+              title: question.question,
+              text: question.answer,
+            }))}
+          />
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <CtaBand
+    heading={page.cta.heading}
+    headingId="faq-cta-heading"
+    text={page.cta.text}
+    button={page.cta.button}
+  />
+</PageLayout>

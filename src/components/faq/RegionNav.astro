@@ -1,0 +1,71 @@
+---
+/**
+ * The FAQ region pages' list of every region (spec 0020), in `order`, each
+ * link carrying its badge and name. The region you are on is marked
+ * `aria-current="page"`, sits on a `panel` fill, and its badge turns
+ * `filled`.
+ *
+ * A `nav` named by its visible title ("Regions"), which is a plain
+ * paragraph, not a heading, so the page's `h1` stays its first heading
+ * wherever the nav lands in the reading order.
+ *
+ * Below `lg` it is a row of chips above the questions that wraps onto a
+ * second line rather than scrolling sideways. From `lg` it is a column in
+ * the page's sidebar that stays in view below the header while the page
+ * scrolls (`sticky-below-header` in `global.css`). Every link is at least
+ * 44px tall. Words: `ink` (11.66:1 on canvas, 7.62:1 on panel), turning
+ * `accent` on hover (7.71:1); the current one `heading` (10.35:1 on panel).
+ */
+import RegionBadge from './RegionBadge.astro';
+import { cx } from '../ui/styles';
+
+type Region = Readonly<{ slug: string; code: string; name: string }>;
+
+interface Props {
+  /** The nav's name and its visible title, "Regions". */
+  label: string;
+  /** The id the title takes, which the `nav` points at. */
+  labelId: string;
+  /** Every region, in order. */
+  regions: readonly Region[];
+  /** The slug of the region this page shows. */
+  current: string;
+  class?: string;
+}
+
+const { label, labelId, regions, current, class: className } = Astro.props;
+---
+
+<nav aria-labelledby={labelId} class={cx('lg:sticky-below-header', className)}>
+  <p
+    id={labelId}
+    class="text-eyebrow font-semibold tracking-wider text-ink-muted uppercase"
+  >
+    {label}
+  </p>
+  <ul class="mt-3 flex flex-wrap gap-2 lg:flex-col lg:gap-1">
+    {regions.map((region) => {
+      const isCurrent = region.slug === current;
+      return (
+        <li>
+          <a
+            href={`/faq/${region.slug}`}
+            aria-current={isCurrent ? 'page' : undefined}
+            class={cx(
+              'flex min-h-11 items-center gap-3 rounded-ui border px-3 py-2 transition-colors duration-150 lg:border-transparent',
+              isCurrent
+                ? 'border-line bg-panel font-semibold text-heading'
+                : 'border-line text-ink hover:text-accent',
+            )}
+          >
+            <RegionBadge
+              code={region.code}
+              tone={isCurrent ? 'filled' : 'outline'}
+            />
+            <span>{region.name}</span>
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</nav>

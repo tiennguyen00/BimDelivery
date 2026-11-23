@@ -1,7 +1,7 @@
 # 0020. FAQ knowledge base, one page per region
 
 **Date**: 2026-11-23
-**Status**: Proposed
+**Status**: In Progress
 **Scope feature**: 19, FAQ knowledge base (`docs/scope/scope.md`)
 **Amends**: [0002](../0002-content-model/index.md) (two new collections, `faqPage` and `faqRegions`, and `faq` joins the reserved paths) · [0010](../0010-about-us-page/index.md) (`Accordion` gains a second look) · [0011](../0011-contact-page/index.md) (a link to the FAQ under the intro)
 

@@ -9,6 +9,8 @@ items:
     href: /about-us
   - label: Project
     href: /project
+  - label: FAQ
+    href: /faq
   - label: Contact Us
     href: /contact-us
 cta:

@@ -4,6 +4,9 @@ seo:
   description: Tell us about your project and get a reply within one business day. Email, phone, or use the form on this page.
 heading: Contact us
 intro: Looking for a trusted, experienced BIM partner for your ==architecture==, ==interior design==, or ==landscape== project? Tell us what you need, and we'll get back to you within **one business day** with a clear proposal outlining our approach.
+faqLink:
+  label: Read the answers to common questions
+  href: /faq
 photo:
   src: https://images.pexels.com/photos/323705/pexels-photo-323705.jpeg?auto=compress&cs=tinysrgb&w=1600
   alt: A modern glass and steel office building seen from below against a pale sky

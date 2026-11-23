@@ -1,0 +1,44 @@
+# Placeholder content (spec 0020): the engineer's sample questions and
+# answers, copied word for word from the spec's sample-content.md. It awaits
+# the client's review before launch; spec 0020's Follow-up lists the claims
+# a customer could hold them to.
+lang: en
+slug: australia
+code: AU
+name: Australia
+focus: 'NATSPEC/ISO 19650, Council DA Approvals, QS/5D Integration, Digital Twins, & Time-Zone Overlap.'
+order: 2
+seo:
+  title: 'FAQ for Australian developers | BIM Delivery'
+  description: 'ISO 19650 and NATSPEC, council DA support, QS ready models, Green Star inputs, and a daily time zone overlap: answers for Australian projects.'
+questions:
+  - id: iso-19650-natspec
+    question: 'Are your BIM workflows aligned with ISO 19650 and the NATSPEC National BIM Guide?'
+    answer: 'Yes. Our delivery workflows strictly follow ISO 19650 naming conventions, CDE (Common Data Environment) protocols, and NATSPEC guidelines, ensuring seamless handover across Australian Tier-1 contractors, consultants, and state government agencies.'
+  - id: working-hours-overlap
+    question: 'How well do our working hours overlap for live coordination with Sydney, Melbourne, or Brisbane teams?'
+    answer: 'Vietnam (GMT+7) sits just 3 to 4 hours behind AEST/AEDT, giving us a **5-to-6-hour real-time overlap every business day**. Our BIM leads join your live Teams/Zoom coordination meetings and respond to urgent council RFI markups on the same day.'
+  - id: state-digital-twins
+    question: 'Can your BIM models feed into Australian State Digital Twins (e.g., NSW Spatial Digital Twin or Digital Twin Victoria)?'
+    answer: 'Yes. We structure our georeferenced site, landscape, and architectural models for clean IFC and CityGML/3D Tiles export so urban planners and developers can plug proposed precincts directly into state-level spatial digital twins.'
+  - id: development-applications
+    question: 'How do you support Development Application (DA) submissions for local councils?'
+    answer: 'We produce council-ready DA drawing sets, accurate overshadowing/solar access diagrams (critical for SEPP 65 / Apartment Design Guide compliance), GFA/FSR area schedules, and landscape deep-soil calculations directly from the Revit model.'
+  - id: quantity-surveyors
+    question: 'Can your models be structured for Australian Quantity Surveyors (QS) using CostX or Cubit?'
+    answer: 'Yes. We build clean, non-overlapping geometry with standardized Australian classification codes (Uniclass 2015 / ANZRS) so your QS team can run automated 5D takeoffs in iTWO CostX without manual cleanup.'
+  - id: green-star-nabers
+    question: 'How do you support Green Star and NABERS sustainability documentation?'
+    answer: 'We embed material thermal/glazing parameters, accurate room volumes, orientation data, and landscape permeability/canopy metrics into the BIM model, giving your ESD (Environmentally Sustainable Design) consultants reliable inputs for energy and Green Star modeling.'
+  - id: btr-hospitality-masterplans
+    question: 'Do you have experience with high-density Build-to-Rent (BTR), hospitality, and masterplanned communities?'
+    answer: 'Yes. Our core specialization across Architectural, Interior (FF&E/joinery), and Landscape BIM makes us uniquely suited for mixed-use precincts, resorts, and BTR developments where interior repeatability and exterior amenity coordination drive ROI.'
+  - id: council-revisions
+    question: 'How do you handle revisions when a local council requests design modifications mid-approval?'
+    answer: 'Because all plans, sections, schedules, and area tables are parametrically linked in our Revit models, council-mandated height, setback, or unit-mix changes propagate automatically across the entire documentation set—cutting turnaround times dramatically.'
+  - id: qa-qc-process
+    question: "What QA/QC process guarantees we won't waste internal senior staff hours fixing offshore models?"
+    answer: 'Every deliverable passes a 3-tier QA/QC gate: automated Revit/Solibri model health checks, discipline-lead coordination review, and a final BEP compliance sign-off before upload to ACC or Aconex.'
+  - id: engagement-models
+    question: 'What commercial engagement models do you offer for long-term Australian property portfolios?'
+    answer: 'We offer both Fixed-Fee milestone pricing (ideal for defined DA/Tender packages) and Dedicated BIM Pods (monthly FTE teams embedded directly into your studio) to scale flexibly across your development pipeline.'

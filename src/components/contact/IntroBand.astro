@@ -11,8 +11,13 @@
  * because it is lazy as well, a phone never asks for it. The capitals are
  * CSS only (`uppercase`), so a screen reader reads words, not letters.
  *
- * On page load the heading, the paragraph, and the photo fade and rise in
- * through the `entrance` utility (steps 0, 1, 2), pure CSS. The band never
+ * Under the paragraph, a link to the FAQ (spec 0020): `accent` words
+ * (7.71:1 on canvas) and an arrow that nudges on hover, at least 44px tall.
+ *
+ * On page load the heading, the paragraph with its link, and the photo fade
+ * and rise in through the `entrance` utility (steps 0, 1, 2), pure CSS. The
+ * link shares the paragraph's step, so the form band's steps after the photo
+ * never shift. The band never
  * takes `data-reveal`, so the scroll reveal never touches what the entrance
  * animates. The heading carries `data-heading-rule`, so its rule runs back
  * and draws again with the scroll direction like every ruled heading, once
@@ -20,6 +25,8 @@
  */
 import { Image } from 'astro:assets';
 import Emphasis from '../ui/Emphasis.astro';
+import Icon from '../ui/Icon.astro';
+import type { Link } from '../../lib/content';
 
 interface Props {
   heading: string;
@@ -27,10 +34,12 @@ interface Props {
   headingId: string;
   /** May carry `**bold**` and `==accent==` phrases. */
   intro: string;
+  /** The link to the FAQ under the paragraph (spec 0020). */
+  faqLink: Link;
   photo: Readonly<{ src: string; alt: string }>;
 }
 
-const { heading, headingId, intro, photo } = Astro.props;
+const { heading, headingId, intro, faqLink, photo } = Astro.props;
 ---
 
 <div class="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
@@ -44,9 +53,22 @@ const { heading, headingId, intro, photo } = Astro.props;
       {heading}
     </h1>
 
-    <p class="entrance mt-8 text-lead" style="--entrance-step: 1">
-      <Emphasis text={intro} />
-    </p>
+    <div class="entrance mt-8" style="--entrance-step: 1">
+      <p class="text-lead">
+        <Emphasis text={intro} />
+      </p>
+      <a
+        href={faqLink.href}
+        class="group mt-4 inline-flex min-h-11 items-center gap-2 rounded-ui font-semibold text-accent underline-offset-4 hover:text-accent-hover hover:underline"
+      >
+        {faqLink.label}
+        <Icon
+          name="arrow-right"
+          size={20}
+          class="transition-transform duration-150 group-hover:translate-x-1"
+        />
+      </a>
+    </div>
   </div>
 
   <div

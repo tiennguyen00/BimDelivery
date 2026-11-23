@@ -1,14 +1,23 @@
 ---
 /**
- * A group of disclosure items, one open at a time (spec 0010). The About
- * page's capability band uses it first; the service pages can reuse it.
+ * A group of disclosure items (spec 0010), in one of two looks. The About
+ * page's capability band uses the `bar` look; the FAQ region pages use the
+ * `list` look (spec 0020).
  *
  * It is the browser's own `<details>` and `<summary>`, with no script at
- * all. Every item shares one `name`, so opening one closes the other (the
- * browser does that), and the second item ships with `open`. Where the
- * browser does not know the shared `name` yet, items simply open
- * independently, which loses nothing. A closed item's text stays in the
- * HTML, so find in page and a screen reader still reach it.
+ * all. A closed item's text stays in the HTML, so find in page and a screen
+ * reader still reach it. The `accordion-item` utility in `global.css` hides
+ * the browser's disclosure triangle and, where the browser can, slides the
+ * panel open and closed.
+ *
+ * The summary holds plain text, not a heading: a heading inside a `summary`
+ * loses its role in some screen readers, and the band's own heading already
+ * names the group.
+ *
+ * **`bar`** (the default), one open at a time. Every item shares one `name`,
+ * so opening one closes the other (the browser does that), and the second
+ * item ships with `open`. Where the browser does not know the shared `name`
+ * yet, items simply open independently, which loses nothing.
  *
  * - Closed, an item is a bar filled with `--color-accent`: its title bold and
  *   `on-accent` (7.71:1), a `plus` in a `canvas` circle at the end.
@@ -20,49 +29,103 @@
  *   `on-accent`, which is the circle's own colour. They are decorative
  *   (`Icon` hides them), because the browser already announces the summary
  *   as expandable and its state.
+ * - The group carries `focus-contrast`: the base `accent` ring would vanish
+ *   against a closed brass bar, so every summary gets the two colour ring
+ *   instead, which passes on an open `panel` item too.
  *
- * The group carries `focus-contrast`: the base `accent` ring would vanish
- * against a closed brass bar, so every summary gets the two colour ring
- * instead, which passes on an open `panel` item too.
+ * **`list`**, the quiet look, several open at once. No shared `name`, and
+ * every item ships closed.
  *
- * The summary holds plain text, not a heading: a heading inside a `summary`
- * loses its role in some screen readers, and the band's own `h2` already
- * names the group. The `accordion-item` utility in `global.css` hides the
- * browser's disclosure triangle and, where the browser can, slides the panel
- * open and closed.
+ * - Rows on the band itself, each closed off by a `line` border below
+ *   (decorative, 2.45:1 on canvas, never a control boundary).
+ * - The title is semibold `heading` (15.83:1 on canvas, 14.05:1 on raised)
+ *   and turns `accent` when open (7.71:1 / 6.84:1). Hover underlines it.
+ * - A `plus` or `minus` in `accent` at the end, with no circle.
+ * - The answer is `ink` (11.66:1 / 10.35:1), held to a reading width.
+ * - The base `accent` ring: the rows sit on a dark band, where it passes.
+ * - An item may carry an `id`, its address (`#id` jumps to it), and `hooks`,
+ *   the `data-` attributes a page script reads (the FAQ's search). Each item
+ *   carries its own bottom line, so an item a script hides with `hidden`
+ *   takes its line with it.
  */
 import Emphasis from './Emphasis.astro';
 import Icon from './Icon.astro';
 
-interface Props {
-  /** The group's shared `<details name>`; unique on the page. */
-  name: string;
-  /** Each text may carry `**bold**` and `==accent==` phrases. */
-  items: readonly Readonly<{ title: string; text: string }>[];
-}
+type Item = Readonly<{
+  title: string;
+  /** May carry `**bold**` and `==accent==` phrases. */
+  text: string;
+  /** The item's address on the page, so `#id` links to it. */
+  id?: string;
+  /** Script hooks written on the item's `<details>`. */
+  hooks?: Readonly<Record<`data-${string}`, string>>;
+}>;
 
-const { name, items } = Astro.props;
+type Props =
+  | Readonly<{
+      variant?: 'bar';
+      /** The group's shared `<details name>`; unique on the page. */
+      name: string;
+      items: readonly Item[];
+    }>
+  | Readonly<{
+      variant: 'list';
+      name?: never;
+      items: readonly Item[];
+    }>;
+
+const { variant = 'bar', items } = Astro.props;
+const { name } = Astro.props;
 ---
 
-<div class="focus-contrast flex flex-col gap-4">
-  {items.map((item, index) => (
-    <details
-      name={name}
-      open={index === 1}
-      class="group accordion-item rounded-ui border border-transparent bg-accent open:border-line open:bg-panel"
-    >
-      <summary class="flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-ui px-6 py-4 text-h3 font-bold text-on-accent group-open:text-accent">
-        <span>{item.title}</span>
-        <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas text-accent group-open:bg-raised">
-          <Icon name="plus" size={20} class="group-open:hidden" />
-          <Icon name="minus" size={20} class="hidden group-open:block" />
-        </span>
-      </summary>
-      <div class="px-6 pb-6">
-        <p>
-          <Emphasis text={item.text} />
-        </p>
-      </div>
-    </details>
-  ))}
-</div>
+{variant === 'bar' ? (
+  <div class="focus-contrast flex flex-col gap-4">
+    {items.map((item, index) => (
+      <details
+        id={item.id}
+        name={name}
+        open={index === 1}
+        class="group accordion-item rounded-ui border border-transparent bg-accent open:border-line open:bg-panel"
+        {...item.hooks}
+      >
+        <summary class="flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-ui px-6 py-4 text-h3 font-bold text-on-accent group-open:text-accent">
+          <span>{item.title}</span>
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas text-accent group-open:bg-raised">
+            <Icon name="plus" size={20} class="group-open:hidden" />
+            <Icon name="minus" size={20} class="hidden group-open:block" />
+          </span>
+        </summary>
+        <div class="px-6 pb-6">
+          <p>
+            <Emphasis text={item.text} />
+          </p>
+        </div>
+      </details>
+    ))}
+  </div>
+) : (
+  <div class="flex flex-col">
+    {items.map((item) => (
+      <details
+        id={item.id}
+        class="group accordion-item border-b border-line"
+        {...item.hooks}
+      >
+        <summary class="group/summary flex min-h-11 cursor-pointer items-start justify-between gap-6 rounded-ui py-5 text-lead font-semibold text-heading group-open:text-accent">
+          <span class="text-pretty underline-offset-4 group-hover/summary:underline">
+            {item.title}
+          </span>
+          <span class="mt-1 shrink-0 text-accent">
+            <Icon name="plus" size={20} class="group-open:hidden" />
+            <Icon name="minus" size={20} class="hidden group-open:block" />
+          </span>
+        </summary>
+        <div class="max-w-narrow pe-10 pb-6">
+          <p class="text-ink">
+            <Emphasis text={item.text} />
+          </p>
+        </div>
+      </details>
+    ))}
+  </div>
+)}
