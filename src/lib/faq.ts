@@ -4,6 +4,7 @@
  * included.
  */
 import type { Locale } from '../i18n/locales';
+import { splitEmphasis } from './emphasis';
 
 /** A count line's two templates, each with a `{count}` slot. */
 export type CountTemplates = Readonly<{ one: string; other: string }>;
@@ -25,3 +26,52 @@ export const countLine = (
       : templates.other;
   return template.replace('{count}', new Intl.NumberFormat(lang).format(count));
 };
+
+/** An answer with its `**` and `==` marks removed, the words unchanged. */
+export const plainAnswer = (answer: string): string =>
+  splitEmphasis(answer)
+    .map((run) => run.text)
+    .join('');
+
+// Structured data (JSON-LD), the machine readable summary search engines read
+
+type QuestionAndAnswer = Readonly<{ question: string; answer: string }>;
+
+/**
+ * The `FAQPage` of one region page: every question the page shows, in page
+ * order, each name the question exactly as shown and each answer its plain
+ * text. Google only accepts FAQ markup that matches answers visible on the
+ * page, so the page and this list come from the same entries.
+ */
+export const faqPageJsonLd = (questions: readonly QuestionAndAnswer[]) => ({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: questions.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: plainAnswer(item.answer) },
+  })),
+});
+
+/** One step of a breadcrumb trail, with its absolute URL. */
+export type BreadcrumbStep = Readonly<{ name: string; url: string }>;
+
+/** A `BreadcrumbList`, positions counted from 1, in the order given. */
+export const breadcrumbJsonLd = (steps: readonly BreadcrumbStep[]) => ({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: steps.map((step, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: step.name,
+    item: step.url,
+  })),
+});
+
+/**
+ * The text of a `<script type="application/ld+json">`. Every `<` is written
+ * as its JSON escape, `<`, which parses back to the same character, so no
+ * content can close the script tag or open another.
+ */
+export const jsonLdScript = (value: unknown): string =>
+  JSON.stringify(value).replaceAll('<', '\\u003c');

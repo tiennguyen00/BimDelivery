@@ -30,7 +30,12 @@ import RegionBadge from '../../components/faq/RegionBadge.astro';
 import RegionNav from '../../components/faq/RegionNav.astro';
 import { DEFAULT_LOCALE } from '../../i18n/locales';
 import { getFaqPage, getFaqRegions, type FaqRegion } from '../../lib/content';
-import { countLine } from '../../lib/faq';
+import {
+  breadcrumbJsonLd,
+  countLine,
+  faqPageJsonLd,
+  jsonLdScript,
+} from '../../lib/faq';
 
 /**
  * As on the project route, `getStaticPaths` has no `Astro.currentLocale`, so
@@ -55,9 +60,36 @@ const { region, regions } = Astro.props;
 const page = await getFaqPage(region.lang);
 
 const regionHref = `/faq/${region.slug}`;
+
+/**
+ * The page's two JSON-LD scripts (AC-9): the `FAQPage` from exactly the
+ * questions the page shows, in the same order, and the two step trail the
+ * visible breadcrumb draws. Every URL is absolute, built on `site` in
+ * `astro.config.mjs`; a missing `site` is a broken config, so it throws.
+ */
+const site = Astro.site;
+if (!site) {
+  throw new Error('[faq] `site` is not set in astro.config.mjs');
+}
+const faqSchema = jsonLdScript(faqPageJsonLd(region.questions));
+const breadcrumbSchema = jsonLdScript(
+  breadcrumbJsonLd([
+    { name: page.breadcrumb.label, url: new URL('/faq', site).href },
+    { name: region.name, url: new URL(regionHref, site).href },
+  ]),
+);
 ---
 
 <PageLayout title={region.seo.title} description={region.seo.description}>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={faqSchema}></script>
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={breadcrumbSchema}
+    ></script>
+  </Fragment>
+
   <Section tone="canvas" labelledBy="faq-region-heading">
     <Breadcrumb
       label={page.breadcrumb.navLabel}
