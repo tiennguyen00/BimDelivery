@@ -1,24 +1,26 @@
 ---
 /**
- * The front door (spec 0005): five sections, in order, every word and image
+ * The front door (spec 0005): six sections, in order, every word and image
  * of them from a content entry.
  *
  * This file is the only place that knows the page's shape. It owns the tone of
  * each band (the `canvas` and `raised` alternation spec 0003 asks a page to set),
- * and it owns the heading ids, under one rule for all five: `<section>-heading`.
+ * and it owns the heading ids, under one rule for all six: `<section>-heading`.
  * No component here reads a tone or invents an id.
  *
  * The reference site's "Delivering Precision BIM & Revit Modeling" section is
  * deliberately absent; it was cut in the scope. So are the certification row
  * and the accent closing band: the page now ends on the project showcase. The company overview band was
  * removed as well (2026-09-22), so the intro band leads straight into the
- * services.
+ * services. The why choose band follows them (2026-11-23), and the presence
+ * band after it keeps only its globe.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Hero from '../components/home/Hero.astro';
 import ServiceCard from '../components/home/ServiceCard.astro';
 import IntroBand from '../components/home/IntroBand.astro';
+import WhyChooseBand from '../components/home/WhyChooseBand.astro';
 import PresenceBand from '../components/ui/PresenceBand.astro';
 import ProjectShowcase from '../components/home/ProjectShowcase.astro';
 import { resolveLocale } from '../i18n/locales';
@@ -213,9 +215,24 @@ const serviceRow =
   </Section>
 
   {/**
-   * 4. Global presence. A `canvas` band under a faint diagonal
-   * stripe, holding the map, the copy, and the why choose list that used to
-   * be its own differentiators section.
+   * 4. Why choose BIM Delivery (2026-11-23, the client's eight points), then
+   * the button to ask for a pilot. `canvas`, after the `raised` services; the
+   * presence band below is `canvas` too, and its stripe keeps the two apart.
+   */}
+  <Section tone="canvas" labelledBy="why-choose-heading" navSection="/about-us">
+    <WhyChooseBand
+      heading={home.whyChoose.heading}
+      headingId="why-choose-heading"
+      intro={home.whyChoose.intro}
+      points={home.whyChoose.points}
+      primaryCta={home.whyChoose.primaryCta}
+      secondaryCta={home.whyChoose.secondaryCta}
+    />
+  </Section>
+
+  {/**
+   * 5. Global presence. A `canvas` band under a faint diagonal stripe: the
+   * heading and the globe.
    */}
   <Section
     tone="canvas"
@@ -228,12 +245,11 @@ const serviceRow =
       headingId="presence-heading"
       locations={home.presence.locations}
       legend={home.presence.legend}
-      whyChoose={home.presence.whyChoose}
     />
   </Section>
 
   {/**
-   * 5. Project showcase. `raised`, so the tones still alternate after
+   * 6. Project showcase. `raised`, so the tones still alternate after
    * the patterned presence band. It is the last band before the footer,
    * and it is left out entirely when the language has no projects.
    */}
@@ -265,7 +281,8 @@ const serviceRow =
  *
  * So is the scroll aware nav underline: the bands' `navSection` props say
  * which nav item each one stands for (hero and intro are Home itself, the
- * services and presence bands About & Services, the showcase Project), and
+ * services, why choose, and presence bands About & Services, the showcase
+ * Project), and
  * only this page moves the underline while scrolling.
  */}
 <script>

@@ -1,8 +1,9 @@
 ---
 /**
  * The global presence band (spec 0005): a centred heading, then a dotted
- * globe with the company's offices and projects marked on the start side
- * (spec 0017), and the why choose list on the end side.
+ * globe with the company's offices and projects marked (spec 0017), centred
+ * under it with its legend. The why choose list that sat beside the globe
+ * became the home page's own band (`WhyChooseBand`, 2026-11-23).
  *
  * It lives in `ui` because two pages show it (spec 0013): the home page, and
  * each service page's presence block, fed that block's own copy or the home
@@ -16,11 +17,7 @@
  * The globe and its markers are decoration and hidden from assistive tech;
  * the places are two real lists of names, one per kind, so a screen reader
  * hears the places the globe stands for rather than nothing, or a canvas.
- *
- * Mobile stacks the why choose list first and the globe second, the same
- * reading order as `MediaText`.
  */
-import Icon from './Icon.astro';
 import PresenceMarker from './PresenceMarker.astro';
 import { cx } from './styles';
 import WorldMap from '../../assets/images/home/world-map.svg';
@@ -41,10 +38,9 @@ interface Props {
   locations: readonly Location[];
   /** The legend's words for the two kinds of marker. */
   legend: { offices: string; projects: string };
-  whyChoose: { heading: string; items: readonly string[] };
 }
 
-const { heading, headingId, locations, legend, whyChoose } = Astro.props;
+const { heading, headingId, locations, legend } = Astro.props;
 
 /** The places of each kind, for the legend and the screen reader lists. */
 const groups = (
@@ -82,46 +78,23 @@ const MAP_LAT_BOTTOM = -56;
  */
 const toMapPosition = ({ lon, lat }: Location): string =>
   `--x: ${((lon + 180) / 360) * 100}%; --y: ${((MAP_LAT_TOP - lat) / (MAP_LAT_TOP - MAP_LAT_BOTTOM)) * 100}%`;
-
-/**
- * The accent rule under both headings, from the shared `heading-rule` utility
- * in `global.css`; `inline-block` keeps it exactly as wide as the words and
- * the rule never reaches a screen reader. The same treatment as the services
- * heading, and each heading carries `data-heading-rule` so `reveal.ts` draws
- * it with the scroll direction.
- */
-const ruleClass = 'heading-rule inline-block';
 ---
 
+{/**
+ * The accent rule under the heading, from the shared `heading-rule` utility
+ * in `global.css`; `inline-block` keeps it exactly as wide as the words and
+ * the rule never reaches a screen reader. The same treatment as the services
+ * heading, and `data-heading-rule` lets `reveal.ts` draw it with the scroll
+ * direction.
+ */}
 <div class="text-center" data-reveal>
-  <h2 id={headingId} class={ruleClass} data-heading-rule>
+  <h2 id={headingId} class="heading-rule inline-block" data-heading-rule>
     {heading}
   </h2>
 </div>
 
-<div
-  class="mt-12 grid grid-cols-1 gap-12 lg:mt-16 lg:grid-cols-12 lg:items-center lg:gap-16"
-  data-reveal-stagger
->
-  <div class="lg:col-span-5">
-    <h3 class:list={[ruleClass, 'font-bold text-heading']} data-heading-rule>
-      {whyChoose.heading}
-    </h3>
-
-    <ul class="mt-8 flex flex-col gap-4">
-      {whyChoose.items.map((item) => (
-        <li class="flex items-start gap-3 text-ink-strong">
-          <Icon name="check" size={20} class="mt-0.5 shrink-0 text-accent" />
-          <span>{item}</span>
-        </li>
-      ))}
-    </ul>
-  </div>
-
+<div class="mt-12 lg:mt-16" data-reveal>
   {/**
-   * Second in the markup so the list is read first; `lg:order-first` moves
-   * the globe to the start side once there are two columns.
-   *
    * Two layers in one box, both hidden from assistive tech (spec 0017):
    *
    * - The flat map, the picture without JavaScript or WebGL. Each marker sits
@@ -142,71 +115,69 @@ const ruleClass = 'heading-rule inline-block';
    * (`touch-none`, 2026-10-29, the client's call): a drag that starts on the
    * globe only turns it, in any direction, and never scrolls the page.
    */}
-  <div class="lg:order-first lg:col-span-7">
+  <div
+    class="group/globe relative mx-auto w-full max-w-2xl overflow-clip select-none in-[.js]:grid in-[.js]:aspect-square in-[.js]:place-items-center"
+    aria-hidden="true"
+    data-globe
+  >
+    <div class="relative w-full transition-opacity duration-700 group-data-globe-on/globe:opacity-0">
+      <WorldMap class="h-auto w-full text-ink-muted/40" />
+      <ul>
+        {locations.map((location) => (
+          <li
+            class="group/marker absolute top-(--y) left-(--x) hover:z-20 data-[kind=office]:z-10"
+            data-kind={location.kind}
+            style={toMapPosition(location)}
+          >
+            <PresenceMarker name={location.name} kind={location.kind} />
+          </li>
+        ))}
+      </ul>
+    </div>
+
     <div
-      class="group/globe relative mx-auto w-full max-w-2xl overflow-clip select-none in-[.js]:grid in-[.js]:aspect-square in-[.js]:place-items-center"
-      aria-hidden="true"
-      data-globe
+      class="invisible absolute inset-0 cursor-grab touch-none opacity-0 transition-opacity duration-700 group-data-globe-on/globe:visible group-data-globe-on/globe:opacity-100 active:cursor-grabbing"
+      data-globe-layer
     >
-      <div class="relative w-full transition-opacity duration-700 group-data-globe-on/globe:opacity-0">
-        <WorldMap class="h-auto w-full text-ink-muted/40" />
-        <ul>
-          {locations.map((location) => (
-            <li
-              class="group/marker absolute top-(--y) left-(--x) hover:z-20 data-[kind=office]:z-10"
-              data-kind={location.kind}
-              style={toMapPosition(location)}
-            >
-              <PresenceMarker name={location.name} kind={location.kind} />
-            </li>
-          ))}
-        </ul>
+      <div class="absolute inset-0">
+        <canvas class="block size-full" data-globe-canvas></canvas>
       </div>
-
-      <div
-        class="invisible absolute inset-0 cursor-grab touch-none opacity-0 transition-opacity duration-700 group-data-globe-on/globe:visible group-data-globe-on/globe:opacity-100 active:cursor-grabbing"
-        data-globe-layer
-      >
-        <div class="absolute inset-0">
-          <canvas class="block size-full" data-globe-canvas></canvas>
-        </div>
-        <ul>
-          {locations.map((location) => (
-            <li
-              class="group/marker pointer-events-none absolute top-0 left-0 hover:z-20 data-[kind=office]:z-10 scale-50 opacity-0 transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] data-front:pointer-events-auto data-front:scale-100 data-front:opacity-100"
-              data-globe-marker
-              data-kind={location.kind}
-              data-lat={location.lat}
-              data-lon={location.lon}
-            >
-              <PresenceMarker name={location.name} kind={location.kind} />
-            </li>
-          ))}
-        </ul>
-      </div>
+      <ul>
+        {locations.map((location) => (
+          <li
+            class="group/marker pointer-events-none absolute top-0 left-0 hover:z-20 data-[kind=office]:z-10 scale-50 opacity-0 transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] data-front:pointer-events-auto data-front:scale-100 data-front:opacity-100"
+            data-globe-marker
+            data-kind={location.kind}
+            data-lat={location.lat}
+            data-lon={location.lon}
+          >
+            <PresenceMarker name={location.name} kind={location.kind} />
+          </li>
+        ))}
+      </ul>
     </div>
+  </div>
 
-    <ul
-      class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-small text-ink"
-      aria-hidden="true"
-    >
-      {groups.map((group) => (
-        <li class="flex items-center gap-2">
-          <span class={legendDotClass[group.kind]}></span>
-          {group.label}
-        </li>
-      ))}
-    </ul>
+  <ul
+    class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-small text-ink"
+    aria-hidden="true"
+  >
+    {groups.map((group) => (
+      <li class="flex items-center gap-2">
+        <span class={legendDotClass[group.kind]}></span>
+        {group.label}
+      </li>
+    ))}
+  </ul>
 
-    <div class="sr-only">
-      {groups.map((group) => (
-        <ul aria-label={group.label}>
-          {group.names.map((name) => (
-            <li>{name}</li>
-          ))}
-        </ul>
-      ))}
-    </div>
+  <div class="sr-only">
+    {groups.map((group) => (
+      <ul aria-label={group.label}>
+        {group.names.map((name) => (
+          <li>{name}</li>
+        ))}
+      </ul>
+    ))}
   </div>
 </div>
 

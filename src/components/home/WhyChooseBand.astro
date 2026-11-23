@@ -1,0 +1,109 @@
+---
+/**
+ * The home page's why choose band (2026-11-23, the client's "8 Talking
+ * Points"): a centred ruled heading and a lead line, the points as tiles,
+ * then the buttons under them. It took over from the short list the presence
+ * band used to carry beside the globe.
+ *
+ * It renders only the inside of the band; the page wraps it in a `Section`.
+ * Each point is the About page's overview tile (`ServicesOverview`): a 40px
+ * line icon with a 1.5 stroke, the title as an `h3`, then the text in the
+ * small size, on a `panel` tile with a `line` border.
+ *
+ * The tiles run one column on a phone and two from `md`. They go four across
+ * (the client's 4 by 2) only once the band itself is 80rem wide (`@7xl`, a
+ * container query, about a 1700px screen, so a full HD monitor), not at
+ * `lg`. The points run 40 to 75 words: four across a 1440px screen left
+ * each about 28 characters a line and the first tile 650px tall, only about
+ * 40px shorter in total than two across. Shorter copy could bring four
+ * across sooner. The tiles in a row share one height, and each tile's words
+ * run from its top, so a paragraph starts right under its own title.
+ *
+ * The heading wraps to two lines on a desktop, and a wrapped inline block
+ * is as wide as the room it is given, not as its longest line, so the rule
+ * under it would span the band. `max-w-4xl` keeps the box, and so the rule,
+ * close to the words.
+ *
+ * Motion: the heading block reveals as one, then the tiles one after another,
+ * then the buttons, and the heading draws its rule with the scroll direction.
+ * Inert until the page imports `src/scripts/reveal.ts`.
+ */
+import Button from '../ui/Button.astro';
+import Emphasis from '../ui/Emphasis.astro';
+import Icon, { type IconName } from '../ui/Icon.astro';
+import {
+  bandBodyClass,
+  bandHeadingClass,
+  bandIconClass,
+  bandTileClass,
+  cx,
+} from '../ui/styles';
+
+type Link = Readonly<{ label: string; href: string }>;
+
+interface Props {
+  heading: string;
+  /** The id the surrounding Section points at with `aria-labelledby`. */
+  headingId: string;
+  /** May carry `**bold**` and `==accent==` phrases. */
+  intro: string;
+  points: readonly Readonly<{
+    icon: IconName;
+    title: string;
+    /** May carry `**bold**` and `==accent==` phrases. */
+    text: string;
+  }>[];
+  primaryCta: Link;
+  secondaryCta?: Link;
+}
+
+const { heading, headingId, intro, points, primaryCta, secondaryCta } =
+  Astro.props;
+---
+
+<div class="text-center" data-reveal>
+  <h2
+    id={headingId}
+    class={cx(
+      'heading-rule inline-block max-w-4xl text-balance',
+      bandHeadingClass,
+    )}
+    data-heading-rule
+  >
+    {heading}
+  </h2>
+  <p class={cx('mx-auto mt-8 max-w-narrow text-lead', bandBodyClass)}>
+    <Emphasis text={intro} />
+  </p>
+</div>
+
+<div class="@container mt-12">
+  <ul
+    class="grid grid-cols-1 gap-6 md:grid-cols-2 @7xl:grid-cols-4"
+    data-reveal-stagger
+  >
+    {points.map((point) => (
+      <li class={cx('flex flex-col p-6', bandTileClass)}>
+        <Icon
+          name={point.icon}
+          size={40}
+          strokeWidth={1.5}
+          class={bandIconClass}
+        />
+        <h3 class={cx('mt-4 text-balance', bandHeadingClass)}>{point.title}</h3>
+        <p class={cx('mt-3 text-small', bandBodyClass)}>
+          <Emphasis text={point.text} />
+        </p>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<div class="mt-12 flex flex-wrap justify-center gap-4" data-reveal>
+  <Button href={primaryCta.href}>{primaryCta.label}</Button>
+  {secondaryCta && (
+    <Button href={secondaryCta.href} variant="secondary">
+      {secondaryCta.label}
+    </Button>
+  )}
+</div>

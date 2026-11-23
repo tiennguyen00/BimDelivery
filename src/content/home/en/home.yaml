@@ -64,6 +64,48 @@ services:
       image:
         src: ../../../assets/images/services/card-landscape-bim.jpg
         alt: A hillside residence model seen from above, with terraced villas among trees, lawns, and a planted roundabout
+# The client's "8 Talking Points" (2026-11-23), with their revisions taken
+# as final. The only edit is the heading's grammar ("Design Consultants",
+# and "&" before the last group, as in their first draft). Four or eight
+# points, each with a line icon from `lineIcons` or `globe`.
+whyChoose:
+  heading: Why Architects, Design Consultants & Engineers Choose BIM Delivery
+  intro: Precision offshore BIM production engineered for international compliance, faster approvals, and maximum project ROI.
+  points:
+    - icon: layers
+      title: Compliant, Future-Ready Tech Stack
+      text: We leverage Revit, Dynamo, Navisworks, and Autodesk Construction Cloud (ACC), together with AI-assisted workflows. Our BIM processes align with ISO 19650 for information management, while model development and deliverables follow applicable AIA/BIMForum LOD, NATSPEC, MLIT, or client-specific requirements. We also support openBIM interoperability through IFC 4.3 for seamless information exchange and global handover.
+    - icon: savings
+      title: Save 40%–60% on BIM Expenses
+      text: Eliminate local hiring bottlenecks, software overhead, and fixed payroll costs. Our flexible fixed-fee milestones and dedicated Vietnam BIM pods cut production expenses by up to 60% without compromising Tier-1 architectural quality.
+    - icon: clock
+      title: Accelerate Schedules & Save Time
+      text: Turn time zones into a competitive edge. Enjoy overnight turnaround for US and Canadian markups, plus 5–6 hours of real-time daily overlap for Australian and Middle Eastern teams—speeding up municipal approvals and tender deadlines.
+    - icon: clash
+      title: Multi-Tier QA/QC & Clash-Free Accuracy
+      text: Every LOD 100–500 deliverable undergoes automated model health checks, Navisworks clash detection, and senior discipline audits. We resolve costly spatial conflicts pre-construction, dramatically reducing RFIs, contractor change orders, and expensive field rework.
+    - icon: blueprint
+      title: Specialized Architectural, Interior & Landscape Expertise
+      text: Distinctively, we specialize deeply in Architecture, luxury Hospitality Interiors (joinery/FF&E), and complex Landscape BIM. Our multidisciplinary BIM specialists preserve intricate design intent while proactively detecting and coordinating incorporated models flawlessly.
+    # The same four figures as the `stats` entry, which the hero hides until
+    # the client confirms them (8e5bf41). Change both together.
+    - icon: globe
+      title: Proven Global Track Record & Scalability
+      text: Backed by 12+ years of experience, 60+ full-time BIM specialists, and 1,200+ projects delivered across 18 countries. Scale your production capacity effortlessly within days to meet sudden rezoning wins or multi-phase masterplan deadlines.
+    - icon: shield-lock
+      title: Enterprise-Grade Data Security & IP Protection
+      text: Your unannounced developments and proprietary families stay strictly protected. We sign region-specific NDAs, adhere to GDPR and ISMS security protocols, and work directly inside your encrypted cloud CDE with zero unauthorized local storage.
+    - icon: messages
+      title: Risk-Free Pilot & Native-Level Coordination
+      text: Verify our model standards before signing long-term contracts with a no-obligation pilot sample. Dedicated project coordinators integrate directly into your workflows, ensuring clear communication, zero rework, and total peace of mind.
+  primaryCta:
+    label: Get a free trial
+    href: /contact-us
+  # The client's second button, "Download Sample Revit Package", waits for
+  # the file itself and their say on sharing it. Once it is hosted, add:
+  # secondaryCta:
+  #   label: Download Sample Revit Package
+  #   href: /<the file's path>
 presence:
   heading: Delivering BIM excellence across the globe
   # The headquarters, then the client's project locations (Desciptions.pdf,
@@ -114,17 +156,6 @@ presence:
   legend:
     offices: Headquarters
     projects: Project locations
-  whyChoose:
-    heading: Why choose BIM Delivery?
-    items:
-      - Models built to your company standards and templates
-      - Quality checks at every milestone
-      - Secure file handling and clear version history
-      - A single point of contact for every project
-      - Fast turnaround across time zones
-      - LOD 100 to 500 modeling
-      - Multi disciplinary BIM expertise
-      - Quality assurance at every stage
 projectShowcase:
   heading: Featured projects
   intro: A few of the models we have delivered for design and site teams.

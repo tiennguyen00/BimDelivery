@@ -365,8 +365,7 @@ everything else is Astro.
 
 The About & Services page's own bands live in `src/components/about/`
 (2026-10-29): `SplitBand` may end its copy with point lists, each a `check`
-list in the accent as the presence band's why choose list, under a small
-`text-h3` heading when it has one; `ServicesOverview` is a `raised` band of
+list in the accent, under a small `text-h3` heading when it has one; `ServicesOverview` is a `raised` band of
 `FeaturesSplit` tiles (a 40px line icon, an `h3`, and short points in the
 small size), one column, two from `md`, three from `lg`. A tile in the
 `index` layout (the project locations) fills four rows down per column, with
@@ -500,8 +499,8 @@ and so on).
 | `strokeWidth` | `number`, on the 24 unit grid; fill glyphs ignore it | `2` |
 | `class` | `string` | none |
 
-The whole set, thirty seven glyphs on one 24 unit grid: `menu`, `close`,
-`chevron-down`, `check` (the home presence band's why choose list, spec 0005),
+The whole set, forty glyphs on one 24 unit grid: `menu`, `close`,
+`chevron-down`, `check` (a `SplitBand` point list on the About page),
 `arrow-right` (the home service card's cue, spec 0005, and the home project
 tiles' cue and the next project link, spec 0015), `arrow-left` (a project room's
 previous photo arrow, its mirror, spec 0018), `plus` and `minus`
@@ -519,10 +518,11 @@ glyph, and licence, and listed in `src/assets/images/CREDITS.md`:
 
 - **Line glyphs** (Tabler Icons outline, MIT), the `lineIcons` a features
   card or tile may take: `blueprint`, `crane`, `building-check`, `scan`,
-  `clipboard-check`, `ruler`, `clash`, `layers`, `messages`. The tiles draw
-  them at 40px with `strokeWidth` 1.5; the cards no longer draw their icon
-  (they lead with a number instead, 2026-10-11). Coloured `accent` on either
-  pattern.
+  `clipboard-check`, `ruler`, `clash`, `layers`, `messages`, and the three
+  the home why choose band added (2026-11-23): `savings` (Tabler
+  `pig-money`), `clock`, `shield-lock`. The tiles draw them at 40px with
+  `strokeWidth` 1.5; the cards no longer draw their icon (they lead with a
+  number instead, 2026-10-11). Coloured `accent` on either pattern.
 - **Solid glyphs** (Tabler filled, or Material Icons filled under Apache 2.0
   where Tabler has no solid match), the `solidIcons` an audience item may
   take with the existing `users` and `building`: `user`, `presenter`,
@@ -536,7 +536,8 @@ is a path in the map and its name in the list.
   it. **Do not** give an icon a colour of its own unless it should read as
   brass: then a solid glyph takes `fill-accent` (the intro band's cards, the
   contact cards, the audiences) and a stroke glyph `text-accent` (the `check`
-  in the presence band's list). Either is within the accent role rule.
+  in a `SplitBand` list, a tile's line icon). Either is within the accent
+  role rule.
 - A name outside the map is a **type error**, not a blank square. There is no
   icon library and no dynamic lookup.
 - Without `title` the icon is hidden from assistive tech, which is right
@@ -602,8 +603,8 @@ listener**.
   the right when it stops, 350ms ease out. The dropdown and the mobile panel
   are `panel` too.
 - On the home page alone, the underline follows the scroll
-  (`src/scripts/nav-spy.ts`): hero and intro are Home, the services and
-  presence bands About & Services, the showcase Project, the footer Contact
+  (`src/scripts/nav-spy.ts`): hero and intro are Home, the services, why
+  choose, and presence bands About & Services, the showcase Project, the footer Contact
   Us. Each band names its item with `navSection`. Every other page keeps the
   underline on its own item. `aria-current` never moves with it.
 - `--header-h` is the card's box, not its corner curve. Anything
@@ -870,6 +871,44 @@ and the page it opens share a picture.
   stop, and no hover. Four cards in all at most; four sit two by two at
   `md` and in one row from `lg`, with a 32px gap.
 
+### `WhyChooseBand` · `src/components/home/WhyChooseBand.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `heading` | `string` (required) | |
+| `headingId` | `string` (required), `why-choose-heading` | |
+| `intro` | `string` (required), may carry `**` and `==` | |
+| `points` | `{ icon, title, text }[]` (required), four or eight | |
+| `primaryCta` | `{ label, href }` (required) | |
+| `secondaryCta` | `{ label, href }` | none |
+
+The home page's why choose band (2026-11-23, the client's "8 Talking
+Points"), a `canvas` `Section` between the `raised` services and the striped
+presence band, so the stripe keeps the two `canvas` bands apart. It took over
+from the short `check` list the presence band used to carry. Its copy is
+`home.whyChoose`.
+
+- **A centred ruled `h2`** capped at `max-w-4xl`, because a heading that wraps
+  is as wide as its room, not its longest line, and the rule under it would
+  otherwise span the band. Then the `intro` as a `text-lead` line in the
+  `narrow` width.
+- **Each point is the overview tile** (`ServicesOverview`, `FeaturesSplit`):
+  `bandTileClass`, a 40px line icon at `strokeWidth` 1.5 in `accent`, the
+  title as an `h3` with `text-balance`, the text in the small size and `ink`.
+  The points are a `<ul>`. Tiles in a row share one height; the words run
+  from each tile's top, never aligned across tiles (a subgrid left a gap
+  under a one line title).
+- **One column, two from `md`, four only from an 80rem band** (`@7xl` on a
+  `@container`, about a 1700px screen, so full HD and up). Not at `lg`: the
+  points run 40 to 75 words, and four across at 1440 gave about 28 characters
+  a line and a 650px tall first tile, barely shorter than two across. Four or
+  eight points, checked by the schema, so the rows stay full.
+- **The buttons sit centred under the tiles**: `primary`, then `secondary` (the
+  outlined one) when content gives it. The client's second button, a sample
+  Revit download, waits in a comment in `home.yaml` until there is a file.
+- Motion: the heading block reveals as one, then the tiles one after another,
+  then the buttons; the heading's rule draws with the scroll direction.
+
 ### `PatternBand` · `src/components/ui/PatternBand.astro`
 
 | Prop | Type | Default |
@@ -910,8 +949,10 @@ The dots under a photo carousel, on each service intro (spec 0013), run by
 
 ### `PresenceBand` · `src/components/ui/PresenceBand.astro`
 
-The global presence band's inside (spec 0005): a ruled heading, the dotted
-globe with its locations (spec 0017), and the why choose list. It
+The global presence band's inside (spec 0005): a ruled heading, then the
+dotted globe with its locations (spec 0017) centred under it, with its legend.
+The why choose list that sat beside the globe became the home page's own band
+(`WhyChooseBand`, 2026-11-23), so the service pages show the globe alone too. It
 moved from `src/components/home/` to `ui` when the service pages began to show
 it too (spec 0013). The page wraps it in a striped `Section`, and its copy is
 `home.presence`, or a service's own presence `content`.
@@ -1260,8 +1301,9 @@ pages use the same reveal script and add the carousel (spec 0013).
 
 - **The scroll reveal**, the first half of `src/scripts/reveal.ts` (spec 0005).
   Below the hero and the intro band, these fade and rise once as they scroll
-  into view: the services heading block and then its cards, the overview's
-  copy and photo, the presence heading and then its list and map, the showcase
+  into view: the services heading block and then its cards, the why choose
+  heading block, then its tiles one by one, then its buttons, the overview's
+  copy and photo, the presence heading and then its globe, the showcase
   heading block, its tiles, and its button. An element opts in with
   `data-reveal`; a container whose direct children reveal one after another
   carries `data-reveal-stagger`. Both are

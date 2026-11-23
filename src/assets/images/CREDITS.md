@@ -128,8 +128,9 @@ icon package is installed; only the path data is copied.
 - [Tabler Icons](https://tabler.io/icons) 3.48.0, MIT licence, © Paweł Kuna.
   Outline: `map` (as `blueprint`), `crane`, `home-check` (as
   `building-check`), `scan-cube` (as `scan`), `clipboard-check`, `ruler`,
-  `layers-intersect` (as `clash`), `stack-2` (as `layers`), `messages`.
-  Filled: `user`.
+  `layers-intersect` (as `clash`), `stack-2` (as `layers`), `messages`,
+  and for the home why choose band (2026-11-23) `pig-money` (as
+  `savings`), `clock`, `shield-lock`. Filled: `user`.
 - [Material Icons](https://fonts.google.com/icons) by Google, filled,
   Apache License 2.0, where Tabler has no solid match: `co_present` (as
   `presenter`), `architecture` (as `compass`), `engineering` (as

@@ -296,6 +296,9 @@ const lineIcons = [
   'clash',
   'layers',
   'messages',
+  'savings',
+  'clock',
+  'shield-lock',
 ] as const;
 
 const solidIcons = [
@@ -335,7 +338,33 @@ const presenceContent = z.strictObject({
     .max(40),
   /** The legend's words for the two kinds of marker. */
   legend: z.strictObject({ offices: text, projects: text }),
-  whyChoose: z.strictObject({ heading: text, items: z.array(text).min(1) }),
+});
+
+/**
+ * The home page's why choose band (2026-11-23, the client's copy): its own
+ * band after the services, which replaced the short list the presence band
+ * used to carry. The points run four across on a wide screen, so there are
+ * four or eight of them and a row is never left half empty.
+ */
+const whyChoose = z.strictObject({
+  heading: text,
+  /** The line under the heading; may carry `**bold**` and `==accent==`. */
+  intro: emphasisText,
+  points: z
+    .array(
+      z.strictObject({
+        /** A line icon, as on the About page's overview tiles. */
+        icon: z.enum([...lineIcons, 'globe']),
+        title: text,
+        text: emphasisText,
+      }),
+    )
+    .refine((points) => points.length === 4 || points.length === 8, {
+      message: 'needs four or eight points, so the rows of four stay full',
+    }),
+  primaryCta: z.strictObject(link.shape),
+  /** The quieter button beside it, such as a sample download. */
+  secondaryCta: z.strictObject(link.shape).optional(),
 });
 
 const stats = defineCollection({
@@ -463,10 +492,12 @@ const home = defineCollection({
               'the row holds at most four cards, `featured` and `extra` together',
           },
         ),
-      // The presence band (spec 0005), which absorbed the old differentiators
-      // section. Strict, so a leftover `text` or `image` key fails by name.
-      // Shared with the service pages, which show it unless a presence block
-      // carries its own (spec 0013).
+      // The why choose band, between the services and the presence band.
+      whyChoose,
+      // The presence band (spec 0005): the heading and the globe. Strict, so
+      // a leftover key (its old `whyChoose` list) fails by name. Shared with
+      // the service pages, which show it unless a presence block carries its
+      // own (spec 0013).
       presence: presenceContent,
       // The last band on the page (spec 0005): the three lowest `order`
       // projects, then one link to the full list. The tiles' words come from

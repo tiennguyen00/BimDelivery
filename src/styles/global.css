@@ -398,8 +398,8 @@
 }
 
 /**
- * The accent rule under a section heading (spec 0005). Five headings carry it:
- * the home intro band, services, presence, its why choose `h3`, and the
+ * The accent rule under a section heading (spec 0005). On the home page five
+ * headings carry it: the intro band, services, why choose, presence, and the
  * showcase. It is drawn by a pseudo element, so it is exactly as wide as the
  * heading's own box and never reaches a screen reader.
  *
