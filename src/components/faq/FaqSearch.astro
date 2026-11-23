@@ -37,12 +37,14 @@ interface Props {
   /** The page's language, for the count's plural rules and digits. */
   lang: string;
   class?: string;
+  /** For the load entrance's step, `--entrance-step: 1`. */
+  style?: string;
 }
 
-const { copy, target, inputId, lang, class: className } = Astro.props;
+const { copy, target, inputId, lang, class: className, style } = Astro.props;
 ---
 
-<div class={className}>
+<div class={className} style={style}>
   <form
     role="search"
     class="no-js:hidden"

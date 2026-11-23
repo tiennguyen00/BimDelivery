@@ -37,6 +37,11 @@ import FeaturesCards from '../components/service/FeaturesCards.astro';
 import ProjectGallery from '../components/project/ProjectGallery.astro';
 import ProjectOverview from '../components/project/ProjectOverview.astro';
 import NextProject from '../components/project/NextProject.astro';
+import Breadcrumb from '../components/ui/Breadcrumb.astro';
+import RegionBadge from '../components/faq/RegionBadge.astro';
+import RegionCard from '../components/faq/RegionCard.astro';
+import RegionNav from '../components/faq/RegionNav.astro';
+import { countLine } from '../lib/faq';
 import { nextProject, projectFacts, projectHref } from '../lib/project-detail';
 import { galleryTiles } from '../lib/project-gallery';
 import type { BlockAt } from '../lib/service-page';
@@ -45,6 +50,8 @@ import { resolveLocale } from '../i18n/locales';
 import {
   getAboutPage,
   getContactPage,
+  getFaqPage,
+  getFaqRegions,
   getHomePage,
   getNavigation,
   getProjectPage,
@@ -66,6 +73,8 @@ const [
   stats,
   about,
   projectPage,
+  faqPage,
+  faqRegions,
 ] = await Promise.all([
   getHomePage(lang),
   getServices(lang),
@@ -76,7 +85,12 @@ const [
   getStats(lang),
   getAboutPage(lang),
   getProjectPage(lang),
+  getFaqPage(lang),
+  getFaqRegions(lang),
 ]);
+
+/** The FAQ tiles' region (spec 0020); the schema gives every language one or more. */
+const faqRegion = faqRegions[0];
 
 /** The whole icon map, in the order Icon.astro declares it. */
 const iconNames: readonly IconName[] = [
@@ -112,6 +126,10 @@ const iconNames: readonly IconName[] = [
   'clash',
   'layers',
   'messages',
+  'savings',
+  'clock',
+  'search',
+  'shield-lock',
   'user',
   'presenter',
   'compass',
@@ -1156,7 +1174,79 @@ const headCellClass =
       <div class="mt-8 max-w-narrow">
         <Accordion name="sg-accordion" items={about.services.items} />
       </div>
+
+      <h3 class="mt-16">The list look</h3>
+      <p class="mt-4 max-w-narrow">
+        <code class="font-mono text-small">variant="list"</code> (spec 0020),
+        the FAQ region pages' questions: rows on the band, each ended by a{' '}
+        <code class="font-mono text-small">line</code> border, all closed,
+        several open at once. The title is{' '}
+        <code class="font-mono text-small">heading</code> (15.83:1) turning{' '}
+        <code class="font-mono text-small">accent</code> when open (7.71:1), the
+        plus or minus <code class="font-mono text-small">accent</code> with no
+        circle, the answer <code class="font-mono text-small">ink</code>{' '}
+        (11.66:1). The base accent ring.
+      </p>
+      {faqRegion && (
+        <div class="mt-8 max-w-3xl">
+          <Accordion
+            variant="list"
+            items={faqRegion.questions.slice(0, 4).map((question) => ({
+              title: question.question,
+              text: question.answer,
+            }))}
+          />
+        </div>
+      )}
     </Section>
+
+    {faqRegion && (
+      <Section tone="raised" labelledBy="sg-faq">
+        <h2 id="sg-faq">FAQ pieces</h2>
+        <p class="mt-4 max-w-narrow">
+          Spec 0020. The region badge, outline (accent on raised 6.84:1, on
+          panel 5.04:1) and filled (on-accent on accent 7.71:1), hidden from
+          screen readers because the name always sits beside it. The breadcrumb:
+          accent links, the current page ink-strong with{' '}
+          <code class="font-mono text-small">aria-current</code>. A region card,
+          Card's link rule. The region nav, chips below lg and a sticky sidebar
+          column from lg.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <RegionBadge code={faqRegion.code} />
+          <RegionBadge code={faqRegion.code} tone="filled" />
+          <RegionBadge code={faqRegion.code} size="lg" />
+          <RegionBadge code={faqRegion.code} size="lg" tone="filled" />
+        </div>
+        <Breadcrumb
+          class="mt-8"
+          label={faqPage.breadcrumb.navLabel}
+          items={[
+            { label: faqPage.breadcrumb.label, href: '/faq' },
+            { label: faqRegion.name, href: `/faq/${faqRegion.slug}` },
+          ]}
+        />
+        <div class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2">
+          <RegionCard
+            code={faqRegion.code}
+            name={faqRegion.name}
+            focus={faqRegion.focus}
+            count={countLine(
+              faqPage.questionCount,
+              faqRegion.questions.length,
+              lang,
+            )}
+            href={`/faq/${faqRegion.slug}`}
+          />
+          <RegionNav
+            label={faqPage.regionNavLabel}
+            labelId="sg-faq-region-nav"
+            regions={faqRegions}
+            current={faqRegion.slug}
+          />
+        </div>
+      </Section>
+    )}
 
     <Section tone="raised" labelledBy="sg-ctaband">
       <h2 id="sg-ctaband">Closing call to action</h2>

@@ -512,7 +512,8 @@
  * `style` attribute, and each step waits 80ms, the scroll reveal's stagger.
  * Today the home hero's copy, the About band's heading, paragraph, and
  * numbers, the Contact intro and form band,
- * and each service page's intro (spec 0013). The Project page plays the same
+ * each service page's intro (spec 0013), and the FAQ hub's heading block
+ * and each FAQ region page's header (spec 0020). The Project page plays the same
  * entrance through motion instead, held by the `data-enter` rule below.
  *
  * It hides nothing outside the animation itself: with JavaScript off it still

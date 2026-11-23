@@ -102,7 +102,7 @@ const breadcrumbSchema = jsonLdScript(
     />
 
     <div class="sidebar-grid mt-6 grid gap-y-10 lg:mt-10 lg:gap-x-12">
-      <div class="lg:col-start-2 lg:row-start-1">
+      <div class="entrance lg:col-start-2 lg:row-start-1">
         <RegionBadge code={region.code} size="lg" />
         <h1 id="faq-region-heading" class="mt-5 text-balance">
           {region.name}
@@ -158,6 +158,14 @@ const breadcrumbSchema = jsonLdScript(
 </PageLayout>
 
 {/**
+ * Motion (AC-17): the header block fades and rises in on load through the
+ * CSS `entrance`, and a question slides open and shut through
+ * `accordion-item`. The region nav and the questions do not move on load on
+ * purpose: a linked question (`#id`) is scrolled into place while the page
+ * loads, and a column still rising would leave it 24px off once it settles.
+ * Nothing here takes the scroll reveal, so the page imports no `reveal.ts`.
+ * Under reduced motion nothing moves.
+ *
  * The search over this page's questions, and opening the question a link
  * points at (`#id`), on load and on every hash change. With no script the
  * box is gone, the questions all show, and `#id` still jumps to its

@@ -147,8 +147,8 @@ alpha blending over the worst case pixel. The working is in spec 0003's
 | heading / ink-strong (`h1` to `h3`, labels, strong text) | canvas / raised / panel | 15.83 / 14.05 / 10.35 | 4.5 |
 | ink (body, field text) | canvas / raised / panel | 11.66 / 10.35 / 7.62 | 4.5 |
 | ink-muted (hints, card text) | canvas / raised / panel | 8.33 / 7.39 / 5.45 | 4.5 |
-| accent (links, emphasis, numbers, secondary button) | canvas / raised / panel | 7.71 / 6.84 / 5.04 | 4.5 |
-| on-accent (primary button label, closing band text, closed accordion title, step number) | accent / accent-hover | 7.71 / 10.52 | 4.5 |
+| accent (links, emphasis, numbers, secondary button, breadcrumb links, FAQ badges and counts, an open `list` accordion title) | canvas / raised / panel | 7.71 / 6.84 / 5.04 | 4.5 |
+| on-accent (primary button label, closing band text, closed accordion title, step number, filled region badge) | accent / accent-hover | 7.71 / 10.52 | 4.5 |
 | heading (the closing band link's label) | canvas / panel (hover) | 15.83 / 10.35 | 4.5 |
 | error | canvas / raised / panel | 8.06 / 7.16 / 5.27 | 4.5 |
 | field border | canvas (the field's fill) | 5.04 | 3.0 |
@@ -757,14 +757,19 @@ build (`src/lib/emphasis.ts`):
 
 | Prop | Type | Default |
 |---|---|---|
-| `name` | `string` (required), the group's shared `<details name>` | |
-| `items` | `readonly { title: string; text: string }[]` (required) | |
+| `variant` | `'bar' \| 'list'` | `'bar'` |
+| `name` | `string`, the group's shared `<details name>`; required for `bar`, not allowed for `list` | |
+| `items` | `readonly { title: string; text: string; id?: string; hooks?: Record<data-*, string> }[]` (required) | |
 
-Disclosure items, one open at a time (spec 0010), for the About page's
-capability band and ready for the service pages. The browser's own
-`<details>` and `<summary>`, with no script.
+Disclosure items (spec 0010). The browser's own `<details>` and `<summary>`,
+with no script. Two looks: `bar` (the About page's capability band), one open
+at a time, and `list` (the FAQ region pages, spec 0020), several open at once.
+An item's `id` is its address (`#id` jumps to it); `hooks` are the `data-`
+attributes a page script reads, written on the item's `<details>`.
 
-- Every item shares `name`, so opening one closes the other; the first ships
+**`bar`**, the default:
+
+- Every item shares `name`, so opening one closes the other; the second ships
   `open`. A closed item's text stays in the HTML.
 - **Closed**: an `accent` filled bar, the title bold `on-accent` at `text-h3`
   (7.71:1), a `plus` in a `canvas` circle at the end. **Open**: a `panel` card
@@ -778,8 +783,100 @@ capability band and ready for the service pages. The browser's own
 - The group carries `focus-contrast`, so a summary gets the two colour ring:
   the `accent` ring would vanish against a closed brass bar. It passes on an
   open `panel` item too.
-- The `accordion-item` utility in `global.css` hides the browser's own
-  triangle and holds the slide (`## Focus and motion`).
+
+**`list`**, the quiet look (spec 0020):
+
+- Rows on the band itself, no fill, every item closed at first and no shared
+  `name`, so several can be open at once.
+- Each row ends in a `line` border (decorative, 2.45:1, never a control
+  boundary). The line belongs to the item, so an item a script hides takes
+  its line with it and no double line appears.
+- The title is semibold `heading` at `text-lead` in the body face (15.83:1 on
+  canvas, 14.05:1 on raised), turning `accent` when open (7.71:1 / 6.84:1).
+  Hovering the row underlines it.
+- A `plus` or `minus` in `accent` at the end, with **no circle**.
+- The answer is `ink` (11.66:1 / 10.35:1), held to `max-w-narrow` so a line
+  stays readable on a wide screen, with its `**bold**` and `==accent==`.
+- The base `accent` ring, since the rows sit on a dark band.
+
+Both looks: the whole summary is the target, at least 44px tall. The
+`accordion-item` utility in `global.css` hides the browser's own triangle
+and holds the slide (`## Focus and motion`).
+
+### `Breadcrumb` · `src/components/ui/Breadcrumb.astro`
+
+| Prop | Type | Default |
+|---|---|---|
+| `label` | `string` (required), the `nav`'s name | |
+| `items` | `readonly { label: string; href: string }[]` (required), the last is this page | |
+
+A visible trail (spec 0020), after the WAI-ARIA breadcrumb pattern: an ordered
+list of links inside a `nav` named by `label`. The FAQ region pages use it
+first; the project detail pages and feature 11 may follow.
+
+- Earlier items are `accent` links (7.71:1 on canvas, 6.84:1 on raised) at
+  `text-small`, turning `accent-hover` and underlined on hover.
+- The last item is still a link, marked `aria-current="page"`, drawn as
+  semibold `ink-strong` (15.83:1 on canvas) with no hover, so it reads as
+  where you are.
+- Between items, a `chevron-down` turned to point right, `ink-muted`,
+  hidden from assistive tech. A long trail wraps rather than scrolling.
+- Every link is at least 44px tall; the base `accent` ring.
+
+### The FAQ · `src/components/faq/`
+
+Spec 0020. The hub (`/faq`) and every region page (`/faq/<slug>`) are built
+from four components, every word from the `faqPage` and `faqRegions`
+entries.
+
+**`RegionBadge`** (`code`, `size: 'sm' | 'lg'`, `tone: 'outline' |
+'filled'`): the region's two capitals in a square-ish box, bold, in the body
+face (Playfair thins out at this size), with a 2px border. `outline` is an
+`accent` border and `accent` letters (7.71:1 on canvas, 6.84:1 on raised,
+5.04:1 on panel); `filled` is an `accent` fill with `on-accent` letters
+(7.71:1), for the region you are on in the region nav. It always sits beside
+the region's name, so it is hidden from assistive tech and the name is read
+once.
+
+**`RegionCard`**: `Card`'s link rule on a region. A `panel` card with a `line`
+border, the large badge and an `accent` arrow at the top, the name as an `h3`
+in `ink-strong` (10.35:1), the focus line `ink-muted` (5.45:1), and the
+question count `accent` (5.04:1) pinned to the bottom. One link, on the name,
+stretched over the card. Hover underlines the name, turns the border
+`ink-muted`, and nudges the arrow 4px right; keyboard focus draws one `accent`
+ring round the whole card. One column, two from `md`, three from `lg`.
+
+**`RegionNav`**: every region, the current one `aria-current="page"`. A `nav`
+named by its visible title, an `ink-muted` small capitals paragraph
+("Regions"), never a heading, so the `h1` stays the page's first heading.
+Each link carries the small badge and the name, `ink` (11.66:1) turning
+`accent` on hover; the current one is semibold `heading` on a `panel` fill
+(10.35:1) with its badge `filled`. Below `lg` the links are chips with a
+`line` border that wrap onto a second line; from `lg` they stack in the
+sidebar, borderless, and the nav stays in view below the header
+(`sticky-below-header`). Every link is at least 44px tall.
+
+**`FaqSearch`**: the search box, a status line, the list it filters (its
+slot), and the no results message. The box is a `canvas` fill with the
+`field` border (5.04:1), `ink` words at `text-lead`, an `ink-muted`
+placeholder (8.33:1) that is a hint and never the label (the label is
+visually hidden), a decorative `ink-muted` magnifier (Tabler `search`), at
+least 56px tall, with the base `accent` ring. It does not use `fieldClass`,
+whose `outline-none` would hide that ring. The status line is `ink-muted`
+`text-small`, `role="status"`. The box and the status ship `no-js:hidden`;
+the no results message (an `h2` at `text-h3` and a line of `ink`) ships
+`hidden`.
+
+**The pages.** The hub's heading block and search sit on the `dots` pattern,
+centred in `max-w-narrow`; the results list under the box is rows like the
+`list` look, each a link with the question (`heading`), the small badge and
+the region's name (`ink-muted`), and an `accent` arrow. The cards sit on
+`raised`. A region page is one `canvas` band: the breadcrumb, then a
+`sidebar-grid` (a 14rem sidebar beside the content from `lg`, one column
+below), with the header (large badge, `h1`, focus line in `text-lead`,
+`accent` count), the region nav, and the search with the questions in the
+`list` look. Both end with `CtaBand`. Page element ids start with `faq-`;
+question ids may not.
 
 ### `ContactCard` · `src/components/contact/ContactCard.astro`
 
@@ -1366,7 +1463,10 @@ pages use the same reveal script and add the carousel (spec 0013).
   600ms with an ease out, the scroll reveal's language, waiting 80ms per
   `--entrance-step`, which the caller sets in a `style` attribute. Today the
   About band: the `h1` at step 0, the paragraph at 1, the numbers from 2 (by
-  `StatsBand`'s `entranceFrom`). It runs with JavaScript off, and under reduced
+  `StatsBand`'s `entranceFrom`). The FAQ (spec 0020): the hub's heading block
+  at 0 and its search at 1; a region page's header block at 0, and nothing
+  else there, because a linked question is scrolled into place on load and a
+  column still rising would leave it 24px off. It runs with JavaScript off, and under reduced
   motion it does not run, so everything is simply there. It moves by
   `translate`, so nothing around it shifts. **Never** combine it with
   `data-reveal` on one element; the About band takes no scroll reveal for that
@@ -1555,7 +1655,10 @@ pages use the same reveal script and add the carousel (spec 0013).
   revision), which the engineer asked to be built on the project's animation
   framework after a CSS only version proved too faint and absent in Firefox.
   Remove any script and the site stays usable. Any seventh one needs a reason
-  as good.
+  as good. (The list has grown since; `src/scripts/AGENTS.md` holds the
+  current one. The FAQ's `src/scripts/faq.ts`, spec 0020, is there for the
+  Project filter's reason: filtering text as you type is behaviour CSS
+  cannot do. Its box ships `no-js:hidden`, so without it the FAQ is whole.)
 - The React components render to static HTML unless a page hydrates them, and
   only feature 10's contact island may. It is hydrated `client:visible` on
   `/contact-us` alone, which is also the only page that loads Cloudflare's

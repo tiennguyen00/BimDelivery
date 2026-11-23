@@ -38,7 +38,7 @@ const [page, regions] = await Promise.all([
 
 <PageLayout title={page.seo.title} description={page.seo.description}>
   <PatternBand surface="dots" labelledBy="faq-heading">
-    <div class="mx-auto max-w-narrow text-center">
+    <div class="entrance mx-auto max-w-narrow text-center">
       <h1 id="faq-heading" class="heading-rule inline-block" data-heading-rule>
         {page.heading}
       </h1>
@@ -60,7 +60,8 @@ const [page, regions] = await Promise.all([
       target="faq-results-list"
       inputId="faq-search"
       lang={lang}
-      class="mx-auto mt-10 max-w-narrow"
+      class="entrance mx-auto mt-10 max-w-narrow"
+      style="--entrance-step: 1"
     >
       <div hidden class="mt-4" data-faq-results>
         <ul id="faq-results-list" class="flex flex-col">
@@ -108,7 +109,10 @@ const [page, regions] = await Promise.all([
     >
       {page.regionsHeading}
     </h2>
-    <ul class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <ul
+      class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+      data-reveal-stagger
+    >
       {regions.map((region) => (
         <li>
           <RegionCard
@@ -132,8 +136,15 @@ const [page, regions] = await Promise.all([
 </PageLayout>
 
 {/**
- * The search and the scroll reveal. With neither, the page is whole: the
- * box is gone, and the cards and every question's page are a link away.
+ * Motion (AC-17): the heading block and then the search fade and rise in on
+ * load through the CSS `entrance` (steps 0 and 1); the cards rise one after
+ * another as they scroll into view (`data-reveal-stagger`), and the two
+ * ruled headings draw their rules with the scroll (`reveal.ts`). No motion
+ * code of the page's own. Under reduced motion nothing moves.
+ *
+ * The search and the scroll reveal are the page's two scripts. With
+ * neither, the page is whole: the box is gone, and the cards and every
+ * question's page are a link away.
  */}
 <script>
   import '../../scripts/reveal';
