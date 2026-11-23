@@ -24,6 +24,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 16 | Project detail pages | Release 1 | in-progress |
 | 17 | Smooth scrolling | Release 1 | in-progress |
 | 18 | Client editing in Sanity | Release 1 | in-progress |
+| 19 | FAQ knowledge base | Release 1 | in-progress |
 | 11 | SEO foundation | Release 2 | planned |
 | 12 | Performance & image handling | Release 2 | planned |
 | 13 | Privacy policy page | Release 2 | planned |
@@ -209,6 +210,18 @@ spec [0019](../specs/0019-sanity-editing-layer/index.md) · code in `studio/`, `
   - [ ] Publish and preview, end to end: GitHub Actions with the `production` Environment, the relay Worker, the webhook, the Preview on site button, the drills, and the editors invited (AC-4 to AC-6, AC-11, AC-14, AC-16, AC-19)
 - [ ] Verify it: `/check verify client editing in Sanity`
 
+### 19. FAQ knowledge base
+A help center style FAQ grouped by market: `/faq` is a hub with instant search and one card per region (United States, Australia, European Union, Canada, Japan), and each card opens its own page, such as `/faq/japan`, with that region's questions as a quiet list you open one by one. Every region page carries FAQPage and breadcrumb structured data. Linked from the header nav and the Contact page. Enrolled 2026-11-23 (from spec 0020).
+**Done when:** the hub and all five region pages prerender from YAML; search finds a question across regions and its link opens that question; each region page's schema validates with no errors; with JavaScript off everything but the search works; adding a sixth region is one new YAML file.
+spec [0020](../specs/0020-faq-knowledge-base/index.md) · code in `src/pages/faq/`, `src/components/faq/`, `src/lib/faq.ts`, and `src/scripts/faq.ts` (shared: `src/components/ui/Accordion.astro`, `src/components/ui/Breadcrumb.astro`, content: `src/content/faqPage/en/`, `src/content/faqRegions/en/`)
+- [x] Design it (spec): `/architect FAQ knowledge base`
+- [ ] Build it: `/develop FAQ knowledge base`
+  - [ ] The FAQ stands up, no script: `site` in the config, the two collections and their checks, the 50 sample questions, the `Accordion` list look, the breadcrumb, badge, cards, and region nav, both routes, the nav item, and the Contact link (AC-1 to AC-4, AC-8, AC-10 to AC-16, AC-18)
+  - [ ] The schema: `FAQPage` and `BreadcrumbList` on each region page from pure helpers (AC-9)
+  - [ ] Search and deep links: `data-faq-text`, the search boxes, and `faq.ts` (AC-5 to AC-8, AC-18)
+  - [ ] Motion, docs, and gates: entrance and reveal, `design.md` and `/styleguide`, the check, lint, and build gates, the schema validators, and the 390px, 1024px, no script, and reduced motion checks (AC-1, AC-9, AC-10, AC-17, AC-19)
+- [ ] Verify it: `/check verify FAQ knowledge base`
+
 ## Release 2: findable, fast, and live
 
 ### 11. SEO foundation · needs a decision
@@ -248,6 +261,7 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Services overview page and more services**: grow from three toward the reference site's ten; decide then whether the home page keeps showing every service or a featured subset. Spec 0005 makes this a deliberate moment rather than a silent one: a fourth service entry stops the build until the home page's grid is decided (from specs 0002 and 0005)
 - **Second language**: the switcher and a full second set of copy; the content model is already shaped for it · needs a decision
 - **Every other page editable in Sanity**: the Project page copy, home, About, Contact, then settings, navigation, stats, and the 404 page, and services last; each moves its collection and its photos to Sanity, one child spec each in `docs/specs/0019-sanity-editing-layer/` · needs a decision (from spec 0019)
+- **The FAQ editable in Sanity**: move the `faqPage` and `faqRegions` collections to Studio so the client rewrites answers without a developer; one more child spec under spec 0019 (from spec 0020)
 - **Redirects for renamed project slugs**: an editor renaming a project's slug breaks its old URL; decide with the other redirects (from spec 0019)
 - **Cookie consent banner**: once you run tracking that legally needs consent · needs a decision
 - **Blog or insights section** · needs a decision
