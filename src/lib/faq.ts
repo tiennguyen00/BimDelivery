@@ -3,7 +3,6 @@
  * No Astro import, so every one of them can run anywhere, a page at build
  * included.
  */
-import type { Locale } from '../i18n/locales';
 import { splitEmphasis } from './emphasis';
 
 /** A count line's two templates, each with a `{count}` slot. */
@@ -18,7 +17,8 @@ export type CountTemplates = Readonly<{ one: string; other: string }>;
 export const countLine = (
   templates: CountTemplates,
   count: number,
-  lang: Locale,
+  /** A BCP 47 language tag: a `Locale` at build, the page's `lang` in the browser. */
+  lang: string,
 ): string => {
   const template =
     new Intl.PluralRules(lang).select(count) === 'one'
@@ -32,6 +32,39 @@ export const plainAnswer = (answer: string): string =>
   splitEmphasis(answer)
     .map((run) => run.text)
     .join('');
+
+// Search
+
+/** Combining marks, what is left of an accent once a letter is decomposed. */
+const MARKS = /\p{M}/gu;
+
+/**
+ * Text as the search compares it: accents dropped ("é" to "e"), lower case,
+ * and every run of white space one space. The build writes each question's
+ * `data-faq-text` with this, and `src/scripts/faq.ts` runs the visitor's
+ * words through the same function, so both sides always agree.
+ */
+export const normaliseSearch = (text: string): string =>
+  text
+    .normalize('NFD')
+    .replace(MARKS, '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+
+/** A question's `data-faq-text`: its question and plain answer, normalised. */
+export const faqSearchText = (question: string, answer: string): string =>
+  normaliseSearch(`${question} ${plainAnswer(answer)}`);
+
+/**
+ * True when every word of the query appears somewhere in `text`, both
+ * already normalised. An empty query matches everything.
+ */
+export const matchesSearch = (text: string, query: string): boolean =>
+  query
+    .split(' ')
+    .filter((word) => word !== '')
+    .every((word) => text.includes(word));
 
 // Structured data (JSON-LD), the machine readable summary search engines read
 

@@ -4,7 +4,8 @@
  * Every word comes from the `faqPage` entry and the `faqRegions` entries, so
  * a new region is one new YAML file and no edit here.
  *
- * 1. The heading block on the dot grid: the ruled `h1` and the intro.
+ * 1. The heading block on the dot grid: the ruled `h1`, the intro, and the
+ *    search over every question of every region, with its results list.
  * 2. Browse by region, on `raised`: one card per region, in `order`, each
  *    one link to `/faq/<slug>`. One column on a phone, two from `md`, three
  *    from `lg`.
@@ -19,10 +20,13 @@ import PatternBand from '../../components/ui/PatternBand.astro';
 import Section from '../../components/ui/Section.astro';
 import CtaBand from '../../components/ui/CtaBand.astro';
 import Emphasis from '../../components/ui/Emphasis.astro';
+import Icon from '../../components/ui/Icon.astro';
 import RegionCard from '../../components/faq/RegionCard.astro';
+import RegionBadge from '../../components/faq/RegionBadge.astro';
+import FaqSearch from '../../components/faq/FaqSearch.astro';
 import { resolveLocale } from '../../i18n/locales';
 import { getFaqPage, getFaqRegions } from '../../lib/content';
-import { countLine } from '../../lib/faq';
+import { countLine, faqSearchText } from '../../lib/faq';
 
 const lang = resolveLocale(Astro.currentLocale);
 
@@ -42,6 +46,58 @@ const [page, regions] = await Promise.all([
         <Emphasis text={page.intro} />
       </p>
     </div>
+
+    {/**
+     * The search over every region's questions. Its results list is built
+     * here, every question of every region in the regions' order, and ships
+     * `hidden` inside `data-faq-results`: the script only shows the wrapper
+     * while the box holds words that match, and toggles `hidden` on each
+     * result. Each result links straight to its question on its region's
+     * page, which opens it.
+     */}
+    <FaqSearch
+      copy={page.search}
+      target="faq-results-list"
+      inputId="faq-search"
+      lang={lang}
+      class="mx-auto mt-10 max-w-narrow"
+    >
+      <div hidden class="mt-4" data-faq-results>
+        <ul id="faq-results-list" class="flex flex-col">
+          {regions.flatMap((region) =>
+            region.questions.map((question) => (
+              <li
+                class="border-b border-line"
+                data-faq-text={faqSearchText(
+                  question.question,
+                  question.answer,
+                )}
+              >
+                <a
+                  href={`/faq/${region.slug}#${question.id}`}
+                  class="group flex min-h-11 items-start justify-between gap-4 rounded-ui py-4"
+                >
+                  <span class="flex flex-col gap-2">
+                    <span class="font-semibold text-pretty text-heading underline-offset-4 group-hover:underline">
+                      {question.question}
+                    </span>
+                    <span class="flex items-center gap-2 text-small text-ink-muted">
+                      <RegionBadge code={region.code} />
+                      {region.name}
+                    </span>
+                  </span>
+                  <Icon
+                    name="arrow-right"
+                    size={20}
+                    class="mt-1 shrink-0 text-accent transition-transform duration-150 group-hover:translate-x-1"
+                  />
+                </a>
+              </li>
+            )),
+          )}
+        </ul>
+      </div>
+    </FaqSearch>
   </PatternBand>
 
   <Section tone="raised" labelledBy="faq-regions-heading">
@@ -75,6 +131,11 @@ const [page, regions] = await Promise.all([
   />
 </PageLayout>
 
+{/**
+ * The search and the scroll reveal. With neither, the page is whole: the
+ * box is gone, and the cards and every question's page are a link away.
+ */}
 <script>
   import '../../scripts/reveal';
+  import '../../scripts/faq';
 </script>

@@ -130,7 +130,8 @@ icon package is installed; only the path data is copied.
   `building-check`), `scan-cube` (as `scan`), `clipboard-check`, `ruler`,
   `layers-intersect` (as `clash`), `stack-2` (as `layers`), `messages`,
   and for the home why choose band (2026-11-23) `pig-money` (as
-  `savings`), `clock`, `shield-lock`. Filled: `user`.
+  `savings`), `clock`, `shield-lock`, and for the FAQ search box
+  (2026-11-24, spec 0020) `search`. Filled: `user`.
 - [Material Icons](https://fonts.google.com/icons) by Google, filled,
   Apache License 2.0, where Tabler has no solid match: `co_present` (as
   `presenter`), `architecture` (as `compass`), `engineering` (as

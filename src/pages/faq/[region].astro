@@ -28,12 +28,14 @@ import Accordion from '../../components/ui/Accordion.astro';
 import Breadcrumb from '../../components/ui/Breadcrumb.astro';
 import RegionBadge from '../../components/faq/RegionBadge.astro';
 import RegionNav from '../../components/faq/RegionNav.astro';
+import FaqSearch from '../../components/faq/FaqSearch.astro';
 import { DEFAULT_LOCALE } from '../../i18n/locales';
 import { getFaqPage, getFaqRegions, type FaqRegion } from '../../lib/content';
 import {
   breadcrumbJsonLd,
   countLine,
   faqPageJsonLd,
+  faqSearchText,
   jsonLdScript,
 } from '../../lib/faq';
 
@@ -119,18 +121,31 @@ const breadcrumbSchema = jsonLdScript(
         class="lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:self-start"
       />
 
-      <div class="lg:col-start-2 lg:row-start-2">
-        <div id="faq-questions">
+      <FaqSearch
+        copy={page.search}
+        target="faq-questions"
+        inputId="faq-search"
+        lang={region.lang}
+        class="lg:col-start-2 lg:row-start-2"
+      >
+        <div id="faq-questions" class="mt-4">
           <Accordion
             variant="list"
             items={region.questions.map((question) => ({
               id: question.id,
               title: question.question,
               text: question.answer,
+              hooks: {
+                'data-faq-item': '',
+                'data-faq-text': faqSearchText(
+                  question.question,
+                  question.answer,
+                ),
+              },
             }))}
           />
         </div>
-      </div>
+      </FaqSearch>
     </div>
   </Section>
 
@@ -141,3 +156,13 @@ const breadcrumbSchema = jsonLdScript(
     button={page.cta.button}
   />
 </PageLayout>
+
+{/**
+ * The search over this page's questions, and opening the question a link
+ * points at (`#id`), on load and on every hash change. With no script the
+ * box is gone, the questions all show, and `#id` still jumps to its
+ * question, closed.
+ */}
+<script>
+  import '../../scripts/faq';
+</script>
