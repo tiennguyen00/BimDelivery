@@ -1,12 +1,11 @@
-# Copy to .dev.vars (git ignored) for local development.
-# In production these are Cloudflare secrets set with:
-#   wrangler secret put RESEND_API_KEY
+# Copy to .dev.vars (git ignored) for local development. The Worker reads it
+# at request time, like a Cloudflare secret.
 #
-# None is needed for the site as it stands. All three are required only when
-# the contact form's delivery endpoint is built (spec 0001, deferred in the
-# scope). TURNSTILE_SECRET_KEY is the server half of the contact form's
-# Turnstile check (spec 0011); the public site key lives in .env instead.
+# RESEND_API_KEY sends the contact form's enquiries (spec 0022). Without it the
+# form still works up to the send, then shows its delivery failure message.
+# In production it is a Cloudflare secret on the live Worker, set once with:
+#   pnpm exec wrangler secret put RESEND_API_KEY
+# Use a key with "Sending access" only. Locally, pair it with CONTACT_TO_EMAIL
+# in .env so test enquiries reach you, not the team.
 
 # RESEND_API_KEY=""
-# CONTACT_TO_EMAIL=""
-# TURNSTILE_SECRET_KEY=""

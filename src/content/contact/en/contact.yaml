@@ -66,8 +66,7 @@ errors:
   email: Please enter a valid email address.
   phone: Please enter a phone number with at least 6 digits, using only numbers, spaces, and + ( ) - .
   tooLong: This is longer than we can take. Please shorten it.
-  captcha: We could not confirm you are not a robot. Please try again, or email us at
-  deliveryFailed: Your message could not be sent. Please try again, or email us directly.
+  deliveryFailed: Your message could not be sent. Please try again in a minute, or email us at
 success:
   heading: Thank you
   text: We have your message and will reply within one business day.

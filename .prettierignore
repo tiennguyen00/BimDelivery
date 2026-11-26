@@ -16,3 +16,6 @@ docs/
 studio/dist/
 studio/.sanity/
 workers/*/worker-configuration.d.ts
+
+# The site Worker's generated binding types (spec 0022): `pnpm typegen`
+worker-configuration.d.ts

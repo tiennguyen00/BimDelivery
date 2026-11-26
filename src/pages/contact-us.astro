@@ -13,8 +13,9 @@
  * and the "Your needs" choices are the services, in collection order.
  *
  * The form is the site's one React island, hydrated when it comes within
- * 200px of the screen, so React and the Turnstile script load only on this
- * page and only once the visitor is heading for the form.
+ * 200px of the screen, so React loads only on this page and only once the
+ * visitor is heading for the form. It posts to `/api/contact` (spec 0022),
+ * which emails each enquiry to the team.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/ui/Section.astro';
@@ -91,7 +92,6 @@ const cardEntrance = (index: number) => ({
       projectTypes={form.projectTypes}
       lodOptions={form.lodOptions}
       email={details.email}
-      lang={lang}
     />
 
     <ContactCard

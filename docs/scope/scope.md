@@ -257,7 +257,7 @@ Know how many people arrive, where they come from, and which service page they r
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
-- **Working contact form delivery**: the message actually reaches an inbox, with spam protection · needs a decision
+- **Working contact form delivery**: the message actually reaches an inbox, with spam protection · in-progress, assumed decision (spec [0022](../specs/0022-contact-form-delivery.md)) · code in `src/pages/api/contact.ts`, `src/lib/contact.ts`, `src/lib/contact-email.ts`, and `src/components/react/ContactForm.tsx`
 - **Services overview page and more services**: grow from three toward the reference site's ten; decide then whether the home page keeps showing every service or a featured subset. Spec 0005 makes this a deliberate moment rather than a silent one: a fourth service entry stops the build until the home page's grid is decided (from specs 0002 and 0005)
 - **Second language**: the switcher and a full second set of copy; the content model is already shaped for it · needs a decision
 - **Every other page editable in Sanity**: the Project page copy, home, About, Contact, then settings, navigation, stats, and the 404 page, and services last; each moves its collection and its photos to Sanity, one child spec each in `docs/specs/0019-sanity-editing-layer/` · needs a decision (from spec 0019)
