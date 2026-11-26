@@ -1,0 +1,91 @@
+---
+/**
+ * The FAQ page's opening band (spec 0020, after the engineer's mockup of
+ * 2026-11-26): an eyebrow with a short rule after it, the page's `h1`, and a
+ * line of intro on the dark page, beside the client's photo of a villa at
+ * dusk.
+ *
+ * It is its own band, not a `Section` tone, because it holds a photo. Like
+ * the home and Project heroes it slides up under the header card by
+ * `--header-h`, so the photo runs to the top of the screen.
+ *
+ * - From `lg` the photo fills the end half of the band at full height (3/5
+ *   from `xl`, where the band's margins push the words further in), and
+ *   fades into `canvas` across its start half and along its foot, so it
+ *   melts into the page and into the questions below. The words sit on
+ *   `canvas` before it, held to `max-w-md`, so at most the first fifth of
+ *   the fade ever sits under them, where it is still at least 3/4 `canvas`.
+ * - Below `lg` the photo is a block at the top, fading into `canvas` at its
+ *   foot, and the words sit under it on `canvas`.
+ *
+ * So no word ever sits on the photo itself, and the title's `==phrase==`
+ * keeps its brass (7.71:1 on canvas); the accent role rule forbids brass on
+ * a photo. The phrase drops to its own line (`*:block` on the `h1`, which
+ * reaches the `<strong>` `Emphasis` draws), as in the mockup. The eyebrow is
+ * `accent` (7.71:1), its rule decorative and hidden from assistive tech; the
+ * intro is `ink` (11.66:1).
+ *
+ * The photo is the page's largest paint, so it loads eagerly at a high fetch
+ * priority. Its words play the CSS `entrance` on load, 80ms apart (steps 0
+ * to 2); under reduced motion nothing moves.
+ */
+import { Image } from 'astro:assets';
+import Emphasis from '../ui/Emphasis.astro';
+import type { FaqPage } from '../../lib/content';
+import { bandGutterClass, bandWidthClass, cx } from '../ui/styles';
+
+interface Props {
+  copy: FaqPage['hero'];
+  /** The id the band points at with `aria-labelledby`, on the `h1`. */
+  headingId: string;
+}
+
+const { copy, headingId } = Astro.props;
+const { eyebrow, heading, intro, image } = copy;
+---
+
+<section
+  aria-labelledby={headingId}
+  class="relative isolate -mt-(--header-h) overflow-hidden bg-canvas"
+>
+  <div class="relative -z-10 h-72 md:h-96 lg:absolute lg:inset-y-0 lg:inset-e-0 lg:h-auto lg:w-1/2 xl:w-3/5">
+    <Image
+      src={image.src}
+      alt={image.alt ?? ''}
+      widths={[640, 960, 1280, 1672]}
+      sizes="(min-width: 80rem) 60vw, (min-width: 64rem) 50vw, 100vw"
+      loading="eager"
+      fetchpriority="high"
+      class="size-full object-cover object-center"
+    />
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-y-0 inset-s-0 hidden w-1/2 bg-linear-to-r from-canvas to-transparent lg:block rtl:bg-linear-to-l"
+    ></div>
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-canvas to-transparent lg:h-32"
+    ></div>
+  </div>
+
+  <div class={cx('relative lg:pt-(--header-h)', bandGutterClass)}>
+    <div class={cx(bandWidthClass.default, 'pb-10 md:pb-12 lg:pt-16 lg:pb-14')}>
+      <div class="max-w-md">
+        <p class="entrance flex items-center gap-4 text-eyebrow text-accent uppercase">
+          {eyebrow}
+          <span aria-hidden="true" class="h-px w-24 bg-accent"></span>
+        </p>
+        <h1
+          id={headingId}
+          class="entrance mt-4 font-display text-h1 font-semibold text-heading *:block"
+          style="--entrance-step: 1"
+        >
+          <Emphasis text={heading} />
+        </h1>
+        <p class="entrance mt-6 text-lead text-ink" style="--entrance-step: 2">
+          {intro}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

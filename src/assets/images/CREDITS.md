@@ -76,6 +76,7 @@ CDN (`cdn.sanity.io`), like every project photo, and need no licence row.
 | Home card: Interior BIM      | `services/card-interior-bim.jpg`, from the SS Apartment Complex cover render         | The client's project render in Sanity, cut on 2026-10-31 (2)      |
 | Home card: Architectural BIM | `services/card-architectural-bim.jpg`, from the TK Mixed-Used Buildings cover render | The client's project render in Sanity, cut on 2026-10-31 (2)      |
 | Home card: Landscape BIM     | `services/card-landscape-bim.jpg`, from the Seaside Residence cover render           | The client's project render in Sanity, cut on 2026-10-31 (2)      |
+| FAQ hero                     | `faq/faq-hero.jpg`, a concrete and glass villa at dusk over a still pool             | Supplied by the engineer on 2026-11-26, 1672 × 941, as given      |
 
 (1) The home hero is the client's 1920 × 1080 render at its own tones,
 prepared once with sharp so desktops at 2x and 4K get a sharp photo

@@ -1,32 +1,59 @@
-# The FAQ hub's copy and the words every region page shares (spec 0020).
-# Placeholder copy, awaiting the client's review. Each region and its
-# questions live in src/content/faqRegions/en/<slug>.yaml.
+# The FAQ, one page at /faq (spec 0020, rewritten 2026-11-26): the photo
+# hero, the search box's words, every question in page order, and the closing
+# band. The questions and answers are the client's own (supplied 2026-11-26),
+# copied word for word apart from the dropped "Q1:" and "A:" prefixes.
+#
+# Each question's `id` is its address, /faq#<id>. Keep it when you reword a
+# question, so links people already shared still open it. An id is lowercase
+# kebab case, unique on the page, never starts with `faq-`, and is never `main`.
 lang: en
 seo:
-  title: FAQ by region | BIM Delivery
-  description: Answers to what developers, architects, and city planners ask before they outsource BIM to Vietnam, grouped by market and searchable.
-heading: Frequently asked questions
-intro: Straight answers to what developers, architects, and city planners ask before they outsource BIM, grouped by market. ==Search every question== at once, or open the region you build in.
-regionsHeading: Browse by region
-questionCount:
-  one: '{count} question'
-  other: '{count} questions'
+  title: FAQ | BIM Delivery
+  description: Quick answers on how BIM Delivery cuts rework, meets your standards, protects your data, scales with your scope, and starts with a low risk pilot.
+hero:
+  eyebrow: FAQ
+  heading: Frequently ==Asked Questions==
+  intro: Find quick answers to common questions about our services, process, and collaboration.
+  image:
+    src: ../../../assets/images/faq/faq-hero.jpg
+    alt: A concrete and glass villa at dusk, its rooms lit warm and mirrored in a still pool among the trees
 search:
   label: Search the FAQ
-  placeholder: Search questions, for example GDPR or LOD 500
+  placeholder: Search for answers…
   results:
     one: '{count} question found'
     other: '{count} questions found'
   noResults:
     heading: No questions match
     text: Try a shorter or different word, or ask us directly and we'll answer within one business day.
-breadcrumb:
-  navLabel: Breadcrumb
-  label: FAQ
-regionNavLabel: Regions
+questions:
+  - id: reduce-costs-change-orders
+    question: How does BIM Delivery reduce our project costs and change orders?
+    answer: With our extensive experience across various projects, we understand the unforeseen issues between your design ideas and coordination within BIM projects. Therefore, we proactively assist you in identifying your design input against the BIM packages of other disciplines and highlighting clashes or any coordination issues. We have resolved numerous spatial conflicts and prevented rework for multiple Clients.
+  - id: model-quality-for-takeoffs
+    question: 'Can your models ensure quality to support validating contractor bids or management uses (e.g. Quantity Takeoffs, Cost Estimation or Building Operations)?'
+    answer: Absolutely. We model with strict BEP compliance, clean element parameters and proper model categories with the mind of utilize of wise BIM model instead of 3D viewing, so your team can take the model for further construction procedures.
+  - id: country-and-studio-standards
+    question: How do you handle and ensure country-specific or studio standards in your BIM-produced package?
+    answer: During onboarding, we map your local national templates, drawing conventions, and phase deliverables into a project-specific QA checklist, then run a calibration sample before full-scale production. Additionally, we will strictly follow your instructions on local project regulations to update the BIM package accordingly during production.
+  - id: interior-design-quality
+    question: How do you ensure design quality is maintained in a high-end hospitality or residential interiors BIM package?
+    answer: BIM Delivery has dedicated Interior BIM specialists who understand millwork details, FF&E tolerances, bespoke finishes, and material transitions—preserving the exact design intent of architects when overdeveloping in BIM models and documentation.
+  - id: scope-expansion
+    question: What happens if our project scope suddenly expands after a new contract win?
+    answer: BIM Delivery maintain a multidisciplinary team across Architecture, Interiors, and Landscape. We can onboard additional trained BIM modelers and flexibly arrange to meet your demands with compliant project standards within 5–7 business days—eliminating months of local recruiting delays.
+  - id: ip-nda-data-security
+    question: How do you handle Intellectual Property (IP) protection, NDAs, and data security?
+    answer: We sign mutual NDAs, operate strictly within your secure Autodesk Construction Cloud (ACC / BIM 360) environment so files never reside on unauthorized local drives, and can be audited regularly at your end.
+  - id: start-a-partnership
+    question: We value long-term partnerships—how do we safely start a relationship with BIM Delivery?
+    answer: We never rush a large contract. We propose starting with a clearly scoped project - such as one floor of an interior/architectural package or a landscape zone—so your team can evaluate our workflow, communication, appropriate working strategy and QA/QC rigor before building a long-term dedicated team.
+  - id: pilot-before-masterplan
+    question: "Can we test your team's quality before committing to a multi-phase masterplan?"
+    answer: Yes. We recommend starting with a technical discussion, then a low-risk pilot—such as modelling one typical residential/hospitality unit or a defined landscape parcel—using your exact standards so your BIM Manager can audit our model and BIM strategy.
 cta:
   heading: Still have a question?
-  text: Tell us about your project and get a clear answer within one business day.
+  text: Feel free to contact us, we're here to help.
   button:
-    label: Contact us
+    label: Contact Us
     href: /contact-us
