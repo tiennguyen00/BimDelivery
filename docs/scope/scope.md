@@ -265,7 +265,7 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Redirects for renamed project slugs**: an editor renaming a project's slug breaks its old URL; decide with the other redirects (from spec 0019)
 - **Cookie consent banner**: once you run tracking that legally needs consent · needs a decision
 - **Blog or insights section** · needs a decision
-- **Real brand**: the real logo, brand colours, and typeface replace the palette borrowed from paviliusbim.com before launch; update the tokens, both contrast tables, and walk `/styleguide` again (from spec 0003)
+- **Real brand**: the real logo is in (2026-11-26, traced from the client's artwork); the brand colours and typeface replace the palette borrowed from paviliusbim.com before launch; update the tokens, both contrast tables, and walk `/styleguide` again (from spec 0003)
 - **A dark section tone**: bring back a dark band for a section such as the home page's closing call to action. It means reintroducing inherited tone variables, a card tone reset, and a second focus colour, then computing the dark contrast pairs. Gold reads well on black at 8.73:1 if you want it. Less urgent since spec 0005: the closing call to action now ends on a self contained gold band, so the dark tone is no longer the only way to close a page (from specs 0003 and 0005)
 - **Display typeface**: a high contrast serif in capitals for headings, as on the client's brand board; font loading, a metric fallback, and the heading scale need deciding · needs a decision (from spec 0003, 2026-10-09)
 - **Testimonials and client logos**
