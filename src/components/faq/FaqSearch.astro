@@ -1,9 +1,9 @@
 ---
 /**
  * The FAQ's instant search (spec 0020), around the list it filters: the
- * search box, a status line, the list itself (the default slot), and the no
- * results message. The hub puts its prerendered results list in the slot,
- * a region page its questions. `src/scripts/faq.ts` brings it alive.
+ * search box, a status line, the list itself (the default slot, the page's
+ * questions), and the no results message. `src/scripts/faq.ts` brings it
+ * alive.
  *
  * It enhances markup that is already complete. The box and the status line
  * ship `no-js:hidden`, so with JavaScript off neither is there and the list
@@ -21,9 +21,10 @@
  * - In the list: `[data-faq-text]` on every item the search can hide.
  *
  * The box: a `canvas` fill, the `field` border (5.04:1 against the fill),
- * `ink` words (11.66:1), an `ink-muted` placeholder (8.33:1), a decorative
- * magnifier, and the base `accent` focus ring. Its label is visually hidden;
- * the placeholder is a hint, never the label. Enter never reloads the page.
+ * the same edge as the question boxes under it, `ink` words (11.66:1), an
+ * `ink-muted` placeholder (8.33:1), a decorative magnifier, at least 44px
+ * tall, and the base `accent` focus ring. Its label is visually hidden; the
+ * placeholder is a hint, never the label. Enter never reloads the page.
  */
 import Icon from '../ui/Icon.astro';
 import type { FaqPage } from '../../lib/content';
@@ -37,14 +38,12 @@ interface Props {
   /** The page's language, for the count's plural rules and digits. */
   lang: string;
   class?: string;
-  /** For the load entrance's step, `--entrance-step: 1`. */
-  style?: string;
 }
 
-const { copy, target, inputId, lang, class: className, style } = Astro.props;
+const { copy, target, inputId, lang, class: className } = Astro.props;
 ---
 
-<div class={className} style={style}>
+<div class={className}>
   <form
     role="search"
     class="no-js:hidden"
@@ -60,7 +59,7 @@ const { copy, target, inputId, lang, class: className, style } = Astro.props;
     <div class="relative">
       <Icon
         name="search"
-        size={22}
+        size={20}
         class="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-ink-muted"
       />
       <input
@@ -71,7 +70,7 @@ const { copy, target, inputId, lang, class: className, style } = Astro.props;
         spellcheck="false"
         enterkeyhint="search"
         placeholder={copy.placeholder}
-        class="min-h-14 w-full rounded-ui border border-field bg-canvas py-3 ps-13 pe-4 text-lead text-ink placeholder:text-ink-muted"
+        class="min-h-11 w-full rounded-ui border border-field bg-canvas py-2 ps-12 pe-4 text-body text-ink placeholder:text-ink-muted"
       />
     </div>
   </form>

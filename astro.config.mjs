@@ -155,10 +155,21 @@ export default defineConfig({
 
   // The address the live Worker answers on, the apex domain its route in
   // wrangler.jsonc serves (spec 0020). Pages read it as `Astro.site` and build
-  // absolute URLs with `new URL(path, Astro.site)`: today the FAQ's
-  // structured data, later feature 11's canonical URLs and sitemap. Not
-  // `www`, which the Worker's route does not list.
+  // absolute URLs with `new URL(path, Astro.site)`: feature 11's canonical
+  // URLs and sitemap, when they come. Not `www`, which the Worker's route
+  // does not list.
   site: 'https://bimdelivery.vn',
+
+  // The FAQ's five region pages, live from 2026-11-24 until the FAQ became
+  // one page on 2026-11-26 (spec 0020). Their old addresses, in links and
+  // search results, land on `/faq` instead of the 404 page.
+  redirects: {
+    '/faq/united-states': { status: 301, destination: '/faq' },
+    '/faq/australia': { status: 301, destination: '/faq' },
+    '/faq/european-union': { status: 301, destination: '/faq' },
+    '/faq/canada': { status: 301, destination: '/faq' },
+    '/faq/japan': { status: 301, destination: '/faq' },
+  },
 
   vite: {
     // Tailwind v4 runs as a Vite plugin; there is no tailwind.config file.

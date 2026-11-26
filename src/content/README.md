@@ -117,26 +117,17 @@ number of services changes.
 
 ## FAQ
 
-The FAQ (spec 0020) is two collections. `faqPage/<lang>/faq.yaml` holds the
-hub's copy (`/faq`) and the words every region page shares: the search box,
-the breadcrumb, the region nav's title, the question count, and the closing
-band. Each region is one file, `faqRegions/<lang>/<slug>.yaml`, with its
-`slug` (the page is `/faq/<slug>`), a two capital `code` for its badge, its
-`name`, its `focus` line, its `order`, its own `seo`, and its `questions` in
-page order. Today's 50 questions are placeholders awaiting the client's
-review; spec 0020's Follow-up lists the claims to check first.
+The FAQ (spec 0020) is one page, `/faq`, and one file,
+`faqPage/<lang>/faq.yaml`: its `seo`, the `hero` (eyebrow, title, intro, and
+photo), the search box's words, every question in page order, and the
+closing band. The questions are the client's own, supplied on 2026-11-26.
 
 ### Edit or add a question
 
 Each question is an `id`, the `question`, and the `answer`. The answer may
 mark phrases with `**bold**` and `==accent==`. The `id` is the question's
-address, `/faq/<slug>#<id>`, so keep it when you reword a question: links
-people already shared keep working. An `id` is lowercase kebab case, unique
-within its region, never starts with `faq-`, and is never `main`. A region
-holds 1 to 30 questions.
-
-### Add a region
-
-Add one file to `faqRegions/<lang>/`. It appears in the hub cards, the
-region nav, the search, its own page, and its structured data, with no code
-change. Its `slug`, `code`, and `order` must each be unique in its language.
+address, `/faq#<id>`, so keep it when you reword a question: links people
+already shared keep working. An `id` is lowercase kebab case, unique on the
+page, never starts with `faq-`, and is never `main`. The page holds 1 to 30
+questions. A new question shows in the list, the search, and the page's
+structured data with no code change.

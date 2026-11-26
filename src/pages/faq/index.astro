@@ -1,133 +1,81 @@
 ---
 /**
- * The FAQ hub, `/faq` (spec 0020): three bands, in order, then the footer.
- * Every word comes from the `faqPage` entry and the `faqRegions` entries, so
- * a new region is one new YAML file and no edit here.
+ * The FAQ, `/faq` (spec 0020, one page since 2026-11-26, after the
+ * engineer's mockup): three bands, in order, then the footer. Every word
+ * comes from the `faqPage` entry, so a new question is a YAML edit and no
+ * edit here.
  *
- * 1. The heading block on the dot grid: the ruled `h1`, the intro, and the
- *    search over every question of every region, with its results list.
- * 2. Browse by region, on `raised`: one card per region, in `order`, each
- *    one link to `/faq/<slug>`. One column on a phone, two from `md`, three
- *    from `lg`.
- * 3. The accent closing band, linking to Contact.
+ * 1. The hero: eyebrow, `h1`, and intro beside the client's photo
+ *    (`FaqHero`).
+ * 2. The questions on `canvas`: the search box, then every question in page
+ *    order as the `Accordion`'s `list` look, each its own box, all closed,
+ *    several open at once. One centred column, `max-w-4xl`, so the margins
+ *    either side are equal. Each `details` carries its question's `id`, so
+ *    `/faq#<id>` jumps to it even with JavaScript off.
+ * 3. The accent closing band in its `inline` layout, linking to Contact.
  *
- * The hub shows no answers, so it carries no `FAQPage` schema; each region
- * page carries its own. This file owns the page's element ids, every one
- * starting with `faq-`, so none can meet a question's id (spec 0020).
+ * The page carries a `FAQPage` JSON-LD script built from exactly the
+ * questions it shows, in the same order. This file owns the page's element
+ * ids, every one starting with `faq-`, so none can meet a question's id,
+ * which may not (spec 0020).
  */
 import PageLayout from '../../layouts/PageLayout.astro';
-import PatternBand from '../../components/ui/PatternBand.astro';
-import Section from '../../components/ui/Section.astro';
+import Accordion from '../../components/ui/Accordion.astro';
 import CtaBand from '../../components/ui/CtaBand.astro';
-import Emphasis from '../../components/ui/Emphasis.astro';
-import Icon from '../../components/ui/Icon.astro';
-import RegionCard from '../../components/faq/RegionCard.astro';
-import RegionBadge from '../../components/faq/RegionBadge.astro';
+import FaqHero from '../../components/faq/FaqHero.astro';
 import FaqSearch from '../../components/faq/FaqSearch.astro';
+import {
+  bandGutterClass,
+  bandPaddingBottomClass,
+  cx,
+} from '../../components/ui/styles';
 import { resolveLocale } from '../../i18n/locales';
-import { getFaqPage, getFaqRegions } from '../../lib/content';
-import { countLine, faqSearchText } from '../../lib/faq';
+import { getFaqPage } from '../../lib/content';
+import { faqPageJsonLd, faqSearchText, jsonLdScript } from '../../lib/faq';
 
 const lang = resolveLocale(Astro.currentLocale);
+const page = await getFaqPage(lang);
 
-const [page, regions] = await Promise.all([
-  getFaqPage(lang),
-  getFaqRegions(lang),
-]);
+const faqSchema = jsonLdScript(faqPageJsonLd(page.questions));
 ---
 
 <PageLayout title={page.seo.title} description={page.seo.description}>
-  <PatternBand surface="dots" labelledBy="faq-heading">
-    <div class="entrance mx-auto max-w-narrow text-center">
-      <h1 id="faq-heading" class="heading-rule inline-block" data-heading-rule>
-        {page.heading}
-      </h1>
-      <p class="mt-8 text-lead">
-        <Emphasis text={page.intro} />
-      </p>
-    </div>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={faqSchema}></script>
+  </Fragment>
 
-    {/**
-     * The search over every region's questions. Its results list is built
-     * here, every question of every region in the regions' order, and ships
-     * `hidden` inside `data-faq-results`: the script only shows the wrapper
-     * while the box holds words that match, and toggles `hidden` on each
-     * result. Each result links straight to its question on its region's
-     * page, which opens it.
-     */}
+  <FaqHero copy={page.hero} headingId="faq-heading" />
+
+  <div class={cx('bg-canvas', bandGutterClass, bandPaddingBottomClass)}>
     <FaqSearch
       copy={page.search}
-      target="faq-results-list"
+      target="faq-questions"
       inputId="faq-search"
       lang={lang}
-      class="entrance mx-auto mt-10 max-w-narrow"
-      style="--entrance-step: 1"
+      class="mx-auto w-full max-w-4xl"
     >
-      <div hidden class="mt-4" data-faq-results>
-        <ul id="faq-results-list" class="flex flex-col">
-          {regions.flatMap((region) =>
-            region.questions.map((question) => (
-              <li
-                class="border-b border-line"
-                data-faq-text={faqSearchText(
-                  question.question,
-                  question.answer,
-                )}
-              >
-                <a
-                  href={`/faq/${region.slug}#${question.id}`}
-                  class="group flex min-h-11 items-start justify-between gap-4 rounded-ui py-4"
-                >
-                  <span class="flex flex-col gap-2">
-                    <span class="font-semibold text-pretty text-heading underline-offset-4 group-hover:underline">
-                      {question.question}
-                    </span>
-                    <span class="flex items-center gap-2 text-small text-ink-muted">
-                      <RegionBadge code={region.code} />
-                      {region.name}
-                    </span>
-                  </span>
-                  <Icon
-                    name="arrow-right"
-                    size={20}
-                    class="mt-1 shrink-0 text-accent transition-transform duration-150 group-hover:translate-x-1"
-                  />
-                </a>
-              </li>
-            )),
-          )}
-        </ul>
+      <div id="faq-questions" class="mt-2">
+        <Accordion
+          variant="list"
+          items={page.questions.map((question) => ({
+            id: question.id,
+            title: question.question,
+            text: question.answer,
+            hooks: {
+              'data-faq-item': '',
+              'data-faq-text': faqSearchText(
+                question.question,
+                question.answer,
+              ),
+            },
+          }))}
+        />
       </div>
     </FaqSearch>
-  </PatternBand>
-
-  <Section tone="raised" labelledBy="faq-regions-heading">
-    <h2
-      id="faq-regions-heading"
-      class="heading-rule inline-block"
-      data-heading-rule
-    >
-      {page.regionsHeading}
-    </h2>
-    <ul
-      class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-      data-reveal-stagger
-    >
-      {regions.map((region) => (
-        <li>
-          <RegionCard
-            code={region.code}
-            name={region.name}
-            focus={region.focus}
-            count={countLine(page.questionCount, region.questions.length, lang)}
-            href={`/faq/${region.slug}`}
-          />
-        </li>
-      ))}
-    </ul>
-  </Section>
+  </div>
 
   <CtaBand
+    layout="inline"
     heading={page.cta.heading}
     headingId="faq-cta-heading"
     text={page.cta.text}
@@ -136,17 +84,18 @@ const [page, regions] = await Promise.all([
 </PageLayout>
 
 {/**
- * Motion (AC-17): the heading block and then the search fade and rise in on
- * load through the CSS `entrance` (steps 0 and 1); the cards rise one after
- * another as they scroll into view (`data-reveal-stagger`), and the two
- * ruled headings draw their rules with the scroll (`reveal.ts`). No motion
- * code of the page's own. Under reduced motion nothing moves.
+ * Motion: the hero's words fade and rise in on load through the CSS
+ * `entrance`, and a question slides open and shut through `accordion-item`.
+ * The search and the questions do not move on load on purpose: a linked
+ * question (`#id`) is scrolled into place while the page loads, and a column
+ * still rising would leave it 24px off once it settles. Under reduced motion
+ * nothing moves.
  *
- * The search and the scroll reveal are the page's two scripts. With
- * neither, the page is whole: the box is gone, and the cards and every
- * question's page are a link away.
+ * The search over the questions, and opening the question a link points at
+ * (`#id`), on load and on every hash change. With no script the box is
+ * gone, the questions all show, and `#id` still jumps to its question,
+ * closed.
  */}
 <script>
-  import '../../scripts/reveal';
   import '../../scripts/faq';
 </script>

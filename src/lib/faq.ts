@@ -9,10 +9,10 @@ import { splitEmphasis } from './emphasis';
 export type CountTemplates = Readonly<{ one: string; other: string }>;
 
 /**
- * "10 questions": the template the language's plural rules pick, `one` or
- * `other` (any other category falls back to `other`), with the number
- * formatted for the language. The search script builds the same line in the
- * browser (`src/scripts/faq.ts`).
+ * "3 questions found": the template the language's plural rules pick, `one`
+ * or `other` (any other category falls back to `other`), with the number
+ * formatted for the language. The search script builds its status line with
+ * it in the browser (`src/scripts/faq.ts`).
  */
 export const countLine = (
   templates: CountTemplates,
@@ -71,10 +71,10 @@ export const matchesSearch = (text: string, query: string): boolean =>
 type QuestionAndAnswer = Readonly<{ question: string; answer: string }>;
 
 /**
- * The `FAQPage` of one region page: every question the page shows, in page
- * order, each name the question exactly as shown and each answer its plain
- * text. Google only accepts FAQ markup that matches answers visible on the
- * page, so the page and this list come from the same entries.
+ * The FAQ page's `FAQPage`: every question the page shows, in page order,
+ * each name the question exactly as shown and each answer its plain text.
+ * Google only accepts FAQ markup that matches answers visible on the page,
+ * so the page and this list come from the same entry.
  */
 export const faqPageJsonLd = (questions: readonly QuestionAndAnswer[]) => ({
   '@context': 'https://schema.org',
@@ -83,21 +83,6 @@ export const faqPageJsonLd = (questions: readonly QuestionAndAnswer[]) => ({
     '@type': 'Question',
     name: item.question,
     acceptedAnswer: { '@type': 'Answer', text: plainAnswer(item.answer) },
-  })),
-});
-
-/** One step of a breadcrumb trail, with its absolute URL. */
-export type BreadcrumbStep = Readonly<{ name: string; url: string }>;
-
-/** A `BreadcrumbList`, positions counted from 1, in the order given. */
-export const breadcrumbJsonLd = (steps: readonly BreadcrumbStep[]) => ({
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: steps.map((step, index) => ({
-    '@type': 'ListItem',
-    position: index + 1,
-    name: step.name,
-    item: step.url,
   })),
 });
 

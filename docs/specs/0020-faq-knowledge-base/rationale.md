@@ -1,63 +1,47 @@
-# 0020. FAQ knowledge base: decision record
+# 0020. FAQ, one page: decision record
 
 ## Context
 
-BIM Delivery sells offshore BIM work to developers and city planners in five markets (the United States, Australia, the European Union, Canada, and Japan). Each market asks different questions before it trusts an offshore team: units and LOD specs in the US, ISO 19650 and council approvals in Australia, GDPR and OpenBIM in the EU, metric and imperial and French in Canada, MLIT rules and Japanese speaking coordinators in Japan. The engineer has 50 sample questions and answers, ten per market, and wants them on the site, styled like a software help center and marked up for search engines.
+BIM Delivery sells offshore BIM work to developers, architects, and studios abroad. Before they trust an offshore team they ask the same handful of things: will it cut rework, will the models hold up for takeoffs, will it follow our standards, can it scale, is our data safe, and can we try it first. The client wrote eight questions and answers on exactly these, and the engineer drew a mockup of the page they belong on.
 
 The forces:
-- **Five audiences, one site.** A Japanese developer should not wade through US code questions, and a salesperson should be able to send one link per market.
+- **One audience, one short list.** Eight questions read in one scroll; nothing needs grouping.
 - **The rules in `AGENTS.md`.** Every page prerenders, content comes from checked collections, and no JavaScript ships by default (plain scripts may enhance finished markup; React is for the contact form only). Nothing may hide content waiting for a script.
-- **Content will change.** The answers are a first draft; the client will rewrite them, and later edit them in Sanity (spec 0019). Links to single questions must survive a reworded question.
-- **Schema markup was asked for.** Google only accepts FAQ markup that matches answers visible on the same page, and since 2023 shows FAQ rich results only for well known government and health sites, so the markup's value here is in other engines and AI tools, not in Google's expandable result.
-- **Small team, Skateboard approach.** One developer with AI help; the smallest usable whole first.
+- **Content will change.** The client will reword answers, and later edit them in Sanity (spec 0019). Links to single questions must survive a reworded question.
+- **The design system.** Brass words never sit on a photo (the accent role rule in `docs/design.md`), and the mockup puts the title's second line in brass.
+
+## History
+
+The first version of this spec (2026-11-23) chose a hub plus one page per market (United States, Australia, European Union, Canada, Japan), with 50 sample questions written per market, region cards, a region nav, a breadcrumb, and a search that crossed pages. It shipped on 2026-11-24. On 2026-11-26 the engineer replaced it: the client's own eight questions are not split by market, and the mockup is one simple page. The spec was rewritten in place at the engineer's request rather than superseded.
 
 ## Options considered
 
-### Option 1: Hub plus one page per region (chosen)
+### Option 1: One page after the mockup (chosen)
 
-`/faq` with search and region cards; `/faq/<country>` per region from one template.
-
-**Pros**:
-- A title, description, and schema per market; one shareable link per market.
-- Each page stays short (ten questions), and the schema per page stays honest (only the answers that page shows).
-- The help center pattern visitors already know.
-
-**Cons**:
-- Six routes instead of one; search must cross pages, so the hub needs its own index of every question.
-- A visitor comparing markets clicks between pages.
-
-### Option 2: One long page with a sticky region sidebar
-
-All 50 questions on `/faq`, five sections, the sidebar jumping between them.
+Hero, search, the eight questions as boxes, a slim closing band.
 
 **Pros**:
-- One route, one schema block, in page search with no cross page links.
-- The fewest files.
+- Matches the mockup and the content: eight questions need no navigation.
+- One title, one link, one honest schema listing every answer the page shows.
+- Fewer files than before: one collection, two components, one route.
 
 **Cons**:
-- One title and description for five markets; no per market page to send or rank.
-- A very long page, and the schema lists 50 questions.
+- No per market pages; if the client later writes market specific answers, this decision reopens.
 
-### Option 3: One page with region tabs
+### Option 2: Keep the hub and put the eight questions on it
 
-All 50 questions in the HTML, a script showing one region at a time.
+The 2026-11-23 structure with the new content.
 
 **Pros**:
-- Feels compact; one route.
+- Room to grow by market.
 
 **Cons**:
-- Tabs are a script feature: without JavaScript every region shows at once, so the no script page is Option 2 anyway.
-- Same single title problem as Option 2, plus a tab script to build and make accessible.
-
-Sub decisions, each settled with the engineer:
-- **Search**: a plain filter script (chosen) over no search (the knowledge base feel was asked for) and Pagefind (a static search index; real ranking, but a new dependency and build step for 50 entries).
-- **Question look**: a quiet list where several can be open (chosen) over today's brass bars, one open at a time (ten stacked brass bars are loud, and readers compare answers), and every answer shown (easiest to read, but the longest page and no knowledge base feel).
-- **Content source**: YAML now (chosen) over Sanity now (spec 0019's publish pipeline is unfinished, and spec 0019 AC-15 keeps every page outside projects in YAML until its own slice).
+- Region pages with nothing market specific to say; a hub, cards, and a region nav around eight questions; not what the mockup shows.
 
 ## Rationale
 
-Five markets with different worries is the force that decides this: per market pages give each audience a short, relevant page, a title written for that market, and a link sales can send, and they keep each page's FAQ schema to the ten answers it actually shows. Option 2 is simpler, but it gives one title to five audiences and a 50 question page, and Option 3 collapses into Option 2 without JavaScript.
+The content decides it: eight questions for every visitor do not need a hub, cards, or a sidebar, and the mockup asks for one page. The search and the linked question script carry over unchanged in spirit, now filtering in place, so a visitor with one worry still narrows the list as they type and a salesperson can still send `/faq#<id>`.
 
-The cost of Option 1 is that search has to cross pages. With 50 questions, a prerendered hidden list on the hub and a 60 line plain script cover it with no dependency, in keeping with the zero JavaScript default: with the script gone, the cards and pages still work and only the search box is missing. Explicit question ids exist because the content is a draft; ids derived from question text would break every shared link the first time the client rewords a question.
+The hero keeps the brass second line legal by never putting words on the photo: beside it from `lg`, under it below `lg`. The questions became boxes because the mockup draws them that way; the `Accordion`'s `list` look had no other user, so it was restyled rather than joined by a third look. The closing band gained an `inline` layout instead of a FAQ only copy, so the accent band's rules (the `on-accent` words, the two colour ring) stay in one component.
 
-The schema is worth adding even though Google limits the FAQ rich result: it costs a pure function and a `head` slot, other engines and AI tools read it, and the `BreadcrumbList` and the `site` setting are groundwork feature 11 needs anyway.
+The old region addresses had been live two days, long enough to be crawled, so they redirect to `/faq` with a 301 rather than ending on the 404 page.
