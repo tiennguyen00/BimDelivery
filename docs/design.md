@@ -38,7 +38,7 @@ Building a page should be layout work, not styling decisions.
 - Pages set rhythm by alternating `canvas` and `raised` sections. Both are
   dark, so no component adapts to its background. The bands that are not a
   `Section` tone (the home hero, the home intro band, the contact form band,
-  the Project hero, `CtaBand`, the footer) are their own components that
+  the Project hero, the FAQ hero, `CtaBand`, the footer) are their own components that
   borrow the band frame.
 - No shadows. A shadow cannot be seen on a dark page; a card separates by its
   `panel` fill and, where it has one, its `line` border.
@@ -147,8 +147,8 @@ alpha blending over the worst case pixel. The working is in spec 0003's
 | heading / ink-strong (`h1` to `h3`, labels, strong text) | canvas / raised / panel | 15.83 / 14.05 / 10.35 | 4.5 |
 | ink (body, field text) | canvas / raised / panel | 11.66 / 10.35 / 7.62 | 4.5 |
 | ink-muted (hints, card text) | canvas / raised / panel | 8.33 / 7.39 / 5.45 | 4.5 |
-| accent (links, emphasis, numbers, secondary button, breadcrumb links, FAQ badges and counts, an open `list` accordion title) | canvas / raised / panel | 7.71 / 6.84 / 5.04 | 4.5 |
-| on-accent (primary button label, closing band text, closed accordion title, step number, filled region badge) | accent / accent-hover | 7.71 / 10.52 | 4.5 |
+| accent (links, emphasis, numbers, secondary button, the FAQ hero's eyebrow and brass title line, an open `list` accordion title) | canvas / raised / panel | 7.71 / 6.84 / 5.04 | 4.5 |
+| on-accent (primary button label, closing band text and its inline divider, closed accordion title, step number) | accent / accent-hover | 7.71 / 10.52 | 4.5 |
 | heading (the closing band link's label) | canvas / panel (hover) | 15.83 / 10.35 | 4.5 |
 | error | canvas / raised / panel | 8.06 / 7.16 / 5.27 | 4.5 |
 | field border | canvas (the field's fill) | 5.04 | 3.0 |
@@ -763,7 +763,7 @@ build (`src/lib/emphasis.ts`):
 
 Disclosure items (spec 0010). The browser's own `<details>` and `<summary>`,
 with no script. Two looks: `bar` (the About page's capability band), one open
-at a time, and `list` (the FAQ region pages, spec 0020), several open at once.
+at a time, and `list` (the FAQ page, spec 0020), several open at once.
 An item's `id` is its address (`#id` jumps to it); `hooks` are the `data-`
 attributes a page script reads, written on the item's `<details>`.
 
@@ -784,98 +784,67 @@ attributes a page script reads, written on the item's `<details>`.
   the `accent` ring would vanish against a closed brass bar. It passes on an
   open `panel` item too.
 
-**`list`**, the quiet look (spec 0020):
+**`list`**, the FAQ's look (spec 0020; boxes since 2026-11-26, after the
+engineer's mockup):
 
-- Rows on the band itself, no fill, every item closed at first and no shared
-  `name`, so several can be open at once.
-- Each row ends in a `line` border (decorative, 2.45:1, never a control
-  boundary). The line belongs to the item, so an item a script hides takes
-  its line with it and no double line appears.
-- The title is semibold `heading` at `text-lead` in the body face (15.83:1 on
-  canvas, 14.05:1 on raised), turning `accent` when open (7.71:1 / 6.84:1).
-  Hovering the row underlines it.
-- A `plus` or `minus` in `accent` at the end, with **no circle**.
-- The answer is `ink` (11.66:1 / 10.35:1), held to `max-w-narrow` so a line
-  stays readable on a wide screen, with its `**bold**` and `==accent==`.
-- The base `accent` ring, since the rows sit on a dark band.
+- Every item is its own box: a `canvas` fill and a `field` border (5.04:1
+  on canvas), 4px apart, the same edge as the search box above. Every item
+  is closed at first and there is no shared `name`, so several can be open
+  at once. Hover lifts the border to `ink-muted`.
+- The box belongs to the item, so an item a script hides with `hidden`
+  leaves no gap or stray line behind.
+- The title is medium `heading` in the display face at `text-body`, set
+  snug (15.83:1 on canvas), turning `accent` when open (7.71:1).
+- A `chevron-down` in `ink` (11.66:1) at the end, turning to point up when
+  the item opens (200ms; no turn under reduced motion).
+- The answer is `ink` (11.66:1), held to `max-w-narrow` so a line stays
+  readable on a wide screen, with its `**bold**` and `==accent==`.
+- The base `accent` ring, since the boxes sit on a dark band.
 
 Both looks: the whole summary is the target, at least 44px tall. The
 `accordion-item` utility in `global.css` hides the browser's own triangle
 and holds the slide (`## Focus and motion`).
 
-### `Breadcrumb` · `src/components/ui/Breadcrumb.astro`
-
-| Prop | Type | Default |
-|---|---|---|
-| `label` | `string` (required), the `nav`'s name | |
-| `items` | `readonly { label: string; href: string }[]` (required), the last is this page | |
-
-A visible trail (spec 0020), after the WAI-ARIA breadcrumb pattern: an ordered
-list of links inside a `nav` named by `label`. The FAQ region pages use it
-first; the project detail pages and feature 11 may follow.
-
-- Earlier items are `accent` links (7.71:1 on canvas, 6.84:1 on raised) at
-  `text-small`, turning `accent-hover` and underlined on hover.
-- The last item is still a link, marked `aria-current="page"`, drawn as
-  semibold `ink-strong` (15.83:1 on canvas) with no hover, so it reads as
-  where you are.
-- Between items, a `chevron-down` turned to point right, `ink-muted`,
-  hidden from assistive tech. A long trail wraps rather than scrolling.
-- Every link is at least 44px tall; the base `accent` ring.
-
 ### The FAQ · `src/components/faq/`
 
-Spec 0020. The hub (`/faq`) and every region page (`/faq/<slug>`) are built
-from four components, every word from the `faqPage` and `faqRegions`
-entries.
+Spec 0020, one page at `/faq` since 2026-11-26 (the engineer's mockup), every
+word from the `faqPage` entry. Three bands, then the footer.
 
-**`RegionBadge`** (`code`, `size: 'sm' | 'lg'`, `tone: 'outline' |
-'filled'`): the region's two capitals in a square-ish box, bold, in the body
-face (Playfair thins out at this size), with a 2px border. `outline` is an
-`accent` border and `accent` letters (7.71:1 on canvas, 6.84:1 on raised,
-5.04:1 on panel); `filled` is an `accent` fill with `on-accent` letters
-(7.71:1), for the region you are on in the region nav. It always sits beside
-the region's name, so it is hidden from assistive tech and the name is read
-once.
+**`FaqHero`**: an eyebrow, the `h1`, and a line of intro beside the client's
+photo of a villa at dusk (`src/assets/images/faq/faq-hero.jpg`). It slides
+up under the header card by `--header-h`, like the home and Project heroes.
 
-**`RegionCard`**: `Card`'s link rule on a region. A `panel` card with a `line`
-border, the large badge and an `accent` arrow at the top, the name as an `h3`
-in `ink-strong` (10.35:1), the focus line `ink-muted` (5.45:1), and the
-question count `accent` (5.04:1) pinned to the bottom. One link, on the name,
-stretched over the card. Hover underlines the name, turns the border
-`ink-muted`, and nudges the arrow 4px right; keyboard focus draws one `accent`
-ring round the whole card. One column, two from `md`, three from `lg`.
-
-**`RegionNav`**: every region, the current one `aria-current="page"`. A `nav`
-named by its visible title, an `ink-muted` small capitals paragraph
-("Regions"), never a heading, so the `h1` stays the page's first heading.
-Each link carries the small badge and the name, `ink` (11.66:1) turning
-`accent` on hover; the current one is semibold `heading` on a `panel` fill
-(10.35:1) with its badge `filled`. Below `lg` the links are chips with a
-`line` border that wrap onto a second line; from `lg` they stack in the
-sidebar, borderless, and the nav stays in view below the header
-(`sticky-below-header`). Every link is at least 44px tall.
+- From `lg` the photo fills the end 3/5 of the band at full height and fades
+  into `canvas` across its start half and along its foot. The words sit on
+  `canvas` before it in `max-w-md`, so only the faded start of the photo is
+  ever under them.
+- Below `lg` the photo is a block at the top (288px, 384px from `md`),
+  fading into `canvas` at its foot, with the words under it.
+- No word sits on the photo itself, so the title's `==phrase==` keeps its
+  brass (7.71:1 on canvas). The phrase drops to its own line through
+  `*:block` on the `h1`, as the mockup has it. The `h1` is semibold `heading`
+  in the display face at `text-h1` (15.83:1).
+- The eyebrow is `accent` capitals at `text-eyebrow` (7.71:1) with a 96px
+  `accent` rule after it, decorative and hidden from assistive tech. The
+  intro is `ink` at `text-lead` (11.66:1).
+- The photo loads eagerly at a high fetch priority (the page's largest
+  paint). The three lines play the CSS `entrance` (steps 0 to 2).
 
 **`FaqSearch`**: the search box, a status line, the list it filters (its
 slot), and the no results message. The box is a `canvas` fill with the
-`field` border (5.04:1), `ink` words at `text-lead`, an `ink-muted`
-placeholder (8.33:1) that is a hint and never the label (the label is
-visually hidden), a decorative `ink-muted` magnifier (Tabler `search`), at
-least 56px tall, with the base `accent` ring. It does not use `fieldClass`,
-whose `outline-none` would hide that ring. The status line is `ink-muted`
-`text-small`, `role="status"`. The box and the status ship `no-js:hidden`;
-the no results message (an `h2` at `text-h3` and a line of `ink`) ships
-`hidden`.
+`field` border (5.04:1), the same edge as the question boxes, `ink` words at
+`text-body`, an `ink-muted` placeholder (8.33:1) that is a hint and never
+the label (the label is visually hidden), a decorative `ink-muted` magnifier
+(Tabler `search`), at least 44px tall, with the base `accent` ring. It does
+not use `fieldClass`, whose `outline-none` would hide that ring. The status
+line is `ink-muted` `text-small`, `role="status"`. The box and the status
+ship `no-js:hidden`; the no results message (an `h2` at `text-h3` and a line
+of `ink`) ships `hidden`.
 
-**The pages.** The hub's heading block and search sit on the `dots` pattern,
-centred in `max-w-narrow`; the results list under the box is rows like the
-`list` look, each a link with the question (`heading`), the small badge and
-the region's name (`ink-muted`), and an `accent` arrow. The cards sit on
-`raised`. A region page is one `canvas` band: the breadcrumb, then a
-`sidebar-grid` (a 14rem sidebar beside the content from `lg`, one column
-below), with the header (large badge, `h1`, focus line in `text-lead`,
-`accent` count), the region nav, and the search with the questions in the
-`list` look. Both end with `CtaBand`. Page element ids start with `faq-`;
+**The page.** Under the hero, one `canvas` band holds the search and the
+questions in the `Accordion`'s `list` look, in one centred column
+(`max-w-4xl`), so the margins either side are equal at every width. It ends
+with `CtaBand` in its `inline` layout. Page element ids start with `faq-`;
 question ids may not.
 
 ### `ContactCard` · `src/components/contact/ContactCard.astro`
@@ -905,12 +874,22 @@ icon, hidden from assistive tech, above an `h3`, then the value, centred on a
 | `headingId` | `string` (required), the id this band points at | |
 | `text` | `string` (required) | |
 | `button` | `Link` (required) | |
+| `layout` | `'stacked' \| 'inline'` | `'stacked'` |
 
 The closing call to action: a self contained accent band, always brass, taking
 no tone. Spec 0005 kept it for the service pages, but spec 0013 closed them
 inside their process band instead. The Project page closes with it (spec
 0014), and so does every project detail page, fed `projectPage.detail.cta`
-(spec 0015).
+(spec 0015). The FAQ page closes with its `inline` layout (spec 0020).
+
+- **`stacked`**, the default: the heading, the line at `text-lead`, and the
+  link, centred one above another, in the band frame's padding.
+- **`inline`** (2026-11-26, the engineer's FAQ mockup): a slimmer band
+  (48px of padding, 56px from `md`). From `md` the heading at `text-h3` and
+  its line at `text-body` sit on the start side, then a 1px `on-accent`
+  divider as tall as the row (decorative, hidden from assistive tech), then
+  the link with an `arrow-right`. Below `md` the three stack, centred, with
+  no divider.
 
 - **It is not a `Section` with a third tone**, and that is the point. Two tones
   and both dark is what lets every other component name its colours directly
@@ -1463,10 +1442,10 @@ pages use the same reveal script and add the carousel (spec 0013).
   600ms with an ease out, the scroll reveal's language, waiting 80ms per
   `--entrance-step`, which the caller sets in a `style` attribute. Today the
   About band: the `h1` at step 0, the paragraph at 1, the numbers from 2 (by
-  `StatsBand`'s `entranceFrom`). The FAQ (spec 0020): the hub's heading block
-  at 0 and its search at 1; a region page's header block at 0, and nothing
-  else there, because a linked question is scrolled into place on load and a
-  column still rising would leave it 24px off. It runs with JavaScript off, and under reduced
+  `StatsBand`'s `entranceFrom`). The FAQ (spec 0020): the hero's eyebrow,
+  title, and intro at 0 to 2, and nothing else there, because a linked
+  question is scrolled into place on load and a column still rising would
+  leave it 24px off. It runs with JavaScript off, and under reduced
   motion it does not run, so everything is simply there. It moves by
   `translate`, so nothing around it shifts. **Never** combine it with
   `data-reveal` on one element; the About band takes no scroll reveal for that
