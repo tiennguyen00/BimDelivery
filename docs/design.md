@@ -16,9 +16,12 @@ feel of a firm that delivers precise drawings, at night.
 Jungle Green, Jet, Coffee, Antique Brass), adopted on 2026-10-09; the cream
 text family is derived from the brass hue. Headings moved to Playfair Display
 on 2026-10-11, and body copy and UI from Inter to EB Garamond on 2026-10-16,
-when the client asked for serif type throughout. The logo and
-certification badges are still placeholders. Replacing those before launch is
-a tracked follow up (feature 14).
+when the client asked for serif type throughout. The logo is the client's
+own, adopted on 2026-11-26: traced to SVG from their artwork and reversed for
+the dark page (cream ink, the brass wall kept, a dark frame around the lit
+room so it still reads as a window), without the tagline, which would be under
+3px tall at header size. The certification badges are still placeholders.
+Replacing those before launch is a tracked follow up (feature 14).
 
 ## Build mandate
 

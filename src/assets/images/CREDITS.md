@@ -67,6 +67,23 @@ CDN (`cdn.sanity.io`), like every project photo, and need no licence row.
 | Interior BIM      | SS Apartment Complex, MN3 Luxury Hotel, SC Hotel Complex |
 | Landscape BIM     | HP Branded Residence, Seaside Residence, Coastal Hotel   |
 
+## The client's brand
+
+The client supplied their logo as a JPEG (1157 × 314) on 2026-11-26. The
+original is kept at `docs/brand/logo-source.jpg`; every file below is derived
+from it and needs no licence row.
+
+- `brand/logo.svg` (header and footer): the logo traced to vector paths at 4×
+  with potrace, reversed for the dark page. The black ink is `heading` cream,
+  the brass wall keeps its own gradient, and the lit room stays the original
+  pixels, clipped to the window and framed by a 5px gap so it reads against
+  the cream. The tagline (ARCHITECTURE • INTERIOR • LANDSCAPE) is left out:
+  at the header's 40px it would be under 3px tall.
+- `public/favicon.svg`: the mark alone, its ink dark or cream with the
+  browser's colour scheme; the room is left open as the B's counter.
+- `public/favicon.ico` (16, 32, 48) and `public/apple-touch-icon.png` (180):
+  the reversed mark on `canvas`, the touch icon with the room.
+
 ## Local images
 
 | Used for                     | File                                                                                 | Source and licence                                                |
@@ -149,12 +166,9 @@ icon package is installed; only the path data is copied.
 
 ## Generated placeholders (no licence needed)
 
-These are simple SVGs made for this project. They are not real brand marks or
-certification body marks, and must be replaced before launch.
+These are simple SVGs made for this project. They are not real certification
+body marks, and must be replaced before launch.
 
-- `brand/logo.svg`: the light mark, for the dark header and footer alike
-  (formerly `logo-on-dark.svg`; the navy mark was deleted with the dark
-  theme, spec 0003, 2026-10-09)
 - `badges/badge-quality.svg`
 - `badges/badge-bim.svg`
 - `badges/badge-security.svg`
