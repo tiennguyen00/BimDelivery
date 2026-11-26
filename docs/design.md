@@ -1643,8 +1643,9 @@ pages use the same reveal script and add the carousel (spec 0013).
   cannot do. Its box ships `no-js:hidden`, so without it the FAQ is whole.)
 - The React components render to static HTML unless a page hydrates them, and
   only feature 10's contact island may. It is hydrated `client:visible` on
-  `/contact-us` alone, which is also the only page that loads Cloudflare's
-  Turnstile script.
+  `/contact-us` alone. It has no captcha: its spam guard (a hidden honeypot
+  field and a minimum fill time, spec 0022) is invisible, and the honeypot
+  sits in `sr-only` behind `aria-hidden`, out of the tab order.
 - The page scrolls focused elements clear of the sticky header:
   `PageLayout` sets `scroll-padding-top` from `--header-h`.
 

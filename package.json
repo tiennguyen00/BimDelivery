@@ -12,6 +12,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "typegen": "wrangler types --include-runtime=false --env-file .dev.vars.example",
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

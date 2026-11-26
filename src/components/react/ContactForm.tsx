@@ -1,9 +1,9 @@
 /**
- * The contact form, the site's one React island (spec 0011).
+ * The contact form, the site's one React island (specs 0011 and 0022).
  *
- * It owns the nine fields, their checks, the Turnstile widget, and the thank
+ * It owns the nine fields, their checks, the hidden spam guard, and the thank
  * you panel, and it reaches the outside world only through `submitContact`
- * in `src/lib/contact.ts`, which sends nothing yet. Every word it shows
+ * in `src/lib/contact.ts`, which posts to `/api/contact`. Every word it shows
  * arrives in `copy`, from the page's content entry.
  *
  * How it behaves, in order:
@@ -11,26 +11,25 @@
  * - The server HTML is the whole form inside one `<fieldset disabled>`, so
  *   before hydration, and for good with JavaScript off, nothing can be typed
  *   or submitted. The first render here is disabled too, so it matches the
- *   HTML, and an effect enables it after mount.
+ *   HTML, and an effect enables it after mount and starts the fill timer.
  * - No error shows while a visitor types before their first Submit. Submit
  *   shows every failing field's message under it and moves focus to the
  *   first; from then on each message follows its field's value.
- * - Submit with no Turnstile token never submits, and shows the captcha
- *   message with the email to write to instead. The same message appears on
- *   its own once the check fails. It never moves focus.
- * - A valid request with a token goes to `submitContact`; while it is
- *   pending the button says so and a second click does nothing. Success
- *   swaps the form for the thank you panel and focuses its heading. A failed
- *   result keeps every typed value and resets the widget, since a token works
- *   only once.
+ * - A valid request goes to `submitContact` with the spam guard's two values:
+ *   the hidden `website` field (empty for every person) and how long the form
+ *   has been usable. While it is pending the button says so and a second
+ *   click does nothing. Success swaps the form for the thank you panel and
+ *   focuses its heading. A failed result keeps every typed value, and shows
+ *   the field errors or the delivery message with the email to write to.
  *
+ * There is no captcha: the endpoint's checks are invisible (spec 0022).
  * Nothing typed is ever put in a URL, storage, a cookie, or a log.
  */
-import { PUBLIC_TURNSTILE_SITE_KEY } from 'astro:env/client';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { ChangeEvent, SubmitEvent } from 'react';
 import {
   CONTACT_FIELDS,
+  OTHER_NEED,
   submitContact,
   toContactRequest,
   validateContactRequest,
@@ -39,12 +38,12 @@ import {
   type ContactValues,
   type ErrorCode,
   type FieldErrors,
+  type SpamGuard,
 } from '../../lib/contact';
 import { Button } from './ui/Button';
 import { Select, type SelectOption } from './ui/Select';
 import { TextArea } from './ui/TextArea';
 import { TextField } from './ui/TextField';
-import { useTurnstile } from './useTurnstile';
 
 export type ContactFormCopy = Readonly<{
   labels: Readonly<Record<ContactField, string>>;
@@ -53,7 +52,7 @@ export type ContactFormCopy = Readonly<{
   needOtherLabel: string;
   submitLabel: string;
   sendingLabel: string;
-  errors: Readonly<Record<ErrorCode | 'captcha' | 'deliveryFailed', string>>;
+  errors: Readonly<Record<ErrorCode | 'deliveryFailed', string>>;
   success: Readonly<{ heading: string; text: string }>;
 }>;
 
@@ -63,16 +62,11 @@ type Props = Readonly<{
   needs: readonly SelectOption[];
   projectTypes: readonly SelectOption[];
   lodOptions: readonly SelectOption[];
-  /** Where to write instead when the captcha cannot be passed. */
+  /** Where to write instead when a message could not be sent. */
   email: string;
-  /** The page's language, for the Turnstile widget. */
-  lang: string;
 }>;
 
 type FormState = 'idle' | 'submitting' | 'success';
-
-/** The `other` "Your needs" answer, reserved from service slugs (spec 0011). */
-const OTHER_NEED = 'other';
 
 const EMPTY_VALUES: ContactValues = {
   name: '',
@@ -88,6 +82,9 @@ const EMPTY_VALUES: ContactValues = {
 
 const NO_ERRORS: FieldErrors = {};
 
+/** A guard that passes, for checking the fields alone while a visitor types. */
+const FIELDS_ONLY: SpamGuard = { website: '', elapsedMs: 0 };
+
 const firstFailing = (errors: FieldErrors): ContactField | undefined =>
   CONTACT_FIELDS.find((field) => errors[field] !== undefined);
 
@@ -97,7 +94,6 @@ export const ContactForm = ({
   projectTypes,
   lodOptions,
   email,
-  lang,
 }: Props) => {
   const baseId = useId();
   const fieldId = (field: ContactField): string => `${baseId}-${field}`;
@@ -108,7 +104,6 @@ export const ContactForm = ({
   const [showLive, setShowLive] = useState(false);
   const [formState, setFormState] = useState<FormState>('idle');
   const [deliveryFailed, setDeliveryFailed] = useState(false);
-  const [captchaAsked, setCaptchaAsked] = useState(false);
 
   // Guards against a second submit landing before the disabled button renders.
   const pendingRef = useRef(false);
@@ -116,13 +111,11 @@ export const ContactForm = ({
   // The field to focus once the render that shows its error has landed, so a
   // screen reader reads the field together with its message.
   const focusRef = useRef<ContactField | null>(null);
-
-  const turnstile = useTurnstile({
-    siteKey: PUBLIC_TURNSTILE_SITE_KEY,
-    action: 'contact',
-    theme: 'dark',
-    language: lang,
-  });
+  // The honeypot, read once at Submit. Uncontrolled: nothing a person does
+  // ever changes it.
+  const trapRef = useRef<HTMLInputElement>(null);
+  // When the form became usable, for the guard's minimum fill time.
+  const readyAtRef = useRef<number | null>(null);
 
   const allowed: AllowedChoices = useMemo(
     () => ({
@@ -139,6 +132,7 @@ export const ContactForm = ({
   );
 
   useEffect(() => {
+    readyAtRef.current = performance.now();
     setEnabled(true);
   }, []);
 
@@ -155,14 +149,11 @@ export const ContactForm = ({
     document.getElementById(fieldId(field))?.focus();
   });
 
-  // A token arriving answers the captcha message.
-  useEffect(() => {
-    if (turnstile.token !== null) setCaptchaAsked(false);
-  }, [turnstile.token]);
-
-  /** The field errors alone; the token is the captcha message's business. */
   const checkFields = (next: ContactValues): FieldErrors => {
-    const result = validateContactRequest(toContactRequest(next, ''), allowed);
+    const result = validateContactRequest(
+      toContactRequest(next, FIELDS_ONLY),
+      allowed,
+    );
     return result.ok ? NO_ERRORS : result.errors;
   };
 
@@ -182,12 +173,19 @@ export const ContactForm = ({
       if (showLive) setErrors(checkFields(next));
     };
 
+  const spamGuard = (): SpamGuard => {
+    const now = performance.now();
+    return {
+      website: trapRef.current?.value ?? '',
+      elapsedMs: Math.round(now - (readyAtRef.current ?? now)),
+    };
+  };
+
   const submit = async (): Promise<void> => {
     if (pendingRef.current) return;
 
-    const token = turnstile.token;
     const result = validateContactRequest(
-      toContactRequest(values, token ?? ''),
+      toContactRequest(values, spamGuard()),
       allowed,
     );
     const fieldErrors = result.ok ? NO_ERRORS : result.errors;
@@ -197,11 +195,6 @@ export const ContactForm = ({
     setDeliveryFailed(false);
     focusField(firstFailing(fieldErrors));
 
-    if (token === null) {
-      setCaptchaAsked(true);
-      if (turnstile.status === 'error') turnstile.reset();
-      return;
-    }
     if (!result.ok) return;
 
     pendingRef.current = true;
@@ -214,7 +207,6 @@ export const ContactForm = ({
       return;
     }
     setFormState('idle');
-    turnstile.reset();
     if (outcome.kind === 'invalid') {
       setErrors(outcome.errors);
       focusField(firstFailing(outcome.errors));
@@ -244,7 +236,6 @@ export const ContactForm = ({
   }
 
   const submitting = formState === 'submitting';
-  const showCaptcha = turnstile.status === 'error' || captchaAsked;
 
   /** What every field shares: its id, name, value, handler, and error. */
   const common = (field: ContactField) => {
@@ -315,32 +306,35 @@ export const ContactForm = ({
           </div>
         </div>
 
+        {/* The honeypot (spec 0022): out of sight, out of the tab order, and
+            hidden from screen readers, so no person ever fills it. A bot that
+            fills every field does, and its request is quietly dropped. */}
+        <div aria-hidden="true" className="sr-only">
+          <input
+            ref={trapRef}
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            defaultValue=""
+          />
+        </div>
+
         <div role="alert" className="mt-6 empty:mt-0">
           {deliveryFailed && (
-            <p className="text-error">{copy.errors.deliveryFailed}</p>
+            <p className="text-error">
+              {copy.errors.deliveryFailed}{' '}
+              <a
+                href={`mailto:${email}`}
+                className="font-semibold wrap-anywhere text-heading underline"
+              >
+                {email}
+              </a>
+            </p>
           )}
         </div>
 
-        {/* Wraps, so where the lg form column is narrower than the widget and
-            the button side by side, the button drops under the widget instead
-            of pushing the widget out of the column (spec 0011, AC-17). */}
-        <div className="mt-6 flex flex-col gap-4 md:flex-row md:flex-wrap md:items-start md:justify-end">
-          <div className="flex flex-col gap-2">
-            <div ref={turnstile.containerRef} className="min-h-16.25 w-75" />
-            <div role="alert" className="max-w-75 text-small text-error">
-              {showCaptcha && (
-                <p>
-                  {copy.errors.captcha}{' '}
-                  <a
-                    href={`mailto:${email}`}
-                    className="font-semibold wrap-anywhere text-heading underline"
-                  >
-                    {email}
-                  </a>
-                </p>
-              )}
-            </div>
-          </div>
+        <div className="mt-6 flex flex-col md:flex-row md:justify-end">
           <Button type="submit" disabled={submitting} className="md:min-w-40">
             {submitting ? copy.sendingLabel : copy.submitLabel}
           </Button>

@@ -9,8 +9,8 @@ import { DEFAULT_LOCALE, LOCALES } from './src/i18n/locales.ts';
 // https://astro.build/config
 export default defineConfig({
   // RENDERING INVARIANT (spec 0001): every page route must produce a real HTML
-  // file at build time. Exactly one route, the future POST /api/contact
-  // endpoint, may opt out with `export const prerender = false`.
+  // file at build time. Exactly one route, the POST /api/contact endpoint
+  // (spec 0022), opts out with `export const prerender = false`.
   //
   // 'static' is Astro's default and means "prerender by default". It is written
   // out explicitly because flipping it to 'server' would silently turn every
@@ -21,9 +21,9 @@ export default defineConfig({
   // dist/ contains an HTML file per page route.
   output: 'static',
 
-  // Added at scaffold time on purpose (spec 0001). Nothing needs server
-  // rendering yet; having the adapter here means the contact form endpoint is
-  // a new file later, not a platform reconfiguration.
+  // Added at scaffold time on purpose (spec 0001), so the contact form
+  // endpoint (spec 0022) was a new file, not a platform reconfiguration. It
+  // is the one route the Worker renders on demand.
   // Adding an adapter does NOT change the prerender default above.
   adapter: cloudflare({
     // Images are optimised at BUILD time and served as plain files (spec 0001:
@@ -94,16 +94,29 @@ export default defineConfig({
   // Astro's typed env schema, the one way code reads configuration (AGENTS.md).
   env: {
     schema: {
-      // The contact form's Cloudflare Turnstile widget (spec 0011). A site key
-      // is public by design and is inlined into the page's JavaScript at
-      // build, so it must exist wherever the build runs: `.env.development`
-      // holds Cloudflare's always passing test key for `pnpm dev`, a local
-      // `.env` holds one for `pnpm build`, and the live Worker's build
-      // variables hold the real key. No default, so a build without it fails
-      // rather than shipping a widget that can never pass.
-      PUBLIC_TURNSTILE_SITE_KEY: envField.string({
-        context: 'client',
+      // The contact form's email delivery (spec 0022). The Resend API key is
+      // a Cloudflare secret, read by the Worker at request time
+      // (`wrangler secret put RESEND_API_KEY`; `.dev.vars` locally). It is
+      // optional so every build works without it: the endpoint then answers
+      // 502 and logs that the key is missing, and nothing is sent. The dev
+      // link Worker has no key on purpose, so it never sends a real enquiry.
+      RESEND_API_KEY: envField.string({
+        context: 'server',
+        access: 'secret',
+        optional: true,
+      }),
+      // Where each enquiry goes, and the address it comes from. The sender
+      // must be on the domain verified in Resend. Both are inlined at build;
+      // override them in `.env` to test against your own inbox.
+      CONTACT_TO_EMAIL: envField.string({
+        context: 'server',
         access: 'public',
+        default: 'info@bimdelivery.vn',
+      }),
+      CONTACT_FROM_EMAIL: envField.string({
+        context: 'server',
+        access: 'public',
+        default: 'BIM Delivery website <website@bimdelivery.vn>',
       }),
 
       // Projects come from Sanity (spec 0019), read once per build by the

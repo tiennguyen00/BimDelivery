@@ -20,6 +20,8 @@ export default defineConfig(
     'studio/.sanity/',
     'workers/*/.wrangler/',
     'workers/*/worker-configuration.d.ts',
+    // The site Worker's generated binding types (spec 0022).
+    'worker-configuration.d.ts',
   ]),
   js.configs.recommended,
   tseslint.configs.recommended,

@@ -684,7 +684,7 @@ const contact = defineCollection({
       email: text,
       phone: text,
       tooLong: text,
-      captcha: text,
+      // Followed by the email address as a link (spec 0022).
       deliveryFailed: text,
     }),
     success: z.strictObject({ heading: text, text }),

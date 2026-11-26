@@ -1,10 +1,11 @@
 /**
- * The contact form's rules and its one door to the outside world (spec 0011).
+ * The contact form's rules and its one door to the outside world (specs 0011
+ * and 0022).
  *
  * The same module serves both ends of a submission: the form island checks a
- * request with it in the browser now, and the `POST /api/contact` endpoint
- * checks it again with the same schema when delivery is built. So there is
- * one copy of the rules, never two that can drift.
+ * request with it in the browser, and the `POST /api/contact` endpoint checks
+ * it again with the same schema before anything is sent. So there is one copy
+ * of the rules, never two that can drift.
  *
  * Nothing here holds a word a visitor reads. A failed field returns a code
  * (`required`, `email`, `phone`, `tooLong`), and the page shows the message
@@ -46,12 +47,10 @@ export type AllowedChoices = Readonly<{
 /** The fields as typed, before trimming or dropping the empty ones. */
 export type ContactValues = Readonly<Record<ContactField, string>>;
 
-const ERROR_CODES: readonly ErrorCode[] = [
-  'required',
-  'email',
-  'phone',
-  'tooLong',
-];
+/** The `other` "Your needs" answer, reserved from service slugs (spec 0011). */
+export const OTHER_NEED = 'other';
+
+const ERROR_CODES = ['required', 'email', 'phone', 'tooLong'] as const;
 
 const isErrorCode = (value: string): value is ErrorCode =>
   (ERROR_CODES as readonly string[]).includes(value);
@@ -91,12 +90,22 @@ const optionalChoice = (allowed: readonly string[]) =>
     .optional();
 
 /**
+ * The spam guard's two fields (spec 0022). Neither is something a visitor
+ * fills or sees, so neither is ever a field error.
+ *
+ * - `website`: the honeypot, a hidden field people never reach. Filled means
+ *   a bot.
+ * - `elapsedMs`: how long the form was usable before Submit. A person cannot
+ *   fill it in under `MIN_FILL_MS`.
+ */
+export type SpamGuard = Readonly<{ website: string; elapsedMs: number }>;
+
+/** The least time, in milliseconds, a person takes to fill the form in. */
+export const MIN_FILL_MS = 3_000;
+
+/**
  * The `ContactRequest` schema, the JSON body of `POST /api/contact`. A
  * factory, because the dropdowns' allowed keys come from content.
- *
- * `turnstileToken` is checked here so the endpoint rejects a request without
- * one, but it is never a field error: the form handles a missing token with
- * its own message (spec 0011, AC-9).
  */
 export const contactRequestSchema = (allowed: AllowedChoices) =>
   z.strictObject({
@@ -119,10 +128,11 @@ export const contactRequestSchema = (allowed: AllowedChoices) =>
       })
       .optional(),
     country: optionalText(80),
-    need: optionalChoice([...allowed.needs, 'other']),
+    need: optionalChoice([...allowed.needs, OTHER_NEED]),
     projectType: optionalChoice(allowed.projectTypes),
     lod: optionalChoice(allowed.lods),
-    turnstileToken: z.string().min(1),
+    website: z.string(),
+    elapsedMs: z.number().int().nonnegative(),
   });
 
 export type ContactRequest = z.infer<ReturnType<typeof contactRequestSchema>>;
@@ -133,8 +143,9 @@ export type ValidationResult =
 
 /**
  * Checks a request and returns its first problem per field, as a code. It
- * never throws. A request whose only problem is a missing token comes back
- * `ok: false` with no field errors, which the caller reads as "no token".
+ * never throws. A request whose only problem is a missing or malformed guard
+ * field comes back `ok: false` with no field errors: only a hand made request
+ * can do that, never the form.
  */
 export const validateContactRequest = (
   input: unknown,
@@ -153,6 +164,14 @@ export const validateContactRequest = (
   return { ok: false, errors };
 };
 
+/**
+ * True when the guard says a bot sent this: the honeypot is filled, or the
+ * form was sent faster than a person can fill it in. The endpoint answers
+ * such a request as if it were sent, and sends nothing.
+ */
+export const isLikelySpam = (request: ContactRequest): boolean =>
+  request.website !== '' || request.elapsedMs < MIN_FILL_MS;
+
 const OPTIONAL_FIELDS: readonly ContactField[] = [
   'company',
   'phone',
@@ -169,15 +188,15 @@ const OPTIONAL_FIELDS: readonly ContactField[] = [
  */
 export const toContactRequest = (
   values: ContactValues,
-  turnstileToken: string,
-): Readonly<Record<string, string>> => {
+  guard: SpamGuard,
+): Readonly<Record<string, string | number>> => {
   const fields = CONTACT_FIELDS.flatMap((field) => {
     const value = values[field].trim();
     return value === '' && OPTIONAL_FIELDS.includes(field)
       ? []
       : [[field, value] as const];
   });
-  return { ...Object.fromEntries(fields), turnstileToken };
+  return { ...Object.fromEntries(fields), ...guard };
 };
 
 /**
@@ -199,23 +218,46 @@ export type SubmitResult =
   | Readonly<{ ok: false; kind: 'invalid'; errors: FieldErrors }>
   | Readonly<{ ok: false; kind: 'failed' }>;
 
-/** How long the stand in waits, so the sending state is seen. */
-const STAND_IN_DELAY_MS = 600;
+/** The endpoint's `400` body: field codes, never copy. */
+const invalidBodySchema = z.object({
+  ok: z.literal(false),
+  errors: z.partialRecord(z.enum(CONTACT_FIELDS), z.enum(ERROR_CODES)),
+});
+
+const FAILED: SubmitResult = { ok: false, kind: 'failed' };
 
 /**
- * Sends a checked request. The only place the form touches the outside
- * world.
+ * Reads the endpoint's answer. `200` is sent, a `400` with at least one field
+ * code is `invalid`, and every other answer (a refused origin, the rate limit,
+ * a delivery failure, a body that is not what was promised) is `failed`.
+ */
+const toSubmitResult = async (response: Response): Promise<SubmitResult> => {
+  if (response.ok) return { ok: true };
+  if (response.status !== 400) return FAILED;
+  const body = invalidBodySchema.safeParse(
+    await response.json().catch(() => null),
+  );
+  if (!body.success || Object.keys(body.data.errors).length === 0) {
+    return FAILED;
+  }
+  return { ok: false, kind: 'invalid', errors: body.data.errors };
+};
+
+/**
+ * Sends a checked request to `POST /api/contact`. The only place the form
+ * touches the outside world. It never throws: a network failure is `failed`.
  */
 export const submitContact = async (
   request: ContactRequest,
 ): Promise<SubmitResult> => {
-  // NOTHING IS SENT YET. This is a stand in: it makes no network request,
-  // waits a moment, and reports success, so the form behaves exactly as it
-  // will once sending is real. The typed details go nowhere and are not kept.
-  // The delivery feature replaces this body with the `POST /api/contact`
-  // call (spec 0011), mapping `400` to `invalid` and anything else that is
-  // not `200` to `failed`. The island does not change.
-  void request;
-  await new Promise((resolve) => setTimeout(resolve, STAND_IN_DELAY_MS));
-  return { ok: true };
+  try {
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(request),
+    });
+    return await toSubmitResult(response);
+  } catch {
+    return FAILED;
+  }
 };

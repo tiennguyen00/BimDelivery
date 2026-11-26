@@ -40,7 +40,6 @@ jobs:
       HUSKY: '0'
       SANITY_PERSPECTIVE: published
       SANITY_LENIENT: ${{ github.event_name == 'workflow_dispatch' && inputs.lenient && 'true' || 'false' }}
-      PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.PUBLIC_TURNSTILE_SITE_KEY }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -78,9 +77,6 @@ jobs:
       SANITY_PERSPECTIVE: drafts
       SANITY_READ_TOKEN: ${{ secrets.SANITY_READ_TOKEN }}
       SITE_NOINDEX: 'true'
-      # Cloudflare's public, always passing Turnstile test key: the dev link
-      # never sends real enquiries.
-      PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
