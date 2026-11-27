@@ -26,6 +26,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 18 | Client editing in Sanity | Release 1 | in-progress |
 | 19 | FAQ knowledge base | Release 1 | in-progress |
 | 11 | SEO foundation | Release 2 | planned |
+| 20 | SEO blog | Release 2 | in-progress |
 | 12 | Performance & image handling | Release 2 | planned |
 | 13 | Privacy policy page | Release 2 | planned |
 | 14 | Launch to a live URL | Release 2 | planned |
@@ -231,6 +232,18 @@ The sitewide plumbing that lets search engines and chat previews understand the 
 
 Worth knowing: because you chose `//revit-modeling, /scan-to-bim, /bim-coordination` style URLs, the path itself tells a search engine nothing about the service. Titles, headings, and descriptions carry more of the weight here than they would with named paths.
 
+### 20. SEO blog
+The SEO team writes, edits, and deletes posts in the Sanity Studio, and the site shows them at `/blog` (newest first, 12 per page) and `/blog/<slug>`, each with its own search title, description, share card, and `BlogPosting` structured data. Linked from the footer. Built after feature 11, whose canonical addresses, share cards, and sitemap it relies on. Enrolled 2026-11-26 (from spec 0021).
+**Done when:** the dataset is backed up before the SEO team is invited; an SEO editor with no GitHub account writes a post with headings, lists, links, and images, previews it, publishes it, and sees it live within minutes; a bad post never reaches the live site; and every blog page prerenders with structured data that validates.
+spec [0021](../specs/0021-blog-in-sanity/index.md)
+- [x] Design it (spec): `/architect SEO blog`
+- [ ] Build it: `/develop SEO blog` (after feature 11 is done)
+  - [ ] Safety first: the nightly and after deploy backup of published documents (AC-1)
+  - [ ] A post goes live: the Studio post type and its rules, the shared Sanity loader, the `posts` and `blogPage` collections, the list and post pages with the body renderer, the footer link, Preview on site, and the webhook (AC-3 to AC-8, AC-10 to AC-13, AC-17 to AC-19)
+  - [ ] What search engines read: head tags through feature 11, `BlogPosting` JSON-LD, the share crop, pagination, and the sitemap (AC-9, AC-10, AC-14 to AC-16)
+  - [ ] Finish and hand over: motion, accessibility, `design.md` and `/styleguide`, the gates, then the SEO editors invited (AC-1, AC-2, AC-19 to AC-21)
+- [ ] Verify it: `/check verify SEO blog`
+
 ### 12. Performance & image handling
 Make the pages fast on a real connection: right sized images in modern formats, deliberate font loading, and nothing jumping around as the page loads.
 **Done when:** images are served at the size they are displayed and load lazily below the fold; fonts do not block the first paint; there is no visible layout shift; a production build of the home page meets the Core Web Vitals thresholds on a mid range mobile.
@@ -262,9 +275,9 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Second language**: the switcher and a full second set of copy; the content model is already shaped for it · needs a decision
 - **Every other page editable in Sanity**: the Project page copy, home, About, Contact, then settings, navigation, stats, and the 404 page, and services last; each moves its collection and its photos to Sanity, one child spec each in `docs/specs/0019-sanity-editing-layer/` · needs a decision (from spec 0019)
 - **The FAQ editable in Sanity**: move the `faqPage` collection to Studio so the client rewrites answers without a developer; one more child spec under spec 0019 (from spec 0020)
-- **Redirects for renamed project slugs**: an editor renaming a project's slug breaks its old URL; decide with the other redirects (from spec 0019)
+- **Redirects for renamed project slugs and blog posts**: an editor renaming a project's or a post's slug, or deleting a post, breaks its old URL; decide with the other redirects, before the SEO team renames its first published post (from specs 0019 and 0021)
 - **Cookie consent banner**: once you run tracking that legally needs consent · needs a decision
-- **Blog or insights section** · needs a decision
+- **Blog growth**: authors, categories and tags, RSS, related posts, tables and quotes, video embeds, and a per post `noindex` or canonical override, each its own spec when the SEO team asks for it (from spec 0021)
 - **Real brand**: the real logo is in (2026-11-26, traced from the client's artwork); the brand colours and typeface replace the palette borrowed from paviliusbim.com before launch; update the tokens, both contrast tables, and walk `/styleguide` again (from spec 0003)
 - **A dark section tone**: bring back a dark band for a section such as the home page's closing call to action. It means reintroducing inherited tone variables, a card tone reset, and a second focus colour, then computing the dark contrast pairs. Gold reads well on black at 8.73:1 if you want it. Less urgent since spec 0005: the closing call to action now ends on a self contained gold band, so the dark tone is no longer the only way to close a page (from specs 0003 and 0005)
 - **Display typeface**: a high contrast serif in capitals for headings, as on the client's brand board; font loading, a metric fallback, and the heading scale need deciding · needs a decision (from spec 0003, 2026-10-09)
