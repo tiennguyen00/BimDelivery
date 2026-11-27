@@ -40,6 +40,7 @@
 import { Image } from 'astro:assets';
 import Button from './Button.astro';
 import Icon from './Icon.astro';
+import { bandGutterClass, bandWidthClass } from './styles';
 import type { Link, NavItem, NavUi, Settings } from '../../lib/content';
 
 interface Props {
@@ -116,107 +117,112 @@ const active = (on: boolean): '' | undefined => (on ? '' : undefined);
    * navigation region instead of two labelled the same.
    */}
   <nav aria-label={ui.primaryNavLabel}>
-    <div class="mx-auto w-full max-w-content px-4 md:px-6 lg:px-8">
-      {/* Below `lg`: logo and menu button at either end. From `lg`: a
+    {/* The band frame from `styles.ts`, gutters outside and width inside,
+         exactly as `Section` lays it, so the logo and the CTA line up with
+         the content edges below at every screen width. */}
+    <div class={bandGutterClass}>
+      <div class={bandWidthClass.default}>
+        {/* Below `lg`: logo and menu button at either end. From `lg`: a
            1fr | auto | 1fr grid, so the nav sits at the true centre of the bar
            however wide the logo and the CTA are. */}
-      <div class="flex h-(--header-h) items-center justify-between gap-4 lg:grid lg:grid-cols-[1fr_auto_1fr]">
-        <a
-          href="/"
-          class="inline-flex min-h-11 min-w-0 items-center justify-self-start rounded-ui"
-        >
-          {/* Above the fold on every page, so it never waits to load. The
-               logo carries its tagline, so it is set by width, about 48px
-               tall, and shrinks in proportion wherever its room runs short:
-               beside the menu button on a 320px phone, and in the left
-               column just past `lg`, where the centred nav leaves the least.
-               The menu button's `min-w-11` keeps it from being squeezed in
-               turn. */}
-          <Image
-            src={logo.src}
-            alt={logo.alt ?? siteName}
-            loading="eager"
-            class="h-auto w-61 max-w-full"
-          />
-        </a>
-
-        <ul class="hidden list-none items-center gap-1 p-0 lg:flex">
-          {visibleItems.map((item) =>
-            hasChildren(item) ? (
-              <li class="relative" data-nav-dropdown>
-                <button
-                  type="button"
-                  id="nav-services-desktop-btn"
-                  aria-expanded="true"
-                  aria-controls="nav-services-desktop"
-                  data-active={active(isGroupActive(item))}
-                  class:list={[barLinkClass, activeClass]}
-                >
-                  <span class="nav-underline">{item.label}</span>
-                  <Icon name="chevron-down" size={16} class="nav-chevron" />
-                </button>
-
-                {/* Ships open; `html.js` closes it before the first paint. */}
-                <div
-                  id="nav-services-desktop"
-                  class="absolute top-full left-0 min-w-56 rounded-ui border border-line bg-panel p-2"
-                >
-                  <ul class="flex list-none flex-col p-0">
-                    {item.children.map((child) => (
-                      <li>
-                        <a
-                          href={child.href}
-                          aria-current={
-                            isCurrent(child.href) ? 'page' : undefined
-                          }
-                          data-active={active(isCurrent(child.href))}
-                          class:list={[panelLinkClass, activeClass]}
-                        >
-                          <span class="nav-underline">{child.label}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
-            ) : (
-              <li>
-                <a
-                  href={item.href}
-                  aria-current={isCurrent(item.href) ? 'page' : undefined}
-                  data-nav-item
-                  data-active={active(isActive(item.href))}
-                  class:list={[barLinkClass, activeClass]}
-                >
-                  <span class="nav-underline">{item.label}</span>
-                </a>
-              </li>
-            ),
-          )}
-        </ul>
-
-        <div class="flex items-center gap-2 justify-self-end">
-          {cta && (
-            <div class="hidden lg:block">
-              <Button href={cta.href}>{cta.label}</Button>
-            </div>
-          )}
-
-          {/* Which glyph shows follows `aria-expanded` in CSS, so it is right
-               in the server HTML and stays right however the state changes. */}
-          <button
-            type="button"
-            id="nav-menu-btn"
-            aria-expanded="true"
-            aria-controls="nav-menu-panel"
-            aria-label={ui.closeMenu}
-            data-open-label={ui.openMenu}
-            data-close-label={ui.closeMenu}
-            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-ui text-ink-strong hover:text-accent lg:hidden"
+        <div class="flex h-(--header-h) items-center justify-between gap-4 lg:grid lg:grid-cols-[1fr_auto_1fr]">
+          <a
+            href="/"
+            class="inline-flex min-h-11 min-w-0 items-center justify-self-start rounded-ui"
           >
-            <Icon name="menu" class="nav-icon-menu" />
-            <Icon name="close" class="nav-icon-close" />
-          </button>
+            {/* Above the fold on every page, so it never waits to load. The
+                 logo carries its tagline, so it is set by width, about 48px
+                 tall, and shrinks in proportion wherever its room runs short:
+                 beside the menu button on a 320px phone, and in the left
+                 column just past `lg`, where the centred nav leaves the least.
+                 The menu button's `min-w-11` keeps it from being squeezed in
+                 turn. */}
+            <Image
+              src={logo.src}
+              alt={logo.alt ?? siteName}
+              loading="eager"
+              class="h-auto w-61 max-w-full"
+            />
+          </a>
+
+          <ul class="hidden list-none items-center gap-1 p-0 lg:flex">
+            {visibleItems.map((item) =>
+              hasChildren(item) ? (
+                <li class="relative" data-nav-dropdown>
+                  <button
+                    type="button"
+                    id="nav-services-desktop-btn"
+                    aria-expanded="true"
+                    aria-controls="nav-services-desktop"
+                    data-active={active(isGroupActive(item))}
+                    class:list={[barLinkClass, activeClass]}
+                  >
+                    <span class="nav-underline">{item.label}</span>
+                    <Icon name="chevron-down" size={16} class="nav-chevron" />
+                  </button>
+
+                  {/* Ships open; `html.js` closes it before the first paint. */}
+                  <div
+                    id="nav-services-desktop"
+                    class="absolute top-full left-0 min-w-56 rounded-ui border border-line bg-panel p-2"
+                  >
+                    <ul class="flex list-none flex-col p-0">
+                      {item.children.map((child) => (
+                        <li>
+                          <a
+                            href={child.href}
+                            aria-current={
+                              isCurrent(child.href) ? 'page' : undefined
+                            }
+                            data-active={active(isCurrent(child.href))}
+                            class:list={[panelLinkClass, activeClass]}
+                          >
+                            <span class="nav-underline">{child.label}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </li>
+              ) : (
+                <li>
+                  <a
+                    href={item.href}
+                    aria-current={isCurrent(item.href) ? 'page' : undefined}
+                    data-nav-item
+                    data-active={active(isActive(item.href))}
+                    class:list={[barLinkClass, activeClass]}
+                  >
+                    <span class="nav-underline">{item.label}</span>
+                  </a>
+                </li>
+              ),
+            )}
+          </ul>
+
+          <div class="flex items-center gap-2 justify-self-end">
+            {cta && (
+              <div class="hidden lg:block">
+                <Button href={cta.href}>{cta.label}</Button>
+              </div>
+            )}
+
+            {/* Which glyph shows follows `aria-expanded` in CSS, so it is right
+               in the server HTML and stays right however the state changes. */}
+            <button
+              type="button"
+              id="nav-menu-btn"
+              aria-expanded="true"
+              aria-controls="nav-menu-panel"
+              aria-label={ui.closeMenu}
+              data-open-label={ui.openMenu}
+              data-close-label={ui.closeMenu}
+              class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-ui text-ink-strong hover:text-accent lg:hidden"
+            >
+              <Icon name="menu" class="nav-icon-menu" />
+              <Icon name="close" class="nav-icon-close" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -229,7 +235,10 @@ const active = (on: boolean): '' | undefined => (on ? '' : undefined);
      */}
     <div
       id="nav-menu-panel"
-      class="z-30 border-b border-line bg-panel px-4 pt-2 pb-6 lg:hidden"
+      class:list={[
+        'z-30 border-b border-line bg-panel pt-2 pb-6 lg:hidden',
+        bandGutterClass,
+      ]}
     >
       <ul class="flex list-none flex-col p-0">
         {visibleItems.map((item) =>

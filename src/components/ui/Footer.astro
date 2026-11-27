@@ -72,96 +72,103 @@ const contactIconClass = 'shrink-0 text-accent';
     aria-hidden="true"
     class="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-line to-transparent"
   ></div>
-  <div class={cx(bandWidthClass.default, bandGutterClass, 'py-16 md:py-20')}>
-    <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3 lg:gap-16">
-      <div>
-        <Image
-          src={settings.logo.src}
-          alt={settings.logo.alt ?? ''}
-          class="h-auto w-full max-w-80"
-        />
-        <div class="mt-8 flex flex-col gap-4 font-semibold">
-          {footer.intro.map((line) => (
-            <p>
-              <Emphasis text={line} />
-            </p>
-          ))}
+  {/* Gutters outside and width inside, as `Section` lays it, so the footer's
+       edges line up with the content above. */}
+  <div class={cx(bandGutterClass, 'py-16 md:py-20')}>
+    <div class={bandWidthClass.default}>
+      <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3 lg:gap-16">
+        <div>
+          <Image
+            src={settings.logo.src}
+            alt={settings.logo.alt ?? ''}
+            class="h-auto w-full max-w-80"
+          />
+          <div class="mt-8 flex flex-col gap-4 font-semibold">
+            {footer.intro.map((line) => (
+              <p>
+                <Emphasis text={line} />
+              </p>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div>
-        <h2 class={headingClass}>{footer.contactHeading}</h2>
-        <ul class="mt-6 flex list-none flex-col p-0">
-          <li class={contactItemClass}>
-            <Icon name="phone" size={18} class={contactIconClass} />
-            <a href={telHref(contact.phone)} class={linkClass}>
-              {contact.phone}
-            </a>
-          </li>
-          <li class={contactItemClass}>
-            <Icon name="mail" size={18} class={contactIconClass} />
-            <a href={`mailto:${contact.email}`} class={linkClass}>
-              {contact.email}
-            </a>
-          </li>
-          {contact.website && (
+        <div>
+          <h2 class={headingClass}>{footer.contactHeading}</h2>
+          <ul class="mt-6 flex list-none flex-col p-0">
             <li class={contactItemClass}>
-              <Icon name="globe" size={18} class={contactIconClass} />
-              <a href={contact.website} class={linkClass}>
-                {displayUrl(contact.website)}
+              <Icon name="phone" size={18} class={contactIconClass} />
+              <a href={telHref(contact.phone)} class={linkClass}>
+                {contact.phone}
               </a>
             </li>
-          )}
-          <li class={cx(contactItemClass, 'min-h-11 py-2')}>
-            <Icon name="map-pin" size={18} class={contactIconClass} />
-            <address class="not-italic">{contact.address}</address>
-          </li>
-        </ul>
-      </div>
-
-      {settings.social.length > 0 && (
-        <div class="md:col-span-2 lg:col-span-1">
-          <h2 class={headingClass}>{footer.socialHeading}</h2>
-          <ul class="mt-6 grid list-none grid-cols-2 gap-x-6 p-0">
-            {settings.social.map((account) => (
-              <li>
-                <a
-                  href={account.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class={cx(linkClass, 'gap-3')}
-                >
-                  <Icon
-                    name={account.network}
-                    size={18}
-                    class={contactIconClass}
-                  />
-                  {SOCIAL_NAMES[account.network]}
+            <li class={contactItemClass}>
+              <Icon name="mail" size={18} class={contactIconClass} />
+              <a href={`mailto:${contact.email}`} class={linkClass}>
+                {contact.email}
+              </a>
+            </li>
+            {contact.website && (
+              <li class={contactItemClass}>
+                <Icon name="globe" size={18} class={contactIconClass} />
+                <a href={contact.website} class={linkClass}>
+                  {displayUrl(contact.website)}
                 </a>
               </li>
-            ))}
+            )}
+            <li class={cx(contactItemClass, 'min-h-11 py-2')}>
+              <Icon name="map-pin" size={18} class={contactIconClass} />
+              <address class="not-italic">{contact.address}</address>
+            </li>
           </ul>
         </div>
-      )}
-    </div>
 
-    <div class="mt-12 flex flex-col gap-2 border-t border-line pt-6 md:flex-row md:items-center md:justify-between">
-      <p>{footer.copyright}</p>
-      {
-        /* Feature 13's privacy page lands here as a content edit, with no code
+        {/* From `lg` the social column hugs its links and sits at the end of
+             its cell, so its right edge meets the frame's, as the header's
+             CTA does. */}
+        {settings.social.length > 0 && (
+          <div class="md:col-span-2 lg:col-span-1 lg:justify-self-end">
+            <h2 class={headingClass}>{footer.socialHeading}</h2>
+            <ul class="mt-6 grid list-none grid-cols-2 gap-x-6 p-0 lg:grid-cols-[auto_auto] lg:gap-x-10">
+              {settings.social.map((account) => (
+                <li>
+                  <a
+                    href={account.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={cx(linkClass, 'gap-3')}
+                  >
+                    <Icon
+                      name={account.network}
+                      size={18}
+                      class={contactIconClass}
+                    />
+                    {SOCIAL_NAMES[account.network]}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <div class="mt-12 flex flex-col gap-2 border-t border-line pt-6 md:flex-row md:items-center md:justify-between">
+        <p>{footer.copyright}</p>
+        {
+          /* Feature 13's privacy page lands here as a content edit, with no code
            change. Absent or empty, the row is just the copyright. */
-        legal.length > 0 && (
-          <ul class="flex list-none flex-wrap gap-x-6 p-0">
-            {legal.map((link) => (
-              <li>
-                <a href={link.href} class="hover:text-accent">
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        )
-      }
+          legal.length > 0 && (
+            <ul class="flex list-none flex-wrap gap-x-6 p-0">
+              {legal.map((link) => (
+                <li>
+                  <a href={link.href} class="hover:text-accent">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
     </div>
   </div>
 </footer>
