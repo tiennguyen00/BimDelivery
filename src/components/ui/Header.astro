@@ -123,14 +123,20 @@ const active = (on: boolean): '' | undefined => (on ? '' : undefined);
       <div class="flex h-(--header-h) items-center justify-between gap-4 lg:grid lg:grid-cols-[1fr_auto_1fr]">
         <a
           href="/"
-          class="inline-flex min-h-11 shrink-0 items-center justify-self-start rounded-ui"
+          class="inline-flex min-h-11 min-w-0 items-center justify-self-start rounded-ui"
         >
-          {/* Above the fold on every page, so it never waits to load. */}
+          {/* Above the fold on every page, so it never waits to load. The
+               logo carries its tagline, so it is set by width, about 48px
+               tall, and shrinks in proportion wherever its room runs short:
+               beside the menu button on a 320px phone, and in the left
+               column just past `lg`, where the centred nav leaves the least.
+               The menu button's `min-w-11` keeps it from being squeezed in
+               turn. */}
           <Image
             src={logo.src}
             alt={logo.alt ?? siteName}
             loading="eager"
-            class="h-10 w-auto"
+            class="h-auto w-61 max-w-full"
           />
         </a>
 

@@ -19,8 +19,10 @@ on 2026-10-11, and body copy and UI from Inter to EB Garamond on 2026-10-16,
 when the client asked for serif type throughout. The logo is the client's
 own, adopted on 2026-11-26: traced to SVG from their artwork and reversed for
 the dark page (cream ink, the brass wall kept, a dark frame around the lit
-room so it still reads as a window), without the tagline, which would be under
-3px tall at header size. The certification badges are still placeholders.
+room so it still reads as a window). Its tagline, which the client requires,
+came back on 2026-11-27, set larger than in the artwork so it stays readable at
+header size (see `src/assets/images/CREDITS.md`). The certification badges are
+still placeholders.
 Replacing those before launch is a tracked follow up (feature 14).
 
 ## Build mandate
@@ -598,8 +600,12 @@ listener**.
   is open, when the header turns solid `panel` to match the panel. Both
   matter: a `backdrop-filter` makes the header the containing block of the
   fixed mobile panel, which would collapse it to nothing.
-- The logo is drawn at 40px tall (`h-10`), inside the bar's 72px, so it does
-  not change `--header-h`.
+- The logo, tagline included, is set by width (`w-61`, about 48px tall)
+  inside the bar's 72px, so it does not change `--header-h`. With
+  `max-w-full` on it and `min-w-0` on its link, it shrinks in proportion where
+  room runs short: beside the menu button on a 320px phone (to about 228px),
+  and in the left column just past `lg`, where the centred nav leaves the least
+  (about 223px at 1024px).
 - Links are `ink-strong`, turning `accent` on hover; the active link is
   `heading` with a 2px `accent` bar 6px under the words (`nav-underline`). The
   bar draws in from the left when an item turns active and shrinks away to
@@ -651,7 +657,9 @@ A `canvas` band with a `line` hairline on top: brand, contact, and social,
 three columns at `lg`, two at `md` (social spanning both), one below. Copy is
 `heading`, links and contact icons turn `accent` on hover, and its marked copy
 goes through `Emphasis`. The base ring passes there, so no `focus-contrast`.
-It shows the one light logo (`settings.logo`), the same as the header.
+It shows the one light logo (`settings.logo`), the same as the header, filling
+its column up to 320px wide (`w-full max-w-80`), so the tagline is at its most
+readable here.
 
 - **The social column** (2026-10-24, replacing the certification column and
   the brand column's icon row): `footer.socialHeading` over a two column list,

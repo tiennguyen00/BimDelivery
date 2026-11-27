@@ -77,8 +77,15 @@ from it and needs no licence row.
   with potrace, reversed for the dark page. The black ink is `heading` cream,
   the brass wall keeps its own gradient, and the lit room stays the original
   pixels, clipped to the window and framed by a 5px gap so it reads against
-  the cream. The tagline (ARCHITECTURE • INTERIOR • LANDSCAPE) is left out:
-  at the header's 40px it would be under 3px tall.
+  the cream. The tagline (ARCHITECTURE • INTERIOR • LANDSCAPE), required by
+  the client, was added on 2026-11-27: set in Montserrat Medium, which matches
+  the artwork's letters, and drawn as outlines so the site loads no extra font.
+  It keeps the artwork's place, left aligned under DELIVERY and resting on the
+  mark's base, but at 1.65 times the artwork's size with tracking cut from
+  0.2em to 0.1em, so it stays readable at header size (true to size it would
+  be about 2px tall there). The dots are `accent` brass. Montserrat is under
+  the [SIL Open Font License 1.1](https://openfontlicense.org), which allows
+  this use.
 - `public/favicon.svg`: the mark alone, its ink dark or cream with the
   browser's colour scheme; the room is left open as the B's counter.
 - `public/favicon.ico` (16, 32, 48) and `public/apple-touch-icon.png` (180):
