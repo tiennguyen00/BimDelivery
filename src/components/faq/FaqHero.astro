@@ -26,8 +26,7 @@
  * intro is `ink` (11.66:1).
  *
  * The photo is the page's largest paint, so it loads eagerly at a high fetch
- * priority. Its words play the CSS `entrance` on load, 80ms apart (steps 0
- * to 2); under reduced motion nothing moves.
+ * priority. Its words do not move on load: they are there at first paint.
  */
 import { Image } from 'astro:assets';
 import Emphasis from '../ui/Emphasis.astro';
@@ -71,20 +70,17 @@ const { eyebrow, heading, intro, image } = copy;
   <div class={cx('relative lg:pt-(--header-h)', bandGutterClass)}>
     <div class={cx(bandWidthClass.default, 'pb-10 md:pb-12 lg:pt-16 lg:pb-14')}>
       <div class="max-w-md">
-        <p class="entrance flex items-center gap-4 text-eyebrow text-accent uppercase">
+        <p class="flex items-center gap-4 text-eyebrow text-accent uppercase">
           {eyebrow}
           <span aria-hidden="true" class="h-px w-24 bg-accent"></span>
         </p>
         <h1
           id={headingId}
-          class="entrance mt-4 font-display text-h1 font-semibold text-heading *:block"
-          style="--entrance-step: 1"
+          class="mt-4 font-display text-h1 font-semibold text-heading *:block"
         >
           <Emphasis text={heading} />
         </h1>
-        <p class="entrance mt-6 text-lead text-ink" style="--entrance-step: 2">
-          {intro}
-        </p>
+        <p class="mt-6 text-lead text-ink">{intro}</p>
       </div>
     </div>
   </div>

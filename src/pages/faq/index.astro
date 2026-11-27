@@ -84,12 +84,12 @@ const faqSchema = jsonLdScript(faqPageJsonLd(page.questions));
 </PageLayout>
 
 {/**
- * Motion: the hero's words fade and rise in on load through the CSS
- * `entrance`, and a question slides open and shut through `accordion-item`.
- * The search and the questions do not move on load on purpose: a linked
- * question (`#id`) is scrolled into place while the page loads, and a column
- * still rising would leave it 24px off once it settles. Under reduced motion
- * nothing moves.
+ * Motion: a question slides open and shut through `accordion-item`, and
+ * nothing moves on load. The hero's words are there at first paint. The
+ * search and the questions stay still on purpose: a linked question (`#id`)
+ * is scrolled into place while the page loads, and a column still rising
+ * would leave it 24px off once it settles. Under reduced motion nothing
+ * moves.
  *
  * The search over the questions, and opening the question a link points at
  * (`#id`), on load and on every hash change. With no script the box is
