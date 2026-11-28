@@ -25,7 +25,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 17 | Smooth scrolling | Release 1 | in-progress |
 | 18 | Client editing in Sanity | Release 1 | in-progress |
 | 19 | FAQ knowledge base | Release 1 | in-progress |
-| 11 | SEO foundation | Release 2 | planned |
+| 11 | SEO foundation | Release 2 | in-progress |
 | 20 | SEO blog | Release 2 | in-progress |
 | 12 | Performance & image handling | Release 2 | planned |
 | 13 | Privacy policy page | Release 2 | planned |
@@ -225,10 +225,17 @@ spec [0020](../specs/0020-faq-knowledge-base/index.md) · code in `src/pages/faq
 
 ## Release 2: findable, fast, and live
 
-### 11. SEO foundation · needs a decision
+### 11. SEO foundation
 The sitewide plumbing that lets search engines and chat previews understand the site: per page title and description, canonical URLs, a sitemap, robots rules, social preview cards, and organisation structured data.
 **Done when:** every page has a unique title and description; a sitemap and a robots file are served; sharing any URL shows a correct preview card; the structured data validates; headings run in a sensible order on every page.
-- [ ] Design it (spec): `/architect SEO foundation`
+spec [0023](../specs/0023-seo-foundation/index.md)
+- [x] Design it (spec): `/architect SEO foundation`
+- [ ] Build it: `/develop SEO foundation`
+  - [ ] One address and a head on every page: no trailing slash, canonicals, share tags with the default photo, `robots.txt`, the sitemap, the `www` redirect, then Search Console and Bing (AC-1 to AC-3, AC-5, AC-9 to AC-11, AC-15 to AC-17)
+  - [ ] Each card looks like its page: `shareImageUrl` and each page's own photo, tested in Facebook, LinkedIn, and Zalo (AC-5, AC-6)
+  - [ ] The company's facts for machines: the address split, `legalName`, international phone links, the Organization and WebSite graph, breadcrumbs on project details (AC-7, AC-8, AC-14)
+  - [ ] Guard it: the build check fails on a missing or duplicate tag and on heading jumps, and warns on length (AC-4, AC-11 to AC-13, AC-17)
+- [ ] Verify it: `/check verify SEO foundation`
 
 Worth knowing: because you chose `//revit-modeling, /scan-to-bim, /bim-coordination` style URLs, the path itself tells a search engine nothing about the service. Titles, headings, and descriptions carry more of the weight here than they would with named paths.
 
@@ -277,6 +284,7 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **The FAQ editable in Sanity**: move the `faqPage` collection to Studio so the client rewrites answers without a developer; one more child spec under spec 0019 (from spec 0020)
 - **Redirects for renamed project slugs and blog posts**: an editor renaming a project's or a post's slug, or deleting a post, breaks its old URL; decide with the other redirects, before the SEO team renames its first published post (from specs 0019 and 0021)
 - **Cookie consent banner**: once you run tracking that legally needs consent · needs a decision
+- **Title uniqueness in the Studio**: refuse a post or project whose title another page already uses, so a duplicate is caught at publish instead of failing the build (from spec 0023)
 - **Blog growth**: authors, categories and tags, RSS, related posts, tables and quotes, video embeds, and a per post `noindex` or canonical override, each its own spec when the SEO team asks for it (from spec 0021)
 - **Real brand**: the real logo is in (2026-11-26, traced from the client's artwork); the brand colours and typeface replace the palette borrowed from paviliusbim.com before launch; update the tokens, both contrast tables, and walk `/styleguide` again (from spec 0003)
 - **A dark section tone**: bring back a dark band for a section such as the home page's closing call to action. It means reintroducing inherited tone variables, a card tone reset, and a second focus colour, then computing the dark contrast pairs. Gold reads well on black at 8.73:1 if you want it. Less urgent since spec 0005: the closing call to action now ends on a self contained gold band, so the dark tone is no longer the only way to close a page (from specs 0003 and 0005)
