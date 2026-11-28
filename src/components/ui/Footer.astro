@@ -93,8 +93,10 @@ const contactIconClass = 'shrink-0 text-accent';
         </div>
 
         <div>
-          <h2 class={headingClass}>{footer.contactHeading}</h2>
-          <ul class="mt-6 flex list-none flex-col p-0">
+          <h2 class={cx(headingClass, 'text-center')}>
+            {footer.contactHeading}
+          </h2>
+          <ul class="mt-6 flex list-none flex-col p-0 items-center">
             <li class={contactItemClass}>
               <Icon name="phone" size={18} class={contactIconClass} />
               <a href={telHref(contact.phone)} class={linkClass}>
