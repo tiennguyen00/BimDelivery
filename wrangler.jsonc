@@ -16,7 +16,7 @@
   "compatibility_flags": ["nodejs_compat"],
 
   // Astro's adapter builds through Cloudflare's Vite plugin, which reads this
-  // file and writes the real deploy config to dist/client/wrangler.json
+  // file and writes the real deploy config to dist/server/wrangler.json
   // (prerendered pages land in dist/client/, not dist/). `wrangler deploy`
   // follows that automatically via .wrangler/deploy/config.json.
   "assets": {

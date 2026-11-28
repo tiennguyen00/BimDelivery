@@ -89,11 +89,17 @@ jobs:
       - run: pnpm install --frozen-lockfile --filter bim-delivery-site
       - run: pnpm build
       # Stops a preview from ever reaching production: the build must target
-      # the dev Worker, with no route on bimdelivery.vn.
+      # the dev Worker, with no route on bimdelivery.vn. It reads the config
+      # `wrangler deploy` will use, by the same redirect wrangler follows
+      # (dist/server/ since the contact endpoint made the build a server one).
       - name: Confirm the build targets the dev link
         run: |
           node -e '
-            const config = JSON.parse(require("node:fs").readFileSync("dist/client/wrangler.json", "utf8"));
+            const fs = require("node:fs");
+            const path = require("node:path");
+            const redirect = JSON.parse(fs.readFileSync(".wrangler/deploy/config.json", "utf8"));
+            const configPath = path.resolve(".wrangler/deploy", redirect.configPath);
+            const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
             const routes = config.routes;
             if (config.name !== "bim-delivery-site-dev" || !Array.isArray(routes) || routes.length !== 0) {
               console.error(`Refusing to deploy: name "${config.name}", routes ${JSON.stringify(routes)}`);
