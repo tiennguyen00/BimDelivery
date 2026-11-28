@@ -1,9 +1,9 @@
 ---
 /**
  * The FAQ page's opening band (spec 0020, after the engineer's mockup of
- * 2026-11-26): an eyebrow with a short rule after it, the page's `h1`, and a
- * line of intro on the dark page, beside the client's photo of a villa at
- * dusk.
+ * 2026-11-26): the page's `h1` and a line of intro on the dark page, beside
+ * the client's photo of a villa at dusk. The eyebrow above the `h1` was
+ * dropped on 2026-11-28; its `eyebrow` field stays in the content.
  *
  * It is its own band, not a `Section` tone, because it holds a photo. Like
  * the home and Project heroes it slides up under the header card by
@@ -21,9 +21,8 @@
  * So no word ever sits on the photo itself, and the title's `==phrase==`
  * keeps its brass (7.71:1 on canvas); the accent role rule forbids brass on
  * a photo. The phrase drops to its own line (`*:block` on the `h1`, which
- * reaches the `<strong>` `Emphasis` draws), as in the mockup. The eyebrow is
- * `accent` (7.71:1), its rule decorative and hidden from assistive tech; the
- * intro is `ink` (11.66:1).
+ * reaches the `<strong>` `Emphasis` draws), as in the mockup. The intro is
+ * `ink` (11.66:1).
  *
  * The photo is the page's largest paint, so it loads eagerly at a high fetch
  * priority. Its words do not move on load: they are there at first paint.
@@ -40,7 +39,7 @@ interface Props {
 }
 
 const { copy, headingId } = Astro.props;
-const { eyebrow, heading, intro, image } = copy;
+const { heading, intro, image } = copy;
 ---
 
 <section
@@ -70,10 +69,6 @@ const { eyebrow, heading, intro, image } = copy;
   <div class={cx('relative lg:pt-(--header-h)', bandGutterClass)}>
     <div class={cx(bandWidthClass.default, 'pb-10 md:pb-12 lg:pt-16 lg:pb-14')}>
       <div class="max-w-md">
-        <p class="flex items-center gap-4 text-eyebrow text-accent uppercase">
-          {eyebrow}
-          <span aria-hidden="true" class="h-px w-24 bg-accent"></span>
-        </p>
         <h1
           id={headingId}
           class="mt-4 font-display text-h1 font-semibold text-heading *:block"
